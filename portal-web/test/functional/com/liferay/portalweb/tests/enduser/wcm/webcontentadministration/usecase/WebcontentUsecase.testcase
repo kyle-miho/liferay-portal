@@ -962,6 +962,7 @@
 	</command>
 
 	<command name="AddLocalizedWebContentViaSourceEditor" priority="5">
+		<property name="portal.acceptance" value="kyle-miho" />
 		<property name="test.name.skip.portal.instance" value="WebcontentUsecase#AddLocalizedWebContentViaSourceEditor" />
 		<property name="testray.component.names" value="Training,Web Content Administration" />
 
@@ -1616,6 +1617,7 @@
 	</command>
 
 	<command name="AddWebContentWithPortletURL" priority="5">
+		<property name="portal.acceptance" value="pending" />
 		<description message="This is a use case for LPS-70386." />
 
 		<execute macro="ProductMenu#gotoPortlet">
