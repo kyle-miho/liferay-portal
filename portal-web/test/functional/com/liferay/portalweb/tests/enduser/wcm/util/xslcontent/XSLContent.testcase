@@ -67,6 +67,7 @@
 	</tear-down>
 
 	<command name="AddXSL" priority="4">
+		<property name="portal.acceptance" value="kyle-miho" />
 		<property name="test.name.skip.portal.instance" value="XSLContent#AddXSL" />
 
 		<execute macro="ProductMenu#gotoSite">
@@ -204,6 +205,7 @@
 	</command>
 
 	<command name="ConfigurePortletWithCorruptXML" priority="4">
+		<property name="portal.acceptance" value="kyle-miho" />
 		<property name="ignore.errors" value="must be terminated by the matching end-tag" />
 		<property name="test.name.skip.portal.instance" value="XSLContent#ConfigurePortletWithCorruptXML" />
 
@@ -330,6 +332,7 @@
 	</command>
 
 	<command name="ConfigurePortletWithCorruptXSL" priority="4">
+		<property name="portal.acceptance" value="kyle-miho" />
 		<property name="ignore.errors" value="must be terminated by the matching end-tag" />
 		<property name="test.name.skip.portal.instance" value="XSLContent#ConfigurePortletWithCorruptXSL" />
 
@@ -456,6 +459,7 @@
 	</command>
 
 	<command name="ConfigurePortletWithIncorrectVersionXmlAndXsl" priority="4">
+		<property name="portal.acceptance" value="kyle-miho" />
 		<property name="test.name.skip.portal.instance" value="XSLContent#ConfigurePortletWithIncorrectVersionXmlAndXsl" />
 
 		<execute macro="ProductMenu#gotoSite">
@@ -585,6 +589,7 @@
 	</command>
 
 	<command name="ViewXSLDefaultContent" priority="4">
+		<property name="portal.acceptance" value="kyle-miho" />
 		<property name="test.name.skip.portal.instance" value="XSLContent#ViewXSLDefaultContent" />
 
 		<execute macro="Navigator#gotoSitePage">
