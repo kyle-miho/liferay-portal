@@ -92,6 +92,7 @@
 	</command>
 
 	<command name="LocalizationStyle0" priority="3">
+		<property name="portal.acceptance" value="kyle-miho" />
 		<property name="custom.properties" value="locale.prepend.friendly.url.style=0" />
 		<property name="test.name.skip.portal.instance" value="SitelocalizationUsecase#LocalizationStyle0" />
 		<property name="testray.component.names" value="Site Localization" />
@@ -120,10 +121,6 @@
 			<var name="pageName" value="Language Test Page" />
 		</execute>
 
-		<execute macro="LanguagePortlet#selectLanguagePG">
-			<var name="locale" value="en-us" />
-		</execute>
-
 		<execute function="AssertLocation" value1="${portalURL}/web/guest/language-test-page" />
 
 		<execute macro="LanguagePortlet#selectLanguagePG">
@@ -148,6 +145,7 @@
 	</command>
 
 	<command name="LocalizationStyle1" priority="3">
+		<property name="portal.acceptance" value="kyle-miho" />
 		<property name="custom.properties" value="locale.prepend.friendly.url.style=1" />
 		<property name="test.name.skip.portal.instance" value="SitelocalizationUsecase#LocalizationStyle1" />
 		<property name="testray.component.names" value="Site Localization" />
@@ -176,10 +174,6 @@
 			<var name="pageName" value="Language Test Page" />
 		</execute>
 
-		<execute macro="LanguagePortlet#selectLanguagePG">
-			<var name="locale" value="en-us" />
-		</execute>
-
 		<execute function="AssertLocation" value1="${portalURL}/web/guest/language-test-page" />
 
 		<execute macro="LanguagePortlet#selectLanguagePG">
@@ -204,6 +198,7 @@
 	</command>
 
 	<command name="LocalizationStyle2" priority="3">
+		<property name="portal.acceptance" value="kyle-miho" />
 		<property name="custom.properties" value="locale.prepend.friendly.url.style=2" />
 		<property name="test.name.skip.portal.instance" value="SitelocalizationUsecase#LOcalizationStyle2" />
 		<property name="testray.component.names" value="Site Localization" />
@@ -230,10 +225,6 @@
 
 		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Language Test Page" />
-		</execute>
-
-		<execute macro="LanguagePortlet#selectLanguagePG">
-			<var name="locale" value="en-us" />
 		</execute>
 
 		<execute function="AssertLocation" value1="${portalURL}/en/web/guest/language-test-page" />
