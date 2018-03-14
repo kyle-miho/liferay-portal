@@ -16,6 +16,12 @@
 
 <%@ include file="/com.liferay.document.library.analytics/init.jsp" %>
 
+<script data-senna-track="temporary" type="text/javascript">
+	if (window.Analytics) {
+		window.<%= DocumentLibraryAnalyticsConstants.JS_PREFIX %>isViewFileEntry = false;
+	}
+</script>
+
 <aui:script require="metal-dom/src/all/dom as dom,metal-uri/src/Uri">
 	if (window.Analytics) {
 		var Uri = metalUriSrcUri.default;
@@ -42,6 +48,7 @@
 						{
 							groupId: match[1],
 							fileEntryUUID: match[4],
+							preview: !!window.<%= DocumentLibraryAnalyticsConstants.JS_PREFIX %>isViewFileEntry,
 							version: uri.getParameterValue('version')
 						}
 					);
