@@ -964,6 +964,7 @@
 	<command name="AddLocalizedWebContentViaSourceEditor" priority="5">
 		<property name="test.name.skip.portal.instance" value="WebcontentUsecase#AddLocalizedWebContentViaSourceEditor" />
 		<property name="testray.component.names" value="Training,Web Content Administration" />
+		<property name="portal.acceptance" value="kyle-miho" />
 
 		<execute macro="ProductMenu#gotoPortlet">
 			<var name="category" value="Navigation" />
@@ -999,6 +1000,7 @@
 
 <p class="text-center">Dare to Dream out of this world</p>
 ]]></var>
+			<var name="fieldName" value="content-content" />
 		</execute>
 
 		<execute macro="Button#clickPublish" />
@@ -1034,6 +1036,7 @@
 
 <p class="text-center">地球から、宇宙の果てへ</p>
 ]]></var>
+			<var name="fieldName" value="content-content" />
 		</execute>
 
 		<execute macro="Button#clickPublish" />
@@ -1615,6 +1618,7 @@
 
 	<command name="AddWebContentWithPortletURL" priority="5">
 		<description message="This is a use case for LPS-70386." />
+		<property name="portal.acceptance" value="pending" />
 
 		<execute macro="ProductMenu#gotoPortlet">
 			<var name="category" value="Content" />
@@ -1630,6 +1634,7 @@
 
 		<execute macro="AlloyEditor#addSourceContent">
 			<var name="content"><![CDATA[<p><span><a href="http://localhost:8080/web/guest/home/-/testportlet">text</a></span></p>]]></var>
+			<var name="fieldName" value="content-content" />
 		</execute>
 
 		<execute macro="PortletEntry#publish" />
