@@ -21,7 +21,7 @@
 <!--XSL_CONTENT_CONFIGURATION-->
 <tr>
 	<td>XSL_CONTENT_CONFIGURATION_XML_DOCTYPE_DECLARATION_CHECKBOX</td>
-	<td>//input[contains(@id,'xml.doctype.declaration.allowed')]</td>
+	<td>//div[contains(.,'XML DOCTYPE Declaration Allowed')][contains(@class,'custom-checkbox')]//input</td>
 	<td></td>
 </tr>
 </tbody>
