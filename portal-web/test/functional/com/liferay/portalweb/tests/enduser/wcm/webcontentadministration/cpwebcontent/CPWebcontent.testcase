@@ -2339,6 +2339,7 @@
 	</command>
 
 	<command name="ImportLAR" priority="4">
+		<property name="portal.acceptance" value="kyle-miho" />
 		<property name="testray.component.names" value="Web Content Administration" />
 
 		<execute macro="Navigator#openURL" />
