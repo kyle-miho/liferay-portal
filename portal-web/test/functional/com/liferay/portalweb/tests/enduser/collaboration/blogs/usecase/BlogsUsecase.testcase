@@ -1513,8 +1513,6 @@
 			<var name="site" value="www.able.com" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoPrivatePages" />
-
 		<execute macro="Portlet#addPG">
 			<var name="portletName" value="Blogs" />
 		</execute>
@@ -1545,8 +1543,6 @@
 		<execute macro="ProductMenu#gotoSite">
 			<var name="site" value="www.able.com" />
 		</execute>
-
-		<execute macro="ProductMenu#gotoPrivatePages" />
 
 		<execute macro="BlogsNavigator#gotoEntryPG">
 			<var name="entryContent" value="Blogs Entry2 Content" />
