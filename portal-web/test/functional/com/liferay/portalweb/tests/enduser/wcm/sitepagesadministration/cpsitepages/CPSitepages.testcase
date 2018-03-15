@@ -177,6 +177,7 @@
 	</command>
 
 	<command name="AddSitePrivateChildPage" priority="4">
+		<property name="portal.acceptance" value="kyle-miho" />
 		<property name="testray.component.names" value="Site Pages Administration" />
 
 		<var method="TestPropsUtil#get('portal.url')" name="portalURL" />

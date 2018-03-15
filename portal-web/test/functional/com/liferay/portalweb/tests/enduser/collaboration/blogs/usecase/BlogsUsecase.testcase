@@ -1431,6 +1431,7 @@
 	</command>
 
 	<command name="ViewBlogsEntriesWithSpecialCharactersOnPublicAndPrivateVirtualHostPages" priority="3">
+		<property name="portal.acceptance" value="kyle-miho" />
 		<property name="test.name.skip.portal.instance" value="BlogsUsecase#ViewBlogsEntriesWithSpecialCharactersOnPublicAndPrivateVirtualHostPages" />
 
 		<var name="entryTitleSpecialCharacter" value="true" />
