@@ -177,6 +177,7 @@
 	</command>
 
 	<command name="AddSitePrivateChildPage" priority="4">
+		<property name="portal.acceptance" value="kyle-miho" />
 		<property name="testray.component.names" value="Site Pages Administration" />
 
 		<var method="TestPropsUtil#get('portal.url')" name="portalURL" />
@@ -211,12 +212,10 @@
 			<var name="url" value="${portalURL}/group/site-name/site-child-page" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoPrivatePages" />
-
 		<execute macro="Page#view">
 			<var name="depth" value="1" />
 			<var name="pageName" value="Site Child Page" />
-			<var name="privacy" value="Public" />
+			<var name="privacy" value="Private" />
 		</execute>
 	</command>
 
