@@ -688,6 +688,7 @@
 	</command>
 
 	<command name="RedirectLocalizedFriendlyURL" priority="4">
+		<property name="portal.acceptance" value="kyle-miho" />
 		<description message="This is a use case for LPS-59345" />
 
 		<property name="test.name.skip.portal.instance" value="SitelocalizationUsecase#RedirectLocalizedFriendlyURL" />
