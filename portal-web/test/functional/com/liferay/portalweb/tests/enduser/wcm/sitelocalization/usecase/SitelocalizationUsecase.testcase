@@ -560,6 +560,7 @@
 		</execute>
 
 		<execute macro="ProductMenu#gotoSite">
+			<var name="localizedSitesName" value="Mis Sitios" />
 			<var name="site" value="Site Name" />
 		</execute>
 
