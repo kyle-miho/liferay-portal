@@ -4653,6 +4653,7 @@
 
 	<command name="UserSegmentViewAnyContentWithCategorizationViaContentListPortletAndExportImportLAR" priority="4">
 		<description message="This is a use case for WCM-1347." />
+		<property name="portal.acceptance" value="kyle-miho" />
 
 		<property name="content.targeting.release" value="true" />
 
@@ -4733,7 +4734,7 @@
 		</execute>
 
 		<execute macro="LAR#exportPortlet">
-			<var name="larFileName" value="Web_Content.portlet.lar" />
+			<var name="larFileName" value="Web_Content4.portlet.lar" />
 		</execute>
 
 		<execute macro="Navigator#gotoSitePage">
@@ -4786,7 +4787,7 @@
 		</execute>
 
 		<execute macro="LAR#importPortlet">
-			<var name="larFileName" value="Web_Content.portlet.lar" />
+			<var name="larFileName" value="Web_Content4.portlet.lar" />
 		</execute>
 
 		<execute macro="Navigator#gotoSitePage">
