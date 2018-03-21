@@ -233,6 +233,7 @@
 	</command>
 
 	<command name="ADTAssetPublisher" priority="3">
+		<property name="portal.acceptance" value="kyle-miho" />
 		<property name="testray.component.names" value="Asset Publisher,Content and Application Templates" />
 
 		<execute macro="Navigator#openSiteURL">
@@ -833,6 +834,7 @@
 	</command>
 
 	<command name="ADTWiki" priority="3">
+		<property name="portal.acceptance" value="kyle-miho" />
 		<property name="testray.component.names" value="Content and Application Templates,Wiki" />
 
 		<execute macro="Navigator#openSiteURL">
