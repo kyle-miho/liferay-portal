@@ -636,6 +636,8 @@
 	</command>
 
 	<command name="RecycleBinStaging" priority="3">
+		<property name="portal.acceptance" value="kyle-miho" />
+
 		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Test Page" />
 			<var name="siteName" value="Site Name" />
