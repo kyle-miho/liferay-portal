@@ -1280,7 +1280,7 @@
 
 		<execute macro="MessageboardsCategory#viewCP">
 			<var name="categoryName" value="MB Category Name" />
-			<var name="replyCount" value="2" />
+			<var name="replyCount" value="1" />
 			<var name="subcategoriesNumber" value="0" />
 			<var name="threadsNumber" value="1" />
 		</execute>
