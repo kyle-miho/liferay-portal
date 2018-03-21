@@ -52,6 +52,8 @@
 	</tear-down>
 
 	<command name="AddLayoutPageTemplateRemoveFragment" priority="5">
+		<property name="portal.acceptance" value="kyle-miho" />
+
 		<var name="htmlSnippet"><![CDATA[
 <html>${line.separator}
 <div>${line.separator}
