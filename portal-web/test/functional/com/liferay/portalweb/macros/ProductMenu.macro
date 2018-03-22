@@ -164,9 +164,19 @@
 
 		<execute function="SelectFrame" locator1="IFrame#DIALOG" />
 
-		<execute macro="Navigator#gotoNavItem">
-			<var name="navItem" value="My Sites" />
-		</execute>
+		<if>
+			<contains string="${localizedSitesName}" substring="{localizedSitesName}" />
+			<then>
+				<execute macro="Navigator#gotoNavItem">
+					<var name="navItem" value="My Sites" />
+				</execute>
+			</then>
+			<else>
+				<execute macro="Navigator#gotoNavItem">
+					<var name="navItem" value="${localizedSitesName}" />
+				</execute>
+			</else>
+		</if>
 
 		<execute macro="SiteSelector#selectSite">
 			<var name="site" value="${site}" />

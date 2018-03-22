@@ -516,6 +516,7 @@
 	<command name="PortletInteractionLocalization" priority="4">
 		<property name="test.name.skip.portal.instance" value="SitelocalizationUsecase#PortletInteractionLocalization" />
 		<property name="testray.component.names" value="Site Localization" />
+		<property name="portal.acceptance" value="kyle-miho" />
 
 		<execute macro="ProductMenu#gotoPortlet">
 			<var name="category" value="Sites" />
@@ -620,6 +621,7 @@
 		</execute>
 
 		<execute macro="ProductMenu#gotoSite">
+			<var name="localizedSitesName" value="Mis Sitios" />
 			<var name="site" value="Site Name" />
 		</execute>
 
