@@ -75,12 +75,17 @@
 					</not>
 					<then>
 						<var name="siteType" value="${siteTemplateName}" />
-					</then>
-				</if>
 
-				<execute macro="LexiconEntry#gotoEntry">
-					<var name="rowEntry" value="${siteType} Site" />
-				</execute>
+						<execute macro="LexiconEntry#gotoEntry">
+							<var name="rowEntry" value="${siteType}" />
+						</execute>
+					</then>
+					<else>
+						<execute macro="LexiconEntry#gotoEntry">
+							<var name="rowEntry" value="${siteType} Site" />
+						</execute>
+					</else>
+				</if>
 
 				<execute macro="PortletEntry#inputName">
 					<var name="name" value="${siteName}" />
