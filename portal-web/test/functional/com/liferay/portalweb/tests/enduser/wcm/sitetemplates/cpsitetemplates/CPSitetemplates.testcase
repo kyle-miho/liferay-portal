@@ -27,6 +27,8 @@
 	</tear-down>
 
 	<command name="AddSiteTemplate" priority="4">
+		<property name="portal.acceptance" value="kyle-miho" />
+
 		<execute macro="ProductMenu#gotoPortlet">
 			<var name="category" value="Sites" />
 			<var name="panel" value="Control Panel" />
@@ -55,6 +57,8 @@
 	</command>
 
 	<command name="AddSiteTemplateApplySiteTemplateChangesToSite" priority="4">
+		<property name="portal.acceptance" value="kyle-miho" />
+
 		<execute macro="ProductMenu#gotoPortlet">
 			<var name="category" value="Sites" />
 			<var name="panel" value="Control Panel" />
@@ -112,6 +116,8 @@
 	</command>
 
 	<command name="AddSiteTemplateDisablePageModification" priority="4">
+		<property name="portal.acceptance" value="kyle-miho" />
+
 		<execute macro="ProductMenu#gotoPortlet">
 			<var name="category" value="Sites" />
 			<var name="panel" value="Control Panel" />
@@ -224,7 +230,7 @@
 	</command>
 
 	<command name="DeleteSiteTemplateAssociatedWithASite" priority="4">
-		<property name="portal.acceptance" value="quarantine" />
+		<property name="portal.acceptance" value="kyle-miho" />
 
 		<execute macro="ProductMenu#gotoPortlet">
 			<var name="category" value="Sites" />
@@ -311,7 +317,7 @@
 	</command>
 
 	<command name="EditSiteTemplateStatus" priority="5">
-		<property name="portal.acceptance" value="quarantine" />
+		<property name="portal.acceptance" value="kyle-miho" />
 
 		<execute macro="ProductMenu#gotoPortlet">
 			<var name="category" value="Sites" />
@@ -422,6 +428,8 @@
 	</command>
 
 	<command name="OnlySiteAdminCanModifyPageAssociatedWithSiteTemplate" priority="4">
+		<property name="portal.acceptance" value="kyle-miho" />
+
 		<execute macro="ProductMenu#gotoPortlet">
 			<var name="category" value="Sites" />
 			<var name="panel" value="Control Panel" />
