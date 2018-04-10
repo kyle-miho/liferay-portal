@@ -16,7 +16,8 @@ package com.liferay.layout.page.template.service;
 
 import aQute.bnd.annotation.ProviderType;
 
-import com.liferay.osgi.util.ServiceTrackerFactory;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 
 import org.osgi.util.tracker.ServiceTracker;
 
@@ -143,6 +144,14 @@ public class LayoutPageTemplateEntryServiceUtil {
 	}
 
 	public static com.liferay.layout.page.template.model.LayoutPageTemplateEntry updateLayoutPageTemplateEntry(
+		long layoutPageTemplateEntryId, long classNameId, long classTypeId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return getService()
+				   .updateLayoutPageTemplateEntry(layoutPageTemplateEntryId,
+			classNameId, classTypeId);
+	}
+
+	public static com.liferay.layout.page.template.model.LayoutPageTemplateEntry updateLayoutPageTemplateEntry(
 		long layoutPageTemplateEntryId, long[] fragmentEntryIds,
 		java.lang.String editableValues,
 		com.liferay.portal.kernel.service.ServiceContext serviceContext)
@@ -174,6 +183,17 @@ public class LayoutPageTemplateEntryServiceUtil {
 		return _serviceTracker.getService();
 	}
 
-	private static ServiceTracker<LayoutPageTemplateEntryService, LayoutPageTemplateEntryService> _serviceTracker =
-		ServiceTrackerFactory.open(LayoutPageTemplateEntryService.class);
+	private static ServiceTracker<LayoutPageTemplateEntryService, LayoutPageTemplateEntryService> _serviceTracker;
+
+	static {
+		Bundle bundle = FrameworkUtil.getBundle(LayoutPageTemplateEntryService.class);
+
+		ServiceTracker<LayoutPageTemplateEntryService, LayoutPageTemplateEntryService> serviceTracker =
+			new ServiceTracker<LayoutPageTemplateEntryService, LayoutPageTemplateEntryService>(bundle.getBundleContext(),
+				LayoutPageTemplateEntryService.class, null);
+
+		serviceTracker.open();
+
+		_serviceTracker = serviceTracker;
+	}
 }

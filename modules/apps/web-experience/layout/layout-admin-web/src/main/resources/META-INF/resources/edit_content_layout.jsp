@@ -17,14 +17,16 @@
 <%@ include file="/init.jsp" %>
 
 <%
-FragmentsEditorContext fragmentsEditorContext = new FragmentsEditorContext(request, renderResponse, Layout.class.getName(), layoutsAdminDisplayContext.getSelPlid());
+FragmentsEditorContext fragmentsEditorContext = new FragmentsEditorContext(request, renderResponse, Layout.class.getName(), layoutsAdminDisplayContext.getSelPlid(), false);
 
 Layout selLayout = layoutsAdminDisplayContext.getSelLayout();
 
 renderResponse.setTitle(selLayout.getName(locale));
 %>
 
-<liferay-editor:resources editorName="alloyeditor" />
+<liferay-editor:resources
+	editorName="alloyeditor"
+/>
 
 <soy:template-renderer
 	context="<%= fragmentsEditorContext.getEditorContext() %>"

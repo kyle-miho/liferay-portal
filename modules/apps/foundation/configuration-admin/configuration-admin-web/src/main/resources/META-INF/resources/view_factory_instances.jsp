@@ -25,11 +25,19 @@ if (Validator.isNull(redirect)) {
 	redirect = portletURL.toString();
 }
 
-ConfigurationModelIterator configurationModelIterator = (ConfigurationModelIterator)request.getAttribute(ConfigurationAdminWebKeys.CONFIGURATION_MODEL_ITERATOR);
 ConfigurationModel configurationModel = (ConfigurationModel)request.getAttribute(ConfigurationAdminWebKeys.FACTORY_CONFIGURATION_MODEL);
+ConfigurationModelIterator configurationModelIterator = (ConfigurationModelIterator)request.getAttribute(ConfigurationAdminWebKeys.CONFIGURATION_MODEL_ITERATOR);
 
-portletDisplay.setShowBackIcon(true);
-portletDisplay.setURLBack(portletURL.toString());
+PortalUtil.addPortletBreadcrumbEntry(request, portletDisplay.getPortletDisplayName(), String.valueOf(renderResponse.createRenderURL()));
+
+String categoryDisplayName = LanguageUtil.get(request, "category." + configurationModel.getCategory());
+
+PortletURL viewCategoryURL = renderResponse.createRenderURL();
+
+viewCategoryURL.setParameter("mvcRenderCommandName", "/view_category");
+viewCategoryURL.setParameter("configurationCategory", configurationModel.getCategory());
+
+PortalUtil.addPortletBreadcrumbEntry(request, categoryDisplayName, viewCategoryURL.toString());
 
 ResourceBundleLoaderProvider resourceBundleLoaderProvider = (ResourceBundleLoaderProvider)request.getAttribute(ConfigurationAdminWebKeys.RESOURCE_BUNDLE_LOADER_PROVIDER);
 
@@ -39,10 +47,26 @@ ResourceBundle componentResourceBundle = resourceBundleLoader.loadResourceBundle
 
 String factoryConfigurationModelName = (componentResourceBundle != null) ? LanguageUtil.get(componentResourceBundle, configurationModel.getName()) : configurationModel.getName();
 
+PortalUtil.addPortletBreadcrumbEntry(request, factoryConfigurationModelName, null);
+
+portletDisplay.setShowBackIcon(true);
+portletDisplay.setURLBack(portletURL.toString());
+
 renderResponse.setTitle(LanguageUtil.get(request, "category." + configurationModel.getCategory()));
 %>
 
-<div class="container-fluid container-fluid-max-xl container-form-lg">
+<div class="container-fluid container-fluid-max-xl">
+	<div class="col-12">
+		<liferay-ui:breadcrumb
+			showCurrentGroup="<%= false %>"
+			showGuestGroup="<%= false %>"
+			showLayout="<%= false %>"
+			showParentGroups="<%= false %>"
+		/>
+	</div>
+</div>
+
+<div class="container-fluid container-fluid-max-xl">
 	<div class="row">
 		<div class="col-md-3">
 			<liferay-util:include page="/configuration_category_menu.jsp" servletContext="<%= application %>" />
@@ -57,7 +81,12 @@ renderResponse.setTitle(LanguageUtil.get(request, "category." + configurationMod
 
 					<c:if test="<%= configurationModelIterator.getTotal() > 0 %>">
 						<div class="autofit-col">
-							<liferay-ui:icon-menu cssClass="float-right" direction="right" markupView="lexicon" showWhenSingleIcon="<%= true %>">
+							<liferay-ui:icon-menu
+								cssClass="float-right"
+								direction="right"
+								markupView="lexicon"
+								showWhenSingleIcon="<%= true %>"
+							>
 								<portlet:resourceURL id="export" var="exportEntriesURL">
 									<portlet:param name="redirect" value="<%= currentURL %>" />
 									<portlet:param name="factoryPid" value="<%= configurationModel.getFactoryPid() %>" />
@@ -126,7 +155,9 @@ renderResponse.setTitle(LanguageUtil.get(request, "category." + configurationMod
 						}
 						%>
 
-						<liferay-ui:search-container-column-text name="<%= columnLabel %>">
+						<liferay-ui:search-container-column-text
+							name="<%= columnLabel %>"
+						>
 							<aui:a href="<%= editFactoryInstanceURL %>"><strong><%= curConfigurationModel.getLabel() %></strong></aui:a>
 						</liferay-ui:search-container-column-text>
 
@@ -135,7 +166,11 @@ renderResponse.setTitle(LanguageUtil.get(request, "category." + configurationMod
 							cssClass="entry-action"
 							name=""
 						>
-							<liferay-ui:icon-menu direction="down" markupView="lexicon" showWhenSingleIcon="<%= true %>">
+							<liferay-ui:icon-menu
+								direction="down"
+								markupView="lexicon"
+								showWhenSingleIcon="<%= true %>"
+							>
 								<liferay-ui:icon
 									message="edit"
 									method="post"
@@ -170,7 +205,9 @@ renderResponse.setTitle(LanguageUtil.get(request, "category." + configurationMod
 						</liferay-ui:search-container-column-text>
 					</liferay-ui:search-container-row>
 
-					<liferay-ui:search-iterator markupView="lexicon" />
+					<liferay-ui:search-iterator
+						markupView="lexicon"
+					/>
 				</liferay-ui:search-container>
 			</div>
 		</div>

@@ -19,7 +19,18 @@
 <%
 ViewUADApplicationsSummaryDisplay viewUADApplicationsSummaryDisplay = (ViewUADApplicationsSummaryDisplay)request.getAttribute(UADWebKeys.VIEW_UAD_APPLICATIONS_SUMMARY_DISPLAY);
 
-int totalCount = viewUADApplicationsSummaryDisplay.getTotalCount();
+SearchContainer<UADApplicationSummaryDisplay> uadApplicationsSummaryDisplaySearchContainer = viewUADApplicationsSummaryDisplay.getSearchContainer();
+
+portletDisplay.setShowBackIcon(true);
+
+PortletURL backURL = renderResponse.createRenderURL();
+
+backURL.setParameter("mvcRenderCommandName", "/view_uad_summary");
+backURL.setParameter("p_u_i_d", String.valueOf(selectedUser.getUserId()));
+
+portletDisplay.setURLBack(backURL.toString());
+
+renderResponse.setTitle(StringBundler.concat(selectedUser.getFullName(), " - ", LanguageUtil.get(request, "personal-data-erasure")));
 %>
 
 <div class="container-fluid container-fluid-max-xl container-form-lg">
@@ -36,17 +47,12 @@ int totalCount = viewUADApplicationsSummaryDisplay.getTotalCount();
 			<div class="autofit-row autofit-row-center">
 				<div class="autofit-col autofit-col-expand">
 					<div class="autofit-section">
-						<strong><liferay-ui:message key="remaining-items" />: </strong><%= totalCount %>
+						<strong><liferay-ui:message key="remaining-items" />: </strong><%= viewUADApplicationsSummaryDisplay.getTotalCount() %>
 					</div>
 				</div>
 
 				<div class="autofit-col">
-					<portlet:renderURL var="viewUADEntitiesURL">
-						<portlet:param name="mvcRenderCommandName" value="/view_uad_summary" />
-						<portlet:param name="p_u_i_d" value="<%= String.valueOf(selUserId) %>" />
-					</portlet:renderURL>
-
-					<aui:button cssClass="btn-sm" disabled="<%= totalCount > 0 %>" href="<%= viewUADEntitiesURL %>" primary="true" value="complete-step" />
+					<aui:button cssClass="btn-sm" disabled="<%= viewUADApplicationsSummaryDisplay.getTotalCount() > 0 %>" href="<%= backURL.toString() %>" primary="true" value="complete-step" />
 				</div>
 			</div>
 		</div>
@@ -54,9 +60,25 @@ int totalCount = viewUADApplicationsSummaryDisplay.getTotalCount();
 		<div class="sheet-section">
 			<h3 class="sheet-subtitle"><liferay-ui:message key="applications" /></h3>
 
+			<liferay-frontend:management-bar>
+				<liferay-frontend:management-bar-filters>
+					<liferay-frontend:management-bar-navigation
+						navigationKeys='<%= new String[] {"all", "in-progress", "done"} %>'
+						portletURL="<%= PortletURLUtil.clone(currentURLObj, renderResponse) %>"
+					/>
+
+					<liferay-frontend:management-bar-sort
+						orderByCol="<%= uadApplicationsSummaryDisplaySearchContainer.getOrderByCol() %>"
+						orderByType="<%= uadApplicationsSummaryDisplaySearchContainer.getOrderByType() %>"
+						orderColumns='<%= new String[] {"name", "items", "status"} %>'
+						portletURL="<%= PortletURLUtil.clone(currentURLObj, renderResponse) %>"
+					/>
+				</liferay-frontend:management-bar-filters>
+			</liferay-frontend:management-bar>
+
 			<liferay-ui:search-container
 				id="uadApplicationSummaryDisplays"
-				searchContainer="<%= viewUADApplicationsSummaryDisplay.getSearchContainer() %>"
+				searchContainer="<%= uadApplicationsSummaryDisplaySearchContainer %>"
 			>
 				<liferay-ui:search-container-row
 					className="com.liferay.user.associated.data.web.internal.display.UADApplicationSummaryDisplay"
@@ -96,7 +118,9 @@ int totalCount = viewUADApplicationsSummaryDisplay.getTotalCount();
 					/>
 				</liferay-ui:search-container-row>
 
-				<liferay-ui:search-iterator markupView="lexicon" />
+				<liferay-ui:search-iterator
+					markupView="lexicon"
+				/>
 			</liferay-ui:search-container>
 		</div>
 	</div>

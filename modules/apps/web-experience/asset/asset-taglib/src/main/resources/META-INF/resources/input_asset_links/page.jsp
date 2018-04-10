@@ -16,7 +16,9 @@
 
 <%@ include file="/input_asset_links/init.jsp" %>
 
-<liferay-util:buffer var="removeLinkIcon">
+<liferay-util:buffer
+	var="removeLinkIcon"
+>
 	<liferay-ui:icon
 		icon="times"
 		markupView="lexicon"
@@ -65,10 +67,20 @@
 		</liferay-ui:search-container-column-text>
 	</liferay-ui:search-container-row>
 
-	<liferay-ui:search-iterator markupView="lexicon" paginate="<%= false %>" />
+	<liferay-ui:search-iterator
+		markupView="lexicon"
+		paginate="<%= false %>"
+	/>
 </liferay-ui:search-container>
 
-<liferay-ui:icon-menu cssClass="select-existing-selector" direction="right" id='<%= inputAssetLinksDisplayContext.getRandomNamespace() + "inputAssetLinks" %>' message="select" showArrow="<%= false %>" showWhenSingleIcon="<%= true %>">
+<liferay-ui:icon-menu
+	cssClass="select-existing-selector"
+	direction="right"
+	id='<%= inputAssetLinksDisplayContext.getRandomNamespace() + "inputAssetLinks" %>'
+	message="select"
+	showArrow="<%= false %>"
+	showWhenSingleIcon="<%= true %>"
+>
 
 	<%
 	for (Map<String, Object> selectorEntry : inputAssetLinksDisplayContext.getSelectorEntries()) {

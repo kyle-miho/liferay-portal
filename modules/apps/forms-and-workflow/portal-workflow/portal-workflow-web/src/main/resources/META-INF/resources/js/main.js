@@ -145,11 +145,6 @@ AUI.add(
 			previewBeforeRevertDialog: function(event, renderUrl, actionUrl, title) {
 				var instance = this;
 
-				var form = A.Node.create('<form />');
-
-				form.setAttribute('action', actionUrl);
-				form.setAttribute('method', 'POST');
-
 				var dialog = Liferay.Util.Window.getWindow(
 					{
 						dialog: {
@@ -173,7 +168,7 @@ AUI.add(
 										label: Liferay.Language.get('restore'),
 										on: {
 											click: function() {
-												submitForm(form);
+												window.location.assign(actionUrl);
 											}
 										}
 									}
@@ -198,6 +193,16 @@ AUI.add(
 						uri: renderUrl
 					}
 				);
+			},
+
+			saveWorkflowDefinitionLink: function(event, namespace) {
+				var instance = this;
+
+				var formContainer = document.getElementById(namespace + 'formContainer');
+
+				var form = formContainer.querySelector('.form');
+
+				submitForm(form);
 			},
 
 			showActionUndoneSuccessMessage: function(namespace) {
@@ -270,6 +275,44 @@ AUI.add(
 				alert.show();
 
 				instance._alert = alert;
+			},
+
+			toggleDefinitionLinkEditionMode: function(event, namespace) {
+				var instance = this;
+
+				var saveCancelGroup = document.getElementById(namespace + 'saveCancelGroup');
+
+				var editbutton = document.getElementById(namespace + 'editButton');
+
+				var formContainer = document.getElementById(namespace + 'formContainer');
+
+				var definitionLabel = document.getElementById(namespace + 'definitionLabel');
+
+				instance._toggleElementVisibility(saveCancelGroup, editbutton, formContainer, definitionLabel);
+
+				var formGroup = formContainer.querySelector('.form-group');
+
+				if (formGroup) {
+					formGroup.classList.remove('form-group');
+				}
+			},
+
+			_toggleElementVisibility: function() {
+				var instance = this;
+
+				for (var index in arguments) {
+
+					var element = arguments[parseInt(index, 10)];
+
+					var hidden = element.getAttribute('hidden');
+
+					if (hidden) {
+						element.removeAttribute('hidden');
+					}
+					else {
+						element.setAttribute('hidden', true);
+					}
+				}
 			},
 
 			_alert: null,

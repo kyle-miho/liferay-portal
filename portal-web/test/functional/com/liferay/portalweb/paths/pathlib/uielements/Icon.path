@@ -210,7 +210,7 @@
 </tr>
 <tr>
 	<td>SHARE</td>
-	<td>//div[contains(@class,'dropdown')]//a[@title='Share']</td>
+	<td>//button[*[name()='svg'][contains(@class,'lexicon-icon-share')]]</td>
 	<td></td>
 </tr>
 <tr>
@@ -252,11 +252,6 @@
 <tr>
 	<td>BODY_VERTICAL_ELLIPSIS_2</td>
 	<td>xpath=(//div[contains(@class,'portlet') and contains(@class,'container')]//a[span/*[name()='svg'][contains(@class,'icon-ellipsis')]])[2]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>DESCRIPTIVE_HEADER_VERTICAL_ELLIPSIS</td>
-	<td>//h2[contains(.,'${key_assetHeader}')]//..//a[span/*[name()='svg'][contains(@class,'icon-ellipsis')]]</td>
 	<td></td>
 </tr>
 <tr>

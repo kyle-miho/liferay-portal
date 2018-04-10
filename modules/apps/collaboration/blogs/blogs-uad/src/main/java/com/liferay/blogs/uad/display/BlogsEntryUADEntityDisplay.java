@@ -14,21 +14,18 @@
 
 package com.liferay.blogs.uad.display;
 
+import com.liferay.blogs.model.BlogsEntry;
 import com.liferay.blogs.uad.constants.BlogsUADConstants;
-import com.liferay.blogs.uad.entity.BlogsEntryUADEntity;
 
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 
-import com.liferay.user.associated.data.anonymizer.UADEntityAnonymizer;
-import com.liferay.user.associated.data.display.BaseUADEntityDisplay;
 import com.liferay.user.associated.data.display.UADEntityDisplay;
-import com.liferay.user.associated.data.entity.UADEntity;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
-import java.util.List;
+import java.util.Map;
 
 /**
  * @author Brian Wing Shun Chan
@@ -36,36 +33,44 @@ import java.util.List;
  */
 @Component(immediate = true, property =  {
 	"model.class.name=" + BlogsUADConstants.CLASS_NAME_BLOGS_ENTRY}, service = UADEntityDisplay.class)
-public class BlogsEntryUADEntityDisplay extends BaseUADEntityDisplay {
-	@Override
-	public String getEditURL(UADEntity uadEntity,
-		LiferayPortletRequest liferayPortletRequest,
-		LiferayPortletResponse liferayPortletResponse)
-		throws Exception {
-		BlogsEntryUADEntity blogsEntryUADEntity = (BlogsEntryUADEntity)uadEntity;
+public class BlogsEntryUADEntityDisplay implements UADEntityDisplay<BlogsEntry> {
+	public String getApplicationName() {
+		return BlogsUADConstants.APPLICATION_NAME;
+	}
 
-		return _blogsEntryUADEntityDisplayHelper.getBlogsEntryEditURL(blogsEntryUADEntity.getBlogsEntry(),
-			liferayPortletRequest, liferayPortletResponse);
+	public String[] getDisplayFieldNames() {
+		return _blogsEntryUADEntityDisplayHelper.getDisplayFieldNames();
 	}
 
 	@Override
-	public String getUADEntityTypeDescription() {
+	public String getEditURL(BlogsEntry blogsEntry,
+		LiferayPortletRequest liferayPortletRequest,
+		LiferayPortletResponse liferayPortletResponse)
+		throws Exception {
+		return _blogsEntryUADEntityDisplayHelper.getBlogsEntryEditURL(blogsEntry,
+			liferayPortletRequest, liferayPortletResponse);
+	}
+
+	public String getKey() {
+		return BlogsUADConstants.CLASS_NAME_BLOGS_ENTRY;
+	}
+
+	@Override
+	public Map<String, Object> getNonanonymizableFieldValues(
+		BlogsEntry blogsEntry) {
+		return _blogsEntryUADEntityDisplayHelper.getUADEntityNonanonymizableFieldValues(blogsEntry);
+	}
+
+	@Override
+	public String getTypeDescription() {
 		return "A blog post";
 	}
 
 	@Override
-	public String getUADEntityTypeName() {
+	public String getTypeName() {
 		return "BlogsEntry";
-	}
-
-	@Override
-	public List<String> getUADEntityTypeNonanonymizableFieldNamesList() {
-		return _uadEntityAnonymizer.getUADEntityNonanonymizableFieldNames();
 	}
 
 	@Reference
 	private BlogsEntryUADEntityDisplayHelper _blogsEntryUADEntityDisplayHelper;
-	@Reference(target = "(model.class.name=" +
-	BlogsUADConstants.CLASS_NAME_BLOGS_ENTRY + ")")
-	private UADEntityAnonymizer _uadEntityAnonymizer;
 }

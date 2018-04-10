@@ -66,7 +66,7 @@
 	<command name="AddMBCategories" priority="5">
 		<property name="portal.acceptance" value="false" />
 
-		<for list="MB Category1 Name,MB Category2 Name,MB Category3 Name" param="categoryName" >
+		<for list="MB Category1 Name,MB Category2 Name,MB Category3 Name" param="categoryName">
 			<execute macro="Navigator#gotoPage">
 				<var name="pageName" value="Message Boards Page" />
 			</execute>
@@ -266,6 +266,7 @@
 		</execute>
 
 		<execute macro="MessageboardsThread#addPGAsQuestion">
+			<var name="breadcrumbName" value="MB Category Name" />
 			<var name="threadBody" value="MB Thread Message Body" />
 			<var name="threadSubject" value="MB Thread Message Subject" />
 		</execute>
@@ -392,7 +393,9 @@
 			<var name="pageName" value="Message Boards Page" />
 		</execute>
 
-		<execute macro="MessageboardsPermissions#checkReplyToMessageForGuestPG" />
+		<execute macro="MessageboardsPermissions#checkReplyToMessageForGuestPG">
+			<var name="threadSubject" value="MB Thread Message Subject" />
+		</execute>
 
 		<execute macro="User#logoutPG" />
 
@@ -539,6 +542,7 @@
 
 		<execute macro="MessageboardsThread#cancelEdit">
 			<var name="threadBodyEdit" value="Message Boards Thread Body Edit" />
+			<var name="threadSubject" value="Message Boards Thread Subject" />
 			<var name="threadSubjectEdit" value="Message Boards Thread Subject Edit" />
 		</execute>
 
@@ -651,6 +655,7 @@
 
 		<execute macro="MessageboardsThread#editPG">
 			<var name="threadBodyEdit" value="MB Thread Message Body Edit" />
+			<var name="threadSubject" value="MB Thread Message Subject" />
 		</execute>
 
 		<execute macro="MessageboardsThread#viewPG">
@@ -681,6 +686,7 @@
 		</execute>
 
 		<execute macro="MessageboardsThread#editPG">
+			<var name="threadSubject" value="MB Thread Message Subject" />
 			<var name="threadSubjectEdit" value="MB Thread Message Subject Edit" />
 		</execute>
 
@@ -715,6 +721,7 @@
 
 		<execute macro="MessageboardsThread#editPG">
 			<var name="threadBodyEdit" value="MB Thread Message Body Edit" />
+			<var name="threadSubject" value="MB Thread Message Subject" />
 			<var name="threadSubjectEdit" value="MB Thread Message Subject Edit" />
 		</execute>
 
@@ -883,7 +890,9 @@
 
 		<execute macro="MessageboardsThread#downloadAttachmentPG" />
 
-		<execute function="Click" locator1="MessageBoardsThread#THREAD_CONTROLS_BACK" />
+		<execute function="Click" locator1="Breadcrumb#BREADCRUMB_ENTRY_LINK">
+			<var name="key_breadcrumbName" value="Home" />
+		</execute>
 
 		<execute macro="MessageboardsThread#replyPG">
 			<var name="threadReplyBody" value="MB Thread Reply Body" />

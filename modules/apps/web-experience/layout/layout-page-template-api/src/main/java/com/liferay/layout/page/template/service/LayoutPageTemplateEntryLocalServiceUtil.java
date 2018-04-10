@@ -16,7 +16,8 @@ package com.liferay.layout.page.template.service;
 
 import aQute.bnd.annotation.ProviderType;
 
-import com.liferay.osgi.util.ServiceTrackerFactory;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 
 import org.osgi.util.tracker.ServiceTracker;
 
@@ -304,6 +305,14 @@ public class LayoutPageTemplateEntryLocalServiceUtil {
 	}
 
 	public static com.liferay.layout.page.template.model.LayoutPageTemplateEntry updateLayoutPageTemplateEntry(
+		long layoutPageTemplateEntryId, long classNameId, long classTypeId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return getService()
+				   .updateLayoutPageTemplateEntry(layoutPageTemplateEntryId,
+			classNameId, classTypeId);
+	}
+
+	public static com.liferay.layout.page.template.model.LayoutPageTemplateEntry updateLayoutPageTemplateEntry(
 		long layoutPageTemplateEntryId, java.lang.String name)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return getService()
@@ -325,6 +334,17 @@ public class LayoutPageTemplateEntryLocalServiceUtil {
 		return _serviceTracker.getService();
 	}
 
-	private static ServiceTracker<LayoutPageTemplateEntryLocalService, LayoutPageTemplateEntryLocalService> _serviceTracker =
-		ServiceTrackerFactory.open(LayoutPageTemplateEntryLocalService.class);
+	private static ServiceTracker<LayoutPageTemplateEntryLocalService, LayoutPageTemplateEntryLocalService> _serviceTracker;
+
+	static {
+		Bundle bundle = FrameworkUtil.getBundle(LayoutPageTemplateEntryLocalService.class);
+
+		ServiceTracker<LayoutPageTemplateEntryLocalService, LayoutPageTemplateEntryLocalService> serviceTracker =
+			new ServiceTracker<LayoutPageTemplateEntryLocalService, LayoutPageTemplateEntryLocalService>(bundle.getBundleContext(),
+				LayoutPageTemplateEntryLocalService.class, null);
+
+		serviceTracker.open();
+
+		_serviceTracker = serviceTracker;
+	}
 }

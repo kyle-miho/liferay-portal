@@ -992,15 +992,12 @@ public class ProjectTemplatesTest {
 
 		_executeGradle(gradleProjectDir, _GRADLE_TASK_PATH_BUILD);
 
-		File gradleBundleFile = _testExists(
-			gradleProjectDir, "build/libs/servicepreaction-1.0.0.jar");
+		_testExists(gradleProjectDir, "build/libs/servicepreaction-1.0.0.jar");
 
 		_executeGradle(workspaceDir, ":modules:servicepreaction:build");
 
-		File workspaceBundleFile = _testExists(
+		_testExists(
 			workspaceProjectDir, "build/libs/servicepreaction-1.0.0.jar");
-
-		_testBundlesDiff(gradleBundleFile, workspaceBundleFile);
 	}
 
 	@Test
@@ -1055,15 +1052,12 @@ public class ProjectTemplatesTest {
 
 		_executeGradle(gradleProjectDir, _GRADLE_TASK_PATH_BUILD);
 
-		File gradleBundleFile = _testExists(
-			gradleProjectDir, "build/libs/serviceoverride-1.0.0.jar");
+		_testExists(gradleProjectDir, "build/libs/serviceoverride-1.0.0.jar");
 
 		_executeGradle(workspaceDir, ":modules:serviceoverride:build");
 
-		File workspaceBundleFile = _testExists(
+		_testExists(
 			workspaceProjectDir, "build/libs/serviceoverride-1.0.0.jar");
-
-		_testBundlesDiff(gradleBundleFile, workspaceBundleFile);
 	}
 
 	@Test
@@ -1373,9 +1367,7 @@ public class ProjectTemplatesTest {
 
 		_testContains(
 			gradleProjectDir, "bnd.bnd",
-			"Liferay-Theme-Contributor-Type: foo-bar");
-		_testContains(
-			gradleProjectDir, "bnd.bnd",
+			"Liferay-Theme-Contributor-Type: foo-bar",
 			"Web-ContextPath: /foo-bar-theme-contributor");
 		_testNotContains(
 			gradleProjectDir, "bnd.bnd",
@@ -1406,9 +1398,7 @@ public class ProjectTemplatesTest {
 
 		_testContains(
 			gradleProjectDir, "bnd.bnd",
-			"Liferay-Theme-Contributor-Type: my-contributor-default");
-		_testContains(
-			gradleProjectDir, "bnd.bnd",
+			"Liferay-Theme-Contributor-Type: my-contributor-default",
 			"Web-ContextPath: /my-contributor-default-theme-contributor");
 	}
 
@@ -1743,14 +1733,35 @@ public class ProjectTemplatesTest {
 			"mvc-portlet", "foo-portlet", "com.test", "-DclassName=Foo",
 			"-Dpackage=foo.portlet", "-DprojectType=workspace");
 
-		File gradleOutputDir = new File(
-			gradleModulesDir, "foo-portlet/build/libs");
-		File mavenOutputDir = new File(mavenModulesDir, "foo-portlet/target");
-
-		_buildProjects(
-			gradleWorkspaceProjectDir, mavenWorkspaceProjectDir,
-			gradleOutputDir, mavenOutputDir,
+		_executeGradle(
+			gradleWorkspaceProjectDir,
 			":modules:foo-portlet" + _GRADLE_TASK_PATH_BUILD);
+
+		_testExists(
+			gradleModulesDir, "foo-portlet/build/libs/foo.portlet-1.0.0.jar");
+
+		_executeMaven(mavenModulesDir, _MAVEN_GOAL_PACKAGE);
+
+		_testExists(
+			mavenModulesDir, "foo-portlet/target/foo-portlet-1.0.0.jar");
+	}
+
+	@Test
+	public void testBuildTemplateWorkspaceWithVersion() throws Exception {
+		File workspaceProjectDir = _buildTemplateWithMaven(
+			WorkspaceUtil.WORKSPACE, "withportlet", "com.test",
+			"-DliferayVersion=7.1");
+
+		_testContains(
+			workspaceProjectDir, "pom.xml", "<liferay.workspace.bundle.url>",
+			"liferay.com/portal/7.1.0-");
+
+		workspaceProjectDir = _buildTemplateWithGradle(
+			WorkspaceUtil.WORKSPACE, "withportlet", "--liferayVersion", "7.1");
+
+		_testContains(
+			workspaceProjectDir, "gradle.properties", true,
+			".*liferay.workspace.bundle.url=.*liferay.com/portal/7.1.0-.*");
 	}
 
 	@Test
@@ -1794,10 +1805,14 @@ public class ProjectTemplatesTest {
 
 		Path customArchetypesDirPath = customArchetypesDir.toPath();
 
+		String fileName = String.valueOf(templateFilePath.getFileName());
+
+		String suffix = fileName.substring(fileName.indexOf('-'));
+
 		Files.copy(
 			templateFilePath,
 			customArchetypesDirPath.resolve(
-				ProjectTemplates.TEMPLATE_BUNDLE_PREFIX + "foo.bar-1.0.4.jar"));
+				"custom.name.project.templates.foo.bar-" + suffix));
 
 		List<File> customArchetypesDirs = new ArrayList<>();
 
@@ -2649,6 +2664,12 @@ public class ProjectTemplatesTest {
 
 		String packagePath = packageName.replaceAll("\\.", "\\/");
 
+		_testNotContains(
+			gradleProjectDir,
+			"src/main/java/" + packagePath + "/portlet/" + className +
+				"Portlet.java",
+			"import " + packageName + ".constants." + className + "WebKeys;");
+
 		_testNotExists(
 			gradleProjectDir,
 			"src/main/java/" + packagePath + "/constants/" + className +
@@ -2697,6 +2718,12 @@ public class ProjectTemplatesTest {
 			gradleProjectDir, "src/main/resources/META-INF/resources/view.jsp",
 			"<aui:script require=\"<%= bootstrapRequire %>\">",
 			bootstrapRequire);
+
+		_testContains(
+			gradleProjectDir,
+			"src/main/java/" + packagePath + "/portlet/" + className +
+				"Portlet.java",
+			"import " + packageName + ".constants." + className + "WebKeys;");
 
 		_testExists(
 			gradleProjectDir,
@@ -2996,14 +3023,11 @@ public class ProjectTemplatesTest {
 
 		_executeGradle(gradleProjectDir, _GRADLE_TASK_PATH_BUILD);
 
-		File gradleBundleFile = _testExists(gradleProjectDir, jarFilePath);
+		_testExists(gradleProjectDir, jarFilePath);
 
 		_executeGradle(workspaceDir, ":modules:" + name + ":build");
 
-		File workspaceBundleFile = _testExists(
-			workspaceProjectDir, jarFilePath);
-
-		_testBundlesDiff(gradleBundleFile, workspaceBundleFile);
+		_testExists(workspaceProjectDir, jarFilePath);
 	}
 
 	private static final String _BUNDLES_DIFF_IGNORES = StringTestUtil.merge(

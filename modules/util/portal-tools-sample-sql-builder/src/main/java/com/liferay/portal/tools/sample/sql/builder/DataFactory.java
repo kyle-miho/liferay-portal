@@ -84,6 +84,7 @@ import com.liferay.friendly.url.model.FriendlyURLEntryModel;
 import com.liferay.friendly.url.model.impl.FriendlyURLEntryLocalizationModelImpl;
 import com.liferay.friendly.url.model.impl.FriendlyURLEntryMappingModelImpl;
 import com.liferay.friendly.url.model.impl.FriendlyURLEntryModelImpl;
+import com.liferay.journal.constants.JournalActivityKeys;
 import com.liferay.journal.constants.JournalPortletKeys;
 import com.liferay.journal.model.JournalArticle;
 import com.liferay.journal.model.JournalArticleConstants;
@@ -95,7 +96,6 @@ import com.liferay.journal.model.impl.JournalArticleLocalizationModelImpl;
 import com.liferay.journal.model.impl.JournalArticleModelImpl;
 import com.liferay.journal.model.impl.JournalArticleResourceModelImpl;
 import com.liferay.journal.model.impl.JournalContentSearchModelImpl;
-import com.liferay.journal.social.JournalActivityKeys;
 import com.liferay.message.boards.constants.MBCategoryConstants;
 import com.liferay.message.boards.constants.MBMessageConstants;
 import com.liferay.message.boards.constants.MBPortletKeys;
@@ -1791,13 +1791,13 @@ public class DataFactory {
 	}
 
 	public List<DLFileEntryModel> newDlFileEntryModels(
-		DLFolderModel dlFolerModel) {
+		DLFolderModel dlFolderModel) {
 
 		List<DLFileEntryModel> dlFileEntryModels = new ArrayList<>(
 			_maxDLFileEntryCount);
 
 		for (int i = 1; i <= _maxDLFileEntryCount; i++) {
-			dlFileEntryModels.add(newDlFileEntryModel(dlFolerModel, i));
+			dlFileEntryModels.add(newDlFileEntryModel(dlFolderModel, i));
 		}
 
 		return dlFileEntryModels;
@@ -3248,20 +3248,20 @@ public class DataFactory {
 	}
 
 	protected DLFileEntryModel newDlFileEntryModel(
-		DLFolderModel dlFolerModel, int index) {
+		DLFolderModel dlFolderModel, int index) {
 
 		DLFileEntryModel dlFileEntryModel = new DLFileEntryModelImpl();
 
 		dlFileEntryModel.setUuid(SequentialUUID.generate());
 		dlFileEntryModel.setFileEntryId(_counter.get());
-		dlFileEntryModel.setGroupId(dlFolerModel.getGroupId());
+		dlFileEntryModel.setGroupId(dlFolderModel.getGroupId());
 		dlFileEntryModel.setCompanyId(_companyId);
 		dlFileEntryModel.setUserId(_sampleUserId);
 		dlFileEntryModel.setUserName(_SAMPLE_USER_NAME);
 		dlFileEntryModel.setCreateDate(nextFutureDate());
 		dlFileEntryModel.setModifiedDate(nextFutureDate());
-		dlFileEntryModel.setRepositoryId(dlFolerModel.getRepositoryId());
-		dlFileEntryModel.setFolderId(dlFolerModel.getFolderId());
+		dlFileEntryModel.setRepositoryId(dlFolderModel.getRepositoryId());
+		dlFileEntryModel.setFolderId(dlFolderModel.getFolderId());
 		dlFileEntryModel.setName("TestFile" + index);
 		dlFileEntryModel.setFileName("TestFile" + index + ".txt");
 		dlFileEntryModel.setExtension("txt");

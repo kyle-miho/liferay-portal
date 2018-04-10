@@ -14,16 +14,13 @@
 
 package com.liferay.announcements.uad.display;
 
+import com.liferay.announcements.kernel.model.AnnouncementsEntry;
 import com.liferay.announcements.uad.constants.AnnouncementsUADConstants;
-import com.liferay.announcements.uad.entity.AnnouncementsEntryUADEntity;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
-import com.liferay.user.associated.data.anonymizer.UADEntityAnonymizer;
-import com.liferay.user.associated.data.display.BaseUADEntityDisplay;
 import com.liferay.user.associated.data.display.UADEntityDisplay;
-import com.liferay.user.associated.data.entity.UADEntity;
 
-import java.util.List;
+import java.util.Map;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -36,45 +33,51 @@ import org.osgi.service.component.annotations.Reference;
 	property = "model.class.name=" + AnnouncementsUADConstants.CLASS_NAME_ANNOUNCEMENTS_ENTRY,
 	service = UADEntityDisplay.class
 )
-public class AnnouncementsEntryUADEntityDisplay extends BaseUADEntityDisplay {
+public class AnnouncementsEntryUADEntityDisplay
+	implements UADEntityDisplay<AnnouncementsEntry> {
 
-	@Override
+	public String getApplicationName() {
+		return AnnouncementsUADConstants.APPLICATION_NAME;
+	}
+
+	public String[] getDisplayFieldNames() {
+		return _announcementsEntryUADEntityDisplayHelper.getDisplayFieldNames();
+	}
+
 	public String getEditURL(
-			UADEntity uadEntity, LiferayPortletRequest liferayPortletRequest,
+			AnnouncementsEntry announcementsEntry,
+			LiferayPortletRequest liferayPortletRequest,
 			LiferayPortletResponse liferayPortletResponse)
 		throws Exception {
 
-		AnnouncementsEntryUADEntity announcementsEntryUADEntity =
-			(AnnouncementsEntryUADEntity)uadEntity;
-
 		return _announcementsEntryUADEntityDisplayHelper.
 			getAnnouncementsEntryEditURL(
-				announcementsEntryUADEntity.getAnnouncementsEntry(),
-				liferayPortletRequest, liferayPortletResponse);
+				announcementsEntry, liferayPortletRequest,
+				liferayPortletResponse);
+	}
+
+	public String getKey() {
+		return AnnouncementsUADConstants.CLASS_NAME_ANNOUNCEMENTS_ENTRY;
 	}
 
 	@Override
-	public String getUADEntityTypeDescription() {
+	public Map<String, Object> getNonanonymizableFieldValues(
+		AnnouncementsEntry announcementsEntry) {
+
+		return _announcementsEntryUADEntityDisplayHelper.
+			getUADEntityNonanonymizableFieldValues(announcementsEntry);
+	}
+
+	public String getTypeDescription() {
 		return "Announcements posted by the user";
 	}
 
-	@Override
-	public String getUADEntityTypeName() {
+	public String getTypeName() {
 		return "AnnouncementsEntry";
-	}
-
-	@Override
-	public List<String> getUADEntityTypeNonanonymizableFieldNamesList() {
-		return _uadEntityAnonymizer.getUADEntityNonanonymizableFieldNames();
 	}
 
 	@Reference
 	private AnnouncementsEntryUADEntityDisplayHelper
 		_announcementsEntryUADEntityDisplayHelper;
-
-	@Reference(
-		target = "(model.class.name=" + AnnouncementsUADConstants.CLASS_NAME_ANNOUNCEMENTS_ENTRY + ")"
-	)
-	private UADEntityAnonymizer _uadEntityAnonymizer;
 
 }

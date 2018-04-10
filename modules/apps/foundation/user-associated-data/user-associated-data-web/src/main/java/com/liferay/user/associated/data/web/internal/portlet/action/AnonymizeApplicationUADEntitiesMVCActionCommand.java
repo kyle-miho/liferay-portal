@@ -14,10 +14,9 @@
 
 package com.liferay.user.associated.data.web.internal.portlet.action;
 
-import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCActionCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
 import com.liferay.portal.kernel.util.ParamUtil;
-import com.liferay.user.associated.data.anonymizer.UADEntityAnonymizer;
+import com.liferay.user.associated.data.anonymizer.UADAnonymizer;
 import com.liferay.user.associated.data.constants.UserAssociatedDataPortletKeys;
 import com.liferay.user.associated.data.web.internal.util.UADApplicationSummaryHelper;
 
@@ -41,23 +40,24 @@ import org.osgi.service.component.annotations.Reference;
 	service = MVCActionCommand.class
 )
 public class AnonymizeApplicationUADEntitiesMVCActionCommand
-	extends BaseMVCActionCommand {
+	extends BaseUADMVCActionCommand {
 
 	@Override
 	protected void doProcessAction(
 			ActionRequest actionRequest, ActionResponse actionResponse)
 		throws Exception {
 
-		long selUserId = ParamUtil.getLong(actionRequest, "selUserId");
-		String uadEntitySetName = ParamUtil.getString(
-			actionRequest, "uadEntitySetName");
+		long selectedUserId = getSelectedUserId(actionRequest);
 
-		List<UADEntityAnonymizer> uadEntityAnonymizers =
-			_uadApplicationSummaryHelper.getApplicationUADEntityAnonymizers(
-				uadEntitySetName);
+		String applicationName = ParamUtil.getString(
+			actionRequest, "applicationName");
 
-		for (UADEntityAnonymizer uadEntityAnonymizer : uadEntityAnonymizers) {
-			uadEntityAnonymizer.autoAnonymizeAll(selUserId);
+		List<UADAnonymizer> uadAnonymizers =
+			_uadApplicationSummaryHelper.getApplicationUADAnonymizers(
+				applicationName);
+
+		for (UADAnonymizer uadAnonymizer : uadAnonymizers) {
+			uadAnonymizer.autoAnonymizeAll(selectedUserId);
 		}
 	}
 

@@ -85,7 +85,7 @@
 	</command>
 
 	<command name="AddDocumentTypeAndMetadata" priority="5">
-		<property name="portal.acceptance" value="false" />
+		<property name="portal.acceptance" value="true" />
 		<property name="testray.component.names" value="Training" />
 
 		<execute macro="ProductMenu#gotoPortlet">
@@ -2037,7 +2037,7 @@
 		</execute>
 
 		<execute macro="Panel#expandPanel">
-			<var name="panelHeading" value="Categorization" />
+			<var name="panel" value="Categorization" />
 		</execute>
 
 		<execute function="AssertTextEquals" locator1="AssetCategorization#CATEGORY" value1="Category Name">

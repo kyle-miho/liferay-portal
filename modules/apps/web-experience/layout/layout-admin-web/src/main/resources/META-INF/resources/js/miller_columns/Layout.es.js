@@ -1,7 +1,6 @@
 import Component from 'metal-component';
 import {Config} from 'metal-state';
 import Soy from 'metal-soy';
-import 'metal-dropdown';
 
 import './LayoutBreadcrumbs.es';
 import './LayoutColumn.es';
@@ -137,13 +136,13 @@ Layout.STATE = {
 	portletNamespace: Config.string().required(),
 
 	/**
-	 * Site navigation menu name, to add layouts by default
+	 * Site navigation menu names, to add layouts by default
 	 * @instance
 	 * @memberof Layout
 	 * @type {!string}
 	 */
 
-	siteNavigationMenuName: Config.string().required()
+	siteNavigationMenuNames: Config.string().required()
 
 };
 

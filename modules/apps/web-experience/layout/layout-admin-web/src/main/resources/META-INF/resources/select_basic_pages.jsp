@@ -61,7 +61,10 @@ SelectLayoutPageTemplateEntryDisplayContext selectLayoutPageTemplateEntryDisplay
 		</liferay-ui:search-container-column-text>
 	</liferay-ui:search-container-row>
 
-	<liferay-ui:search-iterator displayStyle="icon" markupView="lexicon" />
+	<liferay-ui:search-iterator
+		displayStyle="icon"
+		markupView="lexicon"
+	/>
 </liferay-ui:search-container>
 
 <portlet:actionURL name="/layout/add_simple_layout" var="addLayoutURL">
@@ -72,10 +75,11 @@ SelectLayoutPageTemplateEntryDisplayContext selectLayoutPageTemplateEntryDisplay
 	<portlet:param name="stagingGroupId" value="<%= String.valueOf(layoutsAdminDisplayContext.getStagingGroupId()) %>" />
 	<portlet:param name="parentLayoutId" value="<%= String.valueOf(layoutsAdminDisplayContext.getParentLayoutId()) %>" />
 	<portlet:param name="privateLayout" value="<%= String.valueOf(layoutsAdminDisplayContext.isPrivateLayout()) %>" />
+	<portlet:param name="explicitCreation" value="<%= Boolean.TRUE.toString() %>" />
 </portlet:actionURL>
 
 <%
-SiteNavigationMenu primarySiteNavigationMenu = SiteNavigationMenuLocalServiceUtil.fetchPrimarySiteNavigationMenu(scopeGroupId);
+String autoSiteNavigationMenuNames = layoutsAdminDisplayContext.getAutoSiteNavigationMenuNames();
 %>
 
 <aui:script require="metal-dom/src/all/dom as dom,frontend-js-web/liferay/modal/commands/OpenSimpleInputModal.es as modalCommands">
@@ -88,9 +92,9 @@ SiteNavigationMenu primarySiteNavigationMenu = SiteNavigationMenuLocalServiceUti
 
 			modalCommands.openSimpleInputModal(
 				{
-					<c:if test="<%= primarySiteNavigationMenu != null %>">
-						checkboxFieldLabel: '<liferay-ui:message arguments="<%= primarySiteNavigationMenu.getName() %>" key="add-this-page-to-the-primary-navigation-x"/>',
-						checkboxFieldName: 'TypeSettingsProperties--addToPrimaryMenu--',
+					<c:if test="<%= Validator.isNotNull(autoSiteNavigationMenuNames) %>">
+						checkboxFieldLabel: '<liferay-ui:message arguments="<%= autoSiteNavigationMenuNames %>" key="add-this-page-to-the-following-menus-x" />',
+						checkboxFieldName: 'TypeSettingsProperties--addToAutoMenus--',
 						checkboxFieldValue: true,
 					</c:if>
 

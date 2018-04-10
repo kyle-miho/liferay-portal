@@ -14,7 +14,7 @@
 
 package com.liferay.frontend.taglib.clay.servlet.taglib.util;
 
-import com.liferay.portal.kernel.json.JSON;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author Carlos Lancha
@@ -22,22 +22,17 @@ import com.liferay.portal.kernel.json.JSON;
 public class DropdownGroupItem extends DropdownItem {
 
 	public DropdownGroupItem() {
-		this("group");
+		this(null);
 	}
 
-	public DropdownGroupItem(String type) {
-		super(type);
+	public DropdownGroupItem(HttpServletRequest request) {
+		super(request);
+
+		put("type", "group");
 	}
 
-	@JSON(name = "items")
-	public DropdownItemList getDropdownItems() {
-		return _dropdownItems;
+	public void setDropdownItemList(DropdownItemList dropdownItemList) {
+		put("items", dropdownItemList);
 	}
-
-	public void setDropdownItems(DropdownItemList dropdownItems) {
-		_dropdownItems = dropdownItems;
-	}
-
-	private DropdownItemList _dropdownItems;
 
 }

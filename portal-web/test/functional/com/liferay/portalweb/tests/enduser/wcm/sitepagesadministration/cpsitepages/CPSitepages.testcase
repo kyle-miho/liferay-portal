@@ -114,11 +114,14 @@
 
 		<execute macro="NavigationMenu#gotoAddPage" />
 
-		<execute macro="PortletEntry#inputName">
-			<var name="name" value="Test Page Name" />
+		<execute macro="SitePages#_addPage">
+			<var name="pageName" value="Test Page Name" />
 		</execute>
 
-		<execute macro="Page#saveAddPage" />
+		<execute macro="Navigator#gotoSitePage">
+			<var name="pageName" value="Test Page Name" />
+			<var name="siteName" value="Liferay" />
+		</execute>
 
 		<execute function="AssertLocation" value1="${portalURL}/web/guest/test-page-name" />
 	</command>
@@ -160,14 +163,14 @@
 			<var name="pageName" value="Site Page" />
 		</execute>
 
-		<for list="Site Child Page 1,Site Child Page 2,Site Child Page 3" param="childPageName" >
+		<for list="Site Child Page 1,Site Child Page 2,Site Child Page 3" param="childPageName">
 			<execute macro="SitePages#addPublicChildPage">
 				<var name="childPageName" value="${childPageName}" />
 				<var name="parentPageName" value="Site Page" />
 			</execute>
 		</for>
 
-		<for list="Site Child Page 1,Site Child Page 2,Site Child Page 3" param="childPageName" >
+		<for list="Site Child Page 1,Site Child Page 2,Site Child Page 3" param="childPageName">
 			<execute macro="Page#view">
 				<var name="depth" value="1" />
 				<var name="pageName" value="${childPageName}" />
@@ -211,12 +214,10 @@
 			<var name="url" value="${portalURL}/group/site-name/site-child-page" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoPrivatePages" />
-
 		<execute macro="Page#view">
 			<var name="depth" value="1" />
 			<var name="pageName" value="Site Child Page" />
-			<var name="privacy" value="Public" />
+			<var name="privacy" value="Private" />
 		</execute>
 	</command>
 

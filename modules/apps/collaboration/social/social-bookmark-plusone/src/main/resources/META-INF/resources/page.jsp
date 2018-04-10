@@ -17,40 +17,19 @@
 <%@ include file="/init.jsp" %>
 
 <%
-String displayStyle = GetterUtil.getString((String)request.getAttribute("liferay-social-bookmarks:bookmark:displayStyle"));
+SocialBookmark socialBookmark = (SocialBookmark)request.getAttribute("liferay-social-bookmarks:bookmark:socialBookmark");
+String title = GetterUtil.getString((String)request.getAttribute("liferay-social-bookmarks:bookmark:title"));
 String url = GetterUtil.getString((String)request.getAttribute("liferay-social-bookmarks:bookmark:url"));
 
-String plusOneDisplayStyle = "medium";
-
-if (displayStyle.equals("vertical")) {
-	plusOneDisplayStyle = "tall";
-}
+String icon = "../aui/google-plus-sign";
 %>
 
-<liferay-util:html-bottom outputKey="taglib_ui_social_bookmark_plusone">
-	<script type="text/javascript">
-		window.___gcfg = {
-			lang: '<%= locale.getLanguage() %>-<%= locale.getCountry() %>'
-		};
-
-		(function() {
-			var script = document.createElement('script');
-
-			script.async = true;
-			script.type = 'text/javascript';
-
-			script.src = 'https://apis.google.com/js/plusone.js';
-
-			var firstScript = document.getElementsByTagName('script')[0];
-
-			firstScript.parentNode.insertBefore(script, firstScript);
-		})();
-	</script>
-</liferay-util:html-bottom>
-
-<g:plusone
-	count='<%= !displayStyle.equals("simple") %>'
-	href="<%= url %>"
-	size="<%= plusOneDisplayStyle %>"
->
-</g:plusone>
+<liferay-ui:icon
+	image="<%= icon %>"
+	label="<%= false %>"
+	linkCssClass="btn btn-borderless btn-outline-borderless btn-outline-secondary btn-sm"
+	message="<%= socialBookmark.getName(locale) %>"
+	method="get"
+	src="<%= icon %>"
+	url="<%= socialBookmark.getPostURL(title, url) %>"
+/>

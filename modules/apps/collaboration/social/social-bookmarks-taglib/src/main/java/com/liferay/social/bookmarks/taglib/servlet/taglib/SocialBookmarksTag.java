@@ -14,8 +14,6 @@
 
 package com.liferay.social.bookmarks.taglib.servlet.taglib;
 
-import com.liferay.portal.kernel.util.PropsKeys;
-import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.social.bookmarks.taglib.internal.servlet.ServletContextUtil;
@@ -52,16 +50,17 @@ public class SocialBookmarksTag extends IncludeTag {
 		return super.doStartTag();
 	}
 
-	public void setContentId(String contentId) {
-		_contentId = contentId;
+	public void setClassName(String className) {
+		_className = className;
+	}
+
+	public void setClassPK(long classPK) {
+		_classPK = classPK;
 	}
 
 	public void setDisplayStyle(String displayStyle) {
 		if (Validator.isNull(displayStyle)) {
-			String[] socialBookmarksDisplayStyles = PropsUtil.getArray(
-				PropsKeys.SOCIAL_BOOKMARK_DISPLAY_STYLES);
-
-			_displayStyle = socialBookmarksDisplayStyles[0];
+			_displayStyle = "inline";
 		}
 		else {
 			_displayStyle = displayStyle;
@@ -103,7 +102,8 @@ public class SocialBookmarksTag extends IncludeTag {
 	protected void cleanUp() {
 		super.cleanUp();
 
-		_contentId = null;
+		_className = null;
+		_classPK = 0;
 		_displayStyle = null;
 		_target = null;
 		_title = null;
@@ -119,7 +119,9 @@ public class SocialBookmarksTag extends IncludeTag {
 	@Override
 	protected void setAttributes(HttpServletRequest request) {
 		request.setAttribute(
-			"liferay-social-bookmarks:bookmarks:contentId", _contentId);
+			"liferay-social-bookmarks:bookmarks:className", _className);
+		request.setAttribute(
+			"liferay-social-bookmarks:bookmarks:classPK", _classPK);
 		request.setAttribute(
 			"liferay-social-bookmarks:bookmarks:displayStyle", _displayStyle);
 		request.setAttribute(
@@ -133,7 +135,8 @@ public class SocialBookmarksTag extends IncludeTag {
 
 	private static final String _PAGE = "/bookmarks/page.jsp";
 
-	private String _contentId;
+	private String _className;
+	private long _classPK;
 	private String _displayStyle;
 	private String _target;
 	private String _title;

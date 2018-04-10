@@ -17,7 +17,15 @@ package com.liferay.frontend.taglib.clay.servlet.taglib.soy;
 import com.liferay.frontend.js.loader.modules.extender.npm.NPMResolver;
 import com.liferay.frontend.taglib.clay.internal.js.loader.modules.extender.npm.NPMResolverProvider;
 import com.liferay.frontend.taglib.clay.servlet.taglib.soy.base.BaseClayTag;
+import com.liferay.frontend.taglib.clay.servlet.taglib.util.CreationMenu;
+import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItemList;
+import com.liferay.frontend.taglib.clay.servlet.taglib.util.ViewTypeItemList;
 import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.dao.search.DisplayTerms;
+import com.liferay.portal.kernel.util.ParamUtil;
+import com.liferay.portal.kernel.util.Validator;
+
+import java.util.Map;
 
 /**
  * @author Carlos Lancha
@@ -26,6 +34,42 @@ public class ManagementToolbarTag extends BaseClayTag {
 
 	public ManagementToolbarTag() {
 		super("management-toolbar", "ClayManagementToolbar", true);
+	}
+
+	@Override
+	public int doStartTag() {
+		Map<String, Object> context = getContext();
+
+		String searchInputName = (String)context.get("searchInputName");
+
+		if (Validator.isNull(searchInputName)) {
+			searchInputName = DisplayTerms.KEYWORDS;
+
+			setSearchInputName(searchInputName);
+		}
+
+		String searchValue = (String)context.get("searchValue");
+
+		if (Validator.isNull(searchValue) &&
+			Validator.isNotNull(searchInputName)) {
+
+			setSearchValue(ParamUtil.getString(request, searchInputName));
+		}
+
+		Boolean selectable = (Boolean)context.get("selectable");
+
+		if (selectable == null) {
+			setSelectable(true);
+		}
+
+		Boolean showFiltersDoneButton = (Boolean)context.get(
+			"showFiltersDoneButton");
+
+		if (showFiltersDoneButton == null) {
+			setShowFiltersDoneButton(false);
+		}
+
+		return super.doStartTag();
 	}
 
 	@Override
@@ -40,19 +84,27 @@ public class ManagementToolbarTag extends BaseClayTag {
 			"frontend-taglib-clay/management_toolbar/ManagementToolbar.es");
 	}
 
-	public void setActionItems(Object actionItems) {
+	public void setActionItems(DropdownItemList actionItems) {
 		putValue("actionItems", actionItems);
+	}
+
+	public void setClearResultsURL(String clearResultsURL) {
+		putValue("clearResultsURL", clearResultsURL);
 	}
 
 	public void setContentRenderer(String contentRenderer) {
 		putValue("contentRenderer", contentRenderer);
 	}
 
-	public void setCreationMenu(Object creationMenu) {
+	public void setCreationMenu(CreationMenu creationMenu) {
 		putValue("creationMenu", creationMenu);
 	}
 
-	public void setFilterItems(Object filterItems) {
+	public void setDisabled(Boolean disabled) {
+		putValue("disabled", disabled);
+	}
+
+	public void setFilterItems(DropdownItemList filterItems) {
 		putValue("filterItems", filterItems);
 	}
 
@@ -72,6 +124,10 @@ public class ManagementToolbarTag extends BaseClayTag {
 		putValue("searchInputName", searchInputName);
 	}
 
+	public void setSearchValue(String searchValue) {
+		putValue("searchValue", searchValue);
+	}
+
 	public void setSelectable(Boolean selectable) {
 		putValue("selectable", selectable);
 	}
@@ -82,6 +138,10 @@ public class ManagementToolbarTag extends BaseClayTag {
 
 	public void setShowAdvancedSearch(Boolean showAdvancedSearch) {
 		putValue("showAdvancedSearch", showAdvancedSearch);
+	}
+
+	public void setShowCreationMenu(Boolean showCreationMenu) {
+		putValue("showCreationMenu", showCreationMenu);
 	}
 
 	public void setShowFiltersDoneButton(Boolean showFiltersDoneButton) {
@@ -100,12 +160,24 @@ public class ManagementToolbarTag extends BaseClayTag {
 		putValue("sortingOrder", sortingOrder);
 	}
 
+	public void setSortingURL(String sortingURL) {
+		putValue("sortingURL", sortingURL);
+	}
+
 	public void setTotalItems(int totalItems) {
 		putValue("totalItems", totalItems);
 	}
 
-	public void setViewTypes(Object viewTypes) {
+	public void setViewTypes(ViewTypeItemList viewTypes) {
 		putValue("viewTypes", viewTypes);
 	}
+
+	@Override
+	protected String[] getNamespacedParams() {
+		return _NAMESPACED_PARAMS;
+	}
+
+	private static final String[] _NAMESPACED_PARAMS =
+		{"searchContainerId", "searchFormName", "searchInputName"};
 
 }

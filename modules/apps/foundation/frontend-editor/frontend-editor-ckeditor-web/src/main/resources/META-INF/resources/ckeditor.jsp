@@ -80,7 +80,11 @@ if (editorOptions != null) {
 %>
 
 <c:if test="<%= !skipEditorLoading %>">
-	<liferay-editor:resources editorName="<%= editorName %>" inlineEdit="<%= inlineEdit %>" inlineEditSaveURL="<%= inlineEditSaveURL %>" />
+	<liferay-editor:resources
+		editorName="<%= editorName %>"
+		inlineEdit="<%= inlineEdit %>"
+		inlineEditSaveURL="<%= inlineEditSaveURL %>"
+	/>
 </c:if>
 
 <%
@@ -95,7 +99,9 @@ if (inlineEdit && Validator.isNotNull(inlineEditSaveURL)) {
 }
 %>
 
-<liferay-util:buffer var="editor">
+<liferay-util:buffer
+	var="editor"
+>
 	<textarea id="<%= textareaName %>" name="<%= textareaName %>" style="display: none;"></textarea>
 </liferay-util:buffer>
 
@@ -520,37 +526,39 @@ name = HtmlUtil.escapeJS(name);
 				<c:if test="<%= !(inlineEdit && Validator.isNotNull(inlineEditSaveURL)) %>">
 					var initialEditor = CKEDITOR.instances['<%= name %>'].id;
 
-					A.getWin().on(
-						'resize',
-						A.debounce(
-							function() {
-								if (currentToolbarSet != getToolbarSet(initialToolbarSet)) {
-									var ckeditorInstance = CKEDITOR.instances['<%= name %>'];
+					eventHandles.push(
+						A.getWin().on(
+							'resize',
+							A.debounce(
+								function() {
+									if (currentToolbarSet != getToolbarSet(initialToolbarSet)) {
+										var ckeditorInstance = CKEDITOR.instances['<%= name %>'];
 
-									if (ckeditorInstance) {
-										var currentEditor = ckeditorInstance.id;
+										if (ckeditorInstance) {
+											var currentEditor = ckeditorInstance.id;
 
-										if (currentEditor === initialEditor) {
-											var currentDialog = CKEDITOR.dialog.getCurrent();
+											if (currentEditor === initialEditor) {
+												var currentDialog = CKEDITOR.dialog.getCurrent();
 
-											if (currentDialog) {
-												currentDialog.hide();
+												if (currentDialog) {
+													currentDialog.hide();
+												}
+
+												ckEditorContent = ckeditorInstance.getData();
+
+												window['<%= name %>'].dispose();
+
+												window['<%= name %>'].create();
+
+												window['<%= name %>'].setHTML(ckEditorContent);
+
+												initialEditor = CKEDITOR.instances['<%= name %>'].id;
 											}
-
-											ckEditorContent = ckeditorInstance.getData();
-
-											window['<%= name %>'].dispose();
-
-											window['<%= name %>'].create();
-
-											window['<%= name %>'].setHTML(ckEditorContent);
-
-											initialEditor = CKEDITOR.instances['<%= name %>'].id;
 										}
 									}
-								}
-							},
-							250
+								},
+								250
+							)
 						)
 					);
 				</c:if>

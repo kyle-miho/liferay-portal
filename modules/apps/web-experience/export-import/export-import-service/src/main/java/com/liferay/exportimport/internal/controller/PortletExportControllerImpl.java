@@ -127,7 +127,7 @@ import org.osgi.service.component.annotations.Reference;
  */
 @Component(
 	immediate = true,
-	property = {"model.class.name=com.liferay.portal.kernel.model.Portlet"},
+	property = "model.class.name=com.liferay.portal.kernel.model.Portlet",
 	service = {ExportImportController.class, PortletExportController.class}
 )
 @ProviderType
@@ -1166,7 +1166,7 @@ public class PortletExportControllerImpl implements PortletExportController {
 
 		rootElement.addAttribute("owner-id", String.valueOf(ownerId));
 		rootElement.addAttribute("owner-type", String.valueOf(ownerType));
-		rootElement.addAttribute("default-user", String.valueOf(false));
+		rootElement.addAttribute("default-user", Boolean.FALSE.toString());
 		rootElement.addAttribute("service-name", serviceName);
 
 		if (ownerType == PortletKeys.PREFS_OWNER_TYPE_ARCHIVED) {

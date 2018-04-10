@@ -24,9 +24,9 @@ import com.google.javascript.jscomp.JSError;
 import com.google.javascript.jscomp.MessageFormatter;
 import com.google.javascript.jscomp.SourceFile;
 
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.minifier.JavaScriptMinifier;
 
 import java.util.Arrays;
@@ -39,7 +39,7 @@ import org.osgi.service.component.annotations.Component;
  * @author Carlos Sierra Andrés
  */
 @Component(
-	immediate = true, property = {"service.ranking:Integer=100"},
+	immediate = true, property = "service.ranking:Integer=100",
 	service = JavaScriptMinifier.class
 )
 public class GoogleJavaScriptMinifier implements JavaScriptMinifier {

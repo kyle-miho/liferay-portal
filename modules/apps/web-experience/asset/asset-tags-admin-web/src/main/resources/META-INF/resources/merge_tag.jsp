@@ -35,18 +35,30 @@ renderResponse.setTitle(LanguageUtil.get(request, "merge-tags"));
 	<portlet:param name="mvcPath" value="/merge_tag.jsp" />
 </portlet:actionURL>
 
-<aui:form action="<%= mergeURL %>" cssClass="container-fluid-1280" method="post" name="fm" onSubmit="event.preventDefault();">
+<liferay-frontend:edit-form
+	action="<%= mergeURL %>"
+	method="post"
+	name="fm"
+	onSubmit="event.preventDefault();"
+>
 	<aui:input name="redirect" type="hidden" value="<%= redirect %>" />
 	<aui:input name="groupId" type="hidden" value="<%= scopeGroupId %>" />
 
-	<aui:fieldset-group markupView="lexicon">
-		<aui:fieldset>
+	<liferay-frontend:fieldset-group>
+		<liferay-frontend:fieldset>
 			<label for="<portlet:namespace />assetTagsSelector">
 				<liferay-ui:message key="tags" />
 			</label>
 
 			<div class="button-holder">
-				<liferay-asset:asset-tags-selector addCallback="onAddTag" allowAddEntry="<%= false %>" hiddenInput="mergeTagNames" id="assetTagsSelector" removeCallback="onRemoveTag" tagNames="<%= StringUtil.merge(assetTagsDisplayContext.getMergeTagNames()) %>" />
+				<liferay-asset:asset-tags-selector
+					addCallback="onAddTag"
+					allowAddEntry="<%= false %>"
+					hiddenInput="mergeTagNames"
+					id="assetTagsSelector"
+					removeCallback="onRemoveTag"
+					tagNames="<%= StringUtil.merge(assetTagsDisplayContext.getMergeTagNames()) %>"
+				/>
 			</div>
 
 			<aui:select cssClass="target-tag" label="into-this-tag" name="targetTagName">
@@ -62,15 +74,15 @@ renderResponse.setTitle(LanguageUtil.get(request, "merge-tags"));
 				%>
 
 			</aui:select>
-		</aui:fieldset>
-	</aui:fieldset-group>
+		</liferay-frontend:fieldset>
+	</liferay-frontend:fieldset-group>
 
-	<aui:button-row>
+	<liferay-frontend:button-row>
 		<aui:button type="submit" />
 
 		<aui:button href="<%= redirect %>" type="cancel" />
-	</aui:button-row>
-</aui:form>
+	</liferay-frontend:button-row>
+</liferay-frontend:edit-form>
 
 <aui:script sandbox="<%= true %>">
 	var form = $('#<portlet:namespace />fm');

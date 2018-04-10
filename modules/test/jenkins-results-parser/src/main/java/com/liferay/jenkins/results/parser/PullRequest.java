@@ -50,7 +50,7 @@ public class PullRequest {
 
 		_number = Integer.parseInt(matcher.group("number"));
 		_repositoryName = matcher.group("repository");
-		_ownerUserName = matcher.group("owner");
+		_ownerUsername = matcher.group("owner");
 
 		refresh();
 	}
@@ -91,12 +91,46 @@ public class PullRequest {
 		return StringUtils.replace(labelsURL, "{/name}", "");
 	}
 
-	public String getOwnerUserName() {
-		return _ownerUserName;
+	public String getNumber() {
+		return String.valueOf(_number);
+	}
+
+	public String getOwnerUsername() {
+		return _ownerUsername;
+	}
+
+	public String getRepositoryName() {
+		return _repositoryName;
+	}
+
+	public String getSenderBranchName() {
+		JSONObject headJSONObject = _jsonObject.getJSONObject("head");
+
+		return headJSONObject.getString("ref");
+	}
+
+	public String getSenderSHA() {
+		JSONObject headJSONObject = _jsonObject.getJSONObject("head");
+
+		return headJSONObject.getString("sha");
+	}
+
+	public String getSenderUsername() {
+		JSONObject headJSONObject = _jsonObject.getJSONObject("head");
+
+		JSONObject userJSONObject = headJSONObject.getJSONObject("user");
+
+		return userJSONObject.getString("login");
 	}
 
 	public TestSuiteStatus getTestSuiteStatus() {
 		return _testSuiteStatus;
+	}
+
+	public String getUpstreamBranchName() {
+		JSONObject baseJSONObject = _jsonObject.getJSONObject("base");
+
+		return baseJSONObject.getString("ref");
 	}
 
 	public void refresh() {
@@ -142,8 +176,8 @@ public class PullRequest {
 
 	public static enum TestSuiteStatus {
 
-		ERROR("de4753"), FAILURE("de4753"), MISSING("cccccc"),
-		PENDING("fbca04"), SUCCESS("28a745");
+		ERROR("fccdcc"), FAILURE("fccdcc"), MISSING("eeeeee"),
+		PENDING("fff4c9"), SUCCESS("c7e8cb");
 
 		public String getColor() {
 			return _color;
@@ -163,7 +197,7 @@ public class PullRequest {
 
 	protected String getURL() {
 		return JenkinsResultsParserUtil.combine(
-			"https://api.github.com/repos/", _ownerUserName, "/",
+			"https://api.github.com/repos/", _ownerUsername, "/",
 			_repositoryName, "/pulls/", _number.toString());
 	}
 
@@ -243,7 +277,7 @@ public class PullRequest {
 	private JSONObject _jsonObject;
 	private final List<Label> _labels = new ArrayList<>();
 	private Integer _number;
-	private String _ownerUserName;
+	private String _ownerUsername;
 	private String _repositoryName;
 	private final String _testSuiteName;
 	private TestSuiteStatus _testSuiteStatus = TestSuiteStatus.MISSING;

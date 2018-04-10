@@ -21,7 +21,13 @@ JournalArticle article = journalContentDisplayContext.getArticle();
 %>
 
 <div class="visible-interaction">
-	<liferay-ui:icon-menu direction="left-side" icon="<%= StringPool.BLANK %>" markupView="lexicon" message="<%= StringPool.BLANK %>" showWhenSingleIcon="<%= true %>">
+	<liferay-ui:icon-menu
+		direction="left-side"
+		icon="<%= StringPool.BLANK %>"
+		markupView="lexicon"
+		message="<%= StringPool.BLANK %>"
+		showWhenSingleIcon="<%= true %>"
+	>
 		<c:if test="<%= journalContentDisplayContext.isShowEditArticleIcon() %>">
 
 			<%
@@ -40,7 +46,6 @@ JournalArticle article = journalContentDisplayContext.getArticle();
 				message="edit-web-content"
 				url="<%= journalContentDisplayContext.getURLEdit() %>"
 				useDialog="<%= true %>"
-
 			/>
 		</c:if>
 
@@ -62,7 +67,6 @@ JournalArticle article = journalContentDisplayContext.getArticle();
 				message="edit-template"
 				url="<%= journalContentDisplayContext.getURLEditTemplate() %>"
 				useDialog="<%= true %>"
-
 			/>
 		</c:if>
 
@@ -73,7 +77,6 @@ JournalArticle article = journalContentDisplayContext.getArticle();
 				resourcePrimKey="<%= String.valueOf(article.getResourcePrimKey()) %>"
 				var="permissionsURL"
 				windowState="<%= LiferayWindowState.POP_UP.toString() %>"
-
 			/>
 
 			<liferay-ui:icon
@@ -81,7 +84,6 @@ JournalArticle article = journalContentDisplayContext.getArticle();
 				method="get"
 				url="<%= permissionsURL %>"
 				useDialog="<%= true %>"
-
 			/>
 		</c:if>
 	</liferay-ui:icon-menu>

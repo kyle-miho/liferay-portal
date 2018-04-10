@@ -4,7 +4,7 @@
 
 	<command name="addCategories">
 		<execute macro="Panel#expandPanel">
-			<var name="panelHeading" value="Categorization" />
+			<var name="panel" value="Categorization" />
 		</execute>
 
 		<execute macro="AssetCategorization#addMultipleCategories">
@@ -138,7 +138,7 @@
 			<isset var="tagNameList" />
 			<then>
 				<execute macro="Panel#expandPanel">
-					<var name="panelHeading" value="Categorization" />
+					<var name="panel" value="Categorization" />
 				</execute>
 
 				<for list="${tagNameList}" param="tagName">
@@ -471,7 +471,7 @@
 				<var name="key_categoryName" value="${categoryName}" />
 
 				<execute macro="Panel#expandPanel">
-					<var name="panelHeading" value="Categorization" />
+					<var name="panel" value="Categorization" />
 				</execute>
 
 				<execute macro="AssetCategorization#addCategory">
@@ -495,7 +495,7 @@
 			<isset var="tagNameList" />
 			<then>
 				<execute macro="Panel#expandPanel">
-					<var name="panelHeading" value="Categorization" />
+					<var name="panel" value="Categorization" />
 				</execute>
 
 				<for list="${tagNameList}" param="tagName">
@@ -541,6 +541,25 @@
 		</execute>
 
 		<execute function="AssertClick" locator1="Button#PUBLISH" value1="Publish" />
+
+		<execute function="SelectFrame" locator1="relative=top" />
+	</command>
+
+	<command name="addPGViaAPWithValidationPosition">
+		<execute macro="AssetPublisherPortlet#addAsset">
+			<var name="assetType" value="Basic Document" />
+		</execute>
+
+		<execute macro="DMDocument#editDocument">
+			<var name="dmDocumentDescription" value="${dmDocumentDescription}" />
+			<var name="dmDocumentFile" value="${dmDocumentFile}" />
+			<var name="dmDocumentTitle" value="${dmDocumentTitle}" />
+		</execute>
+
+		<execute function="AssertElementPresent" locator1="Button#CANCEL_GIVEN_POSITION" />
+		<execute function="AssertElementPresent" locator1="Button#PUBLISH_GIVEN_POSITION" />
+
+		<execute macro="Button#clickPublish" />
 
 		<execute function="SelectFrame" locator1="relative=top" />
 	</command>
@@ -634,7 +653,7 @@
 
 	<command name="addRelatedAssetPG">
 		<execute macro="Panel#expandPanel">
-			<var name="panelHeading" value="Related Assets" />
+			<var name="panel" value="Related Assets" />
 		</execute>
 
 		<var name="key_assetType" value="${assetType}" />
@@ -670,7 +689,7 @@
 		<var name="key_dmDocumentTitle" value="${dmDocumentTitle}" />
 		<var name="key_siteName" value="${siteName}" />
 
-		<execute function="Type" locator1="Search#SEARCH_FIELD" value1="${siteName}" />
+		<execute function="Type" locator1="Search#TEMPLATE_SEARCH_BAR" value1="${siteName}" />
 
 		<execute function="Click" locator1="Search#SEARCH_BUTTON" />
 
@@ -1111,7 +1130,7 @@
 				<contains string="${dmDocumentTitleEdit}" substring="{dmDocumentTitleEdit}" />
 			</not>
 			<then>
-				<execute function="Type" locator1="TextInput#TITLE" value1="${dmDocumentTitleEdit}"  />
+				<execute function="Type" locator1="TextInput#TITLE" value1="${dmDocumentTitleEdit}" />
 			</then>
 		</if>
 
@@ -1132,7 +1151,7 @@
 			</not>
 			<then>
 				<execute macro="Panel#expandPanel">
-					<var name="panelHeading" value="Categorization" />
+					<var name="panel" value="Categorization" />
 				</execute>
 
 				<execute function="Type" locator1="AssetCategorization#TAGS_FIELD" value1="${dmDocumentTagName}" />
@@ -1238,7 +1257,7 @@
 				<contains string="${dmDocumentTitleEdit}" substring="{dmDocumentTitleEdit}" />
 			</not>
 			<then>
-				<execute function="Type" locator1="TextInput#TITLE" value1="${dmDocumentTitleEdit}"  />
+				<execute function="Type" locator1="TextInput#TITLE" value1="${dmDocumentTitleEdit}" />
 			</then>
 		</if>
 
@@ -1927,7 +1946,7 @@
 
 	<command name="viewCategories">
 		<execute macro="Panel#expandPanel">
-			<var name="panelHeading" value="Categorization" />
+			<var name="panel" value="Categorization" />
 		</execute>
 
 		<for list="${categoryNameList}" param="categoryName">
@@ -2121,7 +2140,7 @@
 		<execute function="Click" locator1="DocumentsAndMediaDocument#DOCUMENT_DETAILS_DROPDOWN" />
 
 		<execute macro="Panel#expandPanel">
-			<var name="panelHeading" value="Automatically Extracted Metadata" />
+			<var name="panel" value="Automatically Extracted Metadata" />
 		</execute>
 	</command>
 
@@ -2690,8 +2709,8 @@
 		<execute function="Check" locator1="DocumentsAndMedia#DESCRIPTIVE_LIST_DOCUMENT_CHECKBOX" />
 
 		<execute function="AssertVisible" locator1="Toolbar#MANAGEMENT_BAR_LOCK_ICON_BUTTON" />
-		<execute function="AssertVisible" locator1="Toolbar#MANAGEMENT_BAR_UNLOCK_ICON_BUTTON"  />
-		<execute function="AssertVisible" locator1="Button#MOVE"  />
+		<execute function="AssertVisible" locator1="Toolbar#MANAGEMENT_BAR_UNLOCK_ICON_BUTTON" />
+		<execute function="AssertVisible" locator1="Button#MOVE" />
 		<execute function="AssertVisible" locator1="Button#RECYCLE_BIN" />
 
 		<execute macro="Navigator#gotoSitePage">
