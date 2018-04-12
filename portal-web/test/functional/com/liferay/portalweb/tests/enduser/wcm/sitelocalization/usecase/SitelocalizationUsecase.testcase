@@ -688,6 +688,7 @@
 	</command>
 
 	<command name="RedirectLocalizedFriendlyURL" priority="4">
+		<property name="portal.acceptance" value="kyle-miho" />
 		<description message="This is a use case for LPS-59345" />
 
 		<property name="test.name.skip.portal.instance" value="SitelocalizationUsecase#RedirectLocalizedFriendlyURL" />
@@ -717,6 +718,7 @@
 
 		<execute macro="SitePages#addPublicPage">
 			<var name="pageName" value="Language Page" />
+			<var name="hideFromNavMenu" value="true" />
 		</execute>
 
 		<execute macro="SitePages#gotoPageMenuItem">
@@ -733,8 +735,6 @@
 			<var name="friendlyUrlLocalized" value="en_US" />
 			<var name="localizedFriendlyURL" value="/test" />
 		</execute>
-
-		<execute macro="Page#hideFromNavigationMenu" />
 
 		<execute macro="User#logoutPG" />
 
