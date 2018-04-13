@@ -84,15 +84,6 @@
 		</execute>
 
 		<execute macro="SiteNavigationMenu#addItem">
-			<var name="applicationName" value="Blogs" />
-			<var name="item" value="Application" />
-		</execute>
-
-		<execute macro="SiteNavigationMenu#viewItem">
-			<var name="itemName" value="Blogs" />
-		</execute>
-
-		<execute macro="SiteNavigationMenu#addItem">
 			<var name="item" value="Submenu" />
 			<var name="submenuName" value="Submenu Name" />
 		</execute>
