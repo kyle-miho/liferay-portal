@@ -200,10 +200,6 @@
 	<command name="AddSubmenuNavigationMenu" priority="5"> 
 		<description message="This is a use case for LPS-75061" />
 
-		<execute macro="ProductMenu#gotoSite">
-			<var name="site" value="Test Site Name" />
-		</execute>
-
 		<execute macro="ProductMenu#gotoPortlet">
 			<var name="category" value="Navigation" />
 			<var name="panel" value="Site Administration" />
@@ -290,10 +286,6 @@
 
 	<command name="EditNavMenuPageItemName" priority="5">
 		<description message="This is a usecase for LPS-76658" />
-
-		<execute macro="ProductMenu#gotoSite">
-			<var name="site" value="Test Site Name" />
-		</execute>
 
 		<execute macro="ProductMenu#gotoPortlet">
 			<var name="category" value="Navigation" />
