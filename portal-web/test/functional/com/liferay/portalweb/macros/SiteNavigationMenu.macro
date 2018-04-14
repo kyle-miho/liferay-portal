@@ -5,6 +5,19 @@
 		<execute macro="Portlet#selectTreeNode">
 			<var name="nodeName" value="${pageName}" />
 		</execute>
+
+		<if>
+			<not>
+				<contains string="${extraPageNames}" substring="{extraPageNames}" />
+			</not>
+			<then>
+				<for list="${extraPageNames}" param="pageNames">
+					<execute macro="Portlet#selectTreeNode">
+						<var name="nodeName" value="${pageNames}" />
+					</execute>
+				</for>
+			</then>
+		</if>
 	</command>
 
 	<command name="_addItemSubmenu">
@@ -99,6 +112,7 @@
 				<execute macro="SiteNavigationMenu#_addItemPage">
 					<var name="pageName" value="${pageName}" />
 					<var name="privacy" value="${privacy}" />
+					<var name="extraPageNames" value="${extraPageNames}" />
 				</execute>
 			</then>
 			<elseif>
