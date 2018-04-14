@@ -316,6 +316,60 @@
 		<execute function="AssertLocation" value1="https://liferay.com" />
 	</command>
 
+	<command name="EditNavigationMenuTypes" priority="5">
+		<description message="This is a usecase for LPS-78046" />
+
+		<for list="1,2" param="index">
+			<execute macro="ProductMenu#gotoPortlet">
+				<var name="category" value="Navigation" />
+				<var name="panel" value="Site Administration" />
+				<var name="portlet" value="Navigation Menus" />
+			</execute>
+
+			<execute macro="SiteNavigationMenu#addMenu">
+				<var name="menuName" value="Primary Menu Name ${index}" />
+			</execute>
+		</for>
+
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Navigation" />
+			<var name="panel" value="Site Administration" />
+			<var name="portlet" value="Navigation Menus" />
+		</execute>
+
+		<for list="Primary Navigation,Secondary Navigation,Social Navigation" param="menuType">
+			<execute macro="LexiconEntry#gotoEntryMenuItem">
+				<var name="key_menuItem" value="${menuType}" />
+				<var name="key_rowEntry" value="Primary Menu Name 1" />
+			</execute>
+
+			<execute function="AssertElementPresent" locator1="SiteNavigationMenu#MENU_MARKED_AS_TYPE">
+				<var name="key_menuName" value="Primary Menu Name 1" />
+				<var name="key_menuType" value="${menuType}" />
+			</execute>
+
+			<execute function="AssertElementNotPresent" locator1="SiteNavigationMenu#MENU_MARKED_AS_TYPE">
+				<var name="key_menuName" value="Primary Menu Name 2" />
+				<var name="key_menuType" value="${menuType}" />
+			</execute>
+
+			<execute macro="LexiconEntry#gotoEntryMenuItem">
+				<var name="key_menuItem" value="${menuType}" />
+				<var name="key_rowEntry" value="Primary Menu Name 2" />
+			</execute>
+
+			<execute function="AssertElementPresent" locator1="SiteNavigationMenu#MENU_MARKED_AS_TYPE">
+				<var name="key_menuName" value="Primary Menu Name 2" />
+				<var name="key_menuType" value="${menuType}" />
+			</execute>
+
+			<execute function="AssertElementNotPresent" locator1="SiteNavigationMenu#MENU_MARKED_AS_TYPE">
+				<var name="key_menuName" value="Primary Menu Name 1" />
+				<var name="key_menuType" value="${menuType}" />
+			</execute>
+		</for>
+	</command>
+
 	<command name="EditNavMenuPageItemName" priority="5">
 		<description message="This is a usecase for LPS-76658" />
 
