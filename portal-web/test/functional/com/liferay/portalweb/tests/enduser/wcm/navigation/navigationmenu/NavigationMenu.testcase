@@ -480,7 +480,8 @@
 			<var name="portlet" value="Navigation Menus" />
 		</execute>
 
-		<execute macro="LexiconEntry#gotoEntry">
+		<execute macro="LexiconEntry#gotoEntryMenuItem">
+			<var name="menuItem" value="Rename" />
 			<var name="rowEntry" value="Default" />
 		</execute>
 
