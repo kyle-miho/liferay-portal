@@ -196,8 +196,12 @@
 			<var name="portlet" value="Navigation Menus" />
 		</execute>
 
+		<execute macro="SiteNavigationMenu#addMenu">
+			<var name="menuName" value="Primary Menu Name 1" />
+		</execute>
+
 		<execute macro="LexiconEntry#gotoEntry">
-			<var name="rowEntry" value="Default" />
+			<var name="rowEntry" value="Primary Menu Name 1" />
 		</execute>
 
 		<for list="1,2,3,4" param="index">
