@@ -234,6 +234,74 @@
 		</execute>
 	</command>
 
+	<command name="AddSitePagesToNavigationMenuOnCreation" priority="5">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Navigation" />
+			<var name="panel" value="Site Administration" />
+			<var name="portlet" value="Navigation Menus" />
+		</execute>
+
+		<execute macro="LexiconEntry#gotoEntry">
+			<var name="rowEntry" value="Default" />
+		</execute>
+
+		<execute macro="SiteNavigationMenu#checkMenuRadioFunction">
+			<var name="function" value="Add New Pages to This Menu" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Navigation" />
+			<var name="panel" value="Site Administration" />
+			<var name="portlet" value="Site Pages" />
+		</execute>
+
+		<execute macro="SitePages#addPublicPage">
+			<var name="pageName" value="Test Page Name Visible" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Navigation" />
+			<var name="panel" value="Site Administration" />
+			<var name="portlet" value="Navigation Menus" />
+		</execute>
+
+		<execute macro="LexiconEntry#gotoEntry">
+			<var name="rowEntry" value="Default" />
+		</execute>
+
+		<execute macro="SiteNavigationMenu#uncheckMenuRadioFunction">
+			<var name="function" value="Add New Pages to This Menu" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Navigation" />
+			<var name="panel" value="Site Administration" />
+			<var name="portlet" value="Site Pages" />
+		</execute>
+
+		<execute macro="SitePages#addPublicPage">
+			<var name="pageName" value="Test Page Name Invisible" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Navigation" />
+			<var name="panel" value="Site Administration" />
+			<var name="portlet" value="Navigation Menus" />
+		</execute>
+
+		<execute macro="LexiconEntry#gotoEntry">
+			<var name="rowEntry" value="Default" />
+		</execute>
+
+		<execute macro="SiteNavigationMenu#viewItem">
+			<var name="itemName" value="Test Page Name Visible" />
+		</execute>
+
+		<execute macro="SiteNavigationMenu#viewItemMissing">
+			<var name="itemName" value="Test Page Name Invisible" />
+		</execute>
+	</command>
+
 	<command name="AddSubmenuNavigationMenu" priority="5"> 
 		<description message="This is a use case for LPS-75061" />
 
