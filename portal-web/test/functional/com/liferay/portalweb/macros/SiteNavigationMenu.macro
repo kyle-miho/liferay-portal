@@ -275,4 +275,16 @@
 			<var name="key_function" value="Primary" />
 		</execute>
 	</command>
+
+	<command name="viewLiferayURL">
+		<execute function="Click" locator1="Home#PAGE">
+			<var name="key_pageName" value="${pageName}" />
+		</execute>
+
+		<execute function="SelectWindow" locator1="title=Liferay: Digital experience software tailored to your needs" />
+
+		<execute function="AssertLocation#assertPartialLocation" value1="liferay.com" />
+
+		<execute function="Close" locator1="title=Liferay: Digital experience software tailored to your needs" />
+	</command>
 </definition>

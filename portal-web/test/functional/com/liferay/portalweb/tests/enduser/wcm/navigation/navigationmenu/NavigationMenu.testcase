@@ -313,12 +313,11 @@
 			<var name="itemName" value="Liferay" />
 		</execute>
 
-		<execute macro="Navigator#gotoSitePage">
-			<var name="pageName" value="Liferay" />
-			<var name="siteName" value="Test Site Name" />
+		<execute macro="ProductMenu#gotoSite">
+			<var name="site" value="Test Site Name" />
 		</execute>
 
-		<execute function="AssertLocation" value1="https://liferay.com" />
+		<execute macro="SiteNavigationMenu#viewLiferayURL" />
 	</command>
 
 	<command name="EditNavigationMenuTypes" priority="5">
