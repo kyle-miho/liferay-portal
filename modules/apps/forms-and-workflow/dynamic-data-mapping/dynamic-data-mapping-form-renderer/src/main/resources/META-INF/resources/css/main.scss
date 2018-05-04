@@ -144,8 +144,14 @@ body .ddm-user-view-content {
 		min-height: auto;
 	}
 
-	.has-error select.form-control[multiple] {
-		background-image: none;
+	.has-error {
+		select.form-control[multiple] {
+			background-image: none;
+		}
+
+		td, th {
+			color: #DA1414;
+		}
 	}
 
 	.lfr-ddm-form-field-repeatable-toolbar a {
@@ -379,6 +385,10 @@ body .ddm-user-view-content {
 			right: 8px;
 			top: 16px;
 		}
+	}
+
+	.lfr-ddm-form-field-container .liferay-ddm-form-field-checkbox {
+		margin-top: 21px;
 	}
 
 	&.border-bottom {

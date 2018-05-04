@@ -1214,7 +1214,7 @@
 		</execute>
 
 		<execute macro="ProductMenu#gotoPortlet">
-			<var name="category" value="Navigation" />
+			<var name="category" value="Build" />
 			<var name="panel" value="Site Administration" />
 			<var name="portlet" value="Site Pages" />
 		</execute>
@@ -1321,7 +1321,7 @@
 		<execute macro="Navigator#openURL" />
 
 		<execute macro="ProductMenu#gotoPortlet">
-			<var name="category" value="Navigation" />
+			<var name="category" value="Build" />
 			<var name="panel" value="Site Administration" />
 			<var name="portlet" value="Site Pages" />
 		</execute>
@@ -1868,8 +1868,9 @@
 			<var name="navItem" value="Templates" />
 		</execute>
 
-		<execute macro="WebContentNavigator#gotoEditTemplate">
-			<var name="templateName" value="Basic Web Content" />
+		<execute macro="LexiconEntry#gotoEntryMenuItem">
+			<var name="menuItem" value="Edit" />
+			<var name="rowEntry" value="Basic Web Content" />
 		</execute>
 
 		<execute macro="PortletEntry#inputName">
@@ -2617,7 +2618,7 @@
 		<property name="testray.component.names" value="Web Content Administration" />
 
 		<execute macro="ProductMenu#gotoPortlet">
-			<var name="category" value="Navigation" />
+			<var name="category" value="Build" />
 			<var name="panel" value="Site Administration" />
 			<var name="portlet" value="Site Pages" />
 		</execute>
@@ -2747,7 +2748,7 @@
 		</execute>
 
 		<execute macro="ProductMenu#gotoPortlet">
-			<var name="category" value="Navigation" />
+			<var name="category" value="Build" />
 			<var name="panel" value="Site Administration" />
 			<var name="portlet" value="Site Pages" />
 		</execute>

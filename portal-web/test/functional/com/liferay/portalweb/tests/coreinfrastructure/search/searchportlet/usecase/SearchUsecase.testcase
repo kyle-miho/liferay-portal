@@ -1,5 +1,6 @@
 <definition component-name="portal-search">
 	<property name="portal.release" value="true" />
+	<property name="portal.suite.search.engine" value="elasticsearch6,solr" />
 	<property name="portal.upstream" value="true" />
 	<property name="testray.main.component.name" value="Web Search" />
 
@@ -46,7 +47,7 @@
 		</execute>
 
 		<execute macro="ProductMenu#gotoPortlet">
-			<var name="category" value="Navigation" />
+			<var name="category" value="Build" />
 			<var name="panel" value="Site Administration" />
 			<var name="portlet" value="Site Pages" />
 		</execute>
@@ -237,7 +238,7 @@
 		<execute macro="Navigator#openURL" />
 
 		<execute macro="ProductMenu#gotoPortlet">
-			<var name="category" value="Navigation" />
+			<var name="category" value="Build" />
 			<var name="panel" value="Site Administration" />
 			<var name="portlet" value="Site Pages" />
 		</execute>
@@ -257,7 +258,7 @@
 			<var name="dmDocumentTitle" value="Potato Document" />
 		</execute>
 
-		<var method="DateUtil#getFormattedDate(0,'MMM d YYYY')" name="currentDate" />
+		<var method="DateUtil#getFormattedDate(0,'MMM d, YYYY')" name="currentDate" />
 
 		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Search Page" />
@@ -432,7 +433,7 @@
 		<execute macro="Navigator#openURL" />
 
 		<execute macro="ProductMenu#gotoPortlet">
-			<var name="category" value="Navigation" />
+			<var name="category" value="Build" />
 			<var name="panel" value="Site Administration" />
 			<var name="portlet" value="Site Pages" />
 		</execute>
@@ -690,7 +691,7 @@
 		<execute macro="Navigator#openURL" />
 
 		<execute macro="ProductMenu#gotoPortlet">
-			<var name="category" value="Navigation" />
+			<var name="category" value="Build" />
 			<var name="panel" value="Site Administration" />
 			<var name="portlet" value="Site Pages" />
 		</execute>
@@ -813,7 +814,7 @@
 		</execute>
 
 		<execute macro="ProductMenu#gotoPortlet">
-			<var name="category" value="Navigation" />
+			<var name="category" value="Build" />
 			<var name="panel" value="Site Administration" />
 			<var name="portlet" value="Site Pages" />
 		</execute>
@@ -932,7 +933,7 @@
 		</execute>
 
 		<execute macro="ProductMenu#gotoPortlet">
-			<var name="category" value="Navigation" />
+			<var name="category" value="Build" />
 			<var name="panel" value="Site Administration" />
 			<var name="portlet" value="Site Pages" />
 		</execute>
@@ -1060,7 +1061,7 @@
 		</execute>
 
 		<execute macro="ProductMenu#gotoPortlet">
-			<var name="category" value="Navigation" />
+			<var name="category" value="Build" />
 			<var name="panel" value="Site Administration" />
 			<var name="portlet" value="Site Pages" />
 		</execute>
@@ -1190,7 +1191,7 @@
 		</execute>
 
 		<execute macro="ProductMenu#gotoPortlet">
-			<var name="category" value="Navigation" />
+			<var name="category" value="Build" />
 			<var name="panel" value="Site Administration" />
 			<var name="portlet" value="Site Pages" />
 		</execute>
@@ -1301,7 +1302,7 @@
 		<execute macro="PortletEntry#publish" />
 
 		<execute macro="ProductMenu#gotoPortlet">
-			<var name="category" value="Navigation" />
+			<var name="category" value="Build" />
 			<var name="panel" value="Site Administration" />
 			<var name="portlet" value="Site Pages" />
 		</execute>
@@ -1343,7 +1344,7 @@
 
 	<command name="SearchXSSAsset" priority="4">
 		<execute macro="ProductMenu#gotoPortlet">
-			<var name="category" value="Navigation" />
+			<var name="category" value="Build" />
 			<var name="panel" value="Site Administration" />
 			<var name="portlet" value="Site Pages" />
 		</execute>
@@ -1380,7 +1381,7 @@
 		</execute>
 
 		<var name="actualScript"><![CDATA[<script>alert(123);</script>]]></var>
-		<var name="escapedScript"><![CDATA[&lt;script&gt;alert(123);&lt;/script&gt;]]></var>
+		<var name="escapedScript"><![CDATA[&lt;script&gt;<span class="highlight">alert</span>(123);&lt;/script&gt;]]></var>
 
 		<execute function="AssertHTMLSourceTextNotPresent" value1="${actualScript}" />
 		<execute function="AssertHTMLSourceTextPresent" value1="${escapedScript}" />
@@ -1435,7 +1436,7 @@
 		</execute>
 
 		<execute macro="ProductMenu#gotoPortlet">
-			<var name="category" value="Navigation" />
+			<var name="category" value="Build" />
 			<var name="panel" value="Site Administration" />
 			<var name="portlet" value="Site Pages" />
 		</execute>
@@ -1557,7 +1558,7 @@
 		</execute>
 
 		<execute macro="ProductMenu#gotoPortlet">
-			<var name="category" value="Navigation" />
+			<var name="category" value="Build" />
 			<var name="panel" value="Site Administration" />
 			<var name="portlet" value="Site Pages" />
 		</execute>
@@ -1612,7 +1613,7 @@
 		</execute>
 
 		<execute macro="ProductMenu#gotoPortlet">
-			<var name="category" value="Navigation" />
+			<var name="category" value="Build" />
 			<var name="panel" value="Site Administration" />
 			<var name="portlet" value="Site Pages" />
 		</execute>
@@ -1637,7 +1638,7 @@
 
 		<var method="TestPropsUtil#get('portal.url')" name="portalURL" />
 
-		<execute function="AssertLocation" value1="${portalURL}/web/guest/search-page?q=Blogs+Entry+Title" />
+		<execute function="AssertLocation" value1="${portalURL}/web/guest/search-page?q=Blogs%20Entry%20Title" />
 
 		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Search Page" />
@@ -1652,18 +1653,18 @@
 			<var name="searchTerm" value="Blogs Entry Title" />
 		</execute>
 
-		<execute function="AssertLocation" value1="${portalURL}/web/guest/search-page?keywordparameter=Blogs+Entry+Title" />
+		<execute function="AssertLocation" value1="${portalURL}/web/guest/search-page?keywordparameter=Blogs%20Entry%20Title" />
 
 		<execute macro="SearchFacetPortlet#checkFacetOption">
 			<var name="facetOption" value="Blogs Entry" />
 		</execute>
 
-		<execute function="AssertLocation" value1="${portalURL}/web/guest/search-page?keywordparameter=Blogs+Entry+Title&amp;type=com.liferay.blogs.model.BlogsEntry" />
+		<execute function="AssertLocation" value1="${portalURL}/web/guest/search-page?keywordparameter=Blogs%20Entry%20Title&amp;type=com.liferay.blogs.model.BlogsEntry" />
 	</command>
 
 	<command name="ViewURLChangesWithUpdatedSearchAndScopeParameters" priority="4">
 		<execute macro="ProductMenu#gotoPortlet">
-			<var name="category" value="Navigation" />
+			<var name="category" value="Build" />
 			<var name="panel" value="Site Administration" />
 			<var name="portlet" value="Site Pages" />
 		</execute>
@@ -1708,17 +1709,17 @@
 		<execute macro="ProductMenu#gotoPortlet">
 			<var name="category" value="Configuration" />
 			<var name="panel" value="Control Panel" />
-			<var name="portlet" value="Server Administration" />
+			<var name="portlet" value="Search" />
 		</execute>
 
-		<execute macro="ServerAdministration#executeServerResourcesActions">
+		<execute macro="SearchAdministration#executeSearchActions">
 			<var name="actionsDescription" value="Reindex all search indexes." />
 		</execute>
 
 		<execute macro="Navigator#openURL" />
 
 		<execute macro="ProductMenu#gotoPortlet">
-			<var name="category" value="Navigation" />
+			<var name="category" value="Build" />
 			<var name="panel" value="Site Administration" />
 			<var name="portlet" value="Site Pages" />
 		</execute>

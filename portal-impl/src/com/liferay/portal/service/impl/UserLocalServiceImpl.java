@@ -2261,7 +2261,9 @@ public class UserLocalServiceImpl extends UserLocalServiceBaseImpl {
 	 * Returns all the users who do not have any contacts.
 	 *
 	 * @return the users who do not have any contacts
+	 * @deprecated As of 7.0.0, with no direct replacement
 	 */
+	@Deprecated
 	@Override
 	public List<User> getNoContacts() {
 		return userFinder.findByNoContacts();
@@ -2944,7 +2946,7 @@ public class UserLocalServiceImpl extends UserLocalServiceBaseImpl {
 	public boolean isPasswordExpired(User user) throws PortalException {
 		PasswordPolicy passwordPolicy = user.getPasswordPolicy();
 
-		if ((passwordPolicy != null) && passwordPolicy.getExpireable()) {
+		if ((passwordPolicy != null) && passwordPolicy.isExpireable()) {
 			long currentTime = System.currentTimeMillis();
 
 			long passwordModifiedTime = 0;
@@ -3808,8 +3810,8 @@ public class UserLocalServiceImpl extends UserLocalServiceBaseImpl {
 
 				boolean passwordReset = false;
 
-				if (passwordPolicy.getChangeable() &&
-					passwordPolicy.getChangeRequired()) {
+				if (passwordPolicy.isChangeable() &&
+					passwordPolicy.isChangeRequired()) {
 
 					passwordReset = true;
 				}

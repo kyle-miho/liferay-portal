@@ -790,7 +790,7 @@ public class UpgradeDynamicDataMapping extends UpgradeProcess {
 			String[] templateIdAndLanguage = StringUtil.split(
 				entrySet.getKey(), StringPool.DOLLAR);
 
-			long ddmTemplateId = Long.parseLong(templateIdAndLanguage[0]);
+			long ddmTemplateId = GetterUtil.getLong(templateIdAndLanguage[0]);
 			String language = templateIdAndLanguage[1];
 
 			String script = entrySet.getValue();
@@ -2466,6 +2466,7 @@ public class UpgradeDynamicDataMapping extends UpgradeProcess {
 						"Unable to find the binary file with path \"%s\" " +
 							"referenced by %s",
 						filePath, getModelInfo()));
+
 				throw pe;
 			}
 		}

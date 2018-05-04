@@ -191,6 +191,14 @@ public class CommandPoshiElement extends PoshiElement {
 				continue;
 			}
 
+			if (isMultilineReadableSyntaxComment(item)) {
+				item = item.replaceFirst("\t", pad + "\t");
+
+				sb.append(item);
+
+				continue;
+			}
+
 			item = item.replaceAll("\n", "\n" + pad);
 
 			sb.append(item.replaceAll("\n\t\n", "\n\n"));
@@ -263,7 +271,7 @@ public class CommandPoshiElement extends PoshiElement {
 	}
 
 	protected boolean isCDATAVar(String readableSyntax) {
-		if (readableSyntax.contains("escapeText(")) {
+		if (readableSyntax.contains("\'\'\'")) {
 			return true;
 		}
 

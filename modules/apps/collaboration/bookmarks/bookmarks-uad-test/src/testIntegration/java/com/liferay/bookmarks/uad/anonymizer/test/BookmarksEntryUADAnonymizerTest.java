@@ -18,14 +18,13 @@ import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.bookmarks.model.BookmarksEntry;
 import com.liferay.bookmarks.service.BookmarksEntryLocalService;
 import com.liferay.bookmarks.uad.constants.BookmarksUADConstants;
-import com.liferay.bookmarks.uad.test.BookmarksEntryUADEntityTestHelper;
+import com.liferay.bookmarks.uad.test.BookmarksEntryUADTestHelper;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
-import com.liferay.user.associated.data.aggregator.UADAggregator;
 import com.liferay.user.associated.data.anonymizer.UADAnonymizer;
 import com.liferay.user.associated.data.test.util.BaseUADAnonymizerTestCase;
 import com.liferay.user.associated.data.test.util.WhenHasStatusByUserIdField;
@@ -56,8 +55,8 @@ public class BookmarksEntryUADAnonymizerTest
 		throws Exception {
 
 		BookmarksEntry bookmarksEntry =
-			_bookmarksEntryUADEntityTestHelper.
-				addBookmarksEntryWithStatusByUserId(userId, statusByUserId);
+			_bookmarksEntryUADTestHelper.addBookmarksEntryWithStatusByUserId(
+				userId, statusByUserId);
 
 		_bookmarksEntries.add(bookmarksEntry);
 
@@ -75,18 +74,13 @@ public class BookmarksEntryUADAnonymizerTest
 		throws Exception {
 
 		BookmarksEntry bookmarksEntry =
-			_bookmarksEntryUADEntityTestHelper.addBookmarksEntry(userId);
+			_bookmarksEntryUADTestHelper.addBookmarksEntry(userId);
 
 		if (deleteAfterTestRun) {
 			_bookmarksEntries.add(bookmarksEntry);
 		}
 
 		return bookmarksEntry;
-	}
-
-	@Override
-	protected UADAggregator getUADAggregator() {
-		return _uadAggregator;
 	}
 
 	@Override
@@ -132,13 +126,7 @@ public class BookmarksEntryUADAnonymizerTest
 	private BookmarksEntryLocalService _bookmarksEntryLocalService;
 
 	@Inject
-	private BookmarksEntryUADEntityTestHelper
-		_bookmarksEntryUADEntityTestHelper;
-
-	@Inject(
-		filter = "model.class.name=" + BookmarksUADConstants.CLASS_NAME_BOOKMARKS_ENTRY
-	)
-	private UADAggregator _uadAggregator;
+	private BookmarksEntryUADTestHelper _bookmarksEntryUADTestHelper;
 
 	@Inject(
 		filter = "model.class.name=" + BookmarksUADConstants.CLASS_NAME_BOOKMARKS_ENTRY

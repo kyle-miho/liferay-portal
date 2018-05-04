@@ -7,6 +7,8 @@ AUI.add(
 
 		var FormBuilderUtil = Liferay.DDM.FormBuilderUtil;
 
+		var Lang = A.Lang;
+
 		var CSS_FIELD = A.getClassName('form', 'builder', 'field');
 
 		var CSS_FIELD_CONTENT_TARGET = A.getClassName('form', 'builder', 'field', 'content', 'target');
@@ -63,8 +65,39 @@ AUI.add(
 					function(settingsFormFieldContext) {
 						var fieldName = settingsFormFieldContext.fieldName;
 
+						if (fieldName === 'label') {
+							var defaultLocale = builder.get('defaultLanguageId');
+
+							var oldLabel = settingsFormFieldContext.localizedValue[defaultLocale];
+
+							if (oldLabel && (oldLabel != '')) {
+								var newLabel = Lang.sub(
+									Liferay.Language.get('copy-of-x'),
+									[
+										oldLabel
+									]
+								);
+
+								settingsFormFieldContext.localizedValue[defaultLocale] = newLabel;
+								settingsFormFieldContext.value = newLabel;
+							}
+						}
+
 						if (fieldName === 'name') {
-							settingsFormFieldContext.value = copy.generateFieldName(instance.get('fieldName'));
+							var oldFieldName = instance.get('fieldName');
+
+							var newFieldName = Lang.sub(
+								Liferay.Language.get('copy-of-x'),
+								[
+									oldFieldName
+								]
+							);
+
+							newFieldName = Lang.String.camelize(newFieldName, ' ');
+
+							newFieldName = newFieldName.replace(/\s/g, '');
+
+							settingsFormFieldContext.value = copy.generateFieldName(newFieldName);
 						}
 					}
 				);

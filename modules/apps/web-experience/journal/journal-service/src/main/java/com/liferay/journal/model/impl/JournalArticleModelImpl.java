@@ -172,17 +172,18 @@ public class JournalArticleModelImpl extends BaseModelImpl<JournalArticle>
 	public static final long CLASSPK_COLUMN_BITMASK = 16L;
 	public static final long COMPANYID_COLUMN_BITMASK = 32L;
 	public static final long DISPLAYDATE_COLUMN_BITMASK = 64L;
-	public static final long FOLDERID_COLUMN_BITMASK = 128L;
-	public static final long GROUPID_COLUMN_BITMASK = 256L;
-	public static final long INDEXABLE_COLUMN_BITMASK = 512L;
-	public static final long LAYOUTUUID_COLUMN_BITMASK = 1024L;
-	public static final long RESOURCEPRIMKEY_COLUMN_BITMASK = 2048L;
-	public static final long SMALLIMAGEID_COLUMN_BITMASK = 4096L;
-	public static final long STATUS_COLUMN_BITMASK = 8192L;
-	public static final long URLTITLE_COLUMN_BITMASK = 16384L;
-	public static final long USERID_COLUMN_BITMASK = 32768L;
-	public static final long UUID_COLUMN_BITMASK = 65536L;
-	public static final long VERSION_COLUMN_BITMASK = 131072L;
+	public static final long EXPIRATIONDATE_COLUMN_BITMASK = 128L;
+	public static final long FOLDERID_COLUMN_BITMASK = 256L;
+	public static final long GROUPID_COLUMN_BITMASK = 512L;
+	public static final long INDEXABLE_COLUMN_BITMASK = 1024L;
+	public static final long LAYOUTUUID_COLUMN_BITMASK = 2048L;
+	public static final long RESOURCEPRIMKEY_COLUMN_BITMASK = 4096L;
+	public static final long SMALLIMAGEID_COLUMN_BITMASK = 8192L;
+	public static final long STATUS_COLUMN_BITMASK = 16384L;
+	public static final long URLTITLE_COLUMN_BITMASK = 32768L;
+	public static final long USERID_COLUMN_BITMASK = 65536L;
+	public static final long UUID_COLUMN_BITMASK = 131072L;
+	public static final long VERSION_COLUMN_BITMASK = 262144L;
 
 	/**
 	 * Converts the soap model instance into a normal model instance.
@@ -221,8 +222,8 @@ public class JournalArticleModelImpl extends BaseModelImpl<JournalArticle>
 		model.setDisplayDate(soapModel.getDisplayDate());
 		model.setExpirationDate(soapModel.getExpirationDate());
 		model.setReviewDate(soapModel.getReviewDate());
-		model.setIndexable(soapModel.getIndexable());
-		model.setSmallImage(soapModel.getSmallImage());
+		model.setIndexable(soapModel.isIndexable());
+		model.setSmallImage(soapModel.isSmallImage());
 		model.setSmallImageId(soapModel.getSmallImageId());
 		model.setSmallImageURL(soapModel.getSmallImageURL());
 		model.setLastPublishDate(soapModel.getLastPublishDate());
@@ -318,8 +319,8 @@ public class JournalArticleModelImpl extends BaseModelImpl<JournalArticle>
 		attributes.put("displayDate", getDisplayDate());
 		attributes.put("expirationDate", getExpirationDate());
 		attributes.put("reviewDate", getReviewDate());
-		attributes.put("indexable", getIndexable());
-		attributes.put("smallImage", getSmallImage());
+		attributes.put("indexable", isIndexable());
+		attributes.put("smallImage", isSmallImage());
 		attributes.put("smallImageId", getSmallImageId());
 		attributes.put("smallImageURL", getSmallImageURL());
 		attributes.put("lastPublishDate", getLastPublishDate());
@@ -1046,7 +1047,17 @@ public class JournalArticleModelImpl extends BaseModelImpl<JournalArticle>
 
 	@Override
 	public void setExpirationDate(Date expirationDate) {
+		_columnBitmask |= EXPIRATIONDATE_COLUMN_BITMASK;
+
+		if (_originalExpirationDate == null) {
+			_originalExpirationDate = _expirationDate;
+		}
+
 		_expirationDate = expirationDate;
+	}
+
+	public Date getOriginalExpirationDate() {
+		return _originalExpirationDate;
 	}
 
 	@JSON
@@ -1512,8 +1523,8 @@ public class JournalArticleModelImpl extends BaseModelImpl<JournalArticle>
 		journalArticleImpl.setDisplayDate(getDisplayDate());
 		journalArticleImpl.setExpirationDate(getExpirationDate());
 		journalArticleImpl.setReviewDate(getReviewDate());
-		journalArticleImpl.setIndexable(getIndexable());
-		journalArticleImpl.setSmallImage(getSmallImage());
+		journalArticleImpl.setIndexable(isIndexable());
+		journalArticleImpl.setSmallImage(isSmallImage());
 		journalArticleImpl.setSmallImageId(getSmallImageId());
 		journalArticleImpl.setSmallImageURL(getSmallImageURL());
 		journalArticleImpl.setLastPublishDate(getLastPublishDate());
@@ -1644,6 +1655,8 @@ public class JournalArticleModelImpl extends BaseModelImpl<JournalArticle>
 		journalArticleModelImpl._originalLayoutUuid = journalArticleModelImpl._layoutUuid;
 
 		journalArticleModelImpl._originalDisplayDate = journalArticleModelImpl._displayDate;
+
+		journalArticleModelImpl._originalExpirationDate = journalArticleModelImpl._expirationDate;
 
 		journalArticleModelImpl._originalIndexable = journalArticleModelImpl._indexable;
 
@@ -1809,9 +1822,9 @@ public class JournalArticleModelImpl extends BaseModelImpl<JournalArticle>
 			journalArticleCacheModel.reviewDate = Long.MIN_VALUE;
 		}
 
-		journalArticleCacheModel.indexable = getIndexable();
+		journalArticleCacheModel.indexable = isIndexable();
 
-		journalArticleCacheModel.smallImage = getSmallImage();
+		journalArticleCacheModel.smallImage = isSmallImage();
 
 		journalArticleCacheModel.smallImageId = getSmallImageId();
 
@@ -1911,9 +1924,9 @@ public class JournalArticleModelImpl extends BaseModelImpl<JournalArticle>
 		sb.append(", reviewDate=");
 		sb.append(getReviewDate());
 		sb.append(", indexable=");
-		sb.append(getIndexable());
+		sb.append(isIndexable());
 		sb.append(", smallImage=");
-		sb.append(getSmallImage());
+		sb.append(isSmallImage());
 		sb.append(", smallImageId=");
 		sb.append(getSmallImageId());
 		sb.append(", smallImageURL=");
@@ -2039,11 +2052,11 @@ public class JournalArticleModelImpl extends BaseModelImpl<JournalArticle>
 		sb.append("]]></column-value></column>");
 		sb.append(
 			"<column><column-name>indexable</column-name><column-value><![CDATA[");
-		sb.append(getIndexable());
+		sb.append(isIndexable());
 		sb.append("]]></column-value></column>");
 		sb.append(
 			"<column><column-name>smallImage</column-name><column-value><![CDATA[");
-		sb.append(getSmallImage());
+		sb.append(isSmallImage());
 		sb.append("]]></column-value></column>");
 		sb.append(
 			"<column><column-name>smallImageId</column-name><column-value><![CDATA[");
@@ -2130,6 +2143,7 @@ public class JournalArticleModelImpl extends BaseModelImpl<JournalArticle>
 	private Date _displayDate;
 	private Date _originalDisplayDate;
 	private Date _expirationDate;
+	private Date _originalExpirationDate;
 	private Date _reviewDate;
 	private boolean _indexable;
 	private boolean _originalIndexable;

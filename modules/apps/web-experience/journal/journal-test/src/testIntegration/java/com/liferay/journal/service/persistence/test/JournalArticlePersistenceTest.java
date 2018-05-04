@@ -246,10 +246,10 @@ public class JournalArticlePersistenceTest {
 		Assert.assertEquals(Time.getShortTimestamp(
 				existingJournalArticle.getReviewDate()),
 			Time.getShortTimestamp(newJournalArticle.getReviewDate()));
-		Assert.assertEquals(existingJournalArticle.getIndexable(),
-			newJournalArticle.getIndexable());
-		Assert.assertEquals(existingJournalArticle.getSmallImage(),
-			newJournalArticle.getSmallImage());
+		Assert.assertEquals(existingJournalArticle.isIndexable(),
+			newJournalArticle.isIndexable());
+		Assert.assertEquals(existingJournalArticle.isSmallImage(),
+			newJournalArticle.isSmallImage());
 		Assert.assertEquals(existingJournalArticle.getSmallImageId(),
 			newJournalArticle.getSmallImageId());
 		Assert.assertEquals(existingJournalArticle.getSmallImageURL(),
@@ -638,6 +638,14 @@ public class JournalArticlePersistenceTest {
 			RandomTestUtil.nextDouble(), RandomTestUtil.nextInt());
 
 		_persistence.countByC_V_ST(0L, 0D, 0);
+	}
+
+	@Test
+	public void testCountByC_ED_ST() throws Exception {
+		_persistence.countByC_ED_ST(RandomTestUtil.nextLong(),
+			RandomTestUtil.nextDate(), RandomTestUtil.nextInt());
+
+		_persistence.countByC_ED_ST(0L, RandomTestUtil.nextDate(), 0);
 	}
 
 	@Test

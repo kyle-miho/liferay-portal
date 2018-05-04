@@ -19,13 +19,7 @@ import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.LoggingTimer;
-import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.verify.VerifyProcess;
-import com.liferay.portal.verify.VerifyResourcePermissions;
-import com.liferay.portal.verify.VerifyUUID;
-import com.liferay.wiki.internal.verify.model.WikiNodeVerifiableModel;
-import com.liferay.wiki.internal.verify.model.WikiPageResourceVerifiableModel;
-import com.liferay.wiki.internal.verify.model.WikiPageVerifiableModel;
 import com.liferay.wiki.model.WikiPage;
 import com.liferay.wiki.model.WikiPageResource;
 import com.liferay.wiki.service.WikiPageLocalService;
@@ -51,9 +45,6 @@ public class WikiServiceVerifyProcess extends VerifyProcess {
 	@Override
 	protected void doVerify() throws Exception {
 		verifyCreateDate();
-		verifyNoAssetPages();
-		verifyResourcedModels();
-		verifyUUIDModels();
 	}
 
 	@Reference(unbind = "-")
@@ -117,55 +108,9 @@ public class WikiServiceVerifyProcess extends VerifyProcess {
 		}
 	}
 
-	protected void verifyNoAssetPages() throws Exception {
-		try (LoggingTimer loggingTimer = new LoggingTimer()) {
-			List<WikiPage> pages = _wikiPageLocalService.getNoAssetPages();
-
-			if (_log.isDebugEnabled()) {
-				_log.debug(
-					"Processing " + pages.size() + " pages with no asset");
-			}
-
-			for (WikiPage page : pages) {
-				try {
-					_wikiPageLocalService.updateAsset(
-						page.getUserId(), page, null, null, null, null);
-				}
-				catch (Exception e) {
-					if (_log.isWarnEnabled()) {
-						_log.warn(
-							StringBundler.concat(
-								"Unable to update asset for page ",
-								String.valueOf(page.getPageId()), ": ",
-								e.getMessage()));
-					}
-				}
-			}
-
-			if (_log.isDebugEnabled()) {
-				_log.debug("Assets verified for pages");
-			}
-		}
-	}
-
-	protected void verifyResourcedModels() throws Exception {
-		try (LoggingTimer loggingTimer = new LoggingTimer()) {
-			_verifyResourcePermissions.verify(new WikiNodeVerifiableModel());
-			_verifyResourcePermissions.verify(new WikiPageVerifiableModel());
-		}
-	}
-
-	protected void verifyUUIDModels() throws Exception {
-		try (LoggingTimer loggingTimer = new LoggingTimer()) {
-			VerifyUUID.verify(new WikiPageResourceVerifiableModel());
-		}
-	}
-
 	private static final Log _log = LogFactoryUtil.getLog(
 		WikiServiceVerifyProcess.class);
 
-	private final VerifyResourcePermissions _verifyResourcePermissions =
-		new VerifyResourcePermissions();
 	private WikiPageLocalService _wikiPageLocalService;
 	private WikiPageResourceLocalService _wikiPageResourceLocalService;
 

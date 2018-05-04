@@ -964,9 +964,7 @@
 
 				<execute macro="Button#clickSave" />
 
-				<execute macro="Alert#viewRequestFailedToComplete" />
-
-				<execute function="AssertTextEquals#assertPartialText" locator1="Message#ERROR_2" value1="The password cannot be blank. Please enter a password." />
+				<execute macro="Alert#viewRequiredField" />
 
 				<execute macro="User#logoutPG" />
 
@@ -1052,7 +1050,7 @@
 				<then>
 					<var name="key_userScreenName" value="${userScreenName}" />
 
-					<execute function="Check#checkAll" locator1="Checkbox#SELECT_ALL" />
+					<execute macro="PortletEntry#selectAll" />
 
 					<execute function="AssertClickNoError" locator1="Button#DEACTIVATE" value1="Deactivate" />
 
@@ -2123,7 +2121,7 @@
 		<if>
 			<condition function="IsElementPresent" locator1="ContentRow#ENTRY_CONTENT_ROW_1" />
 			<then>
-				<execute function="Check#checkAll" locator1="Checkbox#SELECT_ALL" />
+				<execute macro="PortletEntry#selectAll" />
 
 				<execute function="AssertClickNoError" locator1="Button#DEACTIVATE" value1="Deactivate" />
 
@@ -2142,7 +2140,7 @@
 		<if>
 			<condition function="IsElementPresent" locator1="ContentRow#ENTRY_CONTENT_ROW_1" />
 			<then>
-				<execute function="Check#checkAll" locator1="Checkbox#SELECT_ALL" />
+				<execute macro="PortletEntry#selectAll" />
 
 				<execute function="Click" locator1="Icon#DELETE" />
 
@@ -2173,7 +2171,7 @@
 		<if>
 			<condition function="IsElementPresent" locator1="ContentRow#ENTRY_CONTENT_ROW_1" />
 			<then>
-				<execute function="Check#checkAll" locator1="Checkbox#SELECT_ALL" />
+				<execute macro="PortletEntry#selectAll" />
 
 				<execute function="AssertClickNoError" locator1="Button#DEACTIVATE" value1="Deactivate" />
 
@@ -2192,7 +2190,7 @@
 		<if>
 			<condition function="IsElementPresent" locator1="ContentRow#ENTRY_CONTENT_ROW_1" />
 			<then>
-				<execute function="Check#checkAll" locator1="Checkbox#SELECT_ALL" />
+				<execute macro="PortletEntry#selectAll" />
 
 				<execute function="AssertClickNoError" locator1="Button#DELETE" value1="Delete" />
 

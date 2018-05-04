@@ -1012,6 +1012,27 @@ app.server.type=@{app.server.type}]]></echo>
 						</then>
 					</if>
 
+					<get-testcase-property property.name="osgi.app.includes" />
+
+					<if>
+						<and>
+							<isset property="env.CI_TEST_SUITE" />
+							<not>
+								<contains string="${osgi.app.includes}" substring="portal-search-solr" />
+							</not>
+						</and>
+						<then>
+							<propertycopy from="search.engine[${env.CI_TEST_SUITE}]" name="search.engine" silent="true" />
+
+							<if>
+								<equals arg1="${search.engine}" arg2="solr" />
+								<then>
+									<prepare-search-engine search.engine="${search.engine}" />
+								</then>
+							</if>
+						</then>
+					</if>
+
 					<echo if:set="env.JENKINS_HOME">ANT_OPTS=${env.ANT_OPTS}</echo>
 				</test-set-up>
 
@@ -1022,6 +1043,13 @@ app.server.type=@{app.server.type}]]></echo>
 							<antcall target="stop-app-server" />
 
 							<delete failonerror="false" file=".testable.portal.started" />
+						</then>
+					</if>
+
+					<if>
+						<isset property="search.engine" />
+						<then>
+							<stop-search-engine />
 						</then>
 					</if>
 				</test-tear-down>
@@ -1064,7 +1092,25 @@ app.server.type=@{app.server.type}]]></echo>
 							<prepare-test-build />
 						</else>
 					</if>
+
+					<if>
+						<isset property="env.CI_TEST_SUITE" />
+						<then>
+							<propertycopy from="search.engine[${env.CI_TEST_SUITE}]" name="search.engine" silent="true" />
+
+							<prepare-search-engine search.engine="${search.engine}" />
+						</then>
+					</if>
 				</test-set-up>
+
+				<test-tear-down>
+					<if>
+						<isset property="search.engine" />
+						<then>
+							<stop-search-engine />
+						</then>
+					</if>
+				</test-tear-down>
 			</run-batch-test>
 		</sequential>
 	</macrodef>
@@ -1358,6 +1404,7 @@ app.server.type=@{app.server.type}]]></echo>
 									>
 										<include name="apps/*" />
 										<include name="private/apps/*" />
+										<exclude name="${build.exclude.dirs}" />
 									</dirset>
 								</path>
 
@@ -1445,7 +1492,9 @@ app.server.type=@{app.server.type}]]></echo>
 									</gradle-execute>
 
 									<antcall inheritall="false" target="run-selenium-test">
+										<param name="test.batch.run.type" value="single" />
 										<param name="test.class" value="PortalSmoke#Smoke" />
+										<param name="test.skip.tear.down" value="false" />
 									</antcall>
 								</try>
 
@@ -1485,7 +1534,9 @@ app.server.type=@{app.server.type}]]></echo>
 									</gradle-execute>
 
 									<antcall inheritall="false" target="run-selenium-test">
+										<param name="test.batch.run.type" value="single" />
 										<param name="test.class" value="PortalSmoke#Smoke" />
+										<param name="test.skip.tear.down" value="false" />
 									</antcall>
 								</try>
 
@@ -1525,7 +1576,9 @@ app.server.type=@{app.server.type}]]></echo>
 									</gradle-execute>
 
 									<antcall inheritall="false" target="run-selenium-test">
+										<param name="test.batch.run.type" value="single" />
 										<param name="test.class" value="PortalSmoke#Smoke" />
+										<param name="test.skip.tear.down" value="false" />
 									</antcall>
 								</try>
 
@@ -1613,6 +1666,15 @@ app.server.type=@{app.server.type}]]></echo>
 					</if>
 
 					<if>
+						<isset property="env.CI_TEST_SUITE" />
+						<then>
+							<propertycopy from="search.engine[${env.CI_TEST_SUITE}]" name="search.engine" silent="true" />
+
+							<prepare-search-engine search.engine="${search.engine}" />
+						</then>
+					</if>
+
+					<if>
 						<equals arg1="@{subrepository.name}" arg2="" />
 						<then>
 							<antcall inheritAll="false" target="record-test-class-file-names">
@@ -1629,6 +1691,15 @@ app.server.type=@{app.server.type}]]></echo>
 						</else>
 					</if>
 				</test-set-up>
+
+				<test-tear-down>
+					<if>
+						<isset property="search.engine" />
+						<then>
+							<stop-search-engine />
+						</then>
+					</if>
+				</test-tear-down>
 			</run-batch-test>
 		</sequential>
 	</macrodef>
@@ -1681,10 +1752,6 @@ app.server.type=@{app.server.type}]]></echo>
 
 	<macrodef name="setup-testable-tomcat-dummy-socket-proxy">
 		<sequential>
-			<local name="dummy.socket.proxy" />
-
-			<property name="dummy.socket.proxy" value="-DsocksProxyHost=127.0.0.1 -DsocksProxyPort=8888" />
-
 			<if>
 				<not>
 					<resourcecontains
@@ -2288,7 +2355,7 @@ app.server.type=@{app.server.type}]]></echo>
 		<run-functional-test app.server.type="jboss" database.type="mysql" test.portal.log.assert="true" />
 	</target>
 
-	<target name="functional-smoke-jboss70-mysql57-jdk8">
+	<target name="functional-smoke-jboss71-mysql57-jdk8">
 		<run-functional-test app.server.type="jboss" database.type="mysql" database.version="5.7" test.portal.log.assert="true" />
 	</target>
 
@@ -2296,7 +2363,7 @@ app.server.type=@{app.server.type}]]></echo>
 		<run-functional-test app.server.type="tcserver" database.type="mysql" test.portal.log.assert="false" />
 	</target>
 
-	<target name="functional-smoke-tcserver32-mysql57-jdk8">
+	<target name="functional-smoke-tcserver40-mysql57-jdk8">
 		<run-functional-test app.server.type="tcserver" database.type="mysql" database.version="5.7" test.portal.log.assert="false" />
 	</target>
 
@@ -2448,7 +2515,7 @@ app.server.type=@{app.server.type}]]></echo>
 		<run-functional-test app.server.type="jboss" database.type="mysql" />
 	</target>
 
-	<target name="functional-upgrade-jboss70-mysql57-jdk8">
+	<target name="functional-upgrade-jboss71-mysql57-jdk8">
 		<run-functional-test app.server.type="jboss" database.type="mysql" database.version="5.7" />
 	</target>
 
@@ -2456,7 +2523,7 @@ app.server.type=@{app.server.type}]]></echo>
 		<run-functional-test app.server.type="tcserver" database.type="mysql" />
 	</target>
 
-	<target name="functional-upgrade-tcserver32-mysql57-jdk8">
+	<target name="functional-upgrade-tcserver40-mysql57-jdk8">
 		<run-functional-test app.server.type="tcserver" database.type="mysql" database.version="5.7" />
 	</target>
 
@@ -2605,27 +2672,27 @@ app.server.type=@{app.server.type}]]></echo>
 		</run-batch-test>
 	</target>
 
-	<target name="legacy-functional-bundle-tomcat-db2105">
+	<target name="legacy-functional-bundle-tomcat-db2">
 		<run-legacy-database-dump database.type="db2" />
 	</target>
 
-	<target name="legacy-functional-bundle-tomcat-mariadb100">
+	<target name="legacy-functional-bundle-tomcat-mariadb">
 		<run-legacy-database-dump database.type="mariadb" />
 	</target>
 
-	<target name="legacy-functional-bundle-tomcat-mysql55">
-		<run-legacy-database-dump database.type="mysql" database.version="5.5" />
+	<target name="legacy-functional-bundle-tomcat-mysql">
+		<run-legacy-database-dump database.type="mysql" />
 	</target>
 
-	<target name="legacy-functional-bundle-tomcat-oracle121">
+	<target name="legacy-functional-bundle-tomcat-oracle">
 		<run-legacy-database-dump database.type="oracle" />
 	</target>
 
-	<target name="legacy-functional-bundle-tomcat-postgresql94">
+	<target name="legacy-functional-bundle-tomcat-postgresql">
 		<run-legacy-database-dump database.type="postgresql" />
 	</target>
 
-	<target name="legacy-functional-bundle-tomcat-sybase160">
+	<target name="legacy-functional-bundle-tomcat-sybase">
 		<run-legacy-database-dump database.type="sybase" />
 	</target>
 
@@ -3358,23 +3425,6 @@ ${output.content}</echo>
 
 				<record action="stop" name="${project.dir}/build.services.output.txt" />
 
-				<replaceregexp
-					byline="true"
-					file="${project.dir}/build.services.output.txt"
-					match="Writing \/.+\/docroot\/WEB-INF\/src\/service\.properties"
-					replace=""
-				/>
-				<replace
-					file="${project.dir}/build.services.output.txt"
-					token="Writing src/service.properties"
-					value=""
-				/>
-				<replace
-					file="${project.dir}/build.services.output.txt"
-					token="Writing src/main/resources/service.properties"
-					value=""
-				/>
-
 				<loadfile
 					property="build.services.output.txt.content"
 					srcfile="${project.dir}/build.services.output.txt"
@@ -3385,16 +3435,33 @@ ${output.content}</echo>
 				<if>
 					<contains string="${build.services.output.txt.content}" substring="Writing " />
 					<then>
-						<exec executable="git">
+						<exec executable="git" output="${project.dir}/build.services.diff.txt">
 							<arg value="diff" />
+							<arg value="&quot;:!*/*-portlet-service.jar&quot;" />
+							<arg value="&quot;:!*/src/main/resources/service.properties&quot;" />
+							<arg value="&quot;:!*/src/service.properties&quot;" />
 						</exec>
 
-						<fail>
+						<loadfile
+							property="build.services.diff.txt.content"
+							srcfile="${project.dir}/build.services.diff.txt"
+						/>
+
+						<delete file="${project.dir}/build.services.diff.txt" />
+
+						<if>
+							<isset property="build.services.diff.txt.content" />
+							<then>
+								<echo message="${build.services.diff.txt.content}" />
+
+								<fail>
 .
 
 Detected build services changes. See above build services log for more
 information. Make sure to commit in all build services results.
-						</fail>
+								</fail>
+							</then>
+						</if>
 					</then>
 				</if>
 			</test-action>
@@ -3737,6 +3804,8 @@ go
 exec sp_dboption 'lportal', 'allow nulls by default' , true
 go
 exec sp_dboption 'lportal', 'select into/bulkcopy/pllsort' , true
+go
+exec sp_dboption 'lportal', 'trunc log on chkpt', true
 go</echo>
 
 		<retry retrycount="10">

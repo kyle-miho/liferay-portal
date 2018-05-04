@@ -76,10 +76,9 @@ public class PageEndpointImpl<T, S> implements PageEndpoint<T> {
 
 	@Override
 	public Try<SingleModel<T>> addCollectionItem(Body body) {
-		Try<CollectionRoutes<T>> collectionRoutesTry = Try.fromOptional(
-			_collectionRoutesSupplier::get, notFound(_name));
-
-		return collectionRoutesTry.mapOptional(
+		return Try.fromOptional(
+			_collectionRoutesSupplier::get, notFound(_name)
+		).mapOptional(
 			CollectionRoutes::getCreateItemFunctionOptional,
 			notAllowed(POST, _name)
 		).map(
@@ -93,12 +92,10 @@ public class PageEndpointImpl<T, S> implements PageEndpoint<T> {
 	public Try<SingleModel<T>> addNestedCollectionItem(
 		String id, String nestedName, Body body) {
 
-		Try<NestedCollectionRoutes<T, Object>> nestedCollectionRoutesTry =
-			Try.fromOptional(
-				() -> _nestedCollectionRoutesFunction.apply(nestedName),
-				notFound(_name, nestedName));
-
-		return nestedCollectionRoutesTry.mapOptional(
+		return Try.fromOptional(
+			() -> _nestedCollectionRoutesFunction.apply(nestedName),
+			notFound(_name, nestedName)
+		).mapOptional(
 			NestedCollectionRoutes::getNestedCreateItemFunctionOptional
 		).flatMap(
 			function -> {
@@ -125,10 +122,9 @@ public class PageEndpointImpl<T, S> implements PageEndpoint<T> {
 
 	@Override
 	public Response deleteCollectionItem(String id) throws Exception {
-		Try<ItemRoutes<T, S>> itemRoutesTry = Try.fromOptional(
-			_itemRoutesSupplier::get, notFound(_name));
-
-		ThrowableConsumer<S> throwableConsumer = itemRoutesTry.mapOptional(
+		ThrowableConsumer<S> throwableConsumer = Try.fromOptional(
+			_itemRoutesSupplier::get, notFound(_name)
+		).mapOptional(
 			ItemRoutes::getDeleteConsumerOptional, notAllowed(DELETE, _name, id)
 		).map(
 			function -> function.apply(_httpServletRequest)
@@ -148,10 +144,9 @@ public class PageEndpointImpl<T, S> implements PageEndpoint<T> {
 
 	@Override
 	public Try<Page<T>> getCollectionPageTry() {
-		Try<CollectionRoutes<T>> collectionRoutesTry = Try.fromOptional(
-			_collectionRoutesSupplier::get, notFound(_name));
-
-		return collectionRoutesTry.mapOptional(
+		return Try.fromOptional(
+			_collectionRoutesSupplier::get, notFound(_name)
+		).mapOptional(
 			CollectionRoutes::getGetPageFunctionOptional, notFound(_name)
 		).flatMap(
 			function -> function.apply(_httpServletRequest)
@@ -162,12 +157,10 @@ public class PageEndpointImpl<T, S> implements PageEndpoint<T> {
 	public Try<Page<T>> getNestedCollectionPageTry(
 		String id, String nestedName) {
 
-		Try<NestedCollectionRoutes<T, Object>> nestedCollectionRoutesTry =
-			Try.fromOptional(
-				() -> _nestedCollectionRoutesFunction.apply(nestedName),
-				notFound(_name, id, nestedName));
-
-		return nestedCollectionRoutesTry.map(
+		return Try.fromOptional(
+			() -> _nestedCollectionRoutesFunction.apply(nestedName),
+			notFound(_name, id, nestedName)
+		).map(
 			NestedCollectionRoutes::getNestedGetPageFunctionOptional
 		).map(
 			Optional::get
@@ -195,10 +188,9 @@ public class PageEndpointImpl<T, S> implements PageEndpoint<T> {
 
 	@Override
 	public Try<SingleModel<T>> updateCollectionItem(String id, Body body) {
-		Try<ItemRoutes<T, S>> itemRoutesTry = Try.fromOptional(
-			_itemRoutesSupplier::get, notFound(_name, id));
-
-		return itemRoutesTry.mapOptional(
+		return Try.fromOptional(
+			_itemRoutesSupplier::get, notFound(_name, id)
+		).mapOptional(
 			ItemRoutes::getUpdateItemFunctionOptional,
 			notAllowed(PUT, _name, id)
 		).flatMap(
@@ -223,10 +215,9 @@ public class PageEndpointImpl<T, S> implements PageEndpoint<T> {
 
 			String className = relatedIdentifierClass.getName();
 
-			Optional<Class<Identifier>> optional =
-				_identifierClassFunction.apply(nestedName);
-
-			return optional.map(
+			return _identifierClassFunction.apply(
+				nestedName
+			).map(
 				Class::getName
 			).map(
 				className::equals
@@ -239,22 +230,19 @@ public class PageEndpointImpl<T, S> implements PageEndpoint<T> {
 	private ThrowableFunction<SingleModel<T>, Optional<Object>>
 		_getIdentifierFunction(String nestedName) {
 
-		return parentSingleModel -> {
-			Optional<Representor<T, Object>> optional =
-				_representorSupplier.get();
+		Optional<Representor<T, Object>> optional = _representorSupplier.get();
 
-			return optional.map(
-				Representor::getRelatedCollections
-			).filter(
-				stream -> stream.anyMatch(
-					_getFilterRelatedCollectionPredicate(nestedName))
-			).flatMap(
-				__ -> _representorSupplier.get()
-			).map(
-				representor -> representor.getIdentifier(
-					parentSingleModel.getModel())
-			);
-		};
+		return parentSingleModel -> optional.map(
+			Representor::getRelatedCollections
+		).filter(
+			stream -> stream.anyMatch(
+				_getFilterRelatedCollectionPredicate(nestedName))
+		).flatMap(
+			__ -> _representorSupplier.get()
+		).map(
+			representor -> representor.getIdentifier(
+				parentSingleModel.getModel())
+		);
 	}
 
 	private final Supplier<Optional<CollectionRoutes<T>>>

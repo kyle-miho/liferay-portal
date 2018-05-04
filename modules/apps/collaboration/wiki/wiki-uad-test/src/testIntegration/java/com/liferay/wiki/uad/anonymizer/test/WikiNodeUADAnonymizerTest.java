@@ -22,7 +22,6 @@ import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
-import com.liferay.user.associated.data.aggregator.UADAggregator;
 import com.liferay.user.associated.data.anonymizer.UADAnonymizer;
 import com.liferay.user.associated.data.test.util.BaseUADAnonymizerTestCase;
 import com.liferay.user.associated.data.test.util.WhenHasStatusByUserIdField;
@@ -30,7 +29,7 @@ import com.liferay.user.associated.data.test.util.WhenHasStatusByUserIdField;
 import com.liferay.wiki.model.WikiNode;
 import com.liferay.wiki.service.WikiNodeLocalService;
 import com.liferay.wiki.uad.constants.WikiUADConstants;
-import com.liferay.wiki.uad.test.WikiNodeUADEntityTestHelper;
+import com.liferay.wiki.uad.test.WikiNodeUADTestHelper;
 
 import org.junit.After;
 import org.junit.ClassRule;
@@ -55,7 +54,7 @@ public class WikiNodeUADAnonymizerTest extends BaseUADAnonymizerTestCase<WikiNod
 	@Override
 	public WikiNode addBaseModelWithStatusByUserId(long userId,
 		long statusByUserId) throws Exception {
-		WikiNode wikiNode = _wikiNodeUADEntityTestHelper.addWikiNodeWithStatusByUserId(userId,
+		WikiNode wikiNode = _wikiNodeUADTestHelper.addWikiNodeWithStatusByUserId(userId,
 				statusByUserId);
 
 		_wikiNodes.add(wikiNode);
@@ -65,7 +64,7 @@ public class WikiNodeUADAnonymizerTest extends BaseUADAnonymizerTestCase<WikiNod
 
 	@After
 	public void tearDown() throws Exception {
-		_wikiNodeUADEntityTestHelper.cleanUpDependencies(_wikiNodes);
+		_wikiNodeUADTestHelper.cleanUpDependencies(_wikiNodes);
 	}
 
 	@Override
@@ -76,7 +75,7 @@ public class WikiNodeUADAnonymizerTest extends BaseUADAnonymizerTestCase<WikiNod
 	@Override
 	protected WikiNode addBaseModel(long userId, boolean deleteAfterTestRun)
 		throws Exception {
-		WikiNode wikiNode = _wikiNodeUADEntityTestHelper.addWikiNode(userId);
+		WikiNode wikiNode = _wikiNodeUADTestHelper.addWikiNode(userId);
 
 		if (deleteAfterTestRun) {
 			_wikiNodes.add(wikiNode);
@@ -88,12 +87,7 @@ public class WikiNodeUADAnonymizerTest extends BaseUADAnonymizerTestCase<WikiNod
 	@Override
 	protected void deleteBaseModels(List<WikiNode> baseModels)
 		throws Exception {
-		_wikiNodeUADEntityTestHelper.cleanUpDependencies(baseModels);
-	}
-
-	@Override
-	protected UADAggregator getUADAggregator() {
-		return _uadAggregator;
+		_wikiNodeUADTestHelper.cleanUpDependencies(baseModels);
 	}
 
 	@Override
@@ -133,10 +127,7 @@ public class WikiNodeUADAnonymizerTest extends BaseUADAnonymizerTestCase<WikiNod
 	@Inject
 	private WikiNodeLocalService _wikiNodeLocalService;
 	@Inject
-	private WikiNodeUADEntityTestHelper _wikiNodeUADEntityTestHelper;
-	@Inject(filter = "model.class.name=" +
-	WikiUADConstants.CLASS_NAME_WIKI_NODE)
-	private UADAggregator _uadAggregator;
+	private WikiNodeUADTestHelper _wikiNodeUADTestHelper;
 	@Inject(filter = "model.class.name=" +
 	WikiUADConstants.CLASS_NAME_WIKI_NODE)
 	private UADAnonymizer _uadAnonymizer;

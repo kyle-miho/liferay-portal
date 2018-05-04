@@ -76,24 +76,24 @@ public class JSONBodyMessageBodyReader implements MessageBodyReader<Body> {
 
 		Gson gson = new Gson();
 
-		Try<JsonObject> mapTry = Try.fromFallibleWithResources(
+		JsonObject jsonObject = Try.fromFallibleWithResources(
 			() -> new InputStreamReader(entityStream, "UTF-8"),
-			streamReader -> gson.fromJson(streamReader, JsonObject.class));
-
-		JsonObject jsonObject = mapTry.orElseThrow(
-			() -> new BadRequestException("Body is not a valid JSON"));
+			streamReader -> gson.fromJson(streamReader, JsonObject.class)
+		).orElseThrow(
+			() -> new BadRequestException("Body is not a valid JSON")
+		);
 
 		return Body.create(
 			_transform(
 				jsonObject,
-				(Try<JsonElement> aTry) -> aTry.filter(
+				aTry -> aTry.filter(
 					JsonElement::isJsonPrimitive
 				).map(
 					JsonElement::getAsString
 				)),
 			_transform(
 				jsonObject,
-				(Try<JsonElement> aTry) -> aTry.filter(
+				aTry -> aTry.filter(
 					JsonElement::isJsonArray
 				).map(
 					JsonElement::getAsJsonArray
@@ -123,15 +123,15 @@ public class JSONBodyMessageBodyReader implements MessageBodyReader<Body> {
 	private <T> Function<String, Optional<T>> _transform(
 		JsonObject jsonObject, Function<Try<JsonElement>, Try<T>> function) {
 
-		return key -> {
-			Try<String> keyTry = Try.success(key);
-
-			return function.apply(
-				keyTry.map(jsonObject::get)
-			).fold(
-				__ -> Optional.empty(), Optional::of
-			);
-		};
+		return key -> function.apply(
+			Try.success(
+				key
+			).map(
+				jsonObject::get
+			)
+		).fold(
+			__ -> Optional.empty(), Optional::of
+		);
 	}
 
 }

@@ -17,14 +17,13 @@ package com.liferay.announcements.uad.anonymizer.test;
 import com.liferay.announcements.kernel.model.AnnouncementsFlag;
 import com.liferay.announcements.kernel.service.AnnouncementsFlagLocalService;
 import com.liferay.announcements.uad.constants.AnnouncementsUADConstants;
-import com.liferay.announcements.uad.test.AnnouncementsFlagUADEntityTestHelper;
+import com.liferay.announcements.uad.test.AnnouncementsFlagUADTestHelper;
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
-import com.liferay.user.associated.data.aggregator.UADAggregator;
 import com.liferay.user.associated.data.anonymizer.UADAnonymizer;
 import com.liferay.user.associated.data.test.util.BaseUADAnonymizerTestCase;
 
@@ -58,18 +57,13 @@ public class AnnouncementsFlagUADAnonymizerTest
 		throws Exception {
 
 		AnnouncementsFlag announcementsFlag =
-			_announcementsFlagUADEntityTestHelper.addAnnouncementsFlag(userId);
+			_announcementsFlagUADTestHelper.addAnnouncementsFlag(userId);
 
 		if (deleteAfterTestRun) {
 			_announcementsFlags.add(announcementsFlag);
 		}
 
 		return announcementsFlag;
-	}
-
-	@Override
-	protected UADAggregator getUADAggregator() {
-		return _uadAggregator;
 	}
 
 	@Override
@@ -110,13 +104,7 @@ public class AnnouncementsFlagUADAnonymizerTest
 		new ArrayList<>();
 
 	@Inject
-	private AnnouncementsFlagUADEntityTestHelper
-		_announcementsFlagUADEntityTestHelper;
-
-	@Inject(
-		filter = "model.class.name=" + AnnouncementsUADConstants.CLASS_NAME_ANNOUNCEMENTS_FLAG
-	)
-	private UADAggregator _uadAggregator;
+	private AnnouncementsFlagUADTestHelper _announcementsFlagUADTestHelper;
 
 	@Inject(
 		filter = "model.class.name=" + AnnouncementsUADConstants.CLASS_NAME_ANNOUNCEMENTS_FLAG

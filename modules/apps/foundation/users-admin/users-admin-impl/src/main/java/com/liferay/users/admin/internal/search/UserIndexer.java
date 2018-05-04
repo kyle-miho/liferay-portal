@@ -21,6 +21,7 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Contact;
+import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Organization;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.search.BaseIndexer;
@@ -51,6 +52,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
@@ -142,6 +144,7 @@ public class UserIndexer extends BaseIndexer<User> {
 		addSearchTerm(searchQuery, searchContext, "emailAddress", false);
 		addSearchTerm(searchQuery, searchContext, "firstName", false);
 		addSearchTerm(searchQuery, searchContext, "fullName", false);
+		addSearchTerm(searchQuery, searchContext, "jobTitle", false);
 		addSearchTerm(searchQuery, searchContext, "lastName", false);
 		addSearchTerm(searchQuery, searchContext, "middleName", false);
 		addSearchTerm(searchQuery, searchContext, "region", false);
@@ -269,9 +272,11 @@ public class UserIndexer extends BaseIndexer<User> {
 
 		document.addKeyword(Field.COMPANY_ID, user.getCompanyId());
 		document.addKeyword(
-			Field.GROUP_ID, getActiveGroupIds(user.getUserId()));
+			Field.GROUP_ID, getActiveTransitiveGroupIds(user.getUserId()));
 		document.addDate(Field.MODIFIED_DATE, user.getModifiedDate());
-		document.addKeyword(Field.SCOPE_GROUP_ID, user.getGroupIds());
+		document.addKeyword(
+			Field.SCOPE_GROUP_ID,
+			getActiveTransitiveGroupIds(user.getUserId()));
 		document.addKeyword(Field.STATUS, user.getStatus());
 		document.addKeyword(Field.USER_ID, user.getUserId());
 		document.addKeyword(Field.USER_NAME, user.getFullName(), true);
@@ -352,6 +357,22 @@ public class UserIndexer extends BaseIndexer<User> {
 		List<Long> groupIds = groupLocalService.getActiveGroupIds(userId);
 
 		return ArrayUtil.toArray(groupIds.toArray(new Long[groupIds.size()]));
+	}
+
+	protected long[] getActiveTransitiveGroupIds(long userId)
+		throws PortalException {
+
+		List<Group> groups = groupLocalService.getUserGroups(userId, true);
+
+		Stream<Group> stream = groups.stream();
+
+		return stream.filter(
+			Group::isSite
+		).filter(
+			Group::isActive
+		).mapToLong(
+			Group::getGroupId
+		).toArray();
 	}
 
 	protected long[] getAncestorOrganizationIds(long[] organizationIds)

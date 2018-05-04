@@ -7,6 +7,7 @@ import './dialogs/SelectMappingTypeDialog.es';
 import './sidebar/SidebarAddedFragments.es';
 import './sidebar/SidebarAvailableFragments.es';
 import './sidebar/SidebarMapping.es';
+import './translation/TranslationStatus.es';
 import FragmentEntryLink from './FragmentEntryLink.es';
 import templates from './FragmentsEditor.soy';
 
@@ -40,6 +41,19 @@ class FragmentsEditor extends Component {
 		this._sidebarTabs = this.fragmentEntryLinks.length > 0 ?
 			[...this.sidebarTabs, ADDED_FRAGMENTS_TAB] :
 			[...this.sidebarTabs];
+
+		this.on('languageIdChanged', this._handleLanguageIdChange);
+	}
+
+	rendered(firstRender) {
+		if (firstRender) {
+			this._translationStatus = this._getTranslationStatus(
+				Object
+					.keys(this.availableLanguages)
+					.filter(languageId => languageId !== '_INJECTED_DATA_'),
+				this._getEditableValues()
+			);
+		}
 	}
 
 	/**
@@ -134,6 +148,39 @@ class FragmentsEditor extends Component {
 	}
 
 	/**
+	 * Gets all editable values in the current fragment
+	 * @returns Array<Object>
+	 * @private
+	 * @review
+	 */
+
+	_getEditableValues() {
+		return this.fragmentEntryLinks
+			.map(
+				fragmentEntryLink => {
+					const component = this._getFragmentEntryLinkComponent(
+						fragmentEntryLink.fragmentEntryLinkId
+					);
+
+					return component ? component.getEditableValues() : null;
+				}
+			)
+			.filter(editableValues => editableValues);
+	}
+
+	/**
+	 * Returns a FragmentEntryLink instance for a fragmentEntryLinkId
+	 * @param {string} fragmentEntryLinkId
+	 * @private
+	 * @return {FragmentEntryLink}
+	 * @review
+	 */
+
+	_getFragmentEntryLinkComponent(fragmentEntryLinkId) {
+		return this.refs[`fragmentEntryLink_${fragmentEntryLinkId}`];
+	}
+
+	/**
 	 * Gets a new FragmentEntryLink position.
 	 * @returns {number}
 	 * @private
@@ -152,6 +199,61 @@ class FragmentsEditor extends Component {
 	}
 
 	/**
+	 * Gets the translation status for a given set of parameters
+	 * @param languageIds The set of languageIds to check
+	 * @param editableValues The current editable values state
+	 * @private
+	 * @returns {{
+	 * 	languageValues: {{
+	 * 		languageId: string
+	 * 		values: Array<string>
+	 *  }},
+	 *  translationKeys: Array<string>
+	 * }} A translation status object
+	 * @review
+	 */
+
+	_getTranslationStatus(languageIds, editableValues) {
+		const translationKeys = editableValues.map(
+			editableValue => {
+				return Object.keys(editableValue).map(
+					editableValueId => editableValue[editableValueId].defaultValue
+				);
+			}
+		).reduce(
+			(acc, val) => acc.concat(val),
+			[]
+		);
+
+		const languageValues = languageIds.map(
+			languageId => {
+				const values = editableValues.map(
+					editableValue => {
+						return Object.keys(editableValue).map(
+							editableValueId => editableValue[editableValueId][languageId]
+						);
+					}
+				).reduce(
+					(acc, val) => acc.concat(val),
+					[]
+				).filter(
+					localeValue => localeValue
+				);
+
+				return {
+					languageId,
+					values
+				};
+			}
+		);
+
+		return {
+			languageValues,
+			translationKeys
+		};
+	}
+
+	/**
 	 * Callback executed everytime an editable field has been changed
 	 * @param {{
 	 *   editableId: !string,
@@ -163,15 +265,27 @@ class FragmentsEditor extends Component {
 	 */
 
 	_handleEditableChanged(data) {
+		const component = this._getFragmentEntryLinkComponent(data.fragmentEntryLinkId);
 		const fragmentEntryLink = this.fragmentEntryLinks.find(
-			fragmentEntryLink => fragmentEntryLink.fragmentEntryLinkId === data.fragmentEntryLinkId
+			fragmentEntryLink => fragmentEntryLink.fragmentEntryLinkId ===
+				data.fragmentEntryLinkId
 		);
 
-		if (fragmentEntryLink) {
-			fragmentEntryLink.editableValues[data.editableId] = data.value;
-		}
+		if (fragmentEntryLink && component) {
+			const editableValue = component.getEditableValue(data.editableId) || {};
 
-		this._updateFragmentEntryLink(fragmentEntryLink);
+			const defaultEditableValue = editableValue.defaultValue || '';
+
+			if (data.value.trim() !== defaultEditableValue.trim()) {
+				const newEditableValues = component.setEditableValue(
+					data.editableId,
+					{[this.languageId]: data.value}
+				);
+
+				fragmentEntryLink.editableValues = newEditableValues;
+				this._updateFragmentEntryLink(fragmentEntryLink);
+			}
+		}
 	}
 
 	/**
@@ -359,6 +473,13 @@ class FragmentsEditor extends Component {
 				this._sidebarTabs = [...this.sidebarTabs];
 			}
 
+			this._translationStatus = this._getTranslationStatus(
+				Object
+					.keys(this.availableLanguages)
+					.filter(languageId => languageId !== '_INJECTED_DATA_'),
+				this._getEditableValues()
+			);
+
 			this._deleteFragmentEntryLink(data.fragmentEntryLinkId);
 		}
 	}
@@ -371,6 +492,20 @@ class FragmentsEditor extends Component {
 
 	_handleHideContextualSidebar() {
 		this._contextualSidebarVisible = false;
+	}
+
+	/**
+	 * Callback executed when the language id has changed
+	 * @private
+	 * @review
+	 */
+
+	_handleLanguageIdChange() {
+		Object.keys(this.refs).filter(
+			key => key.startsWith('fragmentEntryLink_')
+		).forEach(
+			key => this.refs[key].update(this.languageId, this.defaultLanguageId)
+		);
 	}
 
 	/**
@@ -426,6 +561,17 @@ class FragmentsEditor extends Component {
 	}
 
 	/**
+	 * Callback executed when the translation language has changed
+	 * @private
+	 * @param {{languageId: string}} event
+	 * @review
+	 */
+
+	_handleTranslationLanguageChange(event) {
+		this.languageId = event.languageId;
+	}
+
+	/**
 	 * Swap the positions of two fragmentEntryLinks
 	 * @param {Array} list
 	 * @param {number} indexA
@@ -473,6 +619,17 @@ class FragmentsEditor extends Component {
 				() => {
 					this._lastSaveDate = new Date().toLocaleTimeString();
 
+					this._translationStatus = this._getTranslationStatus(
+						Object.keys(this.availableLanguages).filter(languageId => languageId !== '_INJECTED_DATA_'),
+						this._getEditableValues()
+					);
+
+					const fragmentEntryLinkComponent = this.refs[`fragmentEntryLink_${fragmentEntryLink.fragmentEntryLinkId}`];
+
+					if (fragmentEntryLinkComponent) {
+						fragmentEntryLinkComponent.updateTranslationStatus(this.languageId, this.defaultLanguageId);
+					}
+
 					this._dirty = false;
 				}
 			);
@@ -510,6 +667,17 @@ FragmentsEditor.STATE = {
 	addFragmentEntryLinkURL: Config.string().required(),
 
 	/**
+	 * List of available languages for translation.
+	 * @default undefined
+	 * @instance
+	 * @memberOf FragmentsEditor
+	 * @review
+	 * @type {!object}
+	 */
+
+	availableLanguages: Config.object().required(),
+
+	/**
 	 * Class name id used for storing changes.
 	 * @default undefined
 	 * @instance
@@ -541,6 +709,17 @@ FragmentsEditor.STATE = {
 	 */
 
 	defaultEditorConfiguration: Config.object().value({}),
+
+	/**
+	 * Default language id.
+	 * @default undefined
+	 * @instance
+	 * @memberOf FragmentsEditor
+	 * @review
+	 * @type {!string}
+	 */
+
+	defaultLanguageId: Config.string().required(),
 
 	/**
 	 * URL for removing fragment entries of the underlying model.
@@ -659,6 +838,17 @@ FragmentsEditor.STATE = {
 			}
 		)
 	).value([]),
+
+	/**
+	 * Currently selected language id.
+	 * @default undefined
+	 * @instance
+	 * @memberOf FragmentsEditor
+	 * @review
+	 * @type {!string}
+	 */
+
+	languageId: Config.string().required(),
 
 	/**
 	 * Portlet namespace needed for prefixing form inputs

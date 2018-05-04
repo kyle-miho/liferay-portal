@@ -19,7 +19,7 @@ import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.blogs.model.BlogsEntry;
 import com.liferay.blogs.service.BlogsEntryLocalService;
 import com.liferay.blogs.uad.constants.BlogsUADConstants;
-import com.liferay.blogs.uad.test.BlogsEntryUADEntityTestHelper;
+import com.liferay.blogs.uad.test.BlogsEntryUADTestHelper;
 
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
@@ -27,7 +27,6 @@ import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
-import com.liferay.user.associated.data.aggregator.UADAggregator;
 import com.liferay.user.associated.data.anonymizer.UADAnonymizer;
 import com.liferay.user.associated.data.test.util.BaseUADAnonymizerTestCase;
 import com.liferay.user.associated.data.test.util.WhenHasStatusByUserIdField;
@@ -55,7 +54,7 @@ public class BlogsEntryUADAnonymizerTest extends BaseUADAnonymizerTestCase<Blogs
 	@Override
 	public BlogsEntry addBaseModelWithStatusByUserId(long userId,
 		long statusByUserId) throws Exception {
-		BlogsEntry blogsEntry = _blogsEntryUADEntityTestHelper.addBlogsEntryWithStatusByUserId(userId,
+		BlogsEntry blogsEntry = _blogsEntryUADTestHelper.addBlogsEntryWithStatusByUserId(userId,
 				statusByUserId);
 
 		_blogsEntries.add(blogsEntry);
@@ -65,7 +64,7 @@ public class BlogsEntryUADAnonymizerTest extends BaseUADAnonymizerTestCase<Blogs
 
 	@After
 	public void tearDown() throws Exception {
-		_blogsEntryUADEntityTestHelper.cleanUpDependencies(_blogsEntries);
+		_blogsEntryUADTestHelper.cleanUpDependencies(_blogsEntries);
 	}
 
 	@Override
@@ -76,7 +75,7 @@ public class BlogsEntryUADAnonymizerTest extends BaseUADAnonymizerTestCase<Blogs
 	@Override
 	protected BlogsEntry addBaseModel(long userId, boolean deleteAfterTestRun)
 		throws Exception {
-		BlogsEntry blogsEntry = _blogsEntryUADEntityTestHelper.addBlogsEntry(userId);
+		BlogsEntry blogsEntry = _blogsEntryUADTestHelper.addBlogsEntry(userId);
 
 		if (deleteAfterTestRun) {
 			_blogsEntries.add(blogsEntry);
@@ -88,12 +87,7 @@ public class BlogsEntryUADAnonymizerTest extends BaseUADAnonymizerTestCase<Blogs
 	@Override
 	protected void deleteBaseModels(List<BlogsEntry> baseModels)
 		throws Exception {
-		_blogsEntryUADEntityTestHelper.cleanUpDependencies(baseModels);
-	}
-
-	@Override
-	protected UADAggregator getUADAggregator() {
-		return _uadAggregator;
+		_blogsEntryUADTestHelper.cleanUpDependencies(baseModels);
 	}
 
 	@Override
@@ -133,10 +127,7 @@ public class BlogsEntryUADAnonymizerTest extends BaseUADAnonymizerTestCase<Blogs
 	@Inject
 	private BlogsEntryLocalService _blogsEntryLocalService;
 	@Inject
-	private BlogsEntryUADEntityTestHelper _blogsEntryUADEntityTestHelper;
-	@Inject(filter = "model.class.name=" +
-	BlogsUADConstants.CLASS_NAME_BLOGS_ENTRY)
-	private UADAggregator _uadAggregator;
+	private BlogsEntryUADTestHelper _blogsEntryUADTestHelper;
 	@Inject(filter = "model.class.name=" +
 	BlogsUADConstants.CLASS_NAME_BLOGS_ENTRY)
 	private UADAnonymizer _uadAnonymizer;

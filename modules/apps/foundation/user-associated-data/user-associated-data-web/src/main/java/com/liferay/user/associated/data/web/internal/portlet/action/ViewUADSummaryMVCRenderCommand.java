@@ -12,15 +12,15 @@
  * details.
  */
 
-package liferay.user.associated.data.web.internal.portlet.action;
+package com.liferay.user.associated.data.web.internal.portlet.action;
 
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCRenderCommand;
-import com.liferay.portal.kernel.util.Portal;
-import com.liferay.user.associated.data.aggregator.UADAggregator;
+import com.liferay.user.associated.data.anonymizer.UADAnonymizer;
 import com.liferay.user.associated.data.constants.UserAssociatedDataPortletKeys;
 import com.liferay.user.associated.data.web.internal.constants.UADWebKeys;
 import com.liferay.user.associated.data.web.internal.registry.UADRegistry;
+import com.liferay.user.associated.data.web.internal.util.SelectedUserHelper;
 import com.liferay.user.associated.data.web.internal.util.UADApplicationSummaryHelper;
 
 import java.util.Collection;
@@ -51,7 +51,8 @@ public class ViewUADSummaryMVCRenderCommand implements MVCRenderCommand {
 		throws PortletException {
 
 		try {
-			User selectedUser = _portal.getSelectedUser(renderRequest);
+			User selectedUser = _selectedUserHelper.getSelectedUser(
+				renderRequest);
 
 			renderRequest.setAttribute(
 				UADWebKeys.VIEW_UAD_SUMMARY_STEP, _determineStep(selectedUser));
@@ -78,20 +79,19 @@ public class ViewUADSummaryMVCRenderCommand implements MVCRenderCommand {
 
 		int reviewableUADEntitiesCount =
 			_uadApplicationSummaryHelper.getReviewableUADEntitiesCount(
-				_uadRegistry.getUADEntityDisplayStream(),
-				selectedUser.getUserId());
+				_uadRegistry.getUADDisplayStream(), selectedUser.getUserId());
 
 		if (reviewableUADEntitiesCount > 0) {
 			return 3;
 		}
 
-		Collection<UADAggregator> uadAggregators =
-			_uadRegistry.getUADAggregators();
+		Collection<UADAnonymizer> uadAnonymizers =
+			_uadRegistry.getUADAnonymizers();
 
 		int selectedUserEntityCount = 0;
 
-		for (UADAggregator uadAggregator : uadAggregators) {
-			selectedUserEntityCount += uadAggregator.count(
+		for (UADAnonymizer uadAnonymizer : uadAnonymizers) {
+			selectedUserEntityCount += uadAnonymizer.count(
 				selectedUser.getUserId());
 		}
 
@@ -103,7 +103,7 @@ public class ViewUADSummaryMVCRenderCommand implements MVCRenderCommand {
 	}
 
 	@Reference
-	private Portal _portal;
+	private SelectedUserHelper _selectedUserHelper;
 
 	@Reference
 	private UADApplicationSummaryHelper _uadApplicationSummaryHelper;

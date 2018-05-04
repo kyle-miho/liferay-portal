@@ -4037,8 +4037,8 @@ version 1.0.189.
 ## 3.10.12 - 2018-04-09
 
 ### Added
-- [LPS-79450]: Filter out `.git`, `.gradle`, `build`, `node_modules`, and `tmp`
-in the project directory for Eclipse.
+- [LPS-79450]: Filter out the `.git`, `.gradle`, `build`, `node_modules`, and
+`tmp` files in the project directory for Eclipse.
 
 ### Changed
 - [LPS-79385]: Update the [Liferay Gradle Plugins Service Builder] dependency to
@@ -4049,8 +4049,8 @@ version 1.0.190.
 ## 3.10.13 - 2018-04-09
 
 ### Changed
-- [LPS-74171]: Update the default value of the
-`liferay.appServers.tomcat.version` property to `9.0.6`.
+- [LPS-74171]: Update the `liferay.appServers.tomcat.version` property's default
+value to `9.0.6`.
 
 ## 3.10.14 - 2018-04-10
 
@@ -4140,8 +4140,8 @@ to version 2.3.131.
 ## 3.11.5 - 2018-04-16
 
 ### Changed
-- [LPS-79665]: Update the default value of the
-`liferay.appServers.wildfly.version` property to `11.0.0`.
+- [LPS-79665]: Update the `liferay.appServers.wildfly.version` property's
+default value to `11.0.0`.
 - [LPS-79576]: Update the [Liferay Gradle Plugins Source Formatter] dependency
 to version 2.3.132.
 - [LPS-79576]: Update the [Liferay Source Formatter] dependency to version
@@ -4154,6 +4154,240 @@ to version 2.3.132.
 to version 2.3.133.
 - [LPS-79679]: Update the [Liferay Source Formatter] dependency to version
 1.0.606.
+
+## 3.11.7 - 2018-04-18
+
+### Changed
+- [LPS-79336]: Update the [Liferay Gradle Plugins Service Builder] dependency to
+version 2.1.10.
+- [LPS-79336]: Update the [Liferay Portal Tools Service Builder] dependency to
+version 1.0.193.
+- [LPS-79755]: Update the [Liferay Gradle Plugins Source Formatter] dependency
+to version 2.3.134.
+- [LPS-79755]: Update the [Liferay Source Formatter] dependency to version
+1.0.607.
+
+## 3.11.8 - 2018-04-18
+
+### Changed
+- [LPS-77645]: Update the [Liferay Gradle Plugins Service Builder] dependency to
+version 2.1.11.
+- [LPS-77645]: Update the [Liferay Portal Tools Service Builder] dependency to
+version 1.0.194.
+- [LPS-79679]: Update the [Liferay Gradle Plugins Source Formatter] dependency
+to version 2.3.135.
+- [LPS-79679]: Update the [Liferay Source Formatter] dependency to version
+1.0.608.
+
+## 3.11.9 - 2018-04-19
+
+### Changed
+- [LPS-79386]: Update the [Liferay Gradle Plugins Service Builder] dependency to
+version 2.1.12.
+- [LPS-79386]: Update the [Liferay Portal Tools Service Builder] dependency to
+version 1.0.195.
+
+## 3.11.10 - 2018-04-19
+
+### Changed
+- [LPS-74544]: Update the [Liferay Gradle Plugins Source Formatter] dependency
+to version 2.3.136.
+- [LPS-74544]: Update the [Liferay Source Formatter] dependency to version
+1.0.609.
+
+## 3.11.11 - 2018-04-20
+
+### Changed
+- [LPS-79919]: Update the [Liferay Gradle Plugins Service Builder] dependency to
+version 2.1.13.
+- [LPS-79919]: Update the [Liferay Portal Tools Service Builder] dependency to
+version 1.0.196.
+- [LPS-79919]: Update the [Liferay Gradle Plugins Source Formatter] dependency
+to version 2.3.137.
+- [LPS-79919]: Update the [Liferay Source Formatter] dependency to version
+1.0.610.
+
+## 3.11.12 - 2018-04-20
+
+### Changed
+- [LPS-79919]: Update the [Liferay Gradle Plugins Source Formatter] dependency
+to version 2.3.138.
+- [LPS-79919]: Update the [Liferay Source Formatter] dependency to version
+1.0.611.
+
+## 3.11.13 - 2018-04-22
+
+### Changed
+- [LPS-75049]: Update the [Liferay Gradle Plugins Source Formatter] dependency
+to version 2.3.139.
+- [LPS-75049]: Update the [Liferay Source Formatter] dependency to version
+1.0.612.
+
+## 3.11.14 - 2018-04-23
+
+### Changed
+- [LPS-79953]: Update the [Liferay Gradle Plugins Service Builder] dependency to
+version 2.1.14.
+- [LPS-79953]: Update the [Liferay Portal Tools Service Builder] dependency to
+version 1.0.197.
+
+## 3.11.15 - 2018-04-23
+
+### Changed
+- [LPS-80055]: Update the [Liferay Gradle Plugins Service Builder] dependency to
+version 2.1.15.
+- [LPS-80055]: Update the [Liferay Portal Tools Service Builder] dependency to
+version 1.0.198.
+
+## 3.11.16 - 2018-04-23
+
+### Changed
+- [LPS-79799]: Update the [Liferay Gradle Plugins Service Builder] dependency to
+version 2.1.16.
+- [LPS-79799]: Update the [Liferay Portal Tools Service Builder] dependency to
+version 1.0.199.
+
+## 3.11.17 - 2018-04-24
+
+### Changed
+- [LPS-80064]: Update the [Liferay Gradle Plugins Source Formatter] dependency
+to version 2.3.140.
+- [LPS-80064]: Update the [Liferay Source Formatter] dependency to version
+1.0.613.
+- [LPS-80091]: Update the [Liferay Gradle Plugins Service Builder] dependency to
+version 2.1.17.
+- [LPS-80091]: Update the [Liferay Portal Tools Service Builder] dependency to
+version 1.0.200.
+
+## 3.11.18 - 2018-04-25
+
+### Changed
+- [LPS-66797]: Update the [Liferay Gradle Plugins Service Builder] dependency to
+version 2.1.18.
+- [LPS-66797]: Update the [Liferay Portal Tools Service Builder] dependency to
+version 1.0.201.
+- [LPS-79963]: Update the [Liferay Gradle Plugins Source Formatter] dependency
+to version 2.3.141.
+- [LPS-79963]: Update the [Liferay Source Formatter] dependency to version
+1.0.614.
+
+## 3.11.19 - 2018-04-25
+
+### Changed
+- [LPS-79388]: Update the [Liferay Gradle Plugins Service Builder] dependency to
+version 2.1.19.
+- [LPS-79388]: Update the [Liferay Portal Tools Service Builder] dependency to
+version 1.0.202.
+
+## 3.11.20 - 2018-04-26
+
+### Changed
+- [LPS-80184]: Update the [Liferay Gradle Plugins Service Builder] dependency to
+version 2.1.20.
+- [LPS-80184]: Update the [Liferay Portal Tools Service Builder] dependency to
+version 1.0.203.
+
+## 3.11.21 - 2018-04-26
+
+### Changed
+- [LPS-80125]: Update the [Liferay Gradle Plugins Service Builder] dependency to
+version 2.1.21.
+- [LPS-80125]: Update the [Liferay Portal Tools Service Builder] dependency to
+version 1.0.204.
+
+## 3.11.22 - 2018-04-26
+
+### Changed
+- [LPS-80123]: Update the [Liferay Gradle Plugins Service Builder] dependency to
+version 2.1.22.
+- [LPS-80123]: Update the [Liferay Portal Tools Service Builder] dependency to
+version 1.0.205.
+
+## 3.11.23 - 2018-04-29
+
+### Changed
+- [LPS-79755]: Update the [Liferay Gradle Plugins Source Formatter] dependency
+to version 2.3.142.
+- [LPS-79755]: Update the [Liferay Source Formatter] dependency to version
+1.0.615.
+- [LPS-80123]: Update the [Liferay Gradle Plugins Service Builder] dependency to
+version 2.1.23.
+- [LPS-80123]: Update the [Liferay Portal Tools Service Builder] dependency to
+version 1.0.206.
+
+## 3.11.24 - 2018-04-30
+
+### Changed
+- [LPS-79679]: Update the [Liferay Gradle Plugins Source Formatter] dependency
+to version 2.3.143.
+- [LPS-79679]: Update the [Liferay Source Formatter] dependency to version
+1.0.616.
+
+## 3.11.25 - 2018-04-30
+
+### Changed
+- [LPS-80122]: Update the [Liferay Gradle Plugins Service Builder] dependency to
+version 2.1.24.
+- [LPS-80122]: Update the [Liferay Portal Tools Service Builder] dependency to
+version 1.0.207.
+
+## 3.11.26 - 2018-05-01
+
+### Changed
+- [LPS-79679]: Update the [Liferay Gradle Plugins Source Formatter] dependency
+to version 2.3.144.
+- [LPS-79679]: Update the [Liferay Source Formatter] dependency to version
+1.0.617.
+- [LPS-79959]: Update the default value of the
+`liferay.appServers.jboss.version` property to `7.1.0`.
+- [LPS-80184]: Update the [Liferay Gradle Plugins Service Builder] dependency to
+version 2.1.25.
+- [LPS-80184]: Update the [Liferay Portal Tools Service Builder] dependency to
+version 1.0.208.
+
+## 3.11.27 - 2018-05-02
+
+### Changed
+- [LPS-79679]: Update the [Liferay Gradle Plugins Source Formatter] dependency
+to version 2.3.145.
+- [LPS-79679]: Update the [Liferay Source Formatter] dependency to version
+1.0.618.
+
+## 3.11.28 - 2018-05-02
+
+### Changed
+- [LPS-80332]: Update the [Liferay Gradle Plugins Source Formatter] dependency
+to version 2.3.146.
+- [LPS-80332]: Update the [Liferay Source Formatter] dependency to version
+1.0.619.
+
+## 3.11.29 - 2018-05-02
+
+*No changes.*
+
+## 3.11.30 - 2018-05-03
+
+### Changed
+- [LPS-80386]: Update the [Liferay Gradle Plugins Service Builder] dependency to
+version 2.1.26.
+- [LPS-80386]: Update the [Liferay Portal Tools Service Builder] dependency to
+version 1.0.209.
+
+## 3.11.31 - 2018-05-03
+
+### Changed
+- [LPS-80466]: Update the [Liferay Gradle Plugins Service Builder] dependency to
+version 2.1.27.
+- [LPS-80466]: Update the [Liferay Portal Tools Service Builder] dependency to
+version 1.0.210.
+
+## 3.11.32 - 2018-05-03
+
+### Changed
+- [LPS-79679]: Update the [Liferay Gradle Plugins Source Formatter] dependency
+to version 2.3.147.
+- [LPS-79679]: Update the [Liferay Source Formatter] dependency to version
+1.0.620.
 
 [Gradle Bundle Plugin]: https://github.com/TomDmitriev/gradle-bundle-plugin
 [Liferay Alloy Taglib]: https://github.com/liferay/alloy-taglibs
@@ -4201,6 +4435,7 @@ to version 2.3.133.
 [LPS-65930]: https://issues.liferay.com/browse/LPS-65930
 [LPS-66222]: https://issues.liferay.com/browse/LPS-66222
 [LPS-66396]: https://issues.liferay.com/browse/LPS-66396
+[LPS-66797]: https://issues.liferay.com/browse/LPS-66797
 [LPS-66853]: https://issues.liferay.com/browse/LPS-66853
 [LPS-66891]: https://issues.liferay.com/browse/LPS-66891
 [LPS-66906]: https://issues.liferay.com/browse/LPS-66906
@@ -4399,6 +4634,7 @@ to version 2.3.133.
 [LPS-75009]: https://issues.liferay.com/browse/LPS-75009
 [LPS-75010]: https://issues.liferay.com/browse/LPS-75010
 [LPS-75047]: https://issues.liferay.com/browse/LPS-75047
+[LPS-75049]: https://issues.liferay.com/browse/LPS-75049
 [LPS-75096]: https://issues.liferay.com/browse/LPS-75096
 [LPS-75100]: https://issues.liferay.com/browse/LPS-75100
 [LPS-75164]: https://issues.liferay.com/browse/LPS-75164
@@ -4460,6 +4696,7 @@ to version 2.3.133.
 [LPS-77532]: https://issues.liferay.com/browse/LPS-77532
 [LPS-77630]: https://issues.liferay.com/browse/LPS-77630
 [LPS-77639]: https://issues.liferay.com/browse/LPS-77639
+[LPS-77645]: https://issues.liferay.com/browse/LPS-77645
 [LPS-77795]: https://issues.liferay.com/browse/LPS-77795
 [LPS-77836]: https://issues.liferay.com/browse/LPS-77836
 [LPS-77840]: https://issues.liferay.com/browse/LPS-77840
@@ -4498,12 +4735,31 @@ to version 2.3.133.
 [LPS-79248]: https://issues.liferay.com/browse/LPS-79248
 [LPS-79282]: https://issues.liferay.com/browse/LPS-79282
 [LPS-79286]: https://issues.liferay.com/browse/LPS-79286
+[LPS-79336]: https://issues.liferay.com/browse/LPS-79336
 [LPS-79360]: https://issues.liferay.com/browse/LPS-79360
 [LPS-79365]: https://issues.liferay.com/browse/LPS-79365
 [LPS-79385]: https://issues.liferay.com/browse/LPS-79385
+[LPS-79386]: https://issues.liferay.com/browse/LPS-79386
+[LPS-79388]: https://issues.liferay.com/browse/LPS-79388
 [LPS-79450]: https://issues.liferay.com/browse/LPS-79450
 [LPS-79576]: https://issues.liferay.com/browse/LPS-79576
 [LPS-79623]: https://issues.liferay.com/browse/LPS-79623
 [LPS-79665]: https://issues.liferay.com/browse/LPS-79665
 [LPS-79679]: https://issues.liferay.com/browse/LPS-79679
+[LPS-79755]: https://issues.liferay.com/browse/LPS-79755
+[LPS-79799]: https://issues.liferay.com/browse/LPS-79799
+[LPS-79919]: https://issues.liferay.com/browse/LPS-79919
+[LPS-79953]: https://issues.liferay.com/browse/LPS-79953
+[LPS-79959]: https://issues.liferay.com/browse/LPS-79959
+[LPS-79963]: https://issues.liferay.com/browse/LPS-79963
+[LPS-80055]: https://issues.liferay.com/browse/LPS-80055
+[LPS-80064]: https://issues.liferay.com/browse/LPS-80064
+[LPS-80091]: https://issues.liferay.com/browse/LPS-80091
+[LPS-80122]: https://issues.liferay.com/browse/LPS-80122
+[LPS-80123]: https://issues.liferay.com/browse/LPS-80123
+[LPS-80125]: https://issues.liferay.com/browse/LPS-80125
+[LPS-80184]: https://issues.liferay.com/browse/LPS-80184
+[LPS-80332]: https://issues.liferay.com/browse/LPS-80332
+[LPS-80386]: https://issues.liferay.com/browse/LPS-80386
+[LPS-80466]: https://issues.liferay.com/browse/LPS-80466
 [LRDOCS-3023]: https://issues.liferay.com/browse/LRDOCS-3023

@@ -375,7 +375,9 @@
 	</command>
 
 	<command name="editCP">
-		<execute macro="PortletEntry#clickEditFromEllipsis" />
+		<execute macro="LexiconEntry#gotoEllipsisMenuItem">
+			<var name="menuItem" value="Edit" />
+		</execute>
 
 		<if>
 			<equals arg1="${threadAttachmentRemove}" arg2="true" />
@@ -705,9 +707,9 @@
 			<var name="key_threadSubject" value="${threadSubject}" />
 		</execute>
 
-		<execute function="Click#waitForMenuToggleJSClick" locator1="Icon#BODY_VERTICAL_ELLIPSIS" />
-
-		<execute macro="PortletEntry#clickMoveToRecycleBin" />
+		<execute macro="LexiconEntry#gotoEllipsisMenuItem">
+			<var name="menuItem" value="Move to the Recycle Bin" />
+		</execute>
 
 		<execute function="AssertElementPresent" locator1="Message#SUCCESS" />
 		<execute function="AssertTextEquals#assertText" locator1="Message#EMPTY_INFO" value1="There are no threads or categories." />
@@ -912,10 +914,8 @@
 			<var name="key_mbAttachmentFile" value="${mbAttachmentFile}" />
 		</execute>
 
-		<execute function="Click#waitForMenuToggleJSClick" locator1="Icon#BODY_VERTICAL_ELLIPSIS" />
-
-		<execute function="AssertClick" locator1="MenuItem#ANY_MENU_ITEM" value1="Restore">
-			<var name="key_menuItem" value="Restore" />
+		<execute macro="LexiconEntry#gotoEllipsisMenuItem">
+			<var name="menuItem" value="Restore" />
 		</execute>
 
 		<execute macro="Alert#viewSuccessMessage" />
@@ -1016,7 +1016,7 @@
 		<execute macro="Navigator#openURL" />
 
 		<execute macro="ProductMenu#gotoPortlet">
-			<var name="category" value="Content" />
+			<var name="category" value="Recycle Bin" />
 			<var name="panel" value="Site Administration" />
 			<var name="portlet" value="Recycle Bin" />
 		</execute>
@@ -1248,7 +1248,7 @@
 	</command>
 
 	<command name="viewNoXSSPG">
-		<var name="key_threadBody" value="" />
+		<var name="key_threadBody" value="${threadBody}" />
 		<var name="key_threadSubject" value="${threadSubject}" />
 		<var name="key_userName" value="${userName}" />
 
@@ -1256,7 +1256,7 @@
 		<execute function="AssertTextEquals" locator1="MessageBoardsThread#TITLE_HEADER" value1="${threadSubject}" />
 		<execute function="AssertTextEquals#assertPartialText" locator1="MessageBoardsThread#THREAD_USERNAME" value1="${userName}" />
 		<execute function="AssertTextEquals" locator1="MessageBoardsThread#THREAD_SUBJECT" value1="${threadSubject}" />
-		<execute function="AssertTextEquals" locator1="MessageBoardsThread#THREAD_BODY" value1="" />
+		<execute function="AssertTextEquals" locator1="MessageBoardsThread#THREAD_BODY" value1="${threadBody}" />
 	</command>
 
 	<command name="viewPG">

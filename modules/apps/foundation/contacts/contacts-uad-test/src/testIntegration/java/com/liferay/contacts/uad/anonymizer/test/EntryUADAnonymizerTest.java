@@ -19,7 +19,7 @@ import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.contacts.model.Entry;
 import com.liferay.contacts.service.EntryLocalService;
 import com.liferay.contacts.uad.constants.ContactsUADConstants;
-import com.liferay.contacts.uad.test.EntryUADEntityTestHelper;
+import com.liferay.contacts.uad.test.EntryUADTestHelper;
 
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
@@ -27,7 +27,6 @@ import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
-import com.liferay.user.associated.data.aggregator.UADAggregator;
 import com.liferay.user.associated.data.anonymizer.UADAnonymizer;
 import com.liferay.user.associated.data.test.util.BaseUADAnonymizerTestCase;
 
@@ -52,7 +51,7 @@ public class EntryUADAnonymizerTest extends BaseUADAnonymizerTestCase<Entry> {
 
 	@After
 	public void tearDown() throws Exception {
-		_entryUADEntityTestHelper.cleanUpDependencies(_entries);
+		_entryUADTestHelper.cleanUpDependencies(_entries);
 	}
 
 	@Override
@@ -63,7 +62,7 @@ public class EntryUADAnonymizerTest extends BaseUADAnonymizerTestCase<Entry> {
 	@Override
 	protected Entry addBaseModel(long userId, boolean deleteAfterTestRun)
 		throws Exception {
-		Entry entry = _entryUADEntityTestHelper.addEntry(userId);
+		Entry entry = _entryUADTestHelper.addEntry(userId);
 
 		if (deleteAfterTestRun) {
 			_entries.add(entry);
@@ -75,12 +74,7 @@ public class EntryUADAnonymizerTest extends BaseUADAnonymizerTestCase<Entry> {
 	@Override
 	protected void deleteBaseModels(List<Entry> baseModels)
 		throws Exception {
-		_entryUADEntityTestHelper.cleanUpDependencies(baseModels);
-	}
-
-	@Override
-	protected UADAggregator getUADAggregator() {
-		return _uadAggregator;
+		_entryUADTestHelper.cleanUpDependencies(baseModels);
 	}
 
 	@Override
@@ -117,10 +111,7 @@ public class EntryUADAnonymizerTest extends BaseUADAnonymizerTestCase<Entry> {
 	@Inject
 	private EntryLocalService _entryLocalService;
 	@Inject
-	private EntryUADEntityTestHelper _entryUADEntityTestHelper;
-	@Inject(filter = "model.class.name=" +
-	ContactsUADConstants.CLASS_NAME_ENTRY)
-	private UADAggregator _uadAggregator;
+	private EntryUADTestHelper _entryUADTestHelper;
 	@Inject(filter = "model.class.name=" +
 	ContactsUADConstants.CLASS_NAME_ENTRY)
 	private UADAnonymizer _uadAnonymizer;

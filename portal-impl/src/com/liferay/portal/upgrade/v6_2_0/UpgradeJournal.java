@@ -808,8 +808,6 @@ public class UpgradeJournal extends BaseUpgradePortletPreferences {
 								"urlTitle = ?"))) {
 
 				while (rs.next()) {
-					long groupId = rs.getLong("groupId");
-					String articleId = rs.getString("articleId");
 					String urlTitle = GetterUtil.getString(
 						rs.getString("urlTitle"));
 
@@ -821,11 +819,15 @@ public class UpgradeJournal extends BaseUpgradePortletPreferences {
 						continue;
 					}
 
+					String articleId = rs.getString("articleId");
+					long groupId = rs.getLong("groupId");
+
 					normalizedURLTitle = _getUniqueUrlTitle(
 						groupId, articleId, normalizedURLTitle,
 						processedArticleIds);
 
 					ps2.setString(1, normalizedURLTitle);
+
 					ps2.setString(2, urlTitle);
 
 					ps2.addBatch();

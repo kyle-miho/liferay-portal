@@ -19,7 +19,7 @@ import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.message.boards.model.MBMessage;
 import com.liferay.message.boards.service.MBMessageLocalService;
 import com.liferay.message.boards.uad.constants.MBUADConstants;
-import com.liferay.message.boards.uad.test.MBMessageUADEntityTestHelper;
+import com.liferay.message.boards.uad.test.MBMessageUADTestHelper;
 
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
@@ -27,7 +27,6 @@ import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
-import com.liferay.user.associated.data.aggregator.UADAggregator;
 import com.liferay.user.associated.data.anonymizer.UADAnonymizer;
 import com.liferay.user.associated.data.test.util.BaseUADAnonymizerTestCase;
 import com.liferay.user.associated.data.test.util.WhenHasStatusByUserIdField;
@@ -55,7 +54,7 @@ public class MBMessageUADAnonymizerTest extends BaseUADAnonymizerTestCase<MBMess
 	@Override
 	public MBMessage addBaseModelWithStatusByUserId(long userId,
 		long statusByUserId) throws Exception {
-		MBMessage mbMessage = _mbMessageUADEntityTestHelper.addMBMessageWithStatusByUserId(userId,
+		MBMessage mbMessage = _mbMessageUADTestHelper.addMBMessageWithStatusByUserId(userId,
 				statusByUserId);
 
 		_mbMessages.add(mbMessage);
@@ -65,7 +64,7 @@ public class MBMessageUADAnonymizerTest extends BaseUADAnonymizerTestCase<MBMess
 
 	@After
 	public void tearDown() throws Exception {
-		_mbMessageUADEntityTestHelper.cleanUpDependencies(_mbMessages);
+		_mbMessageUADTestHelper.cleanUpDependencies(_mbMessages);
 	}
 
 	@Override
@@ -76,7 +75,7 @@ public class MBMessageUADAnonymizerTest extends BaseUADAnonymizerTestCase<MBMess
 	@Override
 	protected MBMessage addBaseModel(long userId, boolean deleteAfterTestRun)
 		throws Exception {
-		MBMessage mbMessage = _mbMessageUADEntityTestHelper.addMBMessage(userId);
+		MBMessage mbMessage = _mbMessageUADTestHelper.addMBMessage(userId);
 
 		if (deleteAfterTestRun) {
 			_mbMessages.add(mbMessage);
@@ -88,12 +87,7 @@ public class MBMessageUADAnonymizerTest extends BaseUADAnonymizerTestCase<MBMess
 	@Override
 	protected void deleteBaseModels(List<MBMessage> baseModels)
 		throws Exception {
-		_mbMessageUADEntityTestHelper.cleanUpDependencies(baseModels);
-	}
-
-	@Override
-	protected UADAggregator getUADAggregator() {
-		return _uadAggregator;
+		_mbMessageUADTestHelper.cleanUpDependencies(baseModels);
 	}
 
 	@Override
@@ -133,10 +127,7 @@ public class MBMessageUADAnonymizerTest extends BaseUADAnonymizerTestCase<MBMess
 	@Inject
 	private MBMessageLocalService _mbMessageLocalService;
 	@Inject
-	private MBMessageUADEntityTestHelper _mbMessageUADEntityTestHelper;
-	@Inject(filter = "model.class.name=" +
-	MBUADConstants.CLASS_NAME_MB_MESSAGE)
-	private UADAggregator _uadAggregator;
+	private MBMessageUADTestHelper _mbMessageUADTestHelper;
 	@Inject(filter = "model.class.name=" +
 	MBUADConstants.CLASS_NAME_MB_MESSAGE)
 	private UADAnonymizer _uadAnonymizer;

@@ -122,10 +122,10 @@ public class LayoutPageTemplateEntryServiceImpl
 
 	@Override
 	public LayoutPageTemplateEntry fetchDefaultLayoutPageTemplateEntry(
-		long groupId, long classNameId) {
+		long groupId, long classNameId, long classTypeId) {
 
-		return layoutPageTemplateEntryPersistence.fetchByG_C_D_First(
-			groupId, classNameId, true, null);
+		return layoutPageTemplateEntryPersistence.fetchByG_C_C_D_First(
+			groupId, classNameId, classTypeId, true, null);
 	}
 
 	@Override
@@ -196,6 +196,15 @@ public class LayoutPageTemplateEntryServiceImpl
 
 	@Override
 	public List<LayoutPageTemplateEntry> getLayoutPageTemplateEntries(
+			long groupId, long classNameId, long classTypeId, int type)
+		throws PortalException {
+
+		return layoutPageTemplateEntryPersistence.filterFindByG_C_C_T(
+			groupId, classNameId, classTypeId, type);
+	}
+
+	@Override
+	public List<LayoutPageTemplateEntry> getLayoutPageTemplateEntries(
 		long groupId, long layoutPageTemplateCollectionId, String name,
 		int start, int end,
 		OrderByComparator<LayoutPageTemplateEntry> orderByComparator) {
@@ -232,6 +241,15 @@ public class LayoutPageTemplateEntryServiceImpl
 
 	@Override
 	public int getLayoutPageTemplateEntriesCount(
+			long groupId, long classNameId, long classTypeId, int type)
+		throws PortalException {
+
+		return layoutPageTemplateEntryPersistence.filterCountByG_C_C_T(
+			groupId, classNameId, classTypeId, type);
+	}
+
+	@Override
+	public int getLayoutPageTemplateEntriesCount(
 		long groupId, long layoutPageTemplateFolder, String name) {
 
 		return layoutPageTemplateEntryPersistence.filterCountByG_L_LikeN(
@@ -245,6 +263,20 @@ public class LayoutPageTemplateEntryServiceImpl
 
 		return layoutPageTemplateEntryPersistence.filterCountByG_T_LikeN(
 			groupId, _customSQL.keywords(name, WildcardMode.SURROUND)[0], type);
+	}
+
+	@Override
+	public LayoutPageTemplateEntry updateLayoutPageTemplateEntry(
+			long layoutPageTemplateEntryId, boolean defaultTemplate)
+		throws PortalException {
+
+		_layoutPageTemplateEntryModelResourcePermission.check(
+			getPermissionChecker(), layoutPageTemplateEntryId,
+			ActionKeys.UPDATE);
+
+		return layoutPageTemplateEntryLocalService.
+			updateLayoutPageTemplateEntry(
+				layoutPageTemplateEntryId, defaultTemplate);
 	}
 
 	@Override

@@ -26,6 +26,7 @@ import com.liferay.portal.kernel.search.SearchContext;
 import com.liferay.portal.kernel.search.SearchResultPermissionFilter;
 import com.liferay.portal.kernel.search.Sort;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.Props;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -390,7 +391,7 @@ public abstract class BasePermissionFilteredPaginationTestCase
 	}
 
 	protected long getDocumentEntryClassPK(Document document) {
-		return Long.parseLong(document.get(Field.ENTRY_CLASS_PK));
+		return GetterUtil.getLong(document.get(Field.ENTRY_CLASS_PK));
 	}
 
 	protected List<Integer> getEntries(Hits hits) {
@@ -430,7 +431,7 @@ public abstract class BasePermissionFilteredPaginationTestCase
 
 			addDocument(
 				DocumentCreationHelpers.singleKeyword(
-					Field.ENTRY_CLASS_PK, Long.toString(entryClassPK)));
+					Field.ENTRY_CLASS_PK, String.valueOf(entryClassPK)));
 		}
 	}
 
