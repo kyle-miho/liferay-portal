@@ -36,6 +36,26 @@
 		</if>
 	</command>
 
+	<command name="deleteMultiple">
+		<for list="${menuItemList}" param="menuItem">
+			<execute macro="LexiconEntry#selectEntry">
+				<var name="rowEntry" value="${menuItem}" />
+			</execute>
+		</for>
+
+		<execute function="AssertClick" locator1="Button#DELETE" value1="Delete" />
+
+		<execute function="Confirm" value1="Are you sure you want to delete this? It will be deleted immediately." />
+
+		<execute macro="Alert#viewSuccessMessage" />
+
+		<for list="${menuItemList}" param="menuItem">
+			<execute macro="LexiconEntry#viewNoEntry">
+				<var name="rowEntry" value="${menuItem}" />
+			</execute>
+		</for>
+	</command>
+
 	<command name="gotoAdd">
 		<execute function="Click" locator1="Button#PLUS" />
 	</command>
