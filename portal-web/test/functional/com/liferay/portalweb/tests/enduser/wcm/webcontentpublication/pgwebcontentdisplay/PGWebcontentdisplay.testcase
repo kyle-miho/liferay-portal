@@ -1029,6 +1029,7 @@
 	</command>
 
 	<command name="ViewPortletWCDShowAvailableLocales" priority="4">
+		<property name="portal.acceptance" value="kyle-miho" />
 		<property name="testray.component.names" value="Localization,Web Content Display" />
 
 		<execute macro="Navigator#gotoPage">
