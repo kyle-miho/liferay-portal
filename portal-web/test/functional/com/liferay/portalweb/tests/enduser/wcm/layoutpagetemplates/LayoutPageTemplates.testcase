@@ -34,7 +34,7 @@
 	</tear-down>
 
 	<command name="AddLayoutPageTemplateRemoveFragment" priority="5">
-		<property name="portal.acceptance" value="true" />
+		<property name="portal.acceptance" value="kyle-miho" />
 
 		<execute macro="ProductMenu#gotoPortlet">
 			<var name="category" value="Build" />
@@ -181,6 +181,8 @@
 	</command>
 
 	<command name="ChangeEditableText" priority="5">
+		<property name="portal.acceptance" value="kyle-miho" />
+
 		<execute macro="ProductMenu#gotoPortlet">
 			<var name="category" value="Build" />
 			<var name="panel" value="Site Administration" />
@@ -401,7 +403,7 @@
 	</command>
 
 	<command name="ReorderFragments" priority="5">
-		<property name="portal.acceptance" value="true" />
+		<property name="portal.acceptance" value="kyle-miho" />
 
 		<execute macro="ProductMenu#gotoPortlet">
 			<var name="category" value="Build" />
