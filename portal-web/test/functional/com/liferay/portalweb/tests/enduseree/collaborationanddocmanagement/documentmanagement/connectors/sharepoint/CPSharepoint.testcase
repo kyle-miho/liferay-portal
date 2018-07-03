@@ -643,6 +643,7 @@
 	</command>
 
 	<command name="ViewOriginalFileExtensionAfterUnsuccessfulExtensionChange" priority="4">
+		<property name="portal.acceptance" value="kyle-miho" />
 		<property name="test.name.skip.portal.instance" value="CPSharepoint#ViewOriginalFileExtensionAfterUnsuccessfulExtensionChange" />
 
 		<execute macro="DMRepository#gotoCP">
@@ -655,6 +656,7 @@
 		</execute>
 
 		<execute macro="LexiconEntry#gotoEntryMenuItem">
+			<var name="menuItem" value="Edit" />
 			<var name="rowEntry" value="Document_1.docx" />
 		</execute>
 
@@ -690,6 +692,7 @@
 	</command>
 
 	<command name="ViewOriginalFileExtensionAfterUnsuccessfulExtensionRemoval" priority="4">
+		<property name="portal.acceptance" value="kyle-miho" />
 		<property name="test.name.skip.portal.instance" value="CPSharepoint#ViewOriginalFileExtensionAfterUnsuccessfulExtensionRemoval" />
 
 		<execute macro="DMRepository#gotoCP">
@@ -702,6 +705,7 @@
 		</execute>
 
 		<execute macro="LexiconEntry#gotoEntryMenuItem">
+			<var name="menuItem" value="Edit" />
 			<var name="rowEntry" value="Document_3.docx" />
 		</execute>
 
