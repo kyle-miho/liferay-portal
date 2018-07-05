@@ -2495,6 +2495,8 @@
 	</command>
 
 	<command name="ViewWebContentWithConfiguredDisplayPageViaAP" priority="4">
+		<property name="portal.acceptance" value="kyle-miho" />
+
 		<execute macro="TestCase#getSiteName">
 			<return from="siteName" name="siteName" />
 			<var name="siteName" value="${siteName}" />
