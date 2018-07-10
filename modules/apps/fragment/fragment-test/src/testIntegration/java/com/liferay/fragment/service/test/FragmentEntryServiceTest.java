@@ -216,6 +216,23 @@ public class FragmentEntryServiceTest {
 	}
 
 	@Test
+	public void testDeleteFragmentEntries() throws Exception {
+		ServiceContext serviceContext =
+			ServiceContextTestUtil.getServiceContext(
+				_group.getGroupId(), TestPropsValues.getUserId());
+
+		FragmentCollection fragmentCollection =
+			FragmentCollectionServiceUtil.addFragmentCollection(
+				_group.getGroupId(), "Fragment Collection", StringPool.BLANK,
+				serviceContext);
+
+		/*Hint: Follow testDeleteFragmentCollections,
+		but with fragment
+			entries
+		 */
+	}
+
+	@Test
 	public void testDeleteFragmentEntry() throws Exception {
 		ServiceContext serviceContext =
 			ServiceContextTestUtil.getServiceContext(
@@ -237,6 +254,111 @@ public class FragmentEntryServiceTest {
 		Assert.assertNull(
 			FragmentEntryServiceUtil.fetchFragmentEntry(
 				fragmentEntry.getFragmentEntryId()));
+	}
+
+	@Test
+	public void testGetFragmentCollectionsCount() throws Exception {
+		ServiceContext serviceContext =
+			ServiceContextTestUtil.getServiceContext(
+				_group.getGroupId(), TestPropsValues.getUserId());
+
+		FragmentCollection fragmentCollection =
+			FragmentCollectionServiceUtil.addFragmentCollection(
+				_group.getGroupId(), "Fragment Collection", StringPool.BLANK,
+				serviceContext);
+
+		/*
+			Hint: Add some fragment entries, and then use
+			getFragmentCollectionsCount(groupId, fragmentCollectionId)to check
+			if the count is correct*/
+	}
+
+	@Test
+	public void testGetFragmentCollectionsCountByKeywords() throws Exception {
+		ServiceContext serviceContext =
+			ServiceContextTestUtil.getServiceContext(
+				_group.getGroupId(), TestPropsValues.getUserId());
+
+		FragmentCollection fragmentCollection =
+			FragmentCollectionServiceUtil.addFragmentCollection(
+				_group.getGroupId(), "Fragment Collection", StringPool.BLANK,
+				serviceContext);
+
+		/*Hint: Follow testGetFragmentCollectionsByKeywords for this one*/
+	}
+
+	@Test
+	public void testGetFragmentCollectionsCountByKeywordsAndStatus()
+		throws Exception {
+
+		ServiceContext serviceContext =
+			ServiceContextTestUtil.getServiceContext(
+				_group.getGroupId(), TestPropsValues.getUserId());
+
+		FragmentCollection fragmentCollection =
+			FragmentCollectionServiceUtil.addFragmentCollection(
+				_group.getGroupId(), "Fragment Collection", StringPool.BLANK,
+				serviceContext);
+
+		/*Hint: Follow count by keywords, but check with (add different status
+			for this one)
+			getFragmentCollectionsCount(
+				groupId, fragmentCollectionId, name, status);*/
+	}
+
+	@Test
+	public void testGetFragmentCollectionsCountByStatus() throws Exception {
+		ServiceContext serviceContext =
+			ServiceContextTestUtil.getServiceContext(
+				_group.getGroupId(), TestPropsValues.getUserId());
+
+		FragmentCollection fragmentCollection =
+			FragmentCollectionServiceUtil.addFragmentCollection(
+				_group.getGroupId(), "Fragment Collection", StringPool.BLANK,
+				serviceContext);
+
+		/*Hint: Add some fragment entries with different status,
+		and then use
+			getFragmentCollectionsCount(groupId, fragmentCollectionId, status)
+			to check if the count is correct*/
+	}
+
+	@Test
+	public void testUpdateFragmentEntry() throws Exception {
+		ServiceContext serviceContext =
+			ServiceContextTestUtil.getServiceContext(
+				_group.getGroupId(), TestPropsValues.getUserId());
+
+		FragmentCollection fragmentCollection =
+			FragmentCollectionServiceUtil.addFragmentCollection(
+				_group.getGroupId(), "Fragment Collection", StringPool.BLANK,
+				serviceContext);
+
+		/*Hint: Add a fragment entry,
+		and then change the name.Use any method to create the fragment entry
+			Use FragmentEntryServiceUtil.updateFragmentEntry(
+				fragmentEntryId, name);
+		 */
+	}
+
+	@Test
+	public void testUpdateFragmentEntryValues() throws Exception {
+		ServiceContext serviceContext =
+			ServiceContextTestUtil.getServiceContext(
+				_group.getGroupId(), TestPropsValues.getUserId());
+
+		FragmentCollection fragmentCollection =
+			FragmentCollectionServiceUtil.addFragmentCollection(
+				_group.getGroupId(), "Fragment Collection", StringPool.BLANK,
+				serviceContext);
+
+		/*Hint: Add a fragment entry,
+		and then change all the values.
+			Use addFragmentEntry(
+				groupId, fragmentCollectionId, fragmentEntryKey, name, css,
+				html, js, status, serviceContext);
+			Use FragmentEntryServiceUtil.updateFragmentEntry(
+				fragmentEntryId, name, css, html, js, status);*/
 	}
 
 	@DeleteAfterTestRun
