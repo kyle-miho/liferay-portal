@@ -47,9 +47,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -268,23 +266,13 @@ public class TemplateHandlerRegistryImpl implements TemplateHandlerRegistry {
 					continue;
 				}
 
-				ResourceBundleLoader resourceBundleLoader = null;
-
 				Class<?> clazz = _templateHandler.getClass();
 
-				Bundle bundle = FrameworkUtil.getBundle(clazz);
-
-				if (bundle != null) {
-					resourceBundleLoader =
-						resourceBundleLoaderProvider.getResourceBundleLoader(
-							bundle.getSymbolicName());
-				}
-				else {
-					resourceBundleLoader = new AggregateResourceBundleLoader(
+				ResourceBundleLoader resourceBundleLoader =
+					new AggregateResourceBundleLoader(
 						ResourceBundleUtil.getResourceBundleLoader(
 							"content.Language", clazz.getClassLoader()),
 						LanguageResources.RESOURCE_BUNDLE_LOADER);
-				}
 
 				Map<Locale, String> nameMap = getLocalizationMap(
 					resourceBundleLoader, group.getGroupId(),
