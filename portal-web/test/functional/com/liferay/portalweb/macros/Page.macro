@@ -52,7 +52,9 @@
 
 		<execute function="Type" locator1="SitePages#JAVASCRIPT_TEXTAREA" value1="${javaScript}" />
 
-		<execute function="AssertClickNoError" locator1="Button#SAVE" value1="Save" />
+		<execute macro="Button#clickNoError">
+			<var name="button" value="Save" />
+		</execute>
 	</command>
 
 	<command name="addPageCategory">
