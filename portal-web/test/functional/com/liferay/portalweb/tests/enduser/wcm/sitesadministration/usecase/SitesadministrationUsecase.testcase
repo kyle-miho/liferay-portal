@@ -1081,6 +1081,7 @@
 	<command name="SitesDemoSiteManagement" priority="4">
 		<property name="test.name.skip.portal.instance" value="SitesadministrationUsecase#SitesDemoSiteManagement" />
 		<property name="testray.component.names" value="Site Administration,Site Pages Administration" />
+		<property name="portal.acceptance" value="kyle-miho" />
 
 		<var method="PropsUtil#get('portal.url')" name="portalURL" />
 
@@ -1148,6 +1149,28 @@
 		<for list="Accomodations,Maps" param="privatePageName">
 			<execute macro="SitePages#addPrivatePage">
 				<var name="pageName" value="${privatePageName}" />
+			</execute>
+		</for>
+
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Build" />
+			<var name="panel" value="Site Administration" />
+			<var name="portlet" value="Navigation Menus" />
+		</execute>
+
+		<execute macro="LexiconEntry#gotoEntry">
+			<var name="rowEntry" value="Default Private" />
+		</execute>
+
+		<for list="Accomodations,Maps" param="privatePageName">
+			<execute macro="SiteNavigationMenu#addItem">
+				<var name="item" value="Page" />
+				<var name="pageName" value="${privatePageName}" />
+				<var name="privacy" value="Private Pages" />
+			</execute>
+
+			<execute macro="SiteNavigationMenu#viewItem">
+				<var name="itemName" value="${privatePageName}" />
 			</execute>
 		</for>
 
