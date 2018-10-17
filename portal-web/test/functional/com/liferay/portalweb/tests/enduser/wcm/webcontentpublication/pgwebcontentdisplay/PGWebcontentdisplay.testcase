@@ -162,13 +162,18 @@
 			<var name="scopeSelection" value="Web Content Display Page1" />
 		</execute>
 
+		<execute macro="JSONWebcontent#addWebContent">
+			<var name="content" value="WC WebContent Content" />
+			<var name="groupName" value="Test Site Name" />
+			<var name="title" value="WC WebContent Title" />
+		</execute>
+
 		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Web Content Display Page1" />
 			<var name="siteName" value="Test Site Name" />
 		</execute>
 
-		<execute macro="WebContent#addPGViaWCD">
-			<var name="webContentContent" value="WC WebContent Content" />
+		<execute macro="WebContentDisplayPortlet#selectWebContent">
 			<var name="webContentTitle" value="WC WebContent Title" />
 		</execute>
 
@@ -297,13 +302,18 @@
 	<command name="AssertExpired" priority="4">
 		<property name="testray.component.names" value="Web Content Display" />
 
+		<execute macro="JSONWebcontent#addWebContent">
+			<var name="content" value="WC WebContent Content" />
+			<var name="groupName" value="Test Site Name" />
+			<var name="title" value="WC WebContent Title" />
+		</execute>
+
 		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Web Content Display Page" />
 			<var name="siteName" value="Test Site Name" />
 		</execute>
 
-		<execute macro="WebContent#addPGViaWCD">
-			<var name="webContentContent" value="WC WebContent Content" />
+		<execute macro="WebContentDisplayPortlet#selectWebContent">
 			<var name="webContentTitle" value="WC WebContent Title" />
 		</execute>
 
@@ -415,13 +425,18 @@
 	<command name="EditWebContent" priority="4">
 		<property name="testray.component.names" value="Web Content Display" />
 
+		<execute macro="JSONWebcontent#addWebContent">
+			<var name="content" value="WC WebContent Content" />
+			<var name="groupName" value="Test Site Name" />
+			<var name="title" value="WC WebContent Title" />
+		</execute>
+
 		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Web Content Display Page" />
 			<var name="siteName" value="Test Site Name" />
 		</execute>
 
-		<execute macro="WebContent#addPGViaWCD">
-			<var name="webContentContent" value="WC WebContent Content" />
+		<execute macro="WebContentDisplayPortlet#selectWebContent">
 			<var name="webContentTitle" value="WC WebContent Title" />
 		</execute>
 
@@ -444,18 +459,23 @@
 		<property name="test.name.skip.portal.instance" value="PGWebcontentdisplay#LocalizeWebContent" />
 		<property name="testray.component.names" value="Localization,Web Content Display" />
 
+		<execute macro="JSONWebcontent#addWebContent">
+			<var name="content" value="WC WebContent Content" />
+			<var name="groupName" value="Test Site Name" />
+			<var name="title" value="WC WebContent Title" />
+		</execute>
+
 		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Web Content Display Page" />
 			<var name="siteName" value="Test Site Name" />
 		</execute>
 
-		<execute macro="Portlet#addPG">
-			<var name="portletName" value="Language Selector" />
+		<execute macro="WebContentDisplayPortlet#selectWebContent">
+			<var name="webContentTitle" value="WC WebContent Title" />
 		</execute>
 
-		<execute macro="WebContent#addPGViaWCD">
-			<var name="webContentContent" value="WC WebContent Content" />
-			<var name="webContentTitle" value="WC WebContent Title" />
+		<execute macro="Portlet#addPG">
+			<var name="portletName" value="Language Selector" />
 		</execute>
 
 		<execute macro="WebContent#viewPGViaWCD">
@@ -656,14 +676,19 @@
 		<property name="test.name.skip.portal.instance" value="PGWebcontentdisplay#ViewAllFileTypesEnabled" />
 		<property name="testray.component.names" value="Web Content Display" />
 
+		<execute macro="JSONWebcontent#addWebContent">
+			<var name="content" value="WC WebContent Content" />
+			<var name="groupName" value="Test Site Name" />
+			<var name="title" value="WC WebContent Title" />
+		</execute>
+
 		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Web Content Display Page" />
 			<var name="siteName" value="Test Site Name" />
 		</execute>
 
-		<execute macro="WebContent#addPGViaWCD">
-			<var name="webContentContent" value="WC WebContent Content" />
-			<var name="webContentTitle" value="WC WebContent Title" />
+		<execute macro="WebContentDisplayPortlet#selectWebContent">
+			<var name="webContentTitle" value="Web Content Title" />
 		</execute>
 
 		<execute macro="WebContent#viewPGViaWCD">
@@ -798,13 +823,18 @@
 	<command name="ViewArticleWithGuestViewPermission" priority="4">
 		<property name="testray.component.names" value="Permissions,Web Content Display" />
 
+		<execute macro="JSONWebcontent#addWebContent">
+			<var name="content" value="WC WebContent Content" />
+			<var name="groupName" value="Test Site Name" />
+			<var name="title" value="WC WebContent Title" />
+		</execute>
+
 		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Web Content Display Page" />
 			<var name="siteName" value="Test Site Name" />
 		</execute>
 
-		<execute macro="WebContent#addPGViaWCD">
-			<var name="webContentContent" value="WC WebContent Content" />
+		<execute macro="WebContentDisplayPortlet#selectWebContent">
 			<var name="webContentTitle" value="WC WebContent Title" />
 		</execute>
 
@@ -916,14 +946,15 @@
 	<command name="ViewEditTemplate" priority="4">
 		<property name="testray.component.names" value="Web Content Display" />
 
+		<execute macro="JSONWebcontent#addWebContent">
+			<var name="content" value="WC WebContent Content" />
+			<var name="groupName" value="Test Site Name" />
+			<var name="title" value="WC WebContent Title" />
+		</execute>
+
 		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Web Content Display Page" />
 			<var name="siteName" value="Test Site Name" />
-		</execute>
-
-		<execute macro="WebContent#addPGViaWCD">
-			<var name="webContentContent" value="WC WebContent Content" />
-			<var name="webContentTitle" value="WC WebContent Title" />
 		</execute>
 
 		<execute macro="WebContent#viewPGViaWCD">
@@ -943,14 +974,15 @@
 	<command name="ViewPortletWCDShowAvailableLocales" priority="4">
 		<property name="testray.component.names" value="Localization,Web Content Display" />
 
+		<execute macro="JSONWebcontent#addWebContent">
+			<var name="content" value="WC WebContent Content" />
+			<var name="groupName" value="Test Site Name" />
+			<var name="title" value="WC WebContent Title" />
+		</execute>
+
 		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Web Content Display Page" />
 			<var name="siteName" value="Test Site Name" />
-		</execute>
-
-		<execute macro="WebContent#addPGViaWCD">
-			<var name="webContentContent" value="WC WebContent Content" />
-			<var name="webContentTitle" value="WC WebContent Title" />
 		</execute>
 
 		<execute macro="WebContent#viewPGViaWCD">
@@ -1123,14 +1155,15 @@
 	<command name="ViewWithPaginationScript" priority="4">
 		<property name="testray.component.names" value="Web Content Display" />
 
+		<execute macro="JSONWebcontent#addWebContent">
+			<var name="content" value="@page_break@ Welcome @page_break@" />
+			<var name="groupName" value="Test Site Name" />
+			<var name="title" value="WC WebContent Title" />
+		</execute>
+
 		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Web Content Display Page" />
 			<var name="siteName" value="Test Site Name" />
-		</execute>
-
-		<execute macro="WebContent#addPGViaWCD">
-			<var name="webContentContent" value="@page_break@ Welcome @page_break@" />
-			<var name="webContentTitle" value="WC WebContent Title" />
 		</execute>
 
 		<execute macro="WebContent#viewPageBreak" />
