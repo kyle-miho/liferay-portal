@@ -25,7 +25,7 @@
 </tr>
 <tr>
 	<td>SELECTED_STRUCTURE</td>
-	<td>//span[contains(@id,'structureNameLabel')]</td>
+	<td>//a[contains(@id,'editDDMStructure')]</td>
 	<td></td>
 </tr>
 <tr>
