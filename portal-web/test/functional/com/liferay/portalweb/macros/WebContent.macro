@@ -945,7 +945,9 @@
 		<execute function="SelectFrame" locator1="WCSelectDisplayPage#DISPLAY_PAGE_CONFIGURATION_IFRAME" />
 
 		<if>
-			<equals arg1="${pageType}" arg2="Public Pages" />
+			<not>
+				<isset var="pageType" />
+			</not>
 			<then>
 				<execute macro="Navigator#gotoNavItem">
 					<var name="navItem" value="Public Pages" />

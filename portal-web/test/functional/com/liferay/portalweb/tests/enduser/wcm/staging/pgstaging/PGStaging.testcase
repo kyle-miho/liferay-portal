@@ -1024,7 +1024,6 @@
 
 		<execute macro="WebContent#editDisplayPage">
 			<var name="pageName" value="Staging Test Page" />
-			<var name="pageType" value="Public Pages" />
 		</execute>
 
 		<execute macro="Navigator#openStagingSiteURL">
