@@ -688,7 +688,7 @@
 		</execute>
 
 		<execute macro="WebContentDisplayPortlet#selectWebContent">
-			<var name="webContentTitle" value="Web Content Title" />
+			<var name="webContentTitle" value="WC WebContent Title" />
 		</execute>
 
 		<execute macro="WebContent#viewPGViaWCD">
