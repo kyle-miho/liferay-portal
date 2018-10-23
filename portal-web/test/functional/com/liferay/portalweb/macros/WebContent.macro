@@ -107,7 +107,7 @@
 
 		<var name="key_assetTitle" value="${assetTitle}" />
 
-		<execute function="AssertClick" locator1="AssetRelatedAssets#ASSET_TABLE_CHOOSE" value1="${assetTitle}" />
+		<execute function="AssertClick" locator1="Link#WEB_CONTENT_ARTICLE" value1="${assetTitle}" />
 
 		<execute function="SelectFrameTop" />
 
