@@ -1,0 +1,162 @@
+<definition component-name="portal-wcm">
+	<property name="portal.release" value="true" />
+	<property name="portal.upstream" value="true" />
+	<property name="testray.main.component.name" value="Polls" />
+
+	<set-up>
+		<execute macro="TestCase#setUpPortalInstance" />
+
+		<execute macro="User#firstLoginPG" />
+
+		<execute macro="JSONGroup#addGroup">
+			<var name="groupName" value="Test Site Name" />
+		</execute>
+	</set-up>
+
+	<tear-down>
+		<var method="PropsUtil#get('test.portal.instance')" name="testPortalInstance" />
+
+		<if>
+			<equals arg1="${testPortalInstance}" arg2="true" />
+			<then>
+				<execute macro="PortalInstances#tearDownCP" />
+			</then>
+			<else>
+				<execute macro="JSONGroup#deleteGroupByName">
+					<var name="groupName" value="Test Site Name" />
+				</execute>
+			</else>
+		</if>
+	</tear-down>
+
+	<command name="PerformanceTestJournal" priority="5">
+
+		<!-- Create a WC assuming we have to navigate (First Creation) -->
+
+		<for list="1,2,3,4,5,6,7,8,9,10" param="index">
+			<execute macro="Math#getCurrentTimeMilli">
+				<return name="startTime" />
+			</execute>
+
+			<execute macro="WebContent#openWebContentAdmin">
+				<var name="siteURLKey" value="test-site-name" />
+			</execute>
+
+			<execute macro="WebContent#addCP">
+				<var name="webContentContent" value="WC Navigate ${index}" />
+				<var name="webContentTitle" value="WC Navigate ${index}" />
+			</execute>
+
+			<execute macro="Math#getCurrentTimeMilli">
+				<return name="endTime" />
+			</execute>
+
+			<execute macro="Math#getDifference">
+				<return name="runTimeNav" />
+				<var name="first" value="${startTime}" />
+				<var name="second" value="${endTime}" />
+			</execute>
+
+			<var name="totalTime" value="${totalTime},runTimeNav" />
+		</for>
+
+		<execute macro="Math#getAverage">
+			<return name="${averageTimeNav}" />
+			<var name="list" value="${totalTime}" />
+		</execute>
+
+		<!-- Create a WC assuming we do not have to navigate (Second Creation) -->
+
+			<execute macro="WebContent#openWebContentAdmin">
+				<var name="siteURLKey" value="test-site-name" />
+			</execute>
+
+		<for list="1,2,3,4,5,6,7,8,9,10" param="index">
+			<execute macro="Math#getCurrentTimeMilli">
+				<return name="startTime" />
+			</execute>
+
+			<execute macro="WebContent#addCP">
+				<var name="webContentContent" value="WC Default ${index}" />
+				<var name="webContentTitle" value="WC Default ${index}" />
+			</execute>
+
+			<execute macro="Math#getCurrentTimeMilli">
+				<return name="endTime" />
+			</execute>
+
+			<execute macro="Math#getDifference">
+				<var name="first" value="${startTime}" />
+				<var name="second" value="${endTime}" />
+				<return name="runTimeNorm" />
+			</execute>
+
+			<var name="totalTime" value="${totalTime},runTimeNav" />
+		</for>
+
+		<execute macro="Math#getAverage">
+			<return name="${averageTimeNorm}" />
+			<var name="list" value="${totalTime}" />
+		</execute>
+
+		<!-- Create a WC via JSON WS API -->
+
+		<for list="1,2,3,4,5,6,7,8,9,10" param="index">
+			<execute macro="Math#getCurrentTimeMilli">
+				<return name="startTime" />
+			</execute>
+
+			<execute macro="JSONWebcontent#addWebContent">
+				<var name="content" value="WC JSON ${index}" />
+				<var name="groupName" value="Test Site Name" />
+				<var name="title" value="WC JSON ${index}" />
+			</execute>
+
+			<execute macro="Math#getCurrentTimeMilli">
+				<return name="endTime" />
+			</execute>
+
+			<execute macro="Math#getDifference">
+				<var name="first" value="${startTime}" />
+				<var name="second" value="${endTime}" />
+				<return name="runTimeJSON" />
+			</execute>
+		</for>
+
+		<execute macro="Math#getAverage">
+			<return name="${averageTimeJSON}" />
+			<var name="list" value="${totalTime}" />
+		</execute>
+
+		<!-- Echo Output -->
+
+		<echo message="Run time for navigating to WC = ${averageTimeNav}" />
+
+		<echo message="Run time for creating WC without navigation = ${averageTimeNorm}" />
+
+		<echo message="Run time for creating WC with JSON = ${averageTimeJSON}" />
+	</command>
+
+<!--
+	<command name="PerformanceTestFragment" priority="5">
+	</command>
+
+	<command name="PerformanceTestFragmentCollection" priority="5">
+	</command>
+
+	<command name="PerformanceTestGroup" priority="5">
+	</command>
+
+	<command name="PerformanceTestLayout" priority="5">
+	</command>
+
+	<command name="PerformanceTestVocabulary" priority="5">
+	</command>
+
+	<command name="PerformanceTestCategory" priority="5">
+	</command>
+
+	<command name="PerformanceTestSubcategory" priority="5">
+	</command>
+-->
+</definition>

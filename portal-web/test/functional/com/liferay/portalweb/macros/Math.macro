@@ -1,0 +1,35 @@
+<definition>
+	<command name="getAverage">
+		<var name="listLength" value="0" />
+
+		<var name="sum" value="0" />
+
+		<for list="${list}" param="num">
+			<echo message="Adding: ${num}" />
+
+			<var method="MathUtil#sum('${sum}','${num}')" name="sum" />
+
+			<var method="MathUtil#sum('${sum}','${listLength}')" name="sum" /> 
+		</for>
+
+		<echo message="Total Sum: ${sum}" />
+
+		<var method="MathUtil#quotient('${sum}','${listLength}')" name="average" />
+
+		<echo message="Average: ${average}" />
+
+		<return value="${average}" />
+	</command>
+
+	<command name="getCurrentTimeMilli">
+		<var method="DateUtil#getTimeInMilliseconds()" name="time" />
+
+		<return value="${time}" />
+	</command>
+
+	<command name="getDifference">
+		<var method="MathUtil#difference('${first}','${second}')" name="result" />
+
+		<return value="${result}" />
+	</command>
+</definition>
