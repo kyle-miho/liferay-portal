@@ -70,10 +70,8 @@
 			<var name="userScreenName" value="usersn" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoPortlet">
-			<var name="category" value="Members" />
-			<var name="panel" value="Site Administration" />
-			<var name="portlet" value="Site Memberships" />
+		<execute macro="Site#openSiteMembershipsAdmin">
+			<var name="siteURLKey" value="test-site-name" />
 		</execute>
 
 		<execute macro="Site#assignUserAsMemberCP">
@@ -199,10 +197,8 @@
 			<var name="userScreenName" value="usersn" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoPortlet">
-			<var name="category" value="Members" />
-			<var name="panel" value="Site Administration" />
-			<var name="portlet" value="Site Memberships" />
+		<execute macro="Site#openSiteMembershipsAdmin">
+			<var name="siteURLKey" value="test-site-name" />
 		</execute>
 
 		<execute macro="Site#assignUserAsMemberCP">
@@ -726,9 +722,7 @@
 			<var name="vocabularyName" value="Vocabulary Name" />
 		</execute>
 
-		<execute macro="User#openUsersAdmin">
-			<var name="siteURLKey" value="test-site-name" />
-		</execute>
+		<execute macro="User#openUsersAdmin" />
 
 		<execute macro="User#addCP">
 			<var name="userEmailAddress" value="userea@liferay.com" />
@@ -737,9 +731,7 @@
 			<var name="userScreenName" value="usersn" />
 		</execute>
 
-		<execute macro="User#openUsersAdmin">
-			<var name="siteURLKey" value="test-site-name" />
-		</execute>
+		<execute macro="User#openUsersAdmin" />
 
 		<execute macro="User#editPasswordCP">
 			<var name="password" value="password" />
@@ -747,10 +739,8 @@
 			<var name="userScreenName" value="usersn" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoPortlet">
-			<var name="category" value="Members" />
-			<var name="panel" value="Site Administration" />
-			<var name="portlet" value="Site Memberships" />
+		<execute macro="Site#openSiteMembershipsAdmin">
+			<var name="siteURLKey" value="test-site-name" />
 		</execute>
 
 		<execute macro="Site#assignUserAsMemberCP">
@@ -814,7 +804,7 @@
 
 		<execute macro="JSONCategory#addCategoryByGroupName">
 			<var name="groupName" value="Test Site Name" />
-			<var name="title" value="Category Name" />
+			<var name="title" value="Category Name 2" />
 			<var name="vocabularyName" value="Vocabulary Name" />
 		</execute>
 
@@ -823,7 +813,7 @@
 		</execute>
 
 		<execute macro="Category#deletePartialCategoryCP">
-			<var name="categoryName" value="Category Name" />
+			<var name="categoryName" value="Category Name 2" />
 			<var name="vocabularyName" value="Vocabulary Name" />
 		</execute>
 
@@ -832,7 +822,7 @@
 		</execute>
 
 		<execute macro="Category#viewCP">
-			<var name="categoryName" value="Category Name" />
+			<var name="categoryName" value="Category Name 2" />
 			<var name="vocabularyName" value="Vocabulary Name" />
 		</execute>
 	</command>
