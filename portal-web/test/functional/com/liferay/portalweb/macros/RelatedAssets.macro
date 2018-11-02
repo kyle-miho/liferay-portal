@@ -2,11 +2,15 @@
 	<command name="_selectAssetType">
 		<var name="key_assetType" value="${assetType}" />
 
-		<execute function="AssertClick" locator1="AssetRelatedAssets#RELATED_ASSETS_SELECT" value1="Select" />
+		<execute function="Click#mouseOverClick" locator1="AssetRelatedAssets#RELATED_ASSETS_SELECT" />
 
 		<var method="StringUtil#replace('${assetType}', ' ', '_')" name="assetTypeLocator" />
 
 		<var method="StringUtil#upperCase('${assetTypeLocator}')" name="assetTypeLocator" />
+
+		<execute function="ScrollWebElementIntoView" locator1="MenuItem#ANY_MENU_ITEM">
+			<var name="key_menuItem" value="${assetType}" />
+		</execute>
 
 		<execute macro="MenuItem#click">
 			<var name="menuItem" value="${assetType}" />
