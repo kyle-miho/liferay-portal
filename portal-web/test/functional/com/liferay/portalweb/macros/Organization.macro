@@ -276,6 +276,8 @@
 			</then>
 		</if>
 
+		<execute function="Refresh" />
+
 		<execute function="Type" locator1="UsersAndOrganizationsEditOrganization#DETAILS_NAME_FIELD" value1="${orgName}" />
 
 		<execute function="Select" locator1="UsersAndOrganizations#ORGANIZATION_COUNTRY_NAME" value1="${countryName}">
@@ -629,6 +631,8 @@
 		<execute macro="LexiconEntry#openEntryMenu">
 			<var name="rowEntry" value="${orgName}" />
 		</execute>
+
+		<execute function="Refresh" />
 
 		<execute macro="MenuItem#click">
 			<var name="menuItem" value="${editLocalized}" />
