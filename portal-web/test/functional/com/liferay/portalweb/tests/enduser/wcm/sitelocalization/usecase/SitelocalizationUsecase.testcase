@@ -33,7 +33,7 @@
 		<execute macro="ProductMenu#gotoPortlet">
 			<var name="category" value="Build" />
 			<var name="panel" value="Site Administration" />
-			<var name="portlet" value="Pages" />
+			<var name="portlet" value="Pages" />f
 		</execute>
 
 		<execute macro="SitePages#addPublicPage">
@@ -227,6 +227,7 @@
 	</command>
 
 	<command name="LocalizeCountryName" priority="3">
+		<property name="portal.acceptance" value="kyle-miho" />
 		<property name="testray.component.names" value="Site Localization,Users and Organizations" />
 
 		<execute macro="ProductMenu#gotoPortlet">
