@@ -28,7 +28,9 @@
 	</command>
 
 	<command name="getDifference">
-		<var method="MathUtil#difference('${first}','${second}')" name="result" />
+		<var method="MathUtil#differenceLong('${first}','${second}')" name="result" />
+
+		<echo message="${first} - ${second} = ${result}" />
 
 		<return value="${result}" />
 	</command>

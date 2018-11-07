@@ -34,6 +34,8 @@
 
 		<!-- Create a WC assuming we have to navigate (First Creation) -->
 
+		<var name="totalTime" value="" />
+
 		<for list="1,2,3,4,5,6,7,8,9,10" param="index">
 			<execute macro="Math#getCurrentTimeMilli">
 				<return name="startTime" />
@@ -43,10 +45,14 @@
 				<var name="siteURLKey" value="test-site-name" />
 			</execute>
 
+			<execute macro="WebContentNavigator#gotoAddCP" />
+
 			<execute macro="WebContent#addCP">
 				<var name="webContentContent" value="WC Navigate ${index}" />
 				<var name="webContentTitle" value="WC Navigate ${index}" />
 			</execute>
+
+			<execute macro="PortletEntry#publish" />
 
 			<execute macro="Math#getCurrentTimeMilli">
 				<return name="endTime" />
@@ -54,11 +60,11 @@
 
 			<execute macro="Math#getDifference">
 				<return name="runTimeNav" />
-				<var name="first" value="${startTime}" />
-				<var name="second" value="${endTime}" />
+				<var name="first" value="${endTime}" />
+				<var name="second" value="${startTime}" />
 			</execute>
 
-			<var name="totalTime" value="${totalTime},runTimeNav" />
+			<var name="totalTime" value="${totalTime},${runTimeNav}" />
 		</for>
 
 		<execute macro="Math#getAverage">
@@ -68,39 +74,47 @@
 
 		<!-- Create a WC assuming we do not have to navigate (Second Creation) -->
 
-			<execute macro="WebContent#openWebContentAdmin">
-				<var name="siteURLKey" value="test-site-name" />
-			</execute>
+		<execute macro="WebContent#openWebContentAdmin">
+			<var name="siteURLKey" value="test-site-name" />
+		</execute>
+
+		<var name="totalTime2" value="" />
 
 		<for list="1,2,3,4,5,6,7,8,9,10" param="index">
 			<execute macro="Math#getCurrentTimeMilli">
 				<return name="startTime" />
 			</execute>
 
+			<execute macro="WebContentNavigator#gotoAddCP" />
+
 			<execute macro="WebContent#addCP">
 				<var name="webContentContent" value="WC Default ${index}" />
 				<var name="webContentTitle" value="WC Default ${index}" />
 			</execute>
+
+			<execute macro="PortletEntry#publish" />
 
 			<execute macro="Math#getCurrentTimeMilli">
 				<return name="endTime" />
 			</execute>
 
 			<execute macro="Math#getDifference">
-				<var name="first" value="${startTime}" />
-				<var name="second" value="${endTime}" />
+				<var name="first" value="${endTime}" />
+				<var name="second" value="${startTime}" />
 				<return name="runTimeNorm" />
 			</execute>
 
-			<var name="totalTime" value="${totalTime},runTimeNav" />
+			<var name="totalTime2" value="${totalTime},${runTimeNorm}" />
 		</for>
 
 		<execute macro="Math#getAverage">
 			<return name="${averageTimeNorm}" />
-			<var name="list" value="${totalTime}" />
+			<var name="list" value="${totalTime2}" />
 		</execute>
 
 		<!-- Create a WC via JSON WS API -->
+
+		<var name="totalTime3" value="" />
 
 		<for list="1,2,3,4,5,6,7,8,9,10" param="index">
 			<execute macro="Math#getCurrentTimeMilli">
@@ -118,15 +132,17 @@
 			</execute>
 
 			<execute macro="Math#getDifference">
-				<var name="first" value="${startTime}" />
-				<var name="second" value="${endTime}" />
+				<var name="first" value="${endTime}" />
+				<var name="second" value="${startTime}" />
 				<return name="runTimeJSON" />
 			</execute>
+
+			<var name="totalTime3" value="${totalTime},${runTimeJSON}" />
 		</for>
 
 		<execute macro="Math#getAverage">
 			<return name="${averageTimeJSON}" />
-			<var name="list" value="${totalTime}" />
+			<var name="list" value="${totalTime3}" />
 		</execute>
 
 		<!-- Echo Output -->
