@@ -290,6 +290,10 @@ public class PoshiRunnerGetterUtil {
 				parameter = PoshiRunnerVariablesUtil.replaceCommandVars(arg);
 			}
 
+			if(className.endsWith("MathUtil") &&  methodName.equals("differenceLong")) {
+				parameter = GetterUtil.getLong((String)parameter);
+			}
+
 			if (className.endsWith("MathUtil") &&
 				(parameter instanceof String)) {
 

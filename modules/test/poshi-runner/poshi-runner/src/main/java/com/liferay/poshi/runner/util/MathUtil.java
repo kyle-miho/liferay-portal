@@ -25,6 +25,10 @@ public class MathUtil {
 		return value1 - value2;
 	}
 
+	public static long differenceLong(Long value1, Long value2) {
+		return value1 - value2;
+	}
+
 	public static boolean isGreaterThan(Integer value1, Integer value2) {
 		if (value1 > value2) {
 			return true;
