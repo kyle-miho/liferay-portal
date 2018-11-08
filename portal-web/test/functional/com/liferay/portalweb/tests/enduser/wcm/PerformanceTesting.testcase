@@ -65,10 +65,19 @@
 			</execute>
 
 			<var name="totalTime" value="${totalTime},${runTimeNav}" />
+
+			<!-- First creation seperation -->
+
+			<if>
+				<equals arg1="${index}" arg2="1" />
+				<then>
+					<var name="firstRunTimeNav" value="${runTimeNav}" />
+				</then>
+			</if>
 		</for>
 
 		<execute macro="Math#getAverage">
-			<return name="${averageTimeNav}" />
+			<return name="averageTimeNav" />
 			<var name="list" value="${totalTime}" />
 		</execute>
 
@@ -108,7 +117,7 @@
 		</for>
 
 		<execute macro="Math#getAverage">
-			<return name="${averageTimeNorm}" />
+			<return name="averageTimeNorm" />
 			<var name="list" value="${totalTime2}" />
 		</execute>
 
@@ -138,20 +147,52 @@
 			</execute>
 
 			<var name="totalTime3" value="${totalTime},${runTimeJSON}" />
+
+			<!-- First creation seperation -->
+
+			<if>
+				<equals arg1="${index}" arg2="1" />
+				<then>
+					<var name="firstRunTimeJSON" value="${runTimeJSON}" />
+				</then>
+			</if>
 		</for>
 
 		<execute macro="Math#getAverage">
-			<return name="${averageTimeJSON}" />
+			<return name="averageTimeJSON" />
 			<var name="list" value="${totalTime3}" />
+		</execute>
+
+		<!-- Calculate differences -->
+		<execute macro="Math#getDifference">
+			<return name="timeSavedFirst" />
+			<var name="first" value="${firstRunTimeNav}" />
+			<var name="second" value="${firstRunTimeJSON}" />
+		</execute>
+
+		<execute macro="Math#getDifference">
+			<return name="timeSavedOther" />
+			<var name="first" value="${averageTimeNav}" />
+			<var name="second" value="${averageTimeJSON}" />
 		</execute>
 
 		<!-- Echo Output -->
 
-		<echo message="Run time for navigating to WC = ${averageTimeNav}" />
+		<echo message="Run time for navigating to WC = ${averageTimeNav}ms" />
 
-		<echo message="Run time for creating WC without navigation = ${averageTimeNorm}" />
+		<echo message="Run time for creating WC without navigation = ${averageTimeNorm}ms" />
 
-		<echo message="Run time for creating WC with JSON = ${averageTimeJSON}" />
+		<echo message="Run time for creating WC with JSON = ${averageTimeJSON}ms" />
+
+		<echo message="Run time for first WC creation = ${firstRunTimeNav}ms" />
+
+		<echo message="Run time for first WC creation JSON = ${firstRunTimeJSON}ms" />
+
+		<echo message="Time saved for first JSON creation = ${timeSavedFirst}" />
+
+		<echo message="Average time saved for JSON creation = ${timeSavedOther}" />
+
+		<fail message="FINISHED" />
 	</command>
 
 <!--
