@@ -291,7 +291,7 @@ public class PoshiRunnerGetterUtil {
 			}
 
 			if(className.endsWith("MathUtil") &&  methodName.equals("differenceLong")) {
-				parameter = GetterUtil.getLong((String)parameter);
+				parameter = GetterUtil.getLong(String.valueOf(parameter));
 			}
 
 			if (className.endsWith("MathUtil") &&
