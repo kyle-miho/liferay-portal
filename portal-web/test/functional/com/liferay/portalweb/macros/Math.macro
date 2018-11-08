@@ -9,7 +9,7 @@
 
 			<var method="MathUtil#sum('${sum}','${num}')" name="sum" />
 
-			<var method="MathUtil#sum('${sum}','${listLength}')" name="sum" /> 
+			<var method="MathUtil#sum('1','${listLength}')" name="listLength" /> 
 		</for>
 
 		<echo message="Total Sum: ${sum}" />
