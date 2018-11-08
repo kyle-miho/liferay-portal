@@ -12,6 +12,8 @@
 			<var method="MathUtil#sum('1','${listLength}')" name="listLength" /> 
 		</for>
 
+		<var method="MathUtil#sum('-1','${listLength}')" name="listLength" /> 
+
 		<echo message="Total Sum: ${sum}" />
 
 		<var method="MathUtil#quotient('${sum}','${listLength}')" name="average" />
