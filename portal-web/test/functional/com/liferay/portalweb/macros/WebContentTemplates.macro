@@ -1,5 +1,5 @@
 <definition>
-	<command name="_addFields">
+	<command name="_addFields" summary="Helper function to add fields to a template">
 		<if>
 			<isset var="templateFieldNames" />
 			<then>
@@ -12,7 +12,7 @@
 		</if>
 	</command>
 
-	<command name="_inputDescription">
+	<command name="_inputDescription" summary="Helper function to add a description to a template">
 		<if>
 			<isset var="templateDescription" />
 			<then>
@@ -27,7 +27,7 @@
 		</if>
 	</command>
 
-	<command name="_inputScript">
+	<command name="_inputScript" summary="Helper function to add a script to a template">
 		<if>
 			<isset var="templateScript" />
 			<then>
@@ -36,7 +36,7 @@
 		</if>
 	</command>
 
-	<command name="_inputStructure">
+	<command name="_inputStructure" summary="Helper function to link a structure to a template">
 		<if>
 			<isset var="structureName" />
 			<then>
@@ -61,7 +61,7 @@
 		</if>
 	</command>
 
-	<command name="_inputTemplateFile">
+	<command name="_inputTemplateFile" summary="Helper function to add a script to a template via file">
 		<if>
 			<isset var="templateFile" />
 			<then>
@@ -70,7 +70,7 @@
 		</if>
 	</command>
 
-	<command name="_inputTemplateLanguage">
+	<command name="_inputTemplateLanguage" summary="Helper function to add the template language to read the template in">
 		<execute macro="Panel#expandPanel">
 			<var name="panel" value="Details" />
 		</execute>
@@ -108,7 +108,7 @@
 		</if>
 	</command>
 
-	<command name="addCP">
+	<command name="addCP" summary="Click on the add button to add a template, input most basic fields and then save the template">
 		<execute macro="LexiconEntry#gotoAdd" />
 
 		<execute macro="WebContentTemplates#inputTemplateAddScreenFields">
@@ -124,7 +124,7 @@
 		<execute macro="DDLDataDefinition#save" />
 	</command>
 
-	<command name="addNullCP">
+	<command name="addNullCP" summary="Attempt to add a blank template">
 		<execute macro="LexiconEntry#gotoAdd" />
 
 		<execute function="AssertElementNotPresent" locator1="TextInput#REQUIRED_ALERT" />
@@ -136,7 +136,7 @@
 		<execute function="SelectFrame" value1="relative=top" />
 	</command>
 
-	<command name="addRoleViewPermissions">
+	<command name="addRoleViewPermissions" summary="Give specified roles permissions to view a specific template">
 		<execute macro="LexiconEntry#gotoEntryMenuItem">
 			<var name="menuItem" value="Permissions" />
 			<var name="rowEntry" value="${templateName}" />
@@ -152,7 +152,7 @@
 		<execute function="SelectFrameTop" />
 	</command>
 
-	<command name="deleteCP">
+	<command name="deleteCP" summary="Attempt to delete a specified template">
 		<var name="key_ddlTemplateName" value="${templateName}" />
 
 		<execute function="Click" locator1="DDMSelectTemplate#TEMPLATE_TABLE_ELLIPSIS" />
@@ -176,7 +176,7 @@
 		</if>
 	</command>
 
-	<command name="inputTemplateAddScreenFields">
+	<command name="inputTemplateAddScreenFields" summary="Input most basic fields inside a template">
 		<execute macro="PortletEntry#inputName">
 			<var name="name" value="${templateName}" />
 		</execute>
@@ -206,7 +206,7 @@
 		</execute>
 	</command>
 
-	<command name="localizeTemplateName">
+	<command name="localizeTemplateName" summary="Add localization for the template name">
 		<var name="key_ddlTemplateName" value="${templateName}" />
 
 		<execute macro="WebContentNavigator#gotoViewTemplate">
@@ -235,7 +235,7 @@
 		</if>
 	</command>
 
-	<command name="tearDownCP">
+	<command name="tearDownCP" summary="Teardown templates in the guest site">
 		<execute macro="Navigator#openURL" />
 
 		<execute macro="ProductMenu#gotoPortlet">
@@ -366,7 +366,7 @@
 		</if>
 	</command>
 
-	<command name="viewTableEntryCP">
+	<command name="viewTableEntryCP" summary="Assert that the template's table entry is present">
 		<var name="key_ddlTemplateName" value="${templateName}" />
 
 		<execute function="AssertTextEquals" locator1="DDMSelectTemplate#TEMPLATE_TABLE_NAME" value1="${templateName}" />
