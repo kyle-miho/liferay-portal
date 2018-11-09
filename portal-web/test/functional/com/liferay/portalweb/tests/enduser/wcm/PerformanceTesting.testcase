@@ -190,7 +190,7 @@
 
 		<!-- Echo Output -->
 
-		<echo message="Run time for navigating to WC = ${averageTimeNav}ms" />
+		<echo message="Run time for navigating to WC and creation = ${averageTimeNav}ms" />
 
 		<echo message="Run time for creating WC with Product Menu navigation = ${averageTimeNorm}ms" />
 
@@ -207,6 +207,172 @@
 		<fail message="FINISHED" />
 	</command>
 
+	<command name="PerformanceTestLayout" priority="5">
+
+		<!-- Create a layout assuming we have to navigate (First Creation) -->
+
+		<var name="totalTime" value="" />
+
+		<for list="1,2,3,4,5,6,7,8,9,10" param="index">
+			<execute macro="Math#getCurrentTimeMilli">
+				<return name="startTime" />
+			</execute>
+
+			<execute macro="SitePages#openPagesAdmin">
+				<var name="siteURLKey" value="test-site-name" />
+			</execute>
+
+			<execute macro="SitePages#addPublicPage">
+				<var name="pageName" value="Site Page ${index}" />
+			</execute>
+
+			<execute macro="Math#getCurrentTimeMilli">
+				<return name="endTime" />
+			</execute>
+
+			<execute macro="Math#getDifference">
+				<return name="runTimeNav" />
+				<var name="first" value="${endTime}" />
+				<var name="second" value="${startTime}" />
+			</execute>
+
+			<var name="totalTime" value="${totalTime},${runTimeNav}" />
+
+			<!-- First creation seperation -->
+
+			<if>
+				<equals arg1="${index}" arg2="1" />
+				<then>
+					<var name="firstRunTimeNav" value="${runTimeNav}" />
+				</then>
+			</if>
+		</for>
+
+		<execute macro="Math#getAverage">
+			<return name="averageTimeNav" />
+			<var name="list" value="${totalTime}" />
+		</execute>
+
+		<!-- Create a WC assuming we have to navigate (Product Menu Navigation) -->
+
+		<execute macro="SitePages#openPagesAdmin">
+				<var name="siteURLKey" value="test-site-name" />
+		</execute>
+
+		<var name="totalTime2" value="" />
+
+		<for list="1,2,3,4,5,6,7,8,9,10" param="index">
+			<execute macro="Site#openSiteMembershipsAdmin">
+				<var name="siteURLKey" value="test-site-name" />
+			</execute>
+
+			<execute macro="ProductMenuHelper#closeProductMenu" />
+
+			<execute macro="Math#getCurrentTimeMilli">
+				<return name="startTime" />
+			</execute>
+
+			<execute macro="ProductMenu#gotoPortlet">
+				<var name="category" value="Build" />
+				<var name="panel" value="Site Administration" />
+				<var name="portlet" value="Pages" />
+			</execute>
+
+			<execute macro="SitePages#addPublicPage">
+				<var name="pageName" value="Site Page Product ${index}" />
+			</execute>
+
+			<execute macro="Math#getCurrentTimeMilli">
+				<return name="endTime" />
+			</execute>
+
+			<execute macro="Math#getDifference">
+				<var name="first" value="${endTime}" />
+				<var name="second" value="${startTime}" />
+				<return name="runTimeNorm" />
+			</execute>
+
+			<var name="totalTime2" value="${totalTime2},${runTimeNorm}" />
+		</for>
+
+		<execute macro="Math#getAverage">
+			<return name="averageTimeNorm" />
+			<var name="list" value="${totalTime2}" />
+		</execute>
+
+		<!-- Create a WC via JSON WS API -->
+
+		<var name="totalTime3" value="" />
+
+		<for list="1,2,3,4,5,6,7,8,9,10" param="index">
+			<execute macro="Math#getCurrentTimeMilli">
+				<return name="startTime" />
+			</execute>
+
+			<execute macro="JSONLayout#addPublicLayout">
+				<var name="groupName" value="Test Site Name" />
+				<var name="layoutName" value="Site Page JSON ${index}" />
+			</execute>
+
+			<execute macro="Math#getCurrentTimeMilli">
+				<return name="endTime" />
+			</execute>
+
+			<execute macro="Math#getDifference">
+				<var name="first" value="${endTime}" />
+				<var name="second" value="${startTime}" />
+				<return name="runTimeJSON" />
+			</execute>
+
+			<var name="totalTime3" value="${totalTime3},${runTimeJSON}" />
+
+			<!-- First creation seperation -->
+
+			<if>
+				<equals arg1="${index}" arg2="1" />
+				<then>
+					<var name="firstRunTimeJSON" value="${runTimeJSON}" />
+				</then>
+			</if>
+		</for>
+
+		<execute macro="Math#getAverage">
+			<return name="averageTimeJSON" />
+			<var name="list" value="${totalTime3}" />
+		</execute>
+
+		<!-- Calculate differences -->
+		<execute macro="Math#getDifference">
+			<return name="timeSavedProduct" />
+			<var name="first" value="${averageTimeNorm}" />
+			<var name="second" value="${averageTimeJSON}" />
+		</execute>
+
+		<execute macro="Math#getDifference">
+			<return name="timeSavedOther" />
+			<var name="first" value="${averageTimeNav}" />
+			<var name="second" value="${averageTimeJSON}" />
+		</execute>
+
+		<!-- Echo Output -->
+
+		<echo message="Run time for navigating to Layout and Creating = ${averageTimeNav}ms" />
+
+		<echo message="Run time for creating Layout with Product Menu navigation = ${averageTimeNorm}ms" />
+
+		<echo message="Run time for creating Layout with JSON = ${averageTimeJSON}ms" />
+
+		<echo message="Run time for first Layout creation = ${firstRunTimeNav}ms" />
+
+		<echo message="Run time for first Layout creation JSON = ${firstRunTimeJSON}ms" />
+
+		<echo message="Average time for JSON vs Product Menu = ${timeSavedProduct}ms" />
+
+		<echo message="Average time saved for JSON creation = ${timeSavedOther}ms" />
+
+		<fail message="FINISHED" />
+	</command>
+
 <!--
 	<command name="PerformanceTestFragment" priority="5">
 	</command>
@@ -215,9 +381,6 @@
 	</command>
 
 	<command name="PerformanceTestGroup" priority="5">
-	</command>
-
-	<command name="PerformanceTestLayout" priority="5">
 	</command>
 
 	<command name="PerformanceTestVocabulary" priority="5">
