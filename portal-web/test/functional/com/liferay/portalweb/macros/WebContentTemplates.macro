@@ -177,9 +177,14 @@
 	</command>
 
 	<command name="inputTemplateAddScreenFields" summary="Input most basic fields inside a template">
-		<execute macro="PortletEntry#inputName">
-			<var name="name" value="${templateName}" />
-		</execute>
+		<if>
+			<isset var="templateName" />
+			<then>
+				<execute macro="PortletEntry#inputName">
+					<var name="name" value="${templateName}" />
+				</execute>
+			</then>
+		</if>
 
 		<execute macro="WebContentTemplates#_inputStructure">
 			<var name="structureName" value="${structureName}" />
