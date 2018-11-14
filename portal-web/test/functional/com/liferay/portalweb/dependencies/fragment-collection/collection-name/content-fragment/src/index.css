@@ -1,13 +1,7 @@
-.fragment-body {
+.content {
 	background-color: #C1C1C1;
 
-border: solid thin black;
+  border: solid thin black;
 
 	padding: 1em;
-}
-
-.fragment-body .content {
-	font-family: inherit;
-	font-size: 1.25em;
-	font-weight: 300;
 }
