@@ -2039,6 +2039,8 @@
 	</command>
 
 	<command name="ViewBlogsEntriesViaRelatedAssets" priority="4">
+		<property name="portal.acceptance" value="kyle-miho" />
+
 		<execute macro="ProductMenu#gotoPortlet">
 			<var name="category" value="Build" />
 			<var name="panel" value="Site Administration" />
@@ -2342,6 +2344,8 @@
 	</command>
 
 	<command name="ViewRelatedAssetViaDMPortlet" priority="3">
+		<property name="portal.acceptance" value="kyle-miho" />
+
 		<execute macro="ProductMenu#gotoPortlet">
 			<var name="category" value="Build" />
 			<var name="panel" value="Site Administration" />
