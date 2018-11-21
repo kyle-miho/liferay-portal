@@ -424,7 +424,9 @@
 
 				<var name="key_assetTitle" value="${assetTitle}" />
 
-				<execute function="AssertClick" locator1="APConfiguration#ASSET_SELECTION_MANUAL_ASSET_ENTRIES_SELECT_CONTENT_LINK" value1="${assetTitle}" />
+				<execute function="Click" locator1="AssetRelatedAssets#ASSET_TABLE_CHECKBOX">
+					<var name="key_assetTitle" value="${assetTitle}" />
+				</execute>
 
 				<execute function="SelectFrameTop" />
 
