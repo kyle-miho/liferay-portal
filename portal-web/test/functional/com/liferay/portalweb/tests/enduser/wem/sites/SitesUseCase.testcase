@@ -51,6 +51,8 @@
 			<var name="uploadFrom" value="dependencies" />
 		</execute>
 
+		<execute macro="UsersAndOrganizationsNavigator#gotoOrganizations" />
+
 		<execute macro="Organization#viewCP">
 			<var name="orgName" value="Space Program Academy of Continuing Education" />
 			<var name="orgType" value="Organization" />
