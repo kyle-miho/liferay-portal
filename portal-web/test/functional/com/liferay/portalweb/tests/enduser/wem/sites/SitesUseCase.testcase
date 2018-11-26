@@ -82,7 +82,7 @@
 		</execute>
 
 		<execute macro="LAR#importPortlet">
-			<var name="larFileName" value="class-site-template-7.0.lar" />
+			<var name="larFileName" value="class-site-template-7.1.lar" />
 			<var name="portletName" value="Site Templates" />
 			<var name="uploadFrom" value="dependencies" />
 		</execute>
