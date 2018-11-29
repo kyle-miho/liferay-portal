@@ -234,6 +234,14 @@ if (portletTitleBasedNavigation) {
 					/>
 				</aui:fieldset>
 
+				<aui:fieldset collapsed="<%= true %>" collapsible="<%= true %>" label="display-page">
+					<liferay-asset:select-asset-display-page
+						classNameId="<%= PortalUtil.getClassNameId(BlogsEntry.class) %>"
+						classPK="<%= entryId %>"
+						groupId="<%= scopeGroupId %>"
+					/>
+				</aui:fieldset>
+
 				<aui:fieldset collapsed="<%= true %>" collapsible="<%= true %>" label="related-assets">
 					<liferay-asset:input-asset-links
 						className="<%= BlogsEntry.class.getName() %>"
