@@ -1987,9 +1987,10 @@
 			<var name="siteURLKey" value="test-site-name" />
 		</execute>
 
-		<execute macro="WebContentFolder#addCP">
-			<var name="folderDescription" value="WC Folder Description" />
-			<var name="folderName" value="WC Folder Name" />
+		<execute macro="JSONWebcontent#addFolder">
+			<var name="description" value="WC Folder Description" />
+			<var name="groupName" value="Test Site Name" />
+			<var name="name" value="WC Folder Name" />
 		</execute>
 
 		<execute macro="JSONWebcontent#addWebContent">
