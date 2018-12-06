@@ -1,6 +1,60 @@
 <definition>
-	<command name="_addWebContent" summary="Helper function to add a WC Article via JSON">
+	<command name="_addFolder" summary="Helper function to add a WC Folder via JSON">
+		<if>
+			<not>
+				<isset var="description" />
+			</not>
+			<then>
+				<var name="description" value="" />
+			</then>
+		</if>
 
+		<if>
+			<isset var="parentFolderName" />
+			<then>
+				<execute macro="JSONWebcontent#_getFolderIdByName">
+					<return name="parentFolderId" />
+					<var name="folderName" value="${parentFolderName}" />
+					<var name="groupId" value="${groupId}" />
+				</execute>
+			</then>
+			<else>
+				<var name="parentFolderId" value="0" />
+			</else>
+		</if>
+
+		<execute macro="JSONCompany#getPortalURL">
+			<return name="portalURL" />
+		</execute>
+
+		<var name="curl"><![CDATA[
+			${portalURL}/api/jsonws/journal.journalfolder/add-folder \
+				-u test@liferay.com:test \
+				-d groupId=${groupId} \
+				-d parentFolderId=${parentFolderId} \
+				-d name=${name} \
+				-d description=${description}
+		]]></var>
+
+		<execute macro="JSONGroup#_getGroupName">
+			<return name="groupName" />
+			<var name="groupId" value="${groupId}" />
+		</execute>
+
+		<echo message="## Create a 'Web Content Folder' with the following info using JSONWS:" />
+
+		<echo message="## * Group Name: ${groupName}" />
+
+		<echo message="## * Parent Folder Id: ${folderId}" />
+
+		<echo message="## * Name: ${folderName}" />
+
+		<execute class="com.liferay.poshi.runner.util.JSONCurlUtil" method="post">
+			<arg value="${curl}" />
+		</execute>
+	</command>
+
+	<command name="_addWebContent" summary="Helper function to add a WC Article via JSON">
 		<execute macro="JSONCompany#getPortalURL">
 			<return name="portalURL" />
 		</execute>
@@ -32,12 +86,17 @@
 		</if>
 
 		<if>
-			<not>
-				<isset var="folderId" />
-			</not>
+			<isset var="folderName" />
 			<then>
-				<var name="folderId" value="0" />
+				<execute macro="JSONWebcontent#_getFolderIdByName">
+					<return name="folderId" />
+					<var name="folderName" value="${folderName}" />
+					<var name="groupId" value="${groupId}" />
+				</execute>
 			</then>
+			<else>
+				<var name="folderId" value="0" />
+			</else>
 		</if>
 
 		<if>
@@ -146,6 +205,65 @@
 		</if>
 	</command>
 
+	<command name="_getFolderIdByName" summary="Helper function to get folderId from folderName">
+		<if>
+			<not>
+				<isset var="folderName" />
+			</not>
+			<then>
+				<fail message="Please set 'folderName.'" />
+			</then>
+		</if>
+
+		<if>
+			<not>
+				<isset var="groupId" />
+			</not>
+			<then>
+				<fail message="Please set 'groupId.'" />
+			</then>
+		</if>
+
+		<execute macro="JSONCompany#getPortalURL">
+			<return name="portalURL" />
+		</execute>
+
+		<var name="curl"><![CDATA[
+			${portalURL}/api/jsonws/journal.journalfolder/get-folders \
+				-u test@liferay.com:test \
+				-d groupId=${groupId}
+		]]></var>
+
+		<execute macro="JSONGroup#_getGroupName">
+			<return name="groupName" />
+			<var name="groupId" value="${groupId}" />
+		</execute>
+
+		<echo message="## Searching for a 'Folder' with the following info using JSONWS:" />
+
+		<echo message="## * Folder Name: ${folderName}" />
+
+		<echo message="## * Group Name: ${groupName}" />
+
+		<var method="JSONCurlUtil#post('${curl}', '$.[?(@[\'name\'] == \'${folderName}\')][\'folderId\']')" name="folderId" />
+
+		<var method="StringUtil#replace('${folderId}', '[&quot;', '')" name="folderId" />
+
+		<var method="StringUtil#replace('${folderId}', '&quot;]', '')" name="folderId" />
+
+		<if>
+			<equals arg1="${folderId}" arg2="[]" />
+			<then>
+				<fail message="FAIL. Cannot find folder." />
+			</then>
+			<else>
+				<echo message="FOUND. Returning folderId: ${folderId}" />
+			</else>
+		</if>
+
+		<return value="${folderId}" />
+	</command>
+
 	<command name="_localizedConvertToXML" summary="Helper function to help input localized content html info">
 		<!-- Get list of localizations used -->
 
@@ -177,7 +295,7 @@
 		<return value="${contentXML}" />
 	</command>
 
-	<command name="addBasicWebContentLocalized" summary="Add a localized WC Article via JSON using the Basic Web Content Structure with Title: '${title}' or '${titleMap}', Content: '${content}' or '${contentMap}', and Site Name: ${groupName}. The mapped inputs should be inputted in a format the same as 'en_US:Title,es_ES:Titulo'">
+	<command name="addBasicWebContentLocalized" summary="Add a localized WC Article via JSON using the Basic Web Content Structure with Title: '${title}' or '${titleMap}', Content: '${content}' or '${contentMap}', and Site Name: '${groupName}'. The mapped inputs should be inputted in a format the same as 'en_US:Title,es_ES:Titulo'">
 		<execute macro="JSONWebcontent#_exclusiveOrCheck">
 			<var name="A" value="${title}" />
 			<var name="B" value="${titleMap}" />
@@ -215,7 +333,37 @@
 		</execute>
 	</command>
 
-	<command name="addWebContent" summary="Add a WC Article with Title '${title}' and Content '${content}' to the Site '${groupName}' via JSON">
+	<command name="addFolder" summary="Add a WC Folder with Folder Name: '${folderName}', Site Name: '${groupName}'. The option to set the Parent Folder is optional by setting: '${parentFolderName}'">
+		<if>
+			<not>
+				<isset var="name" />
+			</not>
+			<then>
+				<fail message="Please set 'name.'" />
+			</then>
+		</if>
+
+		<if>
+			<isset var="groupName" />
+			<then>
+				<execute macro="JSONGroup#_getGroupIdByName">
+					<return name="groupId" />
+					<var name="groupName" value="${groupName}" />
+				</execute>
+			</then>
+			<else>
+				<fail message="Please set 'groupName' to get groupId." />
+			</else>
+		</if>
+
+		<execute macro="JSONWebcontent#_addFolder">
+			<var name="groupId" value="${groupId}" />
+			<var name="name" value="${name}" />
+			<var name="parentFolderName" value="${parentFolderName}" />
+		</execute>
+	</command>
+
+	<command name="addWebContent" summary="Add a WC Article with Title '${title}' and Content '${content}' to the Site '${groupName}' via JSON. Setting the Folder Name '${folderName}' is optional.">
 		<if>
 			<not>
 				<isset var="content" />
@@ -250,7 +398,7 @@
 		<execute macro="JSONWebcontent#_addWebContent">
 			<var name="content" value="${content}" />
 			<var name="description" value="${description}" />
-			<var name="folderId" value="${folderId}" />
+			<var name="folderName" value="${folderName}" />
 			<var name="groupId" value="${groupId}" />
 			<var name="serviceContext" value="${serviceContext}" />
 			<var name="title" value="${title}" />
