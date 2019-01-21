@@ -30,6 +30,7 @@ import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.transaction.Propagation;
+import com.liferay.portal.kernel.transaction.TransactionCommitCallbackUtil;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PermissionCheckerTestRule;
 import com.liferay.portal.test.rule.PersistenceTestRule;
@@ -312,38 +313,42 @@ public class AssetListEntryAssetEntryRelServiceTest {
 			_group.getGroupId(), null,
 			TestAssetRendererFactory.class.getName());
 
-		AssetListEntryAssetEntryRel assetListEntryRelOriginal =
+		AssetListEntryAssetEntryRel assetListEntryRel1 =
 			AssetListTestUtil.addAssetListEntryAssetEntryRel(
 				_group.getGroupId(), assetEntry, assetListEntry);
 
-		int originalPosition = assetListEntryRelOriginal.getPosition();
-
-		AssetListEntryAssetEntryRel assetListEntryRelOccupied =
+		AssetListEntryAssetEntryRel assetListEntryRel2 =
 			AssetListTestUtil.addAssetListEntryAssetEntryRel(
 				_group.getGroupId(), assetEntry, assetListEntry);
 
-		int occupiedPosition = assetListEntryRelOccupied.getPosition();
+		TransactionCommitCallbackUtil.registerCallback(
+			() -> {
+				AssetListEntryAssetEntryRelLocalServiceUtil.
+					moveAssetListEntryAssetEntryRel(
+						assetListEntry.getAssetListEntryId(),
+						assetListEntryRel1.getPosition(),
+						assetListEntryRel2.getPosition());
 
-		AssetListEntryAssetEntryRelLocalServiceUtil.
-			moveAssetListEntryAssetEntryRel(
-				assetListEntry.getAssetListEntryId(), originalPosition,
-				occupiedPosition);
+				AssetListEntryAssetEntryRel assetListEntryRel1Updated =
+					AssetListEntryAssetEntryRelUtil.findByPrimaryKey(
+						assetListEntryRel1.getAssetListEntryAssetEntryRelId());
 
-		assetListEntryRelOriginal =
-			AssetListEntryAssetEntryRelUtil.findByPrimaryKey(
-				assetListEntryRelOriginal.getAssetListEntryAssetEntryRelId());
+				AssetListEntryAssetEntryRel assetListEntryRel2Updated =
+					AssetListEntryAssetEntryRelUtil.findByPrimaryKey(
+						assetListEntryRel2.getAssetListEntryAssetEntryRelId());
 
-		assetListEntryRelOccupied =
-			AssetListEntryAssetEntryRelUtil.findByPrimaryKey(
-				assetListEntryRelOccupied.getAssetListEntryAssetEntryRelId());
+				//assert assetListEntryRels swap positions
 
-		//assert assetListEntryRels swap positions
+				Assert.assertEquals(
+					assetListEntryRel1.getPosition(),
+					assetListEntryRel2Updated.getPosition());
 
-		Assert.assertEquals(
-			originalPosition, assetListEntryRelOccupied.getPosition());
+				Assert.assertEquals(
+					assetListEntryRel2.getPosition(),
+					assetListEntryRel1Updated.getPosition());
 
-		Assert.assertEquals(
-			occupiedPosition, assetListEntryRelOriginal.getPosition());
+				return null;
+			});
 	}
 
 	@Test
