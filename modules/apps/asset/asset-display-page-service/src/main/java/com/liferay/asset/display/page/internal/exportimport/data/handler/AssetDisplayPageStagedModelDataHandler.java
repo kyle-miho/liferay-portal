@@ -15,12 +15,20 @@
 package com.liferay.asset.display.page.internal.exportimport.data.handler;
 
 import com.liferay.asset.display.page.model.AssetDisplayPageEntry;
+import com.liferay.asset.kernel.AssetRendererFactoryRegistryUtil;
+import com.liferay.asset.kernel.model.AssetRenderer;
+import com.liferay.asset.kernel.model.AssetRendererFactory;
 import com.liferay.exportimport.data.handler.base.BaseStagedModelDataHandler;
 import com.liferay.exportimport.kernel.lar.ExportImportPathUtil;
 import com.liferay.exportimport.kernel.lar.PortletDataContext;
 import com.liferay.exportimport.kernel.lar.StagedModelDataHandler;
+import com.liferay.exportimport.kernel.lar.StagedModelDataHandlerUtil;
 import com.liferay.exportimport.staged.model.repository.StagedModelRepository;
+import com.liferay.portal.kernel.model.StagedModel;
+import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.xml.Element;
+
+import java.util.Map;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -50,6 +58,21 @@ public class AssetDisplayPageStagedModelDataHandler
 		Element assetDisplayPageElement =
 			portletDataContext.getExportDataElement(assetDisplayPageEntry);
 
+		assetDisplayPageElement.addAttribute(
+			"class-name", assetDisplayPageEntry.getClassName());
+
+		AssetRendererFactory assetRendererFactory =
+			AssetRendererFactoryRegistryUtil.getAssetRendererFactoryByClassName(
+				assetDisplayPageEntry.getClassName());
+
+		AssetRenderer assetRenderer = assetRendererFactory.getAssetRenderer(
+			assetDisplayPageEntry.getClassPK());
+
+		StagedModelDataHandlerUtil.exportReferenceStagedModel(
+			portletDataContext, assetDisplayPageEntry,
+			(StagedModel)assetRenderer.getAssetObject(),
+			PortletDataContext.REFERENCE_TYPE_DEPENDENCY);
+
 		portletDataContext.addClassedModel(
 			assetDisplayPageElement,
 			ExportImportPathUtil.getModelPath(assetDisplayPageEntry),
@@ -75,6 +98,21 @@ public class AssetDisplayPageStagedModelDataHandler
 
 		if ((existingAssetDisplayPageEntry == null) ||
 			!portletDataContext.isDataStrategyMirror()) {
+
+			Element element = portletDataContext.getImportDataElement(
+				assetDisplayPageEntry);
+
+			String className = element.attributeValue("class-name");
+
+			Map<Long, Long> classPKs =
+				(Map<Long, Long>)portletDataContext.getNewPrimaryKeysMap(
+					className);
+
+			importedAssetDisplayPageEntry.setClassNameId(
+				_portal.getClassNameId(className));
+
+			importedAssetDisplayPageEntry.setClassPK(
+				classPKs.get(assetDisplayPageEntry.getClassPK()));
 
 			importedAssetDisplayPageEntry =
 				_stagedModelRepository.addStagedModel(
@@ -103,6 +141,9 @@ public class AssetDisplayPageStagedModelDataHandler
 
 		return _stagedModelRepository;
 	}
+
+	@Reference
+	private Portal _portal;
 
 	@Reference(
 		target = "(model.class.name=com.liferay.asset.display.page.model.AssetDisplayPageEntry)",
