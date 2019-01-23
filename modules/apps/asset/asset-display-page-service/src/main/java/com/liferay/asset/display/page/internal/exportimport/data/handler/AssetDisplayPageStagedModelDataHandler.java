@@ -26,6 +26,7 @@ import com.liferay.exportimport.kernel.lar.StagedModelDataHandlerUtil;
 import com.liferay.exportimport.staged.model.repository.StagedModelRepository;
 import com.liferay.portal.kernel.model.StagedModel;
 import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.xml.Element;
 
 import java.util.Map;
@@ -104,15 +105,17 @@ public class AssetDisplayPageStagedModelDataHandler
 
 			String className = element.attributeValue("class-name");
 
-			Map<Long, Long> classPKs =
-				(Map<Long, Long>)portletDataContext.getNewPrimaryKeysMap(
-					className);
+			if (Validator.isNotNull(className)) {
+				Map<Long, Long> classPKs =
+					(Map<Long, Long>)portletDataContext.getNewPrimaryKeysMap(
+						className);
 
-			importedAssetDisplayPageEntry.setClassNameId(
-				_portal.getClassNameId(className));
+				importedAssetDisplayPageEntry.setClassNameId(
+					_portal.getClassNameId(className));
 
-			importedAssetDisplayPageEntry.setClassPK(
-				classPKs.get(assetDisplayPageEntry.getClassPK()));
+				importedAssetDisplayPageEntry.setClassPK(
+					classPKs.get(assetDisplayPageEntry.getClassPK()));
+			}
 
 			importedAssetDisplayPageEntry =
 				_stagedModelRepository.addStagedModel(
