@@ -281,11 +281,11 @@ public class FragmentDisplayContext {
 		List<FragmentEntry> fragmentEntries = null;
 		int fragmentEntriesCount = 0;
 
-		if (isNavigationElements() || isNavigationSections()) {
+		if (isNavigationComponents() || isNavigationSections()) {
 			int type = FragmentEntryTypeConstants.TYPE_SECTION;
 
-			if (isNavigationElements()) {
-				type = FragmentEntryTypeConstants.TYPE_ELEMENT;
+			if (isNavigationComponents()) {
+				type = FragmentEntryTypeConstants.TYPE_COMPONENT;
 			}
 
 			fragmentEntries = FragmentEntryServiceUtil.getFragmentEntriesByType(
@@ -483,8 +483,8 @@ public class FragmentDisplayContext {
 		return redirect;
 	}
 
-	public boolean isNavigationElements() {
-		if (Objects.equals(getNavigation(), "elements")) {
+	public boolean isNavigationComponents() {
+		if (Objects.equals(getNavigation(), "components")) {
 			return true;
 		}
 

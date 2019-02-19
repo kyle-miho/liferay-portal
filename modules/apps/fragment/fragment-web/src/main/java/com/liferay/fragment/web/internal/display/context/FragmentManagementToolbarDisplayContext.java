@@ -210,8 +210,8 @@ public class FragmentManagementToolbarDisplayContext
 
 				addPrimaryDropdownItem(
 					_getAddFragmentEntryDropdownItem(
-						FragmentEntryTypeConstants.TYPE_ELEMENT,
-						FragmentEntryTypeConstants.TYPE_ELEMENT_LABEL));
+						FragmentEntryTypeConstants.TYPE_COMPONENT,
+						FragmentEntryTypeConstants.TYPE_COMPONENT_LABEL));
 			}
 		};
 	}
@@ -248,11 +248,11 @@ public class FragmentManagementToolbarDisplayContext
 						});
 				}
 
-				if (_fragmentDisplayContext.isNavigationElements()) {
+				if (_fragmentDisplayContext.isNavigationComponents()) {
 					add(
 						labelItem -> {
 							labelItem.setLabel(
-								LanguageUtil.get(request, "elements"));
+								LanguageUtil.get(request, "components"));
 						});
 				}
 			}
@@ -288,7 +288,7 @@ public class FragmentManagementToolbarDisplayContext
 
 	@Override
 	protected String[] getNavigationKeys() {
-		return new String[] {"all", "sections", "elements"};
+		return new String[] {"all", "sections", "components"};
 	}
 
 	@Override
