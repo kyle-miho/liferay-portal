@@ -100,7 +100,8 @@ public class LayoutPageTemplateManagementToolbarDisplayContext
 							_getAddLayoutPageTemplateEntryURL());
 						dropdownItem.setHref("#");
 						dropdownItem.setLabel(
-							LanguageUtil.get(request, "content-page-template"));
+							LanguageUtil.get(
+								request, "standard-page-template"));
 					});
 
 				addPrimaryDropdownItem(
