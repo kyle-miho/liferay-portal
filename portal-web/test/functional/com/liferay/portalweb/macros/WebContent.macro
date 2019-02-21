@@ -759,7 +759,7 @@ definition {
 		RecycleBin.emptyCP();
 
 		ProductMenu.gotoPortlet(
-			category = "Content",
+			category = "Content & Data",
 			panel = "Site Administration",
 			portlet = "Web Content"
 		);
@@ -787,7 +787,7 @@ definition {
 		Navigator.gotoStagedSitePage(pageName = "${pageName}", siteName = "${siteName}");
 
 		ProductMenu.gotoPortlet(
-			category = "Content",
+			category = "Content & Data",
 			panel = "Site Administration",
 			portlet = "Web Content"
 		);
@@ -1324,7 +1324,7 @@ definition {
 		Navigator.openURL();
 
 		ProductMenu.gotoPortlet(
-			category = "Content",
+			category = "Content & Data",
 			panel = "Site Administration",
 			portlet = "Web Content"
 		);

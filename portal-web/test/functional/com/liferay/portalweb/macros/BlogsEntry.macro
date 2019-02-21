@@ -611,7 +611,7 @@ definition {
 		Navigator.openURL();
 
 		ProductMenu.gotoPortlet(
-			category = "Content",
+			category = "Content & Data",
 			panel = "Site Administration",
 			portlet = "Blogs"
 		);

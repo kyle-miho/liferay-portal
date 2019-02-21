@@ -156,7 +156,7 @@ definition {
 		);
 
 		ProductMenu.gotoPortlet(
-			category = "Content",
+			category = "Content & Data",
 			panel = "Site Administration",
 			portlet = "Documents and Media"
 		);
@@ -209,7 +209,7 @@ definition {
 		ProductMenu.gotoPortlet(
 			category = "Configuration",
 			panel = "Site Administration",
-			portlet = "Site Settings"
+			portlet =  "Settings"
 		);
 
 		Site.editGoogleAnalyticsIDCP(
@@ -373,7 +373,7 @@ definition {
 		Navigator.openURL();
 
 		ProductMenu.gotoPortlet(
-			category = "Content",
+			category = "Content & Data",
 			panel = "Site Administration",
 			portlet = "Blogs"
 		);
@@ -393,7 +393,7 @@ definition {
 		Navigator.openURL();
 
 		ProductMenu.gotoPortlet(
-			category = "Content",
+			category = "Content & Data",
 			panel = "Site Administration",
 			portlet = "Blogs"
 		);
@@ -566,7 +566,7 @@ definition {
 		Navigator.openURL();
 
 		ProductMenu.gotoPortlet(
-			category = "Content",
+			category = "Content & Data",
 			panel = "Site Administration",
 			portlet = "Web Content"
 		);
@@ -628,7 +628,7 @@ definition {
 		Navigator.openURL();
 
 		ProductMenu.gotoPortlet(
-			category = "Content",
+			category = "Content & Data",
 			panel = "Site Administration",
 			portlet = "Web Content"
 		);
@@ -674,7 +674,7 @@ definition {
 		Navigator.openURL();
 
 		ProductMenu.gotoPortlet(
-			category = "Content",
+			category = "Content & Data",
 			panel = "Site Administration",
 			portlet = "Wiki"
 		);

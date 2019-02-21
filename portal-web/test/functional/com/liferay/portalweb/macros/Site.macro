@@ -675,7 +675,7 @@ definition {
 		ProductMenu.gotoPortlet(
 			category = "Configuration",
 			panel = "Site Administration",
-			portlet = "Site Settings"
+			portlet =  "Settings"
 		);
 
 		AssertElementPresent(locator1 = "SitesEditSite#SITE_ID");
@@ -873,7 +873,7 @@ definition {
 		ProductMenu.gotoPortlet(
 			category = "Configuration",
 			panel = "Site Administration",
-			portlet = "Site Settings"
+			portlet =  "Settings"
 		);
 
 		if ("${selectMembershipType}" == "true") {

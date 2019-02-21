@@ -51,7 +51,7 @@ definition {
 	@priority = "5"
 	test PublishDraftViaSAP {
 		ProductMenu.gotoPortlet(
-			category = "Content",
+			category = "Content & Data",
 			panel = "Site Administration",
 			portlet = "Blogs"
 		);
@@ -68,7 +68,7 @@ definition {
 		);
 
 		ProductMenu.gotoPortlet(
-			category = "Content",
+			category = "Content & Data",
 			panel = "Site Administration",
 			portlet = "Blogs"
 		);
@@ -100,7 +100,7 @@ definition {
 		);
 
 		ProductMenu.gotoPortlet(
-			category = "Content",
+			category = "Content & Data",
 			panel = "Site Administration",
 			portlet = "Blogs"
 		);
@@ -152,7 +152,7 @@ definition {
 		);
 
 		ProductMenu.gotoPortlet(
-			category = "Content",
+			category = "Content & Data",
 			panel = "Site Administration",
 			portlet = "Blogs"
 		);
@@ -187,7 +187,7 @@ definition {
 		ProductMenu.gotoLiveSite();
 
 		ProductMenu.gotoPortlet(
-			category = "Content",
+			category = "Content & Data",
 			panel = "Site Administration",
 			portlet = "Blogs"
 		);
@@ -205,7 +205,7 @@ definition {
 		);
 
 		ProductMenu.gotoPortlet(
-			category = "Content",
+			category = "Content & Data",
 			panel = "Site Administration",
 			portlet = "Blogs"
 		);
@@ -233,7 +233,7 @@ definition {
 		);
 
 		ProductMenu.gotoPortlet(
-			category = "Content",
+			category = "Content & Data",
 			panel = "Site Administration",
 			portlet = "Blogs"
 		);
@@ -253,7 +253,7 @@ definition {
 		ProductMenu.gotoLiveSite();
 
 		ProductMenu.gotoPortlet(
-			category = "Content",
+			category = "Content & Data",
 			panel = "Site Administration",
 			portlet = "Blogs"
 		);
@@ -304,7 +304,7 @@ definition {
 		);
 
 		ProductMenu.gotoPortlet(
-			category = "Content",
+			category = "Content & Data",
 			panel = "Site Administration",
 			portlet = "Blogs"
 		);
