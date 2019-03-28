@@ -190,7 +190,7 @@ definition {
 		);
 
 		ProductMenu.gotoPortlet(
-			category = "Build",
+			category = "Site Builder",
 			panel = "Site Administration",
 			portlet = "Pages"
 		);
@@ -807,7 +807,7 @@ definition {
 		Blogs.addEntry(entryContent = "Blogs Entry Content", entryTitle = "Apple");
 
 		ProductMenu.gotoPortlet(
-			category = "Build",
+			category = "Site Builder",
 			panel = "Site Administration",
 			portlet = "Pages"
 		);
@@ -1055,7 +1055,7 @@ definition {
 		);
 
 		ProductMenu.gotoPortlet(
-			category = "Build",
+			category = "Site Builder",
 			panel = "Site Administration",
 			portlet = "Pages"
 		);
@@ -1397,7 +1397,7 @@ definition {
 	@priority = "4"
 	test SearchWikiPage {
 		ProductMenu.gotoPortlet(
-			category = "Build",
+			category = "Site Builder",
 			panel = "Site Administration",
 			portlet = "Pages"
 		);
@@ -1472,7 +1472,7 @@ definition {
 	@priority = "4"
 	test SearchXSSAsset {
 		ProductMenu.gotoPortlet(
-			category = "Build",
+			category = "Site Builder",
 			panel = "Site Administration",
 			portlet = "Pages"
 		);
@@ -1525,7 +1525,7 @@ definition {
 		Navigator.openURL();
 
 		ProductMenu.gotoPortlet(
-			category = "Build",
+			category = "Site Builder",
 			panel = "Site Administration",
 			portlet = "Pages"
 		);
@@ -1712,7 +1712,7 @@ definition {
 		User.loginPG(password = "test", userEmailAddress = "test@liferay.com");
 
 		ProductMenu.gotoPortlet(
-			category = "Build",
+			category = "Site Builder",
 			panel = "Site Administration",
 			portlet = "Pages"
 		);
@@ -2072,7 +2072,7 @@ definition {
 		Site.addBlankCP(siteName = "Site Name");
 
 		ProductMenu.gotoPortlet(
-			category = "Build",
+			category = "Site Builder",
 			panel = "Site Administration",
 			portlet = "Pages"
 		);
