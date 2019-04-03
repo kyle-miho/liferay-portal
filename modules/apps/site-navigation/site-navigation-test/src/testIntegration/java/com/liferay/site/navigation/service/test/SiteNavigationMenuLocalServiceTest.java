@@ -189,7 +189,6 @@ public class SiteNavigationMenuLocalServiceTest {
 	@Test
 	public void testDeleteSiteNavigationMenus() throws Exception {
 		SiteNavigationMenuTestUtil.addSiteNavigationMenu(_group);
-
 		SiteNavigationMenuTestUtil.addSiteNavigationMenu(_group);
 
 		List<SiteNavigationMenu> siteNavigationMenusOriginal =
@@ -346,7 +345,7 @@ public class SiteNavigationMenuLocalServiceTest {
 	public void testGetSiteNavigationMenusWithOrderByComparatorAndKeywordAsc()
 		throws Exception {
 
-		SiteNavigationMenu siteNavigationMenuBB =
+		SiteNavigationMenu siteNavigationMenu =
 			SiteNavigationMenuTestUtil.addSiteNavigationMenu(
 				_group, "BB Menu Name");
 
@@ -366,14 +365,14 @@ public class SiteNavigationMenuLocalServiceTest {
 		SiteNavigationMenu topSiteNavigationMenu =
 			siteNavigationMenusAscending.get(0);
 
-		Assert.assertEquals(topSiteNavigationMenu, siteNavigationMenuBB);
+		Assert.assertEquals(topSiteNavigationMenu, siteNavigationMenu);
 	}
 
 	@Test
 	public void testGetSiteNavigationMenusWithOrderByComparatorAndKeywordDesc()
 		throws Exception {
 
-		SiteNavigationMenu siteNavigationMenuBB =
+		SiteNavigationMenu siteNavigationMenu =
 			SiteNavigationMenuTestUtil.addSiteNavigationMenu(
 				_group, "BB Menu Name");
 
@@ -394,14 +393,14 @@ public class SiteNavigationMenuLocalServiceTest {
 			siteNavigationMenusDescending.get(
 				siteNavigationMenusDescending.size() - 1);
 
-		Assert.assertEquals(bottomSiteNavigationMenu, siteNavigationMenuBB);
+		Assert.assertEquals(bottomSiteNavigationMenu, siteNavigationMenu);
 	}
 
 	@Test
 	public void testGetSiteNavigationMenusWithOrderByComparatorAsc()
 		throws Exception {
 
-		SiteNavigationMenu siteNavigationMenuAA =
+		SiteNavigationMenu siteNavigationMenu =
 			SiteNavigationMenuTestUtil.addSiteNavigationMenu(
 				_group, "AA Menu Name");
 
@@ -419,14 +418,14 @@ public class SiteNavigationMenuLocalServiceTest {
 		SiteNavigationMenu topSiteNavigationMenu =
 			siteNavigationMenusAscending.get(0);
 
-		Assert.assertEquals(topSiteNavigationMenu, siteNavigationMenuAA);
+		Assert.assertEquals(topSiteNavigationMenu, siteNavigationMenu);
 	}
 
 	@Test
 	public void testGetSiteNavigationMenusWithOrderByComparatorDesc()
 		throws Exception {
 
-		SiteNavigationMenu siteNavigationMenuAA =
+		SiteNavigationMenu siteNavigationMenu =
 			SiteNavigationMenuTestUtil.addSiteNavigationMenu(
 				_group, "AA Menu Name");
 
@@ -445,7 +444,7 @@ public class SiteNavigationMenuLocalServiceTest {
 			siteNavigationMenusDescending.get(
 				siteNavigationMenusDescending.size() - 1);
 
-		Assert.assertEquals(bottomSiteNavigationMenu, siteNavigationMenuAA);
+		Assert.assertEquals(bottomSiteNavigationMenu, siteNavigationMenu);
 	}
 
 	@Test
@@ -456,7 +455,7 @@ public class SiteNavigationMenuLocalServiceTest {
 		siteNavigationMenu = SiteNavigationMenuUtil.fetchByPrimaryKey(
 			siteNavigationMenu.getSiteNavigationMenuId());
 
-		Assert.assertEquals(siteNavigationMenu.isAuto(), false);
+		Assert.assertEquals(false, siteNavigationMenu.isAuto());
 	}
 
 	@Test
@@ -468,7 +467,7 @@ public class SiteNavigationMenuLocalServiceTest {
 			siteNavigationMenu.getSiteNavigationMenuId());
 
 		Assert.assertEquals(
-			siteNavigationMenu.getType(), SiteNavigationConstants.TYPE_DEFAULT);
+			SiteNavigationConstants.TYPE_DEFAULT, siteNavigationMenu.getType());
 	}
 
 	@Test
