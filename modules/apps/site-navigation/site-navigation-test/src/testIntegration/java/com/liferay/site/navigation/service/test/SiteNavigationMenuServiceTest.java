@@ -26,9 +26,11 @@ import com.liferay.portal.kernel.model.RoleConstants;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.security.auth.PrincipalException;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
+import com.liferay.portal.kernel.security.permission.PermissionCheckerFactoryUtil;
 import com.liferay.portal.kernel.service.ResourcePermissionLocalServiceUtil;
 import com.liferay.portal.kernel.service.RoleLocalServiceUtil;
 import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.test.context.ContextUserReplace;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.kernel.test.util.CompanyTestUtil;
@@ -43,6 +45,7 @@ import com.liferay.portal.test.rule.PermissionCheckerTestRule;
 import com.liferay.site.navigation.constants.SiteNavigationActionKeys;
 import com.liferay.site.navigation.constants.SiteNavigationConstants;
 import com.liferay.site.navigation.model.SiteNavigationMenu;
+import com.liferay.site.navigation.service.SiteNavigationMenuLocalServiceUtil;
 import com.liferay.site.navigation.service.SiteNavigationMenuServiceUtil;
 import com.liferay.site.navigation.util.SiteNavigationMenuTestUtil;
 import com.liferay.site.navigation.util.comparator.SiteNavigationMenuCreateDateComparator;
@@ -160,15 +163,23 @@ public class SiteNavigationMenuServiceTest {
 
 	@Test
 	public void testDeleteSiteNavigationMenuWithPermissions() throws Exception {
+		ServiceContext serviceContext =
+			ServiceContextTestUtil.getServiceContext(
+				_group, _user.getUserId());
+
 		SiteNavigationMenu siteNavigationMenu =
-			SiteNavigationMenuTestUtil.addSiteNavigationMenu(_group);
+			SiteNavigationMenuLocalServiceUtil.addSiteNavigationMenu(
+				_user.getUserId(), _group.getGroupId(),
+				RandomTestUtil.randomString(), serviceContext);
 
 		_giveUserDeleteSiteNavigationMenuPermissions();
 
-		ServiceTestUtil.setUser(_groupUser);
+		try (ContextUserReplace contextUserReplace = new ContextUserReplace(
+			_groupUser, PermissionCheckerFactoryUtil.create(_groupUser))) {
 
-		SiteNavigationMenuServiceUtil.deleteSiteNavigationMenu(
-			siteNavigationMenu.getSiteNavigationMenuId());
+			SiteNavigationMenuServiceUtil.deleteSiteNavigationMenu(
+				siteNavigationMenu.getSiteNavigationMenuId());
+		}
 	}
 
 	@Test(expected = PrincipalException.MustHavePermission.class)
