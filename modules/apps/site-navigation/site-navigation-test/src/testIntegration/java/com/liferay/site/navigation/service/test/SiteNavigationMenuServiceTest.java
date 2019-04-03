@@ -26,7 +26,6 @@ import com.liferay.portal.kernel.model.RoleConstants;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.security.auth.PrincipalException;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
-import com.liferay.portal.kernel.service.permission.ModelPermissions;
 import com.liferay.portal.kernel.service.ResourcePermissionLocalServiceUtil;
 import com.liferay.portal.kernel.service.RoleLocalServiceUtil;
 import com.liferay.portal.kernel.service.ServiceContext;
@@ -460,7 +459,8 @@ public class SiteNavigationMenuServiceTest {
 
 	@Test(expected = PrincipalException.MustHavePermission.class)
 	public void testUpdateSiteNavigationMenuWithoutUpdatePermissions1()
-			throws Exception, PortalException {
+		throws Exception, PortalException {
+
 		ServiceContext serviceContext =
 			ServiceContextTestUtil.getServiceContext(
 				_group, _groupUser.getUserId());
@@ -478,7 +478,8 @@ public class SiteNavigationMenuServiceTest {
 
 	@Test(expected = PrincipalException.MustHavePermission.class)
 	public void testUpdateSiteNavigationMenuWithoutUpdatePermissions2()
-			throws Exception, PortalException {
+		throws Exception, PortalException {
+
 		ServiceContext serviceContext =
 			ServiceContextTestUtil.getServiceContext(
 				_group, _groupUser.getUserId());
@@ -495,7 +496,8 @@ public class SiteNavigationMenuServiceTest {
 
 	@Test
 	public void testUpdateSiteNavigationMenuWithUpdatePermissions1()
-			throws Exception, PortalException {
+		throws Exception, PortalException {
+
 		ServiceContext serviceContext =
 			ServiceContextTestUtil.getServiceContext(
 				_group, _groupUser.getUserId());
@@ -515,7 +517,8 @@ public class SiteNavigationMenuServiceTest {
 
 	@Test
 	public void testUpdateSiteNavigationMenuWithUpdatePermissions2()
-			throws Exception, PortalException {
+		throws Exception, PortalException {
+
 		ServiceContext serviceContext =
 			ServiceContextTestUtil.getServiceContext(
 				_group, _groupUser.getUserId());
@@ -559,7 +562,7 @@ public class SiteNavigationMenuServiceTest {
 
 		ResourcePermissionLocalServiceUtil.addResourcePermission(
 			_company.getCompanyId(),
-			"com.liferay.site.navigation.model.SiteNavigationMenu", 
+			"com.liferay.site.navigation.model.SiteNavigationMenu",
 			ResourceConstants.SCOPE_GROUP, String.valueOf(_group.getGroupId()),
 			siteMemberRole.getRoleId(), ActionKeys.DELETE);
 	}
@@ -570,16 +573,14 @@ public class SiteNavigationMenuServiceTest {
 		Role siteMemberRole = RoleLocalServiceUtil.getRole(
 			_company.getCompanyId(), RoleConstants.SITE_MEMBER);
 
-	/*	ResourcePermissionLocalServiceUtil.addResourcePermission(
-			_company.getCompanyId(), "com.liferay.site.navigation",
-			ResourceConstants.SCOPE_GROUP, String.valueOf(_group.getGroupId()),
-			siteMemberRole.getRoleId(),
-			SiteNavigationActionKeys.ADD_SITE_NAVIGATION_MENU);*/
+		/*	ResourcePermissionLocalServiceUtil.addResourcePermission(
+				_company.getCompanyId(), "com.liferay.site.navigation",
+				ResourceConstants.SCOPE_GROUP, String.valueOf(_group.getGroupId()),
+				siteMemberRole.getRoleId(),
+				SiteNavigationActionKeys.ADD_SITE_NAVIGATION_MENU);*/
 	}
 
-	private void _giveUserViewSiteNavigationMenuPermissions()
-		throws Exception {
-
+	private void _giveUserViewSiteNavigationMenuPermissions() throws Exception {
 		Role siteMemberRole = RoleLocalServiceUtil.getRole(
 			_company.getCompanyId(), RoleConstants.SITE_MEMBER);
 
