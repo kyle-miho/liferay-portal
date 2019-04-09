@@ -17,33 +17,9 @@
 <%@ include file="/init.jsp" %>
 
 <%
-InfoDisplayObject infoDisplayObject = displayPageLayoutTypeControllerDisplayContext.getInfoDisplayObject();
-AssetRendererFactory assetRendererFactory = null;
-LayoutPageTemplateStructure layoutPageTemplateStructure = null;
-long[] segmentsExperienceIds = GetterUtil.getLongValues(request.getAttribute(SegmentsWebKeys.SEGMENTS_EXPERIENCE_IDS), new long[] {SegmentsConstants.SEGMENTS_EXPERIENCE_ID_DEFAULT});
-JSONArray structureJSONArray = null;
+AssetRendererFactory assetRendererFactory = displayPageLayoutTypeControllerDisplayContext.getAssetRendererFactory();
 
-if (infoDisplayObject != null) {
-	Object modelEntry = infoDisplayObject.getModelEntry();
-
-	if (modelEntry instanceof AssetEntry) {
-		AssetEntry assetEntry = (AssetEntry)modelEntry;
-
-		assetRendererFactory = assetEntry.getAssetRendererFactory();
-	}
-
-	LayoutPageTemplateEntry layoutPageTemplateEntry = LayoutPageTemplateEntryLocalServiceUtil.getLayoutPageTemplateEntry(displayPageLayoutTypeControllerDisplayContext.getLayoutPageTemplateEntryId());
-
-	layoutPageTemplateStructure = LayoutPageTemplateStructureLocalServiceUtil.fetchLayoutPageTemplateStructure(infoDisplayObject.getGroupId(), PortalUtil.getClassNameId(Layout.class.getName()), layoutPageTemplateEntry.getPlid(), true);
-
-	String data = layoutPageTemplateStructure.getData(segmentsExperienceIds);
-
-	if (Validator.isNotNull(data)) {
-		JSONObject dataJSONObject = JSONFactoryUtil.createJSONObject(data);
-
-		structureJSONArray = dataJSONObject.getJSONArray("structure");
-	}
-}
+JSONArray structureJSONArray = displayPageLayoutTypeControllerDisplayContext.getStructureJSONArray();
 %>
 
 <c:if test="<%= assetRendererFactory != null %>">
