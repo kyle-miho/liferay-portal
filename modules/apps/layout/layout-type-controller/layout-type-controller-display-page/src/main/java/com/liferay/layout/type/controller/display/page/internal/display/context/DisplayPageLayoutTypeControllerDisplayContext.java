@@ -169,6 +169,12 @@ public class DisplayPageLayoutTypeControllerDisplayContext {
 		return 0;
 	}
 
+	public long[] getSegmentExperienceIds() {
+		return GetterUtil.getLongValues(
+			_request.getAttribute(SegmentsWebKeys.SEGMENTS_EXPERIENCE_IDS),
+			new long[] {SegmentsConstants.SEGMENTS_EXPERIENCE_ID_DEFAULT});
+	}
+
 	public JSONArray getStructureJSONArray() throws PortalException {
 		InfoDisplayObject infoDisplayObject = getInfoDisplayObject();
 
@@ -176,9 +182,7 @@ public class DisplayPageLayoutTypeControllerDisplayContext {
 			return null;
 		}
 
-		long[] segmentsExperienceIds = GetterUtil.getLongValues(
-			_request.getAttribute(SegmentsWebKeys.SEGMENTS_EXPERIENCE_IDS),
-			new long[] {SegmentsConstants.SEGMENTS_EXPERIENCE_ID_DEFAULT});
+		long[] segmentsExperienceIds = getSegmentExperienceIds();
 
 		LayoutPageTemplateEntry layoutPageTemplateEntry =
 			LayoutPageTemplateEntryLocalServiceUtil.getLayoutPageTemplateEntry(

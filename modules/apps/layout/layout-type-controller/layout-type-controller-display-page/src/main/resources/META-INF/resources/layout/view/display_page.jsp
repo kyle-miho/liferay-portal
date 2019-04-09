@@ -32,6 +32,8 @@ JSONArray structureJSONArray = displayPageLayoutTypeControllerDisplayContext.get
 		<%
 		String currentI18nLanguageId = GetterUtil.getString(request.getAttribute(AssetDisplayPageWebKeys.CURRENT_I18N_LANGUAGE_ID), themeDisplay.getLanguageId());
 
+		long[] segmentsExperienceIds = displayPageLayoutTypeControllerDisplayContext.getSegmentExperienceIds();
+
 		try {
 			request.setAttribute(WebKeys.PORTLET_DECORATE, Boolean.FALSE);
 		%>
