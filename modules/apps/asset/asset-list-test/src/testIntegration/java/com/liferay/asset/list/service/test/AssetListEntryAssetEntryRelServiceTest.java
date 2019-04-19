@@ -16,20 +16,25 @@ package com.liferay.asset.list.service.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.asset.kernel.model.AssetEntry;
+import com.liferay.asset.list.exception.AssetListEntryAssetEntryRelPostionException;
 import com.liferay.asset.list.model.AssetListEntry;
 import com.liferay.asset.list.model.AssetListEntryAssetEntryRel;
-import com.liferay.asset.list.service.AssetListEntryAssetEntryRelLocalServiceUtil;
+import com.liferay.asset.list.service.AssetListEntryAssetEntryRelLocalService;
 import com.liferay.asset.list.service.persistence.AssetListEntryAssetEntryRelUtil;
 import com.liferay.asset.list.util.AssetListTestUtil;
 import com.liferay.asset.test.util.AssetTestUtil;
 import com.liferay.asset.test.util.asset.renderer.factory.TestAssetRendererFactory;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.model.Group;
+import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
+import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
+import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.transaction.Propagation;
+import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
 import com.liferay.portal.test.rule.PersistenceTestRule;
@@ -129,6 +134,31 @@ public class AssetListEntryAssetEntryRelServiceTest {
 			assetEntry.getEntryId(), assetListEntryRelLocal.getAssetEntryId());
 	}
 
+	@Test(expected = AssetListEntryAssetEntryRelPostionException.class)
+	public void testAddAssetListEntryAssetEntryRelWrongPosition()
+		throws Exception {
+
+		AssetListEntry assetListEntry = AssetListTestUtil.addAssetListEntry(
+			_group.getGroupId());
+
+		AssetEntry assetEntry = AssetTestUtil.addAssetEntry(
+			_group.getGroupId());
+
+		ServiceContext serviceContext =
+			ServiceContextTestUtil.getServiceContext(
+				_group.getGroupId(), TestPropsValues.getUserId());
+
+		long segmentsEntryId = RandomTestUtil.nextLong();
+
+		_assetListEntryAssetEntryRelLocalService.addAssetListEntryAssetEntryRel(
+			assetListEntry.getAssetListEntryId(), segmentsEntryId,
+			assetEntry.getEntryId(), 1, serviceContext);
+
+		_assetListEntryAssetEntryRelLocalService.addAssetListEntryAssetEntryRel(
+			assetListEntry.getAssetListEntryId(), segmentsEntryId,
+			assetEntry.getEntryId(), serviceContext);
+	}
+
 	@Test
 	public void testCountAssetListEntryAssetEntryRel() throws Exception {
 		AssetListEntry assetListEntryCount =
@@ -142,7 +172,7 @@ public class AssetListEntryAssetEntryRelServiceTest {
 			TestAssetRendererFactory.class.getName());
 
 		int currentCount =
-			AssetListEntryAssetEntryRelLocalServiceUtil.
+			_assetListEntryAssetEntryRelLocalService.
 				getAssetListEntryAssetEntryRelsCount(
 					assetListEntryCount.getAssetListEntryId());
 
@@ -153,7 +183,7 @@ public class AssetListEntryAssetEntryRelServiceTest {
 			RandomTestUtil.nextLong());
 
 		currentCount =
-			AssetListEntryAssetEntryRelLocalServiceUtil.
+			_assetListEntryAssetEntryRelLocalService.
 				getAssetListEntryAssetEntryRelsCount(
 					assetListEntryCount.getAssetListEntryId());
 
@@ -164,7 +194,7 @@ public class AssetListEntryAssetEntryRelServiceTest {
 			RandomTestUtil.nextLong());
 
 		currentCount =
-			AssetListEntryAssetEntryRelLocalServiceUtil.
+			_assetListEntryAssetEntryRelLocalService.
 				getAssetListEntryAssetEntryRelsCount(
 					assetListEntryCount.getAssetListEntryId());
 
@@ -186,7 +216,7 @@ public class AssetListEntryAssetEntryRelServiceTest {
 			_group.getGroupId(), assetEntry, assetListEntry,
 			RandomTestUtil.nextLong());
 
-		AssetListEntryAssetEntryRelLocalServiceUtil.
+		_assetListEntryAssetEntryRelLocalService.
 			deleteAssetListEntryAssetEntryRelByAssetListEntryId(
 				assetListEntry.getAssetListEntryId());
 
@@ -220,7 +250,7 @@ public class AssetListEntryAssetEntryRelServiceTest {
 				_group.getGroupId(), assetEntryDeleted, assetListEntry,
 				segmentsEntryId, 0);
 
-		AssetListEntryAssetEntryRelLocalServiceUtil.
+		_assetListEntryAssetEntryRelLocalService.
 			deleteAssetListEntryAssetEntryRel(
 				assetListEntry.getAssetListEntryId(), segmentsEntryId, 0);
 
@@ -255,7 +285,7 @@ public class AssetListEntryAssetEntryRelServiceTest {
 			_group.getGroupId(), assetEntry2, assetListEntry, segmentsEntryId);
 
 		List<AssetListEntryAssetEntryRel> assetListEntryRelList =
-			AssetListEntryAssetEntryRelLocalServiceUtil.
+			_assetListEntryAssetEntryRelLocalService.
 				getAssetListEntryAssetEntryRels(
 					assetListEntry.getAssetListEntryId(), QueryUtil.ALL_POS,
 					QueryUtil.ALL_POS);
@@ -295,7 +325,7 @@ public class AssetListEntryAssetEntryRelServiceTest {
 		int currentPosition = assetListEntryRel.getPosition();
 
 		AssetListEntryAssetEntryRel assetListEntryRelNegativePosition =
-			AssetListEntryAssetEntryRelLocalServiceUtil.
+			_assetListEntryAssetEntryRelLocalService.
 				moveAssetListEntryAssetEntryRel(
 					assetListEntry.getAssetListEntryId(), segmentsEntryId,
 					currentPosition, -1);
@@ -308,7 +338,7 @@ public class AssetListEntryAssetEntryRelServiceTest {
 			assetListEntry.getAssetListEntryId());
 
 		AssetListEntryAssetEntryRel assetListEntryRelHighIndexPosition =
-			AssetListEntryAssetEntryRelLocalServiceUtil.
+			_assetListEntryAssetEntryRelLocalService.
 				moveAssetListEntryAssetEntryRel(
 					assetListEntry.getAssetListEntryId(), segmentsEntryId,
 					currentPosition, highIndex);
@@ -343,7 +373,7 @@ public class AssetListEntryAssetEntryRelServiceTest {
 			_group.getGroupId(), null,
 			TestAssetRendererFactory.class.getName());
 
-		AssetListEntryAssetEntryRelLocalServiceUtil.
+		_assetListEntryAssetEntryRelLocalService.
 			updateAssetListEntryAssetEntryRel(
 				assetListEntryRel.getAssetListEntryAssetEntryRelId(),
 				assetListEntryUpdated.getAssetListEntryId(),
@@ -385,6 +415,10 @@ public class AssetListEntryAssetEntryRelServiceTest {
 			assetListEntryRel1.getSegmentsEntryId(),
 			assetListEntryRel2.getSegmentsEntryId());
 	}
+
+	@Inject
+	private AssetListEntryAssetEntryRelLocalService
+		_assetListEntryAssetEntryRelLocalService;
 
 	@DeleteAfterTestRun
 	private Group _group;
