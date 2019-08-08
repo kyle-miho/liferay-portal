@@ -48,15 +48,18 @@ const CUSTOM_OBJECTS = {
 		{
 			key: 'name',
 			link: item => `/custom-object/${item.id}/form-views`,
+			sortable: true,
 			value: Liferay.Language.get('name')
 		},
 		{
 			key: 'dateCreated',
+			sortable: true,
 			value: Liferay.Language.get('create-date')
 		},
 		{
 			asc: false,
 			key: 'dateModified',
+			sortable: true,
 			value: Liferay.Language.get('modified-date')
 		}
 	],

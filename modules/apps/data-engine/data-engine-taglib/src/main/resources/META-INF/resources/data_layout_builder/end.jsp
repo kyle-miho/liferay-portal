@@ -19,7 +19,7 @@
 <div id="<%= namespace + "container" %>"></div>
 
 <aui:script require='<%= fieldTypesModules + ", " + dataLayoutBuilderModule + " as DataLayoutBuilder" %>'>
-	new DataLayoutBuilder.default(
+	var dataLayoutBuilder = new DataLayoutBuilder.default(
 		{
 			context: <%= dataLayoutJSONObject %>,
 			dataDefinitionInputId: '<%= namespace + dataDefinitionInputId %>',
@@ -31,4 +31,14 @@
 		},
 		'#<%= namespace %>container'
 	);
+
+	var clearPortletHandlers = function(event) {
+		if (event.portletId === '<%= portletDisplay.getRootPortletId() %>') {
+			dataLayoutBuilder.dispose();
+
+			Liferay.detach('destroyPortlet', clearPortletHandlers);
+		}
+	};
+
+	Liferay.on('destroyPortlet', clearPortletHandlers);
 </aui:script>

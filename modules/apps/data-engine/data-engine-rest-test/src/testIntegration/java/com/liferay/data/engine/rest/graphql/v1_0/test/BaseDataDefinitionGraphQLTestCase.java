@@ -277,6 +277,17 @@ public abstract class BaseDataDefinitionGraphQLTestCase {
 				continue;
 			}
 
+			if (Objects.equals("defaultLanguageId", fieldName)) {
+				if (!Objects.equals(
+						dataDefinition.getDefaultLanguageId(),
+						(String)jsonObject.getString("defaultLanguageId"))) {
+
+					return false;
+				}
+
+				continue;
+			}
+
 			if (Objects.equals("id", fieldName)) {
 				if (!Objects.equals(
 						dataDefinition.getId(),
@@ -369,6 +380,7 @@ public abstract class BaseDataDefinitionGraphQLTestCase {
 				dataDefinitionKey = RandomTestUtil.randomString();
 				dateCreated = RandomTestUtil.nextDate();
 				dateModified = RandomTestUtil.nextDate();
+				defaultLanguageId = RandomTestUtil.randomString();
 				id = RandomTestUtil.randomLong();
 				siteId = testGroup.getGroupId();
 				storageType = RandomTestUtil.randomString();
@@ -399,6 +411,26 @@ public abstract class BaseDataDefinitionGraphQLTestCase {
 				sb.append(": ");
 
 				Object value = dataDefinition.getDataDefinitionKey();
+
+				if (value instanceof String) {
+					sb.append("\"");
+					sb.append(value);
+					sb.append("\"");
+				}
+				else {
+					sb.append(value);
+				}
+
+				sb.append(", ");
+			}
+
+			if (Objects.equals(
+					"defaultLanguageId", additionalAssertFieldName)) {
+
+				sb.append(additionalAssertFieldName);
+				sb.append(": ");
+
+				Object value = dataDefinition.getDefaultLanguageId();
 
 				if (value instanceof String) {
 					sb.append("\"");

@@ -194,7 +194,6 @@ public class DataLayoutResourceTest extends BaseDataLayoutResourceTestCase {
 				dateCreated = RandomTestUtil.nextDate();
 				dataLayoutKey = RandomTestUtil.randomString();
 				dateModified = RandomTestUtil.nextDate();
-				defaultLanguageId = "en_US";
 				id = RandomTestUtil.randomLong();
 				paginationMode = "wizard";
 				siteId = testGroup.getGroupId();

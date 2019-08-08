@@ -40,6 +40,8 @@ import com.liferay.portal.kernel.util.ResourceBundleLoaderUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 
+import java.io.InputStream;
+
 import java.net.URL;
 
 import java.util.ArrayList;
@@ -263,11 +265,12 @@ public abstract class BaseFragmentCollectionContributor
 
 		String path = FileUtil.getPath(url.getPath());
 
-		String css = _read(path, jsonObject.getString("cssPath"));
-		String html = _read(path, jsonObject.getString("htmlPath"));
-		String js = _read(path, jsonObject.getString("jsPath"));
+		String css = _read(path, jsonObject.getString("cssPath"), "index.css");
+		String html = _read(
+			path, jsonObject.getString("htmlPath"), "index.html");
+		String js = _read(path, jsonObject.getString("jsPath"), "index.js");
 		String configuration = _read(
-			path, jsonObject.getString("configurationPath"));
+			path, jsonObject.getString("configurationPath"), "index.json");
 
 		String thumbnailURL = _getImagePreviewURL(
 			jsonObject.getString("thumbnail"));
@@ -318,16 +321,30 @@ public abstract class BaseFragmentCollectionContributor
 		}
 	}
 
-	private String _read(String path, String fileName) throws Exception {
+	private String _read(String path, String fileName, String defaultFileName)
+		throws Exception {
+
 		Class<?> clazz = getClass();
 
 		StringBundler sb = new StringBundler(3);
 
 		sb.append(path);
 		sb.append("/");
-		sb.append(fileName);
 
-		return StringUtil.read(clazz.getResourceAsStream(sb.toString()));
+		if (Validator.isNotNull(fileName)) {
+			sb.append(fileName);
+		}
+		else {
+			sb.append(defaultFileName);
+		}
+
+		InputStream is = clazz.getResourceAsStream(sb.toString());
+
+		if (is != null) {
+			return StringUtil.read(is);
+		}
+
+		return StringPool.BLANK;
 	}
 
 	private void _setLocalizedNames(

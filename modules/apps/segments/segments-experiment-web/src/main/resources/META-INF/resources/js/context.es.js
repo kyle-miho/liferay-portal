@@ -22,10 +22,13 @@ const SegmentsExperimentsContext = React.createContext({
 
 SegmentsExperimentsContext.Provider.propTypes = {
 	value: PropTypes.shape({
+		contentPageEditorNamespace: PropTypes.string.isRequired,
 		endpoints: PropTypes.shape({
 			createSegmentsExperimentURL: PropTypes.string,
+			createSegmentsVariantURL: PropTypes.string,
 			editSegmentsExperimentURL: PropTypes.string
 		}).isRequired,
+		namespace: PropTypes.string.isRequired,
 		page: PropTypes.shape({
 			classNameId: PropTypes.string.isRequired,
 			classPK: PropTypes.string.isRequired,

@@ -24,14 +24,17 @@ export default function segmentsExperimentsApp(id, props, context) {
 	ReactDOM.render(
 		<SegmentsExperimentsContext.Provider
 			value={{
-				page: context.page,
-				endpoints: context.endpoints
+				contentPageEditorNamespace: context.contentPageEditorNamespace,
+				endpoints: context.endpoints,
+				namespace: context.namespace,
+				page: context.page
 			}}
 		>
 			<ClayIconSpriteContext.Provider value={context.spritemap}>
 				<SegmentsExperimentsSidebar
 					initialSegmentsExperiences={props.segmentsExperiences}
 					initialSegmentsExperiment={props.segmentsExperiment}
+					initialSegmentsVariants={props.initialSegmentsVariants}
 					initialSelectedSegmentsExperienceId={
 						props.selectedSegmentsExperienceId
 					}
@@ -39,5 +42,9 @@ export default function segmentsExperimentsApp(id, props, context) {
 			</ClayIconSpriteContext.Provider>
 		</SegmentsExperimentsContext.Provider>,
 		rootElement
+	);
+
+	Liferay.once('destroyPortlet', () =>
+		ReactDOM.unmountComponentAtNode(rootElement)
 	);
 }

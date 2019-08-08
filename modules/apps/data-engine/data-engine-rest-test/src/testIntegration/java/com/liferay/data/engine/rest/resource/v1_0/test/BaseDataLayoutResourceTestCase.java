@@ -178,7 +178,6 @@ public abstract class BaseDataLayoutResourceTestCase {
 		DataLayout dataLayout = randomDataLayout();
 
 		dataLayout.setDataLayoutKey(regex);
-		dataLayout.setDefaultLanguageId(regex);
 		dataLayout.setPaginationMode(regex);
 
 		String json = DataLayoutSerDes.toJSON(dataLayout);
@@ -188,7 +187,6 @@ public abstract class BaseDataLayoutResourceTestCase {
 		dataLayout = DataLayoutSerDes.toDTO(json);
 
 		Assert.assertEquals(regex, dataLayout.getDataLayoutKey());
-		Assert.assertEquals(regex, dataLayout.getDefaultLanguageId());
 		Assert.assertEquals(regex, dataLayout.getPaginationMode());
 	}
 
@@ -826,16 +824,6 @@ public abstract class BaseDataLayoutResourceTestCase {
 				continue;
 			}
 
-			if (Objects.equals(
-					"defaultLanguageId", additionalAssertFieldName)) {
-
-				if (dataLayout.getDefaultLanguageId() == null) {
-					valid = false;
-				}
-
-				continue;
-			}
-
 			if (Objects.equals("description", additionalAssertFieldName)) {
 				if (dataLayout.getDescription() == null) {
 					valid = false;
@@ -961,19 +949,6 @@ public abstract class BaseDataLayoutResourceTestCase {
 				if (!Objects.deepEquals(
 						dataLayout1.getDateModified(),
 						dataLayout2.getDateModified())) {
-
-					return false;
-				}
-
-				continue;
-			}
-
-			if (Objects.equals(
-					"defaultLanguageId", additionalAssertFieldName)) {
-
-				if (!Objects.deepEquals(
-						dataLayout1.getDefaultLanguageId(),
-						dataLayout2.getDefaultLanguageId())) {
 
 					return false;
 				}
@@ -1172,14 +1147,6 @@ public abstract class BaseDataLayoutResourceTestCase {
 			return sb.toString();
 		}
 
-		if (entityFieldName.equals("defaultLanguageId")) {
-			sb.append("'");
-			sb.append(String.valueOf(dataLayout.getDefaultLanguageId()));
-			sb.append("'");
-
-			return sb.toString();
-		}
-
 		if (entityFieldName.equals("description")) {
 			throw new IllegalArgumentException(
 				"Invalid entity field " + entityFieldName);
@@ -1224,7 +1191,6 @@ public abstract class BaseDataLayoutResourceTestCase {
 				dataLayoutKey = RandomTestUtil.randomString();
 				dateCreated = RandomTestUtil.nextDate();
 				dateModified = RandomTestUtil.nextDate();
-				defaultLanguageId = RandomTestUtil.randomString();
 				id = RandomTestUtil.randomLong();
 				paginationMode = RandomTestUtil.randomString();
 				siteId = testGroup.getGroupId();

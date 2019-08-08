@@ -98,6 +98,15 @@ public class S3FileCacheCleanUpTest {
 
 		Path subdirPath = Files.createTempDirectory(_cacheDirPath, "subdir");
 
+		long currentTime = System.currentTimeMillis();
+
+		Files.setLastModifiedTime(
+			_cacheDirPath, FileTime.fromMillis(currentTime - 5000));
+		Files.setLastModifiedTime(
+			cachedFilePath, FileTime.fromMillis(currentTime - 5000));
+		Files.setLastModifiedTime(
+			subdirPath, FileTime.fromMillis(currentTime - 3000));
+
 		long expirationTime = _getLastModifiedTimeInMillis(subdirPath) + 1;
 
 		_cleanUpCacheFiles(_cacheDirPath, expirationTime);
@@ -119,6 +128,17 @@ public class S3FileCacheCleanUpTest {
 		Path subdirCachedFilePath = Files.createTempFile(
 			subdirPath, "subdirCachedFile", null);
 
+		long currentTime = System.currentTimeMillis();
+
+		Files.setLastModifiedTime(
+			_cacheDirPath, FileTime.fromMillis(currentTime - 5000));
+		Files.setLastModifiedTime(
+			cachedFilePath, FileTime.fromMillis(currentTime - 5000));
+		Files.setLastModifiedTime(
+			subdirPath, FileTime.fromMillis(currentTime - 3000));
+		Files.setLastModifiedTime(
+			subdirCachedFilePath, FileTime.fromMillis(currentTime - 3000));
+
 		long expirationTime = _getLastModifiedTimeInMillis(subdirPath) + 1;
 
 		_cleanUpCacheFiles(_cacheDirPath, expirationTime);
@@ -138,13 +158,20 @@ public class S3FileCacheCleanUpTest {
 
 		Path subdirPath = Files.createTempDirectory(_cacheDirPath, "subdir");
 
+		long currentTime = System.currentTimeMillis();
+
+		Files.setLastModifiedTime(
+			_cacheDirPath, FileTime.fromMillis(currentTime - 5000));
+		Files.setLastModifiedTime(
+			cachedFilePath, FileTime.fromMillis(currentTime - 5000));
+
 		long expirationTime = _getLastModifiedTimeInMillis(subdirPath);
 
 		_cleanUpCacheFiles(_cacheDirPath, expirationTime);
 
-		Assert.assertTrue(Files.exists(_cacheDirPath));
-		Assert.assertTrue(Files.exists(cachedFilePath));
-		Assert.assertTrue(Files.exists(subdirPath));
+		Assert.assertFalse(Files.exists(_cacheDirPath));
+		Assert.assertFalse(Files.exists(cachedFilePath));
+		Assert.assertFalse(Files.exists(subdirPath));
 	}
 
 	@Test
@@ -159,12 +186,19 @@ public class S3FileCacheCleanUpTest {
 		Path subdirCachedFilePath = Files.createTempFile(
 			subdirPath, "subdirCachedFile", null);
 
+		long currentTime = System.currentTimeMillis();
+
+		Files.setLastModifiedTime(
+			_cacheDirPath, FileTime.fromMillis(currentTime - 5000));
+		Files.setLastModifiedTime(
+			cachedFilePath, FileTime.fromMillis(currentTime - 5000));
+
 		long expirationTime = _getLastModifiedTimeInMillis(subdirPath);
 
 		_cleanUpCacheFiles(_cacheDirPath, expirationTime);
 
 		Assert.assertTrue(Files.exists(_cacheDirPath));
-		Assert.assertTrue(Files.exists(cachedFilePath));
+		Assert.assertFalse(Files.exists(cachedFilePath));
 		Assert.assertTrue(Files.exists(subdirPath));
 		Assert.assertTrue(Files.exists(subdirCachedFilePath));
 	}
@@ -198,7 +232,7 @@ public class S3FileCacheCleanUpTest {
 
 		_cleanUpCacheFiles(_cacheDirPath, expirationTime);
 
-		Assert.assertTrue(Files.exists(_cacheDirPath));
+		Assert.assertFalse(Files.exists(_cacheDirPath));
 	}
 
 	private void _cleanUpCacheFiles(Path cacheDirPath, long expirationTime) {

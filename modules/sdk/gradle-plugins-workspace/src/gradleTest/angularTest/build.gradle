@@ -1,0 +1,8 @@
+task runGradleTest
+
+runGradleTest {
+	doLast {
+		assert project(":modules:angular").plugins.findPlugin('com.liferay.osgi.plugin') != null
+		assert project(":modules:angular").plugins.findPlugin('com.liferay.frontend.plugin') == null
+	}
+}

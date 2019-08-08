@@ -23,19 +23,15 @@ import com.liferay.portal.aop.AopService;
 import com.liferay.portal.kernel.dao.orm.QueryDefinition;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
-import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Brian Wing Shun Chan
@@ -54,28 +50,35 @@ public class CTEntryLocalServiceImpl extends CTEntryLocalServiceBaseImpl {
 			ServiceContext serviceContext)
 		throws PortalException {
 
-		boolean force = GetterUtil.getBoolean(
-			serviceContext.getAttribute("force"));
+		CTCollection ctCollection = ctCollectionPersistence.findByPrimaryKey(
+			ctCollectionId);
 
 		CTEntry ctEntry = ctEntryPersistence.fetchByC_MCNI_MCPK(
 			ctCollectionId, modelClassNameId, modelClassPK);
 
-		_validate(ctEntry, changeType, ctCollectionId, force);
+		boolean force = GetterUtil.getBoolean(
+			serviceContext.getAttribute("force"));
 
-		User user = userLocalService.getUser(userId);
+		_validate(ctEntry, changeType, force);
 
-		if (ctEntry != null) {
-			return _updateCTEntry(ctEntry, user, changeType, serviceContext);
+		if (ctEntry == null) {
+			long ctEntryId = counterLocalService.increment(
+				CTEntry.class.getName());
+
+			ctEntry = ctEntryPersistence.create(ctEntryId);
+
+			ctEntry.setCompanyId(ctCollection.getCompanyId());
+			ctEntry.setCtCollectionId(ctCollectionId);
+			ctEntry.setModelClassNameId(modelClassNameId);
+			ctEntry.setModelClassPK(modelClassPK);
+			ctEntry.setModelResourcePrimKey(modelResourcePrimKey);
+			ctEntry.setStatus(WorkflowConstants.STATUS_DRAFT);
 		}
 
-		return _addCTEntry(
-			user, modelClassNameId, modelClassPK, modelResourcePrimKey,
-			changeType, ctCollectionId, serviceContext);
-	}
+		ctEntry.setUserId(userId);
+		ctEntry.setChangeType(changeType);
 
-	@Override
-	public List<CTEntry> fetchCTEntries(long modelClassNameId) {
-		return ctEntryPersistence.findByModelClassNameId(modelClassNameId);
+		return ctEntryPersistence.update(ctEntry);
 	}
 
 	@Override
@@ -118,11 +121,6 @@ public class CTEntryLocalServiceImpl extends CTEntryLocalServiceBaseImpl {
 		return ctEntryPersistence.findByC_S(
 			ctCollectionId, status, queryDefinition.getStart(),
 			queryDefinition.getEnd(), queryDefinition.getOrderByComparator());
-	}
-
-	@Override
-	public List<CTEntry> fetchCTEntries(String modelClassName) {
-		return fetchCTEntries(_portal.getClassNameId(modelClassName));
 	}
 
 	@Override
@@ -173,7 +171,7 @@ public class CTEntryLocalServiceImpl extends CTEntryLocalServiceBaseImpl {
 		long ctCollectionId, int status, int start, int end,
 		OrderByComparator<CTEntry> orderByComparator) {
 
-		if (_isProductionCTCollectionId(ctCollectionId)) {
+		if (ctCollectionId == CTConstants.CT_COLLECTION_ID_PRODUCTION) {
 			return Collections.emptyList();
 		}
 
@@ -223,77 +221,12 @@ public class CTEntryLocalServiceImpl extends CTEntryLocalServiceBaseImpl {
 		return ctEntryPersistence.update(ctEntry);
 	}
 
-	private CTEntry _addCTEntry(
-		User user, long modelClassNameId, long modelClassPK,
-		long modelResourcePrimKey, int changeType, long ctCollectionId,
-		ServiceContext serviceContext) {
-
-		long ctEntryId = counterLocalService.increment();
-
-		CTEntry ctEntry = ctEntryPersistence.create(ctEntryId);
-
-		ctEntry.setCompanyId(user.getCompanyId());
-		ctEntry.setUserId(user.getUserId());
-		ctEntry.setUserName(user.getFullName());
-
-		Date now = new Date();
-
-		ctEntry.setCreateDate(serviceContext.getCreateDate(now));
-		ctEntry.setModifiedDate(serviceContext.getModifiedDate(now));
-
-		ctEntry.setCtCollectionId(ctCollectionId);
-		ctEntry.setOriginalCTCollectionId(ctCollectionId);
-		ctEntry.setModelClassNameId(modelClassNameId);
-		ctEntry.setModelClassPK(modelClassPK);
-		ctEntry.setModelResourcePrimKey(modelResourcePrimKey);
-		ctEntry.setChangeType(changeType);
-
-		int status = WorkflowConstants.STATUS_DRAFT;
-
-		if (_isProductionCTCollectionId(ctCollectionId)) {
-			status = WorkflowConstants.STATUS_APPROVED;
-		}
-
-		ctEntry.setStatus(status);
-
-		ctEntry = ctEntryPersistence.update(ctEntry);
-
-		return ctEntry;
-	}
-
-	private boolean _isProductionCTCollectionId(long ctCollectionId) {
-		CTCollection ctCollection = ctCollectionPersistence.fetchByPrimaryKey(
-			ctCollectionId);
-
-		if (ctCollection == null) {
-			return false;
-		}
-
-		return ctCollection.isProduction();
-	}
-
-	private CTEntry _updateCTEntry(
-		CTEntry ctEntry, User user, int changeType,
-		ServiceContext serviceContext) {
-
-		ctEntry.setUserId(user.getUserId());
-		ctEntry.setUserName(user.getFullName());
-
-		ctEntry.setModifiedDate(serviceContext.getModifiedDate(new Date()));
-		ctEntry.setChangeType(changeType);
-
-		return ctEntryPersistence.update(ctEntry);
-	}
-
-	private void _validate(
-			CTEntry ctEntry, int changeType, long ctCollectionId, boolean force)
+	private void _validate(CTEntry ctEntry, int changeType, boolean force)
 		throws PortalException {
 
 		if (!force && (ctEntry != null)) {
 			throw new DuplicateCTEntryException();
 		}
-
-		ctCollectionPersistence.findByPrimaryKey(ctCollectionId);
 
 		if ((changeType != CTConstants.CT_CHANGE_TYPE_ADDITION) &&
 			(changeType != CTConstants.CT_CHANGE_TYPE_DELETION) &&
@@ -302,8 +235,5 @@ public class CTEntryLocalServiceImpl extends CTEntryLocalServiceBaseImpl {
 			throw new IllegalArgumentException("Change type value is invalid");
 		}
 	}
-
-	@Reference
-	private Portal _portal;
 
 }

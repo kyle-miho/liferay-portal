@@ -13,21 +13,25 @@
  */
 
 import React from 'react';
-
 import useDispatch from '../../../store/hooks/useDispatch.es';
 import {
 	UPDATE_ACTIVE_ITEM,
 	UPDATE_HOVERED_ITEM
 } from '../../../actions/actions.es';
 import {FRAGMENTS_EDITOR_ITEM_TYPES} from '../../../utils/constants';
+import SidebarHeader from '../SidebarHeader.es';
 import useSelector from '../../../store/hooks/useSelector.es';
+import ShowResolvedCommentsToggle from './ShowResolvedCommentsToggle.es';
+import useGetComments from '../../../store/hooks/useGetComments.es';
+import {NoCommentsMessage} from './NoCommentsMessage.es';
 
 const FragmentEntryLinksWithComments = () => {
 	const dispatch = useDispatch();
+	const getComments = useGetComments();
 
 	const fragmentEntryLinksWithComments = useSelector(state =>
 		Object.values(state.fragmentEntryLinks).filter(
-			fragmentEntryLink => (fragmentEntryLink.comments || []).length
+			fragmentEntryLink => getComments(fragmentEntryLink).length
 		)
 	);
 
@@ -52,40 +56,52 @@ const FragmentEntryLinksWithComments = () => {
 
 	const setHoveredFragmentEntryLink = fragmentEntryLinkId => () => {
 		dispatch({
-			activeItemId: fragmentEntryLinkId,
-			activeItemType: FRAGMENTS_EDITOR_ITEM_TYPES.fragment,
+			hoveredItemId: fragmentEntryLinkId,
+			hoveredItemType: FRAGMENTS_EDITOR_ITEM_TYPES.fragment,
 			type: UPDATE_HOVERED_ITEM
 		});
 	};
 
 	return (
-		<nav className="list-group">
-			{fragmentEntryLinksWithComments.map(fragmentEntryLink => (
-				<a
-					className="border-0 list-group-item list-group-item-action"
-					href={`#${fragmentEntryLink.fragmentEntryLinkId}`}
-					key={fragmentEntryLink.fragmentEntryLinkId}
-					onClick={setActiveFragmentEntryLink(
-						fragmentEntryLink.fragmentEntryLinkId
-					)}
-					onFocus={setHoveredFragmentEntryLink(
-						fragmentEntryLink.fragmentEntryLinkId
-					)}
-					onMouseOver={setHoveredFragmentEntryLink(
-						fragmentEntryLink.fragmentEntryLinkId
-					)}
-				>
-					<strong className="d-block text-dark">{name}</strong>
+		<>
+			<SidebarHeader>{Liferay.Language.get('comments')}</SidebarHeader>
 
-					<span className="text-secondary">
-						{Liferay.Util.sub(
-							Liferay.Language.get('x-comments'),
-							fragmentEntryLink.comments.length
-						)}
-					</span>
-				</a>
-			))}
-		</nav>
+			<ShowResolvedCommentsToggle />
+
+			{fragmentEntryLinksWithComments.length ? (
+				<nav className="list-group">
+					{fragmentEntryLinksWithComments.map(fragmentEntryLink => (
+						<a
+							className="border-0 list-group-item list-group-item-action"
+							href={`#${fragmentEntryLink.fragmentEntryLinkId}`}
+							key={fragmentEntryLink.fragmentEntryLinkId}
+							onClick={setActiveFragmentEntryLink(
+								fragmentEntryLink.fragmentEntryLinkId
+							)}
+							onFocus={setHoveredFragmentEntryLink(
+								fragmentEntryLink.fragmentEntryLinkId
+							)}
+							onMouseOver={setHoveredFragmentEntryLink(
+								fragmentEntryLink.fragmentEntryLinkId
+							)}
+						>
+							<strong className="d-block text-dark">
+								{fragmentEntryLink.name}
+							</strong>
+
+							<span className="text-secondary">
+								{Liferay.Util.sub(
+									Liferay.Language.get('x-comments'),
+									getComments(fragmentEntryLink).length
+								)}
+							</span>
+						</a>
+					))}
+				</nav>
+			) : (
+				<NoCommentsMessage />
+			)}
+		</>
 	);
 };
 

@@ -92,34 +92,14 @@ public class ModulesProjectConfigurator extends BaseProjectConfigurator {
 		}
 
 		Object jarSourcePath = null;
-		File packageJsonFile = project.file("package.json");
 
-		if (packageJsonFile.exists() &&
-			_hasNpmBuildScript(packageJsonFile.toPath())) {
+		File bndBndFile = project.file("bnd.bnd");
+		File buildGradleFile = project.file("build.gradle");
+		File pomXmlFile = project.file("pom.xml");
 
-			GradleUtil.applyPlugin(project, FrontendPlugin.class);
+		if (bndBndFile.exists() &&
+			(buildGradleFile.exists() || pomXmlFile.exists())) {
 
-			Task buildTask = GradleUtil.getTask(project, "build");
-
-			_configureRootTaskDistBundle(buildTask);
-
-			jarSourcePath = new Callable<ConfigurableFileCollection>() {
-
-				@Override
-				public ConfigurableFileCollection call() throws Exception {
-					Project project = buildTask.getProject();
-
-					ConfigurableFileCollection configurableFileCollection =
-						project.files(_getJarFile(project));
-
-					configurableFileCollection.builtBy(buildTask);
-
-					return configurableFileCollection;
-				}
-
-			};
-		}
-		else {
 			GradleUtil.applyPlugin(project, LiferayOSGiPlugin.class);
 
 			if (FileUtil.exists(project, "service.xml")) {
@@ -148,6 +128,34 @@ public class ModulesProjectConfigurator extends BaseProjectConfigurator {
 				});
 
 			jarSourcePath = jar;
+		}
+		else {
+			File packageJsonFile = project.file("package.json");
+
+			if (packageJsonFile.exists() &&
+				_hasNpmBuildScript(packageJsonFile.toPath())) {
+
+				GradleUtil.applyPlugin(project, FrontendPlugin.class);
+
+				final Task buildTask = GradleUtil.getTask(
+					project, LifecycleBasePlugin.BUILD_TASK_NAME);
+
+				_configureRootTaskDistBundle(buildTask);
+
+				jarSourcePath = new Callable<ConfigurableFileCollection>() {
+
+					@Override
+					public ConfigurableFileCollection call() throws Exception {
+						Project project = buildTask.getProject();
+
+						ConfigurableFileCollection configurableFileCollection =
+							project.files(_getJarFile(project));
+
+						return configurableFileCollection.builtBy(buildTask);
+					}
+
+				};
+			}
 		}
 
 		final WorkspaceExtension workspaceExtension = _getWorkspaceExtension(

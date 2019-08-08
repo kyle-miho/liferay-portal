@@ -113,7 +113,20 @@ function editFragmentEntryLinkComment(commentId, body, resolved) {
 		commentId,
 		body,
 		resolved
-	});
+	}).then(response => response.json());
+}
+
+/**
+ * @param {string} classNameId
+ * @param {string} classPK
+ * @param {string} fieldId
+ */
+function getAssetFieldValue(classNameId, classPK, fieldId) {
+	return _fetch(_store.getState().getAssetFieldValueURL, {
+		classNameId,
+		classPK,
+		fieldId
+	}).then(response => response.json());
 }
 
 function getExperienceUsedPortletIds(segmentsExperienceId) {
@@ -237,6 +250,7 @@ export {
 	deleteFragmentEntryLinkComment,
 	editFragmentEntryLinks,
 	editFragmentEntryLinkComment,
+	getAssetFieldValue,
 	getExperienceUsedPortletIds,
 	removeExperience,
 	removeFragmentEntryLinks,

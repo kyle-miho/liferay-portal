@@ -138,7 +138,9 @@ public class DataDefinitionResourceTest
 
 	@Override
 	protected String[] getAdditionalAssertFieldNames() {
-		return new String[] {"name", "userId"};
+		return new String[] {
+			"availableLanguageIds", "defaultLanguageId", "name", "userId"
+		};
 	}
 
 	@Override
@@ -153,6 +155,7 @@ public class DataDefinitionResourceTest
 
 		DataDefinition dataDefinition = new DataDefinition() {
 			{
+				availableLanguageIds = new String[] {"en_US", "pt_BR"};
 				dataDefinitionFields = new DataDefinitionField[] {
 					new DataDefinitionField() {
 						{
@@ -177,6 +180,7 @@ public class DataDefinitionResourceTest
 					}
 				};
 				dataDefinitionKey = RandomTestUtil.randomString();
+				defaultLanguageId = "en_US";
 				siteId = testGroup.getGroupId();
 				userId = TestPropsValues.getUserId();
 			}

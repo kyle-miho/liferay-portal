@@ -25,9 +25,11 @@ import com.liferay.dynamic.data.mapping.storage.StorageType;
 import com.liferay.dynamic.data.mapping.test.util.DDMStructureLayoutTestHelper;
 import com.liferay.dynamic.data.mapping.test.util.DDMStructureTestHelper;
 import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.test.rule.Inject;
 
 import java.io.InputStream;
@@ -48,7 +50,8 @@ public class AppResourceTest extends BaseAppResourceTestCase {
 	public void setUp() throws Exception {
 		super.setUp();
 
-		_ddmStructure = _addDDMStructure();
+		_ddmStructure = _addDDMStructure(testGroup);
+		_irrelevantDDMStructure = _addDDMStructure(irrelevantGroup);
 
 		_ddmStructureLayout = _addDDMStructureLayout(
 			_ddmStructure.getStructureId());
@@ -67,10 +70,9 @@ public class AppResourceTest extends BaseAppResourceTestCase {
 				dataDefinitionId = _ddmStructure.getStructureId();
 				dataLayoutId = _ddmStructureLayout.getStructureLayoutId();
 				dataListViewId = _deDataListView.getDeDataListViewId();
-				siteId = testGroup.getGroupId();
+				siteId = _ddmStructure.getGroupId();
 				settings = new HashMap<String, Object>() {
 					{
-						put("deploymentStatus", "ok");
 						put(
 							"deploymentTypes",
 							new String[] {
@@ -78,9 +80,32 @@ public class AppResourceTest extends BaseAppResourceTestCase {
 							});
 					}
 				};
+				status = WorkflowConstants.STATUS_APPROVED;
 				userId = testGroup.getCreatorUserId();
 			}
 		};
+	}
+
+	@Override
+	protected App randomIrrelevantApp() throws Exception {
+		App randomIrrelevantApp = super.randomIrrelevantApp();
+
+		randomIrrelevantApp.setDataDefinitionId(
+			_irrelevantDDMStructure.getStructureId());
+
+		return randomIrrelevantApp;
+	}
+
+	@Override
+	protected App testDeleteApp_addApp() throws Exception {
+		return appResource.postDataDefinitionApp(
+			_ddmStructure.getStructureId(), randomApp());
+	}
+
+	@Override
+	protected App testGetApp_addApp() throws Exception {
+		return appResource.postDataDefinitionApp(
+			_ddmStructure.getStructureId(), randomApp());
 	}
 
 	@Override
@@ -93,13 +118,19 @@ public class AppResourceTest extends BaseAppResourceTestCase {
 		throws Exception {
 
 		return appResource.postDataDefinitionApp(
-			_ddmStructure.getStructureId(), app);
+			app.getDataDefinitionId(), app);
 	}
 
-	private DDMStructure _addDDMStructure() throws Exception {
+	@Override
+	protected App testPutApp_addApp() throws Exception {
+		return appResource.postDataDefinitionApp(
+			_ddmStructure.getStructureId(), randomApp());
+	}
+
+	private DDMStructure _addDDMStructure(Group group) throws Exception {
 		DDMStructureTestHelper ddmStructureTestHelper =
 			new DDMStructureTestHelper(
-				PortalUtil.getClassNameId(_RESOURCE_NAME), testGroup);
+				PortalUtil.getClassNameId(_RESOURCE_NAME), group);
 
 		return ddmStructureTestHelper.addStructure(
 			PortalUtil.getClassNameId(_RESOURCE_NAME),
@@ -140,5 +171,7 @@ public class AppResourceTest extends BaseAppResourceTestCase {
 
 	@Inject
 	private DEDataListViewLocalService _deDataListViewLocalService;
+
+	private DDMStructure _irrelevantDDMStructure;
 
 }

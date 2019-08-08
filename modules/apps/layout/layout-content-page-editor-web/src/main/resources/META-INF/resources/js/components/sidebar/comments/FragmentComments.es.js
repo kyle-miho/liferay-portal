@@ -12,6 +12,8 @@
  * details.
  */
 
+import ClayButton from '@clayui/button';
+import ClayIcon from '@clayui/icon';
 import PropTypes from 'prop-types';
 import React from 'react';
 
@@ -23,42 +25,65 @@ import {updateFragmentEntryLinkCommentReplyAction} from '../../../actions/update
 import FragmentComment from './FragmentComment.es';
 import useSelector from '../../../store/hooks/useSelector.es';
 import useDispatch from '../../../store/hooks/useDispatch.es';
+import {CLEAR_ACTIVE_ITEM} from '../../../actions/actions.es';
+import SidebarHeader from '../SidebarHeader.es';
+import ShowResolvedCommentsToggle from './ShowResolvedCommentsToggle.es';
+import useGetComments from '../../../store/hooks/useGetComments.es';
 
 const FragmentComments = props => {
 	const fragmentEntryLink = useSelector(
 		state => state.fragmentEntryLinks[props.fragmentEntryLinkId]
 	);
-	const fragmentEntryLinkComments = fragmentEntryLink.comments || [];
+	const getComments = useGetComments();
+	const fragmentEntryLinkComments = getComments(fragmentEntryLink);
 	const dispatch = useDispatch();
-	const {deleteComment, editComment, editCommentReply} = getActions(
-		dispatch,
-		props
-	);
+
+	const {
+		clearActiveItem,
+		deleteComment,
+		editComment,
+		editCommentReply
+	} = getActions(dispatch, props);
 
 	return (
-		<div
-			data-fragments-editor-item-id={props.fragmentEntryLinkId}
-			data-fragments-editor-item-type={
-				FRAGMENTS_EDITOR_ITEM_TYPES.fragment
-			}
-		>
-			<h2 className="mb-2 px-3 sidebar-dt text-secondary">
-				{fragmentEntryLink.name}
-			</h2>
+		<>
+			<SidebarHeader>
+				<ClayButton
+					borderless
+					className="position-absolute text-dark"
+					onClick={clearActiveItem}
+					small
+				>
+					<ClayIcon symbol="angle-left" />
+				</ClayButton>
 
-			<AddCommentForm fragmentEntryLinkId={props.fragmentEntryLinkId} />
+				<span className="ml-5">{fragmentEntryLink.name}</span>
+			</SidebarHeader>
 
-			{[...fragmentEntryLinkComments].reverse().map(comment => (
-				<FragmentComment
-					comment={comment}
+			<ShowResolvedCommentsToggle />
+
+			<div
+				data-fragments-editor-item-id={props.fragmentEntryLinkId}
+				data-fragments-editor-item-type={
+					FRAGMENTS_EDITOR_ITEM_TYPES.fragment
+				}
+			>
+				<AddCommentForm
 					fragmentEntryLinkId={props.fragmentEntryLinkId}
-					key={comment.commentId}
-					onDelete={deleteComment}
-					onEdit={editComment}
-					onEditReply={editCommentReply}
 				/>
-			))}
-		</div>
+
+				{[...fragmentEntryLinkComments].reverse().map(comment => (
+					<FragmentComment
+						comment={comment}
+						fragmentEntryLinkId={props.fragmentEntryLinkId}
+						key={comment.commentId}
+						onDelete={deleteComment}
+						onEdit={editComment}
+						onEditReply={editCommentReply}
+					/>
+				))}
+			</div>
+		</>
 	);
 };
 
@@ -67,6 +92,10 @@ FragmentComments.propTypes = {
 };
 
 const getActions = (dispatch, ownProps) => ({
+	clearActiveItem: () =>
+		dispatch({
+			type: CLEAR_ACTIVE_ITEM
+		}),
 	deleteComment: comment =>
 		dispatch(
 			deleteFragmentEntryLinkCommentAction(

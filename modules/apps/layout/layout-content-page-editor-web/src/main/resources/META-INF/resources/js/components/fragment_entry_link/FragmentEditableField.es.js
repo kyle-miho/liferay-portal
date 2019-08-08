@@ -41,7 +41,11 @@ import {
 	enableSavingChangesStatusAction,
 	updateLastSaveDateAction
 } from '../../actions/saveChanges.es';
-import {editableShouldBeHighlighted} from '../../utils/FragmentsEditorGetUtils.es';
+import {
+	editableIsMapped,
+	editableIsMappedToAssetEntry,
+	editableShouldBeHighlighted
+} from '../../utils/FragmentsEditorGetUtils.es';
 import {getConnectedComponent} from '../../store/ConnectedComponent.es';
 import {prefixSegmentsExperienceId} from '../../utils/prefixSegmentsExperienceId.es';
 import {setIn} from '../../utils/FragmentsEditorUpdateUtils.es';
@@ -58,37 +62,6 @@ import templates from './FragmentEditableField.soy';
  * FragmentEditableField
  */
 class FragmentEditableField extends PortletBase {
-	/**
-	 * Checks if the given editable is mapped
-	 * @param {object} editableValues
-	 * @private
-	 * @return {boolean}
-	 * @review
-	 */
-	static _isMapped(editableValues) {
-		return Boolean(
-			editableValues.mappedField ||
-				(editableValues.classNameId &&
-					editableValues.classPK &&
-					editableValues.fieldId)
-		);
-	}
-
-	/**
-	 * Checks if the given editable is mapped to an asset entry
-	 * @param {object} editableValues
-	 * @private
-	 * @return {boolean}
-	 * @review
-	 */
-	static _isMappedToAssetEntry(editableValues) {
-		return Boolean(
-			editableValues.classNameId &&
-				editableValues.classPK &&
-				editableValues.fieldId
-		);
-	}
-
 	/**
 	 * @inheritDoc
 	 * @review
@@ -134,7 +107,7 @@ class FragmentEditableField extends PortletBase {
 			segmentedValue[this.languageId] ||
 			segmentedValue[this.defaultLanguageId];
 
-		const mapped = FragmentEditableField._isMapped(this.editableValues);
+		const mapped = editableIsMapped(this.editableValues);
 
 		const value = mapped
 			? this._mappedFieldValue || this.editableValues.defaultValue
@@ -156,6 +129,7 @@ class FragmentEditableField extends PortletBase {
 			state.layoutData.structure
 		);
 		const itemId = this._getItemId();
+
 		const translated = !mapped && Boolean(segmentedValue[this.languageId]);
 
 		let nextState = state;
@@ -244,6 +218,23 @@ class FragmentEditableField extends PortletBase {
 	}
 
 	/**
+	 * Handle hoveredItemId changed
+	 * @inheritDoc
+	 * @review
+	 */
+	syncHoveredItemId() {
+		if (this.hoveredItemType === FRAGMENTS_EDITOR_ITEM_TYPES.mappedItem) {
+			const [classNameId, classPK] = this.hoveredItemId.split('-');
+
+			this._mappedItemHovered =
+				this.editableValues.classNameId === classNameId &&
+				this.editableValues.classPK === classPK;
+		} else {
+			this._mappedItemHovered = false;
+		}
+	}
+
+	/**
 	 * Clears the corresponding editor
 	 * @private
 	 * @review
@@ -252,7 +243,6 @@ class FragmentEditableField extends PortletBase {
 		this._handleEditableChanged('');
 
 		this.store.dispatch({
-			itemId: '',
 			type: CLEAR_FRAGMENT_EDITOR
 		});
 	}
@@ -272,10 +262,6 @@ class FragmentEditableField extends PortletBase {
 				this.selectedItems.length > 1
 					? []
 					: processor.getFloatingToolbarButtons(this.editableValues),
-			classes:
-				this.editableValues.mappedField || this.editableValues.fieldId
-					? 'fragments-editor__floating-toolbar--mapped-field'
-					: '',
 			events: {
 				buttonClicked: this._handleFloatingToolbarButtonClicked
 			},
@@ -364,8 +350,8 @@ class FragmentEditableField extends PortletBase {
 			this._preventEditableClick = false;
 		} else {
 			this.store.dispatch({
-				itemId: `${this.fragmentEntryLinkId}-${this.editableId}`,
-				type: ENABLE_FRAGMENT_EDITOR
+				type: ENABLE_FRAGMENT_EDITOR,
+				value: `${this.fragmentEntryLinkId}-${this.editableId}`
 			});
 		}
 	}
@@ -386,7 +372,8 @@ class FragmentEditableField extends PortletBase {
 	 */
 	_handleEditableDestroyed() {
 		this.store.dispatch({
-			type: DISABLE_FRAGMENT_EDITOR
+			type: DISABLE_FRAGMENT_EDITOR,
+			value: ''
 		});
 	}
 
@@ -438,8 +425,8 @@ class FragmentEditableField extends PortletBase {
 
 		if (type === 'editor') {
 			this.store.dispatch({
-				itemId: this._getItemId(),
-				type: ENABLE_FRAGMENT_EDITOR
+				type: ENABLE_FRAGMENT_EDITOR,
+				value: this._getItemId()
 			});
 		} else if (
 			type === 'panel' &&
@@ -450,7 +437,8 @@ class FragmentEditableField extends PortletBase {
 			event.preventDefault();
 
 			this.store.dispatch({
-				type: OPEN_ASSET_TYPE_DIALOG
+				type: OPEN_ASSET_TYPE_DIALOG,
+				value: true
 			});
 		}
 	}
@@ -511,7 +499,7 @@ class FragmentEditableField extends PortletBase {
 	_updateMappedFieldValue() {
 		if (
 			this.getAssetFieldValueURL &&
-			FragmentEditableField._isMappedToAssetEntry(this.editableValues)
+			editableIsMappedToAssetEntry(this.editableValues)
 		) {
 			this.fetch(this.getAssetFieldValueURL, {
 				classNameId: this.editableValues.classNameId,
@@ -625,6 +613,18 @@ FragmentEditableField.STATE = {
 	 * @type {object|null}
 	 */
 	_floatingToolbar: Config.internal().value(null),
+
+	/**
+	 * Mapped content hovered
+	 * @instance
+	 * @memberOf FragmentEditableField
+	 * @private
+	 * @review
+	 * @type {boolean}
+	 */
+	_mappedItemHovered: Config.internal()
+		.bool()
+		.value(false),
 
 	/**
 	 * Translated label of the mapped field

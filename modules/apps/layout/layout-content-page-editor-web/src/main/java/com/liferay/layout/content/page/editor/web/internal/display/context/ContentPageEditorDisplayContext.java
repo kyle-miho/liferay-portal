@@ -60,6 +60,7 @@ import com.liferay.layout.content.page.editor.web.internal.configuration.util.Co
 import com.liferay.layout.content.page.editor.web.internal.configuration.util.FragmentServiceConfigurationUtil;
 import com.liferay.layout.page.template.model.LayoutPageTemplateStructure;
 import com.liferay.layout.page.template.service.LayoutPageTemplateStructureLocalServiceUtil;
+import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.comment.Comment;
 import com.liferay.portal.kernel.comment.CommentManager;
@@ -273,6 +274,12 @@ public class ContentPageEditorDisplayContext {
 		getAssetMappingFieldsURL.setResourceID(
 			"/content_layout/get_asset_mapping_fields");
 
+		ResourceURL getContentStructuresURL =
+			_renderResponse.createResourceURL();
+
+		getContentStructuresURL.setResourceID(
+			"/content_layout/get_content_structures");
+
 		ResourceURL getExperienceUsedPortletsURL =
 			_renderResponse.createResourceURL();
 
@@ -281,6 +288,8 @@ public class ContentPageEditorDisplayContext {
 
 		soyContext.put(
 			"getAssetMappingFieldsURL", getAssetMappingFieldsURL.toString()
+		).put(
+			"getContentStructuresURL", getContentStructuresURL.toString()
 		).put(
 			"getExperienceUsedPortletsURL",
 			getExperienceUsedPortletsURL.toString()
@@ -466,6 +475,26 @@ public class ContentPageEditorDisplayContext {
 		);
 
 		soyContexts.add(availableSoyContext);
+
+		if (classNameId == PortalUtil.getClassNameId(Layout.class)) {
+			availableSoyContext = SoyContextFactoryUtil.createSoyContext();
+
+			availableSoyContext.put("type", "separator");
+
+			soyContexts.add(availableSoyContext);
+
+			availableSoyContext = SoyContextFactoryUtil.createSoyContext();
+
+			availableSoyContext.put(
+				"icon", "format"
+			).put(
+				"label", LanguageUtil.get(resourceBundle, "look-and-feel")
+			).put(
+				"sidebarPanelId", "lookAndFeel"
+			);
+
+			soyContexts.add(availableSoyContext);
+		}
 
 		if (ContentPageEditorCommentsConfigurationUtil.isEnabled()) {
 			availableSoyContext = SoyContextFactoryUtil.createSoyContext();
@@ -953,8 +982,7 @@ public class ContentPageEditorDisplayContext {
 		List<Comment> rootComments = _commentManager.getRootComments(
 			FragmentEntryLink.class.getName(),
 			fragmentEntryLink.getFragmentEntryLinkId(),
-			WorkflowConstants.STATUS_APPROVED, QueryUtil.ALL_POS,
-			QueryUtil.ALL_POS);
+			WorkflowConstants.STATUS_ANY, QueryUtil.ALL_POS, QueryUtil.ALL_POS);
 
 		for (Comment rootComment : rootComments) {
 			JSONObject commentJSONObject = CommentUtil.getCommentJSONObject(
@@ -1286,6 +1314,10 @@ public class ContentPageEditorDisplayContext {
 
 					JSONObject editableJSONObject =
 						editableProcessorJSONObject.getJSONObject(editableKey);
+
+					if (editableJSONObject == null) {
+						continue;
+					}
 
 					JSONObject configJSONObject =
 						editableJSONObject.getJSONObject("config");
@@ -1626,7 +1658,8 @@ public class ContentPageEditorDisplayContext {
 		long count =
 			PortletPreferencesLocalServiceUtil.getPortletPreferencesCount(
 				PortletKeys.PREFS_OWNER_TYPE_LAYOUT, plid,
-				portlet.getPortletId());
+				PortletIdCodec.encode(
+					portlet.getPortletId(), String.valueOf(CharPool.NUMBER_0)));
 
 		if (count > 0) {
 			return true;

@@ -3,6 +3,10 @@ components:
         DataDefinition:
             description: https://www.schema.org/DataDefinition
             properties:
+                availableLanguageIds:
+                    items:
+                        type: string
+                    type: array
                 dataDefinitionFields:
                     items:
                         $ref: '#/components/schemas/DataDefinitionField'
@@ -18,6 +22,8 @@ components:
                     type: string
                 dateModified:
                     format: date-time
+                    type: string
+                defaultLanguageId:
                     type: string
                 description:
                     additionalProperties:
@@ -121,8 +127,6 @@ components:
                     type: string
                 dateModified:
                     format: date-time
-                    type: string
-                defaultLanguageId:
                     type: string
                 description:
                     additionalProperties:

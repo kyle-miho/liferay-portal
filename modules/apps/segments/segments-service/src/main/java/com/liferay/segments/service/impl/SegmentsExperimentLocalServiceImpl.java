@@ -92,6 +92,12 @@ public class SegmentsExperimentLocalServiceImpl
 		resourceLocalService.addModelResources(
 			segmentsExperiment, serviceContext);
 
+		// Segments experiment rel
+
+		segmentsExperimentRelLocalService.addSegmentsExperimentRel(
+			segmentsExperiment.getSegmentsExperimentId(),
+			segmentsExperiment.getSegmentsExperienceId(), serviceContext);
+
 		return segmentsExperiment;
 	}
 
@@ -109,6 +115,11 @@ public class SegmentsExperimentLocalServiceImpl
 
 		resourceLocalService.deleteResource(
 			segmentsExperiment, ResourceConstants.SCOPE_INDIVIDUAL);
+
+		// Segments experiment rels
+
+		segmentsExperimentRelLocalService.deleteSegmentsExperimentRels(
+			segmentsExperiment.getSegmentsExperimentId());
 
 		return segmentsExperiment;
 	}
@@ -193,6 +204,7 @@ public class SegmentsExperimentLocalServiceImpl
 
 		_validateName(name);
 
+		segmentsExperiment.setModifiedDate(new Date());
 		segmentsExperiment.setName(name);
 		segmentsExperiment.setDescription(description);
 
@@ -214,6 +226,7 @@ public class SegmentsExperimentLocalServiceImpl
 			segmentsExperiment.getClassNameId(),
 			segmentsExperiment.getClassPK(), status);
 
+		segmentsExperiment.setModifiedDate(new Date());
 		segmentsExperiment.setStatus(status);
 
 		return segmentsExperimentPersistence.update(segmentsExperiment);
@@ -271,6 +284,10 @@ public class SegmentsExperimentLocalServiceImpl
 			long segmentsExperimentId, long segmentsExperienceId,
 			long classNameId, long classPK, int status)
 		throws SegmentsExperimentStatusException {
+
+		if (SegmentsExperimentConstants.Status.parse(status) == null) {
+			throw new SegmentsExperimentStatusException();
+		}
 
 		if (SegmentsExperimentConstants.STATUS_DRAFT != status) {
 			return;

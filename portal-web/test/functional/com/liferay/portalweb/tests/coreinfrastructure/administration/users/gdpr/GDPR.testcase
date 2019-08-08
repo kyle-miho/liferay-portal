@@ -40,6 +40,12 @@ definition {
 			User.tearDownCP();
 
 			BlogsEntry.tearDownCP();
+
+			DMDocument.tearDownCP();
+
+			MessageboardsThread.tearDownCP();
+
+			WikiPage.tearDownCP();
 		}
 	}
 
@@ -135,6 +141,8 @@ definition {
 
 		WikiNavigator.gotoAllPagesCP();
 
+		LexiconEntry.changeDisplayStyle(displayStyle = "table");
+
 		var key_wikiPageTitle = "Wiki Page Title";
 		var key_wikiPageUsername = "Anonymous Anonymous";
 
@@ -143,10 +151,49 @@ definition {
 			value1 = "Anonymous Anonymous");
 	}
 
+	@priority = "4"
+	test AnonymizeEntryFromApplication {
+		User.logoutPG();
+
+		User.loginUserPG(
+			password = "test",
+			userEmailAddress = "userea@liferay.com");
+
+		DMNavigator.openDocumentsAndMediaAdmin(siteURLKey = "guest");
+
+		DMDocument.addCP(
+			dmDocumentDescription = "DM Document Description",
+			dmDocumentFile = "Document_1.txt",
+			dmDocumentTitle = "DM Document Title");
+
+		User.logoutAndLoginPG(
+			userLoginEmailAddress = "test@liferay.com",
+			userLoginFullName = "Test Test");
+
+		ProductMenu.gotoPortlet(
+			category = "Users",
+			panel = "Control Panel",
+			portlet = "Users and Organizations");
+
+		User.deletePersonalDataCP(
+			userFirstName = "userfn",
+			userLastName = "userln");
+
+		GDPR.anonymizeDataViaReviewData(application = "Documents and Media");
+
+		DMNavigator.openDocumentsAndMediaAdmin(siteURLKey = "guest");
+
+		DMNavigator.gotoDocumentCP(dmDocumentTitle = "DM Document Title");
+
+		DMDocument.expandInfo();
+
+		AssertTextEquals(
+			locator1 = "DocumentsAndMediaDocument#DOCUMENT_INFO_UPLOADED_BY",
+			value1 = "Anonymous Anonymous");
+	}
+
 	@priority = "5"
 	test DeleteEntryFromApplication {
-		property portal.acceptance = "true";
-
 		User.logoutPG();
 
 		User.loginUserPG(
@@ -182,6 +229,55 @@ definition {
 		BlogsNavigator.openBlogsAdmin(siteURLKey = "guest");
 
 		LexiconEntry.viewNoEntry(rowEntry = "Blogs Entry Title");
+	}
+
+	@priority = "4"
+	test EditEntryFromApplication {
+		User.logoutPG();
+
+		User.loginUserPG(
+			password = "test",
+			userEmailAddress = "userea@liferay.com");
+
+		DMNavigator.openDocumentsAndMediaAdmin(siteURLKey = "guest");
+
+		DMDocument.addCP(
+			dmDocumentDescription = "DM Document Description",
+			dmDocumentFile = "Document_1.txt",
+			dmDocumentTitle = "DM Document Title");
+
+		User.logoutAndLoginPG(
+			userLoginEmailAddress = "test@liferay.com",
+			userLoginFullName = "Test Test");
+
+		ProductMenu.gotoPortlet(
+			category = "Users",
+			panel = "Control Panel",
+			portlet = "Users and Organizations");
+
+		User.deletePersonalDataCP(
+			userFirstName = "userfn",
+			userLastName = "userln");
+
+		GDPR.editEntryFromApplicationCP(
+			applications = "Documents and Media",
+			itemsCount = "1",
+			rowEntry = "DM Document Title");
+
+		DMDocument.editCmd(
+			dmDocumentDescriptionEdit = "Edit DM Document Description",
+			dmDocumentTitleEdit = "Edit DM Document Title");
+
+		Button.clickPublish();
+
+		AssertElementPresent(
+			key_firstName = "userfn",
+			key_lastName = "userln",
+			locator1 = "DataErasure#HEADER");
+
+		GDPR.viewEntryRowInApplicationCP(
+			tableEntry = "Edit DM Document Title",
+			tableEntryPartialTextList = "Edit DM Document Title,Edit DM Document Description");
 	}
 
 }

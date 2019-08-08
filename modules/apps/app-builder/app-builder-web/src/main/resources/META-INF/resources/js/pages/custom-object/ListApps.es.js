@@ -12,6 +12,7 @@
  * details.
  */
 
+import ClayLabel from '@clayui/label';
 import moment from 'moment';
 import React from 'react';
 import ListView from '../../components/list-view/ListView.es';
@@ -27,6 +28,7 @@ const APPS = {
 	COLUMNS: [
 		{
 			key: 'name',
+			sortable: true,
 			value: Liferay.Language.get('name')
 		},
 		{
@@ -35,11 +37,13 @@ const APPS = {
 		},
 		{
 			key: 'dateCreated',
+			sortable: true,
 			value: Liferay.Language.get('create-date')
 		},
 		{
 			asc: false,
 			key: 'dateModified',
+			sortable: true,
 			value: Liferay.Language.get('modified-date')
 		},
 		{
@@ -61,8 +65,26 @@ const APPS = {
 			dateModified: moment(item.dateModified).fromNow(),
 			id: item.id,
 			name: item.name.en_US,
-			status: item.settings.status,
-			type: item.settings.type
+			status: (
+				<ClayLabel
+					displayType={
+						item.settings.deploymentStatus.toLowerCase() ===
+						'deployed'
+							? 'success'
+							: 'secondary'
+					}
+				>
+					{item.settings.deploymentStatus.toUpperCase()}
+				</ClayLabel>
+			),
+			type: item.settings.deploymentTypes.reduce(
+				(accumulator, currentValue, index) =>
+					accumulator +
+					(index === item.settings.deploymentTypes.length - 1
+						? ' and '
+						: ', ') +
+					currentValue
+			)
 		}))
 };
 

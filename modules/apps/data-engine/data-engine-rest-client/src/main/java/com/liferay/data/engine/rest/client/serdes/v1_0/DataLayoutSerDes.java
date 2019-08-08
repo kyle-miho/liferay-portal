@@ -135,20 +135,6 @@ public class DataLayoutSerDes {
 			sb.append("\"");
 		}
 
-		if (dataLayout.getDefaultLanguageId() != null) {
-			if (sb.length() > 1) {
-				sb.append(", ");
-			}
-
-			sb.append("\"defaultLanguageId\": ");
-
-			sb.append("\"");
-
-			sb.append(_escape(dataLayout.getDefaultLanguageId()));
-
-			sb.append("\"");
-		}
-
 		if (dataLayout.getDescription() != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
@@ -267,15 +253,6 @@ public class DataLayoutSerDes {
 		map.put(
 			"dateModified",
 			liferayToJSONDateFormat.format(dataLayout.getDateModified()));
-
-		if (dataLayout.getDefaultLanguageId() == null) {
-			map.put("defaultLanguageId", null);
-		}
-		else {
-			map.put(
-				"defaultLanguageId",
-				String.valueOf(dataLayout.getDefaultLanguageId()));
-		}
 
 		if (dataLayout.getDescription() == null) {
 			map.put("description", null);
@@ -444,12 +421,6 @@ public class DataLayoutSerDes {
 				if (jsonParserFieldValue != null) {
 					dataLayout.setDateModified(
 						toDate((String)jsonParserFieldValue));
-				}
-			}
-			else if (Objects.equals(jsonParserFieldName, "defaultLanguageId")) {
-				if (jsonParserFieldValue != null) {
-					dataLayout.setDefaultLanguageId(
-						(String)jsonParserFieldValue);
 				}
 			}
 			else if (Objects.equals(jsonParserFieldName, "description")) {

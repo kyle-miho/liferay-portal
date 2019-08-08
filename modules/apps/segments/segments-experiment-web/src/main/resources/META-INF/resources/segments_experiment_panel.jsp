@@ -28,13 +28,16 @@ String segmentsExperimentRootId = renderResponse.getNamespace() + "-segments-exp
 	segmentsExperimentsApp.default(
 		'<%= segmentsExperimentRootId %>',
 		{
+			initialSegmentsVariants: <%= segmentsExperimentDisplayContext.getSegmentsExperimentRelsJSONArray(locale) %>,
 			segmentsExperiences: <%= segmentsExperimentDisplayContext.getSegmentsExperiencesJSONArray(locale) %>,
 			segmentsExperiment: <%= segmentsExperimentDisplayContext.getSegmentsExperimentJSONObject() %>,
 			selectedSegmentsExperienceId: '<%= segmentsExperimentDisplayContext.getSelectedSegmentsExperienceId() %>'
 		},
 		{
+			contentPageEditorNamespace: '<%= segmentsExperimentDisplayContext.getContentPageEditorPortletNamespace() %>',
 			endpoints: {
-				createSegmentsExperimentURL: '/segments.segmentsexperiment/add-segments-experiment',
+				createSegmentsExperimentURL: '<%= segmentsExperimentDisplayContext.getCreateSegmentsExperimentURL() %>',
+				createSegmentsVariantURL: '<%= segmentsExperimentDisplayContext.getCreateSegmentsVariantURL() %>',
 				editSegmentsExperimentURL: '/segments.segmentsexperiment/update-segments-experiment'
 			},
 			namespace: '<portlet:namespace />',

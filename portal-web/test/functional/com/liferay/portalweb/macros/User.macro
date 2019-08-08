@@ -76,6 +76,8 @@ definition {
 	macro addAddressViaMyAccount {
 		Click(locator1 = "NavBar#ADDRESSES");
 
+		Click(locator1 = "Button#ADD_ADDRESS");
+
 		Type(
 			locator1 = "TextInput#STREET_1",
 			value1 = "${userAddressStreet1}");
@@ -108,7 +110,7 @@ definition {
 			locator1 = "TextInput#CITY",
 			value1 = "${userAddressCity}");
 
-		Click(locator1 = "Radio#PRIMARY");
+		Check(locator1 = "Checkbox#MAKE_PRIMARY");
 
 		Check(locator1 = "Checkbox#MAILING");
 

@@ -27,15 +27,18 @@ const TABLE_VIEWS = {
 	COLUMNS: [
 		{
 			key: 'name',
+			sortable: true,
 			value: Liferay.Language.get('name')
 		},
 		{
 			key: 'dateCreated',
+			sortable: true,
 			value: Liferay.Language.get('create-date')
 		},
 		{
 			asc: false,
 			key: 'dateModified',
+			sortable: true,
 			value: Liferay.Language.get('modified-date')
 		}
 	],

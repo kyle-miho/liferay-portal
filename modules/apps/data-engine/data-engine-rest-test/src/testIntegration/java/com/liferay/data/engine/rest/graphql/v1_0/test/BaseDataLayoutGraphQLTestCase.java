@@ -212,17 +212,6 @@ public abstract class BaseDataLayoutGraphQLTestCase {
 				continue;
 			}
 
-			if (Objects.equals("defaultLanguageId", fieldName)) {
-				if (!Objects.equals(
-						dataLayout.getDefaultLanguageId(),
-						(String)jsonObject.getString("defaultLanguageId"))) {
-
-					return false;
-				}
-
-				continue;
-			}
-
 			if (Objects.equals("id", fieldName)) {
 				if (!Objects.equals(
 						dataLayout.getId(), (Long)jsonObject.getLong("id"))) {
@@ -315,7 +304,6 @@ public abstract class BaseDataLayoutGraphQLTestCase {
 				dataLayoutKey = RandomTestUtil.randomString();
 				dateCreated = RandomTestUtil.nextDate();
 				dateModified = RandomTestUtil.nextDate();
-				defaultLanguageId = RandomTestUtil.randomString();
 				id = RandomTestUtil.randomLong();
 				paginationMode = RandomTestUtil.randomString();
 				siteId = testGroup.getGroupId();

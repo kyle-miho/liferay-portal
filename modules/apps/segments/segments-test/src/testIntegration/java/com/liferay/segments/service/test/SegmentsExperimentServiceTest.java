@@ -42,8 +42,8 @@ import com.liferay.portal.service.test.ServiceTestUtil;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
-import com.liferay.segments.constants.SegmentsActionKeys;
 import com.liferay.segments.constants.SegmentsExperienceConstants;
+import com.liferay.segments.constants.SegmentsExperimentConstants;
 import com.liferay.segments.model.SegmentsEntry;
 import com.liferay.segments.model.SegmentsExperience;
 import com.liferay.segments.model.SegmentsExperiment;
@@ -88,14 +88,9 @@ public class SegmentsExperimentServiceTest {
 		_user = UserTestUtil.addGroupUser(_group, _role.getName());
 	}
 
-	@Test
-	public void testAddSegmentsExperimentsWithManageSegmentsEntriesPermission()
+	@Test(expected = PrincipalException.MustHavePermission.class)
+	public void testAddSegmentsExperimentWithoutManageSegmentsEntriesPermission()
 		throws Exception {
-
-		ResourcePermissionLocalServiceUtil.addResourcePermission(
-			_group.getCompanyId(), "com.liferay.segments",
-			ResourceConstants.SCOPE_GROUP, String.valueOf(_group.getGroupId()),
-			_role.getRoleId(), SegmentsActionKeys.MANAGE_SEGMENTS_ENTRIES);
 
 		try (ContextUserReplace contextUserReplace = new ContextUserReplace(
 				_user, PermissionCheckerFactoryUtil.create(_user))) {
@@ -106,9 +101,14 @@ public class SegmentsExperimentServiceTest {
 		}
 	}
 
-	@Test(expected = PrincipalException.MustHavePermission.class)
-	public void testAddSegmentsExperimentsWithoutManageSegmentsEntriesPermission()
+	@Test
+	public void testAddSegmentsExperimentWithUpdateLayoutPermission()
 		throws Exception {
+
+		ResourcePermissionLocalServiceUtil.addResourcePermission(
+			_group.getCompanyId(), Layout.class.getName(),
+			ResourceConstants.SCOPE_GROUP, String.valueOf(_group.getGroupId()),
+			_role.getRoleId(), ActionKeys.UPDATE);
 
 		try (ContextUserReplace contextUserReplace = new ContextUserReplace(
 				_user, PermissionCheckerFactoryUtil.create(_user))) {
@@ -240,6 +240,50 @@ public class SegmentsExperimentServiceTest {
 			Assert.assertTrue(
 				segmentsExperiments.contains(segmentsExperiment3));
 		}
+	}
+
+	@Test(expected = PrincipalException.MustHavePermission.class)
+	public void testUpdateSegmentsExperimentWithoutUpdatePermission()
+		throws Exception {
+
+		SegmentsExperiment segmentsExperiment = _addSegmentsExperiment();
+
+		try (ContextUserReplace contextUserReplace = new ContextUserReplace(
+				_user, PermissionCheckerFactoryUtil.create(_user))) {
+
+			_segmentsExperimentService.updateSegmentsExperiment(
+				segmentsExperiment.getSegmentsExperimentKey(),
+				SegmentsExperimentConstants.STATUS_CANCELLED);
+		}
+	}
+
+	@Test
+	public void testUpdateSegmentsExperimentWithUpdatePermission()
+		throws Exception {
+
+		SegmentsExperiment segmentsExperiment = _addSegmentsExperiment();
+
+		ResourcePermissionLocalServiceUtil.addResourcePermission(
+			_group.getCompanyId(),
+			"com.liferay.segments.model.SegmentsExperiment",
+			ResourceConstants.SCOPE_GROUP, String.valueOf(_group.getGroupId()),
+			_role.getRoleId(), ActionKeys.UPDATE);
+
+		try (ContextUserReplace contextUserReplace = new ContextUserReplace(
+				_user, PermissionCheckerFactoryUtil.create(_user))) {
+
+			_segmentsExperimentService.updateSegmentsExperiment(
+				segmentsExperiment.getSegmentsExperimentKey(),
+				SegmentsExperimentConstants.STATUS_CANCELLED);
+		}
+	}
+
+	private SegmentsExperiment _addSegmentsExperiment() throws Exception {
+		ServiceContext serviceContext =
+			ServiceContextTestUtil.getServiceContext(
+				_group.getGroupId(), TestPropsValues.getUserId());
+
+		return _addSegmentsExperiment(serviceContext);
 	}
 
 	private SegmentsExperiment _addSegmentsExperiment(

@@ -22,7 +22,6 @@ import com.liferay.app.builder.rest.internal.resource.v1_0.util.LocalizedValueUt
 import com.liferay.app.builder.rest.resource.v1_0.AppResource;
 import com.liferay.app.builder.service.AppBuilderAppLocalService;
 import com.liferay.data.engine.rest.client.resource.v1_0.DataListViewResource;
-import com.liferay.dynamic.data.mapping.exception.NoSuchStructureException;
 import com.liferay.dynamic.data.mapping.exception.NoSuchStructureLayoutException;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.model.DDMStructureLayout;
@@ -36,6 +35,7 @@ import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.search.Sort;
 import com.liferay.portal.kernel.security.auth.AuthTokenUtil;
+import com.liferay.portal.kernel.security.auth.PrincipalThreadLocal;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.CookieKeys;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -65,6 +65,16 @@ import org.osgi.service.component.annotations.ServiceScope;
 )
 public class AppResourceImpl
 	extends BaseAppResourceImpl implements EntityModelResource {
+
+	@Override
+	public void deleteApp(Long appId) throws Exception {
+		_appBuilderAppLocalService.deleteAppBuilderApp(appId);
+	}
+
+	@Override
+	public App getApp(Long appId) throws Exception {
+		return _toApp(_appBuilderAppLocalService.getAppBuilderApp(appId));
+	}
 
 	public Page<App> getDataDefinitionAppsPage(
 			Long dataDefinitionId, String keywords, Pagination pagination,
@@ -162,13 +172,31 @@ public class AppResourceImpl
 	public App postDataDefinitionApp(Long dataDefinitionId, App app)
 		throws Exception {
 
-		_validate(
-			dataDefinitionId, app.getDataLayoutId(), app.getDataListViewId());
+		_validate(app.getDataLayoutId(), app.getDataListViewId());
+
+		DDMStructure ddmStructure = _ddmStructureLocalService.getStructure(
+			dataDefinitionId);
 
 		return _toApp(
 			_appBuilderAppLocalService.addAppBuilderApp(
-				app.getSiteId(), contextCompany.getCompanyId(), app.getUserId(),
-				dataDefinitionId, app.getDataLayoutId(),
+				ddmStructure.getGroupId(), contextCompany.getCompanyId(),
+				PrincipalThreadLocal.getUserId(), dataDefinitionId,
+				app.getDataLayoutId(), app.getDataListViewId(),
+				LocalizedValueUtil.toLocaleStringMap(app.getName()),
+				_toJSON(app.getSettings())));
+	}
+
+	@Override
+	public App putApp(Long appId, App app) throws Exception {
+		_validate(app.getDataLayoutId(), app.getDataListViewId());
+
+		DDMStructure ddmStructure = _ddmStructureLocalService.getStructure(
+			app.getDataDefinitionId());
+
+		return _toApp(
+			_appBuilderAppLocalService.updateAppBuilderApp(
+				PrincipalThreadLocal.getUserId(), appId,
+				ddmStructure.getStructureId(), app.getDataLayoutId(),
 				app.getDataListViewId(),
 				LocalizedValueUtil.toLocaleStringMap(app.getName()),
 				_toJSON(app.getSettings())));
@@ -187,6 +215,7 @@ public class AppResourceImpl
 					appBuilderApp.getNameMap());
 				settings = _toSettings(appBuilderApp.getSettings());
 				siteId = appBuilderApp.getGroupId();
+				status = appBuilderApp.getStatus();
 				userId = appBuilderApp.getUserId();
 			}
 		};
@@ -194,8 +223,6 @@ public class AppResourceImpl
 
 	private String _toJSON(Map<String, Object> settings) {
 		return JSONUtil.put(
-			"deploymentStatus", settings.get("deploymentStatus")
-		).put(
 			"deploymentTypes", settings.get("deploymentTypes")
 		).toString();
 	}
@@ -205,7 +232,6 @@ public class AppResourceImpl
 
 		return new HashMap<String, Object>() {
 			{
-				put("deploymentStatus", jsonObject.get("deploymentStatus"));
 				put(
 					"deploymentTypes",
 					JSONUtil.toObjectList(
@@ -214,19 +240,8 @@ public class AppResourceImpl
 		};
 	}
 
-	private void _validate(
-			long ddmStructureId, long ddmStructureLayoutId,
-			long deDataListViewId)
+	private void _validate(long ddmStructureLayoutId, long deDataListViewId)
 		throws Exception {
-
-		DDMStructure ddmStructure = _ddmStructureLocalService.fetchStructure(
-			ddmStructureId);
-
-		if (ddmStructure == null) {
-			throw new NoSuchStructureException(
-				"Dynamic data mapping structure " + ddmStructureId +
-					" does not exist");
-		}
 
 		DDMStructureLayout ddmStructureLayout =
 			_ddmStructureLayoutLocalService.fetchStructureLayout(

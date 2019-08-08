@@ -17,6 +17,30 @@
 					"then": {
 						"$ref": "#/definitions/fieldSelect"
 					}
+				},
+				{
+					"if": {
+						"properties": {
+							"type": {
+								"const": "checkbox"
+							}
+						}
+					},
+					"then": {
+						"$ref": "#/definitions/fieldCheckbox"
+					}
+				},
+				{
+					"if": {
+						"properties": {
+							"type": {
+								"const": "colorPalette"
+							}
+						}
+					},
+					"then": {
+						"$ref": "#/definitions/fieldColorPalette"
+					}
 				}
 			],
 			"properties": {
@@ -76,6 +100,45 @@
 			],
 			"title": "The Items Schema",
 			"type": "object"
+		},
+		"fieldCheckbox": {
+			"properties": {
+				"defaultValue" : {
+					"enum": [
+						"false",
+						"true",
+						false,
+						true
+					],
+					"title": "The DefaultValue Schema",
+					"type": [
+						"boolean",
+						"string"
+					]
+				}
+			}
+		},
+		"fieldColorPalette": {
+			"properties": {
+				"defaultValue": {
+					"additionalProperties": false,
+					"properties": {
+						"cssClass": {
+							"title": "The CssClass Schema",
+							"type": "string"
+						},
+						"rgbValue": {
+							"title": "The CssClass Schema",
+							"type": "string"
+						}
+					},
+					"required": [
+						"cssClass",
+						"rgbValue"
+					],
+					"title": "The DefaultValue Schema"
+				}
+			}
 		},
 		"fieldSelect": {
 			"properties": {

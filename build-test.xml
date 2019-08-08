@@ -1657,7 +1657,7 @@ sendPasswordCaptchaEnabled=&quot;false&quot;</echo>
 	<macrodef name="prepare-database-upgrade-configuration">
 		<sequential>
 			<delete file="${liferay.home}/osgi/configs/com.liferay.portal.search.configuration.IndexStatusManagerConfiguration.cfg" />
-			<delete file="${liferay.home}/tools/portal-tools-db-upgrade-client/upgrade.log" />
+			<delete file="${liferay.home}/tools/portal-tools-db-upgrade-client/logs/upgrade.log" />
 
 			<echo file="${liferay.home}/osgi/configs/com.liferay.portal.search.configuration.IndexStatusManagerConfiguration.cfg">indexReadOnly=true</echo>
 
@@ -8836,10 +8836,19 @@ auto.deploy.dest.dir=C:/WINDOWS/system32/config/systemprofile/liferay/websphere-
 		<if>
 			<isset property="theme.file.name" />
 			<then>
+				<propertyregex
+					input="${theme.file.name}"
+					override="true"
+					property="zipfileset.includes"
+					regexp="([^\.]+)(\.[^\s]+)"
+					replace="\1*\2"
+				/>
+
 				<if>
 					<resourcecount count="0" when="greater">
 						<zipfileset
-							src="${liferay.home}/osgi/war/${theme.file.name}"
+							dir="${liferay.home}/osgi/war"
+							includes="${zipfileset.includes}"
 						>
 							<patternset>
 								<include name="**/private.lar" />
