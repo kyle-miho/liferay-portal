@@ -35,21 +35,21 @@ definition {
 	@description = "This is a test for LPS-99377. User can add a checkbox configuration fragment to a display page template."
 	@priority = "4"
 	test AddCheckboxConfigurationFragmentToDisplayPageTemplate {
-	property portal.acceptance = "true";
+		property portal.acceptance = "true";
 
 		task ("Add a section fragment to the fragment collection via JSON") {
-     		var htmlSnippet = FragmentsAdmin.getFragmentFileContent(fileName = "checkbox_configuration.html");
+			var htmlSnippet = FragmentsAdmin.getFragmentFileContent(fileName = "checkbox_configuration.html");
 			var jsonSnippet = FragmentsAdmin.getFragmentFileContent(fileName = "checkbox_configuration.json");
 
-        	JSONFragment.addSection(
-         		collectionName = "Collection Name",
-        		groupName = "Test Site Name",
-          		name = "Checkbox Fragment Example",
-          	 	html = "${htmlSnippet}",
-          		configuration = "${jsonSnippet}");
-         }
+			JSONFragment.addSection(
+				collectionName = "Collection Name",
+				configuration = "${jsonSnippet}",
+				groupName = "Test Site Name",
+				html = "${htmlSnippet}",
+				name = "Checkbox Fragment Example");
+		}
 
-        FragmentsAdmin.openFragmentsAdmin(siteURLKey = "test-site-name");
+		FragmentsAdmin.openFragmentsAdmin(siteURLKey = "test-site-name");
 
 		DisplayPageTemplatesAdmin.openDisplayPagesAdmin(siteURLKey = "test-site-name");
 
@@ -71,10 +71,10 @@ definition {
 				item = "Edit");
 
 			AssertVisible(
-          		key_content = "Body Present!!",
-            	key_fragmentClass = "configuration",
-            	key_position = "1",
-            	locator1 = "Fragment#FRAGMENT");
+				key_content = "Body Present!!",
+				key_fragmentClass = "configuration",
+				key_position = "1",
+				locator1 = "Fragment#FRAGMENT");
 		}
 
 		FragmentsAdmin.clickCheckbox(checkboxName = "Hide Body");
@@ -91,10 +91,11 @@ definition {
 				item = "Edit");
 
 			AssertVisible(
-            	key_content = "Bold Words",
-            	key_fragmentClass = "configuration",
-            	key_position = "1",
-            	locator1 = "Fragment#FRAGMENT");
+				key_content = "Bold Words",
+				key_fragmentClass = "configuration",
+				key_position = "1",
+				locator1 = "Fragment#FRAGMENT");
 		}
 	}
+
 }
