@@ -40,13 +40,12 @@ import java.net.URL;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -60,7 +59,6 @@ import org.springframework.mock.web.MockHttpServletResponse;
 /**
  * @author Pavel Savinov
  */
-@Ignore
 @RunWith(Arquillian.class)
 public class RenderFragmentEntryStrutsActionTest {
 
@@ -80,11 +78,6 @@ public class RenderFragmentEntryStrutsActionTest {
 		_guestUser = UserTestUtil.addGroupUser(_group, RoleConstants.GUEST);
 
 		ServiceTestUtil.setUser(_groupUser);
-	}
-
-	@After
-	public void tearDown() throws Exception {
-		GroupTestUtil.deleteGroup(_group);
 	}
 
 	@Test
@@ -167,11 +160,15 @@ public class RenderFragmentEntryStrutsActionTest {
 
 		document.outputSettings(outputSettings);
 
-		Elements elements = document.getElementsByTag("title");
+		Element bodyElement = document.body();
+
+		Elements elements = bodyElement.getElementsByTag("title");
 
 		elements.remove();
 
-		return document.html();
+		System.out.println(bodyElement.html());
+
+		return bodyElement.html();
 	}
 
 	private void _setUpEnvironment(
@@ -194,7 +191,11 @@ public class RenderFragmentEntryStrutsActionTest {
 		"com/liferay/fragment/dependencies/fragments/";
 
 	private Bundle _bundle;
+
+	@DeleteAfterTestRun
 	private Group _group;
+
+	@DeleteAfterTestRun
 	private User _groupUser;
 
 	@DeleteAfterTestRun
