@@ -65,7 +65,7 @@ definition {
 
 	macro setSite {
 		if (!(isSet(site))) {
-			var site = "false";
+			var site = "true";
 		}
 
 		return "${site}";
