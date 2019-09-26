@@ -29,7 +29,7 @@ definition {
 	@description = "This is a test for LPS-98303. Assert that a page that uses a default layout template, does not have a 'Nested Application' Widget, and is not set as customizeable can be converted to a Content Page by default."
 	@priority = "5"
 	test ConvertBasicWidgetPageToContentPage {
-		property portal.acceptance = "true";
+		property portal.acceptance = "kyle";
 
 		JSONLayout.addPublicLayout(
 			groupName = "Test Site Name",
