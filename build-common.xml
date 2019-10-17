@@ -1655,6 +1655,7 @@ artifact.url=${remote.repository.url}/com/liferay/portal/com.liferay.${processed
 		<attribute default="${ssh.host}" name="ssh.host" />
 		<attribute default="${ssh.password}" name="ssh.password" />
 		<attribute default="${ssh.username}" name="ssh.username" />
+		<attribute default="0" name="ssh.timeout" />
 
 		<text name="commands" />
 
@@ -1718,6 +1719,7 @@ rerun your task.
 				command="@{commands}"
 				host="@{ssh.host}"
 				password="@{ssh.password}"
+				timeout="@{ssh.timeout}"
 				trust="true"
 				username="@{ssh.username}"
 			/>
