@@ -210,6 +210,30 @@
 		<clean-database-upgrade-client />
 	</target>
 
+	<target name="check-upgrade-client-sh-disconnect">
+		<get-database-upgrade-client-paths />
+
+		<parallel failonany="true">
+			<exec executable="/bin/bash">
+				<arg value="-c" />
+				<arg value="${db.upgrade.client.home}/db_upgrade${file.suffix.bat}" />
+			</exec>
+
+			<sequential>
+				<waitfor maxwait="30" maxwaitunit="second">
+					<available file="${db.upgrade.client.log}"/>
+				</waitfor>
+
+				<exec executable="/bin/bash" logError="true" output="true">
+					<arg value="-c" />
+					<arg value="( tail -f ${db.upgrade.client.log} &amp; ) | grep -q &quot;Checking to see if all upgrades have completed... done&quot;" />
+				</exec>
+			</sequential>
+		</parallel>
+
+		<clean-database-upgrade-client />
+	</target>
+
 	<target name="check-upgrade-client-upgrade-core-only">
 		<antcall target="rebuild-legacy-database">
 			<param name="portal.version" value="6.2.5" />
