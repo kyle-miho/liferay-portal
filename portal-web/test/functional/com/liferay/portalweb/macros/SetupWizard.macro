@@ -279,15 +279,19 @@ definition {
 	macro viewDefaultPortalNamePG {
 		var testRunEnvironment = PropsUtil.get("test.run.environment");
 
+		echo("${testRunEnvironment}");
+
 		if ("${testRunEnvironment}" == "EE") {
 			AssertTextEquals.assertValue(
 				locator1 = "TextInput#PORTAL_NAME",
 				value1 = "Liferay DXP");
 		}
-		else {
+		else if ("${testRunEnvironment}" == "CE") {
 			AssertTextEquals.assertValue(
 				locator1 = "TextInput#PORTAL_NAME",
 				value1 = "Liferay");
+		} else {
+			fail("Property not set correctly");
 		}
 	}
 
