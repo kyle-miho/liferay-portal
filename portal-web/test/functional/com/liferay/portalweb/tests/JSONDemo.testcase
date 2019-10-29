@@ -1,0 +1,86 @@
+@component-name = "portal-friendly-url"
+definition {
+
+	property portal.release = "true";
+	property portal.upstream = "true";
+	property testray.main.component.name = "Friendly URL";
+
+	setUp {
+		TestCase.setUpPortalInstance();
+
+		User.firstLoginPG();
+	}
+
+	tearDown {
+		var testPortalInstance = PropsUtil.get("test.portal.instance");
+
+		if ("${testPortalInstance}" == "true") {
+			PortalInstances.tearDownCP();
+		}
+		//commented out so you can view the data
+		//else {
+		//	JSONGroup.deleteGroupByName(groupName = "Test Site Name");
+		//}
+	}
+
+	@description = "This is a JSON Demo. Creates 20 Widget Pages with Asset Publisher Widget, 8 Categories, and a Localized WC in Draft Mode with a Category and Tag assigned to it."
+	@priority = "4"
+	test JSONDemo {
+		//Kyle's local machine time - 2 minutes 10 seconds, including Portal login
+		JSONGroup.addGroup(groupName = "Test Site Name");
+
+		task ("Create a widget page with a Widget and a friendlyURL") {
+			var count = "0";
+
+			//note max iterations is 16, so Poshi limitation only creates 15 
+			while ("${count}" != "20") {
+				JSONLayout.addPublicLayout(
+					groupName = "Test Site Name",
+					layoutName = "Test Page ${count}");
+
+				JSONLayout.addWidgetToPublicLayout(
+					groupName = "Test Site Name",
+					layoutName = "Test Page ${count}",
+					widgetName = "Asset Publisher");
+
+				var count = ${count} + 1;
+			}
+
+		}
+
+		task ("Create categories") {
+			JSONCategory.addVocabulary(
+				groupName = "Test Site Name",
+				title = "fruit");
+
+			for (var fruit : list"apple,banana,grape,kiwi,lemon,melon,orange,strawberry") {
+				JSONCategory.addCategory(
+					groupName = "Test Site Name",
+					title = "${fruit}",
+					vocabularyName = "fruit");
+			}
+		}
+
+		//its better to leave categoryId here in testcase level so we dont need to bloat asset services
+		//that need it with vocabulary name, categoryname, and parentcategoryname if applicable
+		var strawberryCategoryId = JSONCategory.getCategoryId(
+			groupName = "Test Site Name",
+			categoryName = "strawberry",
+			vocabularyName = "fruit");
+
+		task ("Create WebContent") {
+			JSONWebcontent.addFolder(
+				folderName = "Fruit WC",
+				groupName = "Test Site Name");
+
+			JSONWebcontent.addBasicWebContentLocalized(
+				assetCategoryIds = "${strawberryCategoryId}",
+				assetTagNames = "Fruit",
+				contentMap = "en_US:English strawberry content,es_ES:Spanish strawberry content",
+				groupName = "Test Site Name",
+				titleMap = "en_US:English strawberry title,es_ES:Spanish strawberry title",
+				workflowAction = "DRAFT");
+		}
+	}
+
+}
