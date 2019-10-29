@@ -10,6 +10,7 @@
 			<stop-one-java-process process.name="DBUpgrader" />
 
 			<delete file="${db.upgrade.client.log}" />
+			<delete file="temp.log" />
 		</sequential>
 	</macrodef>
 
@@ -260,6 +261,43 @@
 				<echo message="${upgrade.log.contents}" />
 
 				<fail if="upgrade.failed" message="Upgrade has failed." />
+			</sequential>
+		</parallel>
+
+		<clean-database-upgrade-client />
+	</target>
+
+	<target name="check-upgrade-client-sh-disconnect-reconnect">
+		<get-database-upgrade-client-paths />
+
+		<parallel failonany="true">
+			<exec executable="/bin/bash" spawn="true">
+				<arg value="-c" />
+				<arg value="${db.upgrade.client.home}/db_upgrade${file.suffix.bat}" />
+			</exec>
+
+			<sequential>
+				<waitfor maxwait="30" maxwaitunit="second" timeoutproperty="upgrade.startfailed">
+					<available file="${db.upgrade.client.log}" />
+				</waitfor>
+
+				<fail if="upgrade.startfailed" message="Upgrade has failed to start." />
+
+				<send-sighup-to-upgrade-process />
+
+				<exec executable="/bin/bash">
+					<arg value="-c" />
+					<arg value="${db.upgrade.client.home}/db_upgrade${file.suffix.bat} > temp.log" />
+				</exec>
+
+				<waitfor maxwait="30" maxwaitunit="second" timeoutproperty="upgrade.secondprocess">
+					<resourcecontains
+						resource="temp.txt"
+						substring="Database upgrade client is already running with process ID"
+					/>
+				</waitfor>
+
+				<fail if="upgrade.secondprocess" message="Upgrade Client is attempting to start a second upgrade process." />
 			</sequential>
 		</parallel>
 
