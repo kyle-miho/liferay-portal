@@ -27,17 +27,17 @@
 
 	<macrodef name="send-sighup-to-upgrade-process">
 		<sequential>
-				<exec executable="/bin/bash" failonerror="true" logError="true" output="true">
-					<arg value="-c" />
-					<arg value="pkill -1 -f db_upgrade" />
-				</exec>
+			<exec executable="/bin/bash" failonerror="true" logError="true" output="true">
+				<arg value="-c" />
+				<arg value="pkill -1 -f db_upgrade" />
+			</exec>
 
-				<exec executable="/bin/bash" failonerror="true" logError="true" output="true">
-					<arg value="-c" />
-					<arg value="pkill -1 -f com.liferay.portal.tools.db.upgrade.client.jar" />
-				</exec>
+			<exec executable="/bin/bash" failonerror="true" logError="true" output="true">
+				<arg value="-c" />
+				<arg value="pkill -1 -f com.liferay.portal.tools.db.upgrade.client.jar" />
+			</exec>
 
-				<echo message="SIGHUP signals sent to db_upgrade script and upgrade client jar." />
+			<echo message="SIGHUP signals sent to db_upgrade script and upgrade client jar." />
 		</sequential>
 	</macrodef>
 
@@ -158,6 +158,39 @@
 		</parallel>
 
 		<clean-database-upgrade-client />
+	</target>
+
+	<target name="check-upgrade-client-gogoshell-failed-upgrade">
+		<parallel failonany="true">
+			<sql classpath="${app.server.lib.global.dir}/${jdbc.mysql.driver}" driver="${database.mysql.driver}" onerror="continue" password="${database.mysql.password}" print="true" url="${database.mysql.url}" userid="${database.mysql.username}">
+				<![CDATA[
+					DROP TABLE Group_;
+					DROP TABLE Layout;
+				]]>
+			</sql>
+
+			<exec executable="/bin/bash" spawn="true">
+				<arg value="-c" />
+				<arg value="${db.upgrade.client.home}/db_upgrade${file.suffix.bat}" />
+			</exec>
+
+			<sequential>
+				<waitfor maxwait="30" maxwaitunit="second" timeoutproperty="upgrade.startfailed">
+					<available file="${db.upgrade.client.log}" />
+				</waitfor>
+
+				<fail if="upgrade.startfailed" message="Upgrade has failed to start." />
+
+				<waitfor maxwait="300" maxwaitunit="second" timeoutproperty="gogoshell.timeout">
+					<resourcecontains
+						resource="${db.upgrade.client.log}"
+						substring="Unable to open Gogo shell"
+					/>
+				</waitfor>
+
+				<fail if="gogoshell.timeout" message="The Gogo shell connection did not fail as expected." />
+			</sequential>
+		</parallel>
 	</target>
 
 	<target name="check-upgrade-client-help">
