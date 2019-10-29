@@ -1,0 +1,249 @@
+[1mdiff --git a/build-test-batch.xml b/build-test-batch.xml[m
+[1mindex d8ea4519f581..2eb4c0f7554a 100644[m
+[1m--- a/build-test-batch.xml[m
+[1m+++ b/build-test-batch.xml[m
+[36m@@ -3381,7 +3381,7 @@[m [mlog.sanitizer.enabled=false</echo>[m
+ [m
+ 				<trycatch property="junit.failure.message">[m
+ 					<try>[m
+[31m-						<for keepgoing="true" list="check-upgrade-client-gogoshell,check-upgrade-client-help,check-upgrade-client-java-version,check-upgrade-client-custom-log,check-upgrade-client-additional-settings,check-upgrade-client-sh-disconnect,check-upgrade-client-upgrade-core-only,check-upgrade-client-zip-content,check-upgrade-properties-app-db-set,check-upgrade-properties-app-ext-set,check-upgrade-properties-db-ext-set,check-upgrade-properties-none-set" param="upgrade.test.target">[m
+[32m+[m						[32m<for keepgoing="true" list="check-upgrade-client-gogoshell,check-upgrade-client-gogoshell-failed-upgrade,check-upgrade-client-help,check-upgrade-client-java-version,check-upgrade-client-custom-log,check-upgrade-client-additional-settings,check-upgrade-client-sh-disconnect,check-upgrade-client-sh-disconnect-reconnect,check-upgrade-client-upgrade-core-only,check-upgrade-client-zip-content,check-upgrade-properties-app-db-set,check-upgrade-properties-app-ext-set,check-upgrade-properties-db-ext-set,check-upgrade-properties-none-set" param="upgrade.test.target">[m
+ 							<sequential>[m
+ 								<antcall target="rebuild-legacy-database">[m
+ 									<param name="portal.version" value="7.1.3" />[m
+[1mdiff --git a/modules/dxp/apps/portal-workflow/portal-workflow-metrics-lang/src/main/resources/content/Language.properties b/modules/dxp/apps/portal-workflow/portal-workflow-metrics-lang/src/main/resources/content/Language.properties[m
+[1mindex 893e60b12803..e9542612b6eb 100644[m
+[1m--- a/modules/dxp/apps/portal-workflow/portal-workflow-metrics-lang/src/main/resources/content/Language.properties[m
+[1m+++ b/modules/dxp/apps/portal-workflow/portal-workflow-metrics-lang/src/main/resources/content/Language.properties[m
+[36m@@ -5,29 +5,22 @@[m [mall-items=All Items[m
+ all-steps=All Steps[m
+ all-time=All Time[m
+ an-sla-with-the-same-name-already-exists=An SLA with the same name already exists.[m
+[31m-asset-title=Asset Title[m
+[31m-asset-type=Asset Type[m
+ assignee-name=Assignee Name[m
+ at-least-one-parameter-is-required=At least one parameter is required.[m
+ average-completion-time=Average Completion Time[m
+ billion-abbreviation=B[m
+ blocked=Blocked[m
+ calendar=Calendar[m
+[31m-cancel=Cancel[m
+ check-sla-job-interval=Check SLA Job Interval[m
+ check-sla-job-interval-description=Set the job interval in minutes.[m
+[31m-clear-all=Clear All[m
+ completed-items=Completed Items[m
+ completed-items-description=Completed workflow items are counted and categorized by their SLA status.[m
+ completion-period=Completion Period[m
+ completion-velocity=Completion Velocity[m
+ completion-velocity-description=Completion velocity tracks the number of completed workflow instances over the selected time period.[m
+[31m-created-by=Created By[m
+ creation-date=Creation Date[m
+ current-assignee=Current Assignee[m
+ current-step=Current Step[m
+[31m-dashboard=Dashboard[m
+[31m-days=Days[m
+ days-abbreviation=d[m
+ dd-yyyy=DD, YYYY[m
+ ddd-mmm-d=ddd, MMM D[m
+[36m@@ -37,16 +30,10 @@[m [mdefault-date-format-is-x=Default date format is {0}.[m
+ define-the-sla-duration=Define the SLA duration. By default, the SLA timer runs 24 hours per day, 7 days per week.[m
+ define-the-sla-duration-and-calendar-format=Define the SLA duration and calendar format.[m
+ define-when-time-should-be-tracked-based-on-workflow-steps=Define when time should be tracked based on workflow steps.[m
+[31m-delete=Delete[m
+ deleting-slas-will-reflect-on-report-data=Deleting SLAs will reflect on report data. This action cannot be undone. Are you sure you want to permanently delete it?[m
+[31m-description=Description[m
+ due-date-by-sla=Due Date by SLA[m
+[31m-duration=Duration[m
+[31m-edit=Edit[m
+[31m-end-date=End Date[m
+ enter-a-whole-number=Enter a whole number.[m
+ enters-task=Enters Task:[m
+[31m-entries=Entries[m
+ error=Error:[m
+ filter-by=Filter By[m
+ fix-blocked-slas-to-resume-accurate-reporting=Fix blocked SLAs to resume accurate reporting.[m
+[36m@@ -54,18 +41,14 @@[m [mfix-the-sla-configuration-to-resume-accurate-reporting=Fix the SLA configuration[m
+ go-to-submission-page=Go to Submission Page[m
+ hh-mm=HH:mm[m
+ hh-mm-a=hh:mm A[m
+[31m-hours=Hours[m
+ hours-abbreviation=h[m
+[31m-id=ID[m
+ info=Info:[m
+ inst-day=Inst / Day[m
+ inst-hour=Inst / Hour[m
+ inst-month=Inst / Month[m
+ inst-week=Inst / Week[m
+ inst-year=Inst / Year[m
+[31m-item=Item[m
+ item-subject=Item Subject[m
+[31m-items=Items[m
+ javax.portlet.title.com_liferay_portal_workflow_metrics_web_internal_portlet_WorkflowMetricsPortlet=Metrics[m
+ last-7-days=Last 7 Days[m
+ last-30-days=Last 30 Days[m
+[36m@@ -73,10 +56,8 @@[m [mlast-90-days=Last 90 Days[m
+ last-180-days=Last 180 Days[m
+ last-year=Last Year[m
+ leaves-task=Leaves Task:[m
+[31m-left=Left[m
+ metrics=Metrics[m
+ million-abbreviation=M[m
+[31m-minutes=Minutes[m
+ minutes-abbreviation=min[m
+ mmm-dd=MMM DD[m
+ mmm-dd-hh-mm=MMM DD, HH:mm[m
+[36m@@ -85,12 +66,9 @@[m [mmmm-dd-lt=MMM DD, LT[m
+ mmm-dd-yyyy=MMM DD, YYYY[m
+ mmm-dd-yyyy-lt=MMM DD, YYYY, LT[m
+ mmm-yyyy=MMM YYYY[m
+[31m-name=Name[m
+ new-sla=New SLA[m
+[31m-next=Next[m
+ no-current-metrics=No Current Metrics[m
+ no-results-found=No results found.[m
+[31m-no-results-were-found=No results were found.[m
+ no-sla-records-for-this-item=No SLA records for this item.[m
+ no-slas-are-defined-for-this-process=No SLAs are defined for this process.[m
+ no-slas-yet=No SLAs Yet[m
+[36m@@ -99,19 +77,14 @@[m [mon-task=On Task:[m
+ on-time=On Time[m
+ once-there-are-active-processes-metrics-will-appear-here=Once there are active processes, metrics will appear here.[m
+ one-or-more-slas-are-being-updated=One or more SLAs are being updated.[m
+[31m-open=Open[m
+ open-processes-summary=Open Processes Summary[m
+ overdue=Overdue[m
+[31m-pause=Pause[m
+ pending-items=Pending Items[m
+ pending-items-description=Pending workflow items are counted and categorized by their SLA status.[m
+[31m-performance=Performance[m
+ performance-by-step=Performance by Step[m
+ performance-by-step-description=For each step of the workflow process, view the average completion time and percentage of SLA breaches over the selected time period.[m
+[31m-please-enter-a-valid-date=Please enter a valid date.[m
+ please-fill-in-the-required-fields=Please fill in the required fields.[m
+ please-try-another-name=Please try another name.[m
+[31m-previous=Previous[m
+ process-begins=Process Begins[m
+ process-details=Process Details[m
+ process-ends=Process Ends:[m
+[36m@@ -119,18 +92,14 @@[m [mprocess-name=Process Name[m
+ process-status=Process Status[m
+ process-step=Process Step[m
+ reload-page=Reload Page[m
+[31m-resolved=Resolved[m
+ resolved-on-time=Resolved on Time[m
+ resolved-overdue=Resolved Overdue[m
+ running=Running[m
+[31m-save=Save[m
+ search-for=Search for...[m
+ see-items=See Items[m
+ select-or-type-an-option=Select or type an option.[m
+ selected-option-is-no-longer-available=Selected option is no longer available. Please choose another option.[m
+ set-up-slas=Set Up SLAs[m
+[31m-showing=Showing[m
+[31m-showing-x-to-x-of-x-entries=Showing {0} to {1} of {2} entries.[m
+ sla-allows-to-define-and-measure-process-performance=SLA allows to define and measure process performance.[m
+ sla-breached-percent=SLA Breached (%)[m
+ sla-definition=SLA Definition[m
+[36m@@ -142,9 +111,7 @@[m [msla-was-deleted=SLA was deleted.[m
+ sla-was-saved=SLA was saved.[m
+ sla-was-updated=SLA was updated.[m
+ slas=SLAs[m
+[31m-status=Status[m
+ step-name=Step Name[m
+[31m-stop=Stop[m
+ success=Success:[m
+ system-default=System Default[m
+ the-date-cannot-be-earlier-than-1970=The date cannot be earlier than 1970.[m
+[36m@@ -169,13 +136,11 @@[m [mtime-frame=Time Frame[m
+ time-will-begin-counting-when=Time Will Begin Counting When:[m
+ time-will-stop-counting-when=Time Will Stop Counting When:[m
+ time-wont-be-considered-when=Time Won't Be Considered When:[m
+[31m-to=To[m
+ total-completed=Total Completed[m
+ total-open=Total Open[m
+ total-pending=Total Pending[m
+ trillion-abbreviation=T[m
+ untracked=Untracked[m
+[31m-update=Update[m
+ value-must-be-an-hour-below=Value must be an hour below 23:59.[m
+ value-must-be-an-integer-above-x=Value must be an integer above {0}.[m
+ view-all-assignees=View All Assignees[m
+[36m@@ -188,6 +153,5 @@[m [mworkload-by-step-description=Workload by step shows the number of items in each[m
+ x-item={0} Item[m
+ x-items={0} Items[m
+ x-result-for-x={0} Result for {1}[m
+[31m-x-results-for-x={0} Results for {1}[m
+ x-sla-is-blocked={0} SLA is blocked.[m
+ x-slas-are-blocked={0} SLAs are blocked.[m
+\ No newline at end of file[m
+[1mdiff --git a/modules/util/portal-tools-db-upgrade-client/src/testFunctional/ant/build-test-db-upgrade-client.xml b/modules/util/portal-tools-db-upgrade-client/src/testFunctional/ant/build-test-db-upgrade-client.xml[m
+[1mindex 8ba37a356aa7..d9f04365cf5f 100644[m
+[1m--- a/modules/util/portal-tools-db-upgrade-client/src/testFunctional/ant/build-test-db-upgrade-client.xml[m
+[1m+++ b/modules/util/portal-tools-db-upgrade-client/src/testFunctional/ant/build-test-db-upgrade-client.xml[m
+[36m@@ -27,17 +27,17 @@[m
+ [m
+ 	<macrodef name="send-sighup-to-upgrade-process">[m
+ 		<sequential>[m
+[31m-				<exec executable="/bin/bash" failonerror="true" logError="true" output="true">[m
+[31m-					<arg value="-c" />[m
+[31m-					<arg value="pkill -1 -f db_upgrade" />[m
+[31m-				</exec>[m
+[32m+[m			[32m<exec executable="/bin/bash" failonerror="true" logError="true" output="true">[m
+[32m+[m				[32m<arg value="-c" />[m
+[32m+[m				[32m<arg value="pkill -1 -f db_upgrade" />[m
+[32m+[m			[32m</exec>[m
+ [m
+[31m-				<exec executable="/bin/bash" failonerror="true" logError="true" output="true">[m
+[31m-					<arg value="-c" />[m
+[31m-					<arg value="pkill -1 -f com.liferay.portal.tools.db.upgrade.client.jar" />[m
+[31m-				</exec>[m
+[32m+[m			[32m<exec executable="/bin/bash" failonerror="true" logError="true" output="true">[m
+[32m+[m				[32m<arg value="-c" />[m
+[32m+[m				[32m<arg value="pkill -1 -f com.liferay.portal.tools.db.upgrade.client.jar" />[m
+[32m+[m			[32m</exec>[m
+ [m
+[31m-				<echo message="SIGHUP signals sent to db_upgrade script and upgrade client jar." />[m
+[32m+[m			[32m<echo message="SIGHUP signals sent to db_upgrade script and upgrade client jar." />[m
+ 		</sequential>[m
+ 	</macrodef>[m
+ [m
+[36m@@ -160,6 +160,39 @@[m
+ 		<clean-database-upgrade-client />[m
+ 	</target>[m
+ [m
+[32m+[m	[32m<target name="check-upgrade-client-gogoshell-failed-upgrade">[m
+[32m+[m		[32m<parallel failonany="true">[m
+[32m+[m			[32m<sql classpath="${app.server.lib.global.dir}/${jdbc.mysql.driver}" driver="${database.mysql.driver}" onerror="continue" password="${database.mysql.password}" print="true" url="${database.mysql.url}" userid="${database.mysql.username}">[m
+[32m+[m				[32m<![CDATA[[m
+[32m+[m					[32mDROP TABLE Group_;[m
+[32m+[m					[32mDROP TABLE Layout;[m
+[32m+[m				[32m]]>[m
+[32m+[m			[32m</sql>[m
+[32m+[m
+[32m+[m			[32m<exec executable="/bin/bash" spawn="true">[m
+[32m+[m				[32m<arg value="-c" />[m
+[32m+[m				[32m<arg value="${db.upgrade.client.home}/db_upgrade${file.suffix.bat}" />[m
+[32m+[m			[32m</exec>[m
+[32m+[m
+[32m+[m			[32m<sequential>[m
+[32m+[m				[32m<waitfor maxwait="30" maxwaitunit="second" timeoutproperty="upgrade.startfailed">[m
+[32m+[m					[32m<available file="${db.upgrade.client.log}" />[m
+[32m+[m				[32m</waitfor>[m
+[32m+[m
+[32m+[m				[32m<fail if="upgrade.startfailed" message="Upgrade has failed to start." />[m
+[32m+[m
+[32m+[m				[32m<waitfor maxwait="300" maxwaitunit="second" timeoutproperty="gogoshell.timeout">[m
+[32m+[m					[32m<resourcecontains[m
+[32m+[m						[32mresource="${db.upgrade.client.log}"[m
+[32m+[m						[32msubstring="Unable to open Gogo shell"[m
+[32m+[m					[32m/>[m
+[32m+[m				[32m</waitfor>[m
+[32m+[m
+[32m+[m				[32m<fail if="gogoshell.timeout" message="The Gogo shell connection did not fail as expected." />[m
+[32m+[m			[32m</sequential>[m
+[32m+[m		[32m</parallel>[m
+[32m+[m	[32m</target>[m
+[32m+[m
+ 	<target name="check-upgrade-client-help">[m
+ 		<get-database-upgrade-client-paths />[m
+ [m

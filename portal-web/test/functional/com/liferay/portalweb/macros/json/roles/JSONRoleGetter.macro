@@ -1,0 +1,12 @@
+definition {
+
+	macro _getUsers {
+		var curl = '''
+			curl http://localhost:8080/api/jsonws/role/get-roles \
+				-u test@liferay.com:test \
+				-d companyId=20095 \
+				-d types=
+		''';
+	}
+
+}

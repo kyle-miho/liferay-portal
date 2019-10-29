@@ -1,0 +1,19 @@
+definition {
+
+	macro test1 {
+		Test.test2(paramater = "${paramater}");
+	}
+
+	macro test2 {
+		Test.test3(checkme = "${paramater}");
+	}
+
+	macro test3 {
+		if (isSet(checkme)) {
+			fail("paramater was never set");
+		}
+
+		return"_sdf}{x";
+	}
+
+}

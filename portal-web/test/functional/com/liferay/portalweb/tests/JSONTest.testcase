@@ -1,0 +1,26 @@
+@component-name = "portal-calendar"
+definition {
+
+	property portal.release = "true";
+	property portal.upstream = "true";
+	property testray.main.component.name = "Calendar";
+
+	//setUp {
+
+	//JSONGroup.addGroup(groupName = "Test Site Name");
+	//}
+
+	tearDown {
+		var testPortalInstance = PropsUtil.get("test.portal.instance");
+
+		if ("${testPortalInstance}" == "true") {
+			PortalInstances.tearDownCP();
+		}
+	}
+
+	@priority = "3"
+	test JSONTest {
+		Test.test1();
+	}
+
+}
