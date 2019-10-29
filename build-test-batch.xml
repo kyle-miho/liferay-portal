@@ -3384,8 +3384,8 @@ log.sanitizer.enabled=false</echo>
 						<for keepgoing="true" list="check-upgrade-client-gogoshell,check-upgrade-client-help,check-upgrade-client-java-version,check-upgrade-client-custom-log,check-upgrade-client-additional-settings,check-upgrade-client-sh-disconnect,check-upgrade-client-upgrade-core-only,check-upgrade-client-zip-content,check-upgrade-properties-app-db-set,check-upgrade-properties-app-ext-set,check-upgrade-properties-db-ext-set,check-upgrade-properties-none-set" param="upgrade.test.target">
 							<sequential>
 								<antcall target="rebuild-legacy-database">
-									<param name="portal.version" value="6.2.5" />
-									<param name="data.archive.type" value="data-archive-polls" />
+									<param name="portal.version" value="7.1.3" />
+									<param name="data.archive.type" value="data-archive-classic-search-portlet" />
 									<param name="skip.get.testcase.database.properties" value="true" />
 								</antcall>
 
