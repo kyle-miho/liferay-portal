@@ -27,12 +27,12 @@
 
 	<macrodef name="send-sighup-to-upgrade-process">
 		<sequential>
-			<exec executable="/bin/bash" failonerror="true" logError="true" output="true">
+			<exec executable="/bin/bash" logError="true" output="true">
 				<arg value="-c" />
 				<arg value="pkill -1 -f db_upgrade" />
 			</exec>
 
-			<exec executable="/bin/bash" failonerror="true" logError="true" output="true">
+			<exec executable="/bin/bash" logError="true" output="true">
 				<arg value="-c" />
 				<arg value="pkill -1 -f com.liferay.portal.tools.db.upgrade.client.jar" />
 			</exec>
@@ -161,11 +161,16 @@
 	</target>
 
 	<target name="check-upgrade-client-gogoshell-failed-upgrade">
-		<parallel failonany="true">
-			<exec executable="/bin/bash" spawn="true">
-				<arg value="-c" />
-				<arg value="${db.upgrade.client.home}/db_upgrade${file.suffix.bat}" />
-			</exec>
+		<get-database-upgrade-client-paths />
+
+		<parallel>
+			<java
+				dir="${db.upgrade.client.home}"
+				fork="true"
+				jar="${db.upgrade.client.jar}"
+				timeout="900000"
+			>
+			</java>
 
 			<sequential>
 				<waitfor maxwait="30" maxwaitunit="second" timeoutproperty="upgrade.startfailed">
@@ -174,12 +179,18 @@
 
 				<fail if="upgrade.startfailed" message="Upgrade has failed to start." />
 
-				<sql classpath="${app.server.lib.global.dir}/${jdbc.mysql.driver}" driver="${database.mysql.driver}" onerror="continue" password="${database.mysql.password}" print="true" url="${database.mysql.url}" userid="${database.mysql.username}">
+				<sql classpath="${app.server.lib.global.dir}/${jdbc.mysql.driver}" driver="${database.mysql.driver}" onerror="continue" output="output.txt" password="${database.mysql.password}" print="true" url="${database.mysql.url}" userid="${database.mysql.username}">
 					<![CDATA[
-						DROP TABLE Group_;
-						DROP TABLE Layout;
+						ALTER TABLE JournalArticle DROP type_;
 					]]>
 				</sql>
+
+				<waitfor maxwait="900000" timeoutproperty="gogoshell.not.started">
+					<resourcecontains
+						resource="${db.upgrade.client.log}"
+						substring="Connecting to Gogo shell"
+					/>
+				</waitfor>
 
 				<waitfor maxwait="300" maxwaitunit="second" timeoutproperty="gogoshell.timeout">
 					<resourcecontains
@@ -188,7 +199,21 @@
 					/>
 				</waitfor>
 
+				<if>
+					<isset property="gogoshell.not.started" />
+					<then>
+						<fail message="The Gogo shell failed to open before the test timed out." />
+					</then>
+				</if>
+
 				<fail if="gogoshell.timeout" message="The Gogo shell connection did not fail as expected." />
+
+				<loadfile
+					property="upgrade.log.contents"
+					srcFile="${db.upgrade.client.log}"
+				/>
+
+				<echo message="${upgrade.log.contents}" />
 			</sequential>
 		</parallel>
 	</target>
@@ -309,28 +334,33 @@
 				<arg value="${db.upgrade.client.home}/db_upgrade${file.suffix.bat}" />
 			</exec>
 
+			<waitfor maxwait="3000" maxwaitunit="second" timeoutproperty="upgrade.secondprocess">
+				<resourcecontains
+					resource="temp.log"
+					substring="Database upgrade client is already running"
+				/>
+			</waitfor>
+
+			<fail if="upgrade.secondprocess" message="FAILED. Upgrade Client is attempting to start a second upgrade process." />
+
 			<sequential>
-				<waitfor maxwait="30" maxwaitunit="second" timeoutproperty="upgrade.startfailed">
+				<waitfor maxwait="300" maxwaitunit="second" timeoutproperty="upgrade.startfailed">
 					<available file="${db.upgrade.client.log}" />
 				</waitfor>
 
 				<fail if="upgrade.startfailed" message="Upgrade has failed to start." />
-
-				<send-sighup-to-upgrade-process />
 
 				<exec executable="/bin/bash">
 					<arg value="-c" />
 					<arg value="${db.upgrade.client.home}/db_upgrade${file.suffix.bat} > temp.log" />
 				</exec>
 
-				<waitfor maxwait="30" maxwaitunit="second" timeoutproperty="upgrade.secondprocess">
-					<resourcecontains
-						resource="temp.log"
-						substring="Database upgrade client is already running with process ID"
-					/>
-				</waitfor>
+				<loadfile
+					property="upgrade.log.contents"
+					srcFile="temp.log"
+				/>
 
-				<fail if="upgrade.secondprocess" message="Upgrade Client is attempting to start a second upgrade process." />
+				<echo message="${upgrade.log.contents}" />
 			</sequential>
 		</parallel>
 
