@@ -302,9 +302,6 @@ public interface DLContentLocalService
 		long companyId, long repositoryId, String path, String version);
 
 	@Transactional(readOnly = true)
-	public InputStream openContentInputStream(long contentId);
-
-	@Transactional(readOnly = true)
 	public InputStream openDataInputStream(long contentId);
 
 	/**
