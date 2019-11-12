@@ -393,6 +393,11 @@ public class DLContentLocalServiceWrapper
 		return _dlContentLocalService.openContentInputStream(contentId);
 	}
 
+	@Override
+	public java.io.InputStream openDataInputStream(long contentId) {
+		return _dlContentLocalService.openDataInputStream(contentId);
+	}
+
 	/**
 	 * Updates the document library content in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
 	 *
