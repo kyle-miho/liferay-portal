@@ -385,10 +385,6 @@ public class DLContentLocalServiceUtil {
 		return getService().hasContent(companyId, repositoryId, path, version);
 	}
 
-	public static java.io.InputStream openContentInputStream(long contentId) {
-		return getService().openContentInputStream(contentId);
-	}
-
 	public static java.io.InputStream openDataInputStream(long contentId) {
 		return getService().openDataInputStream(contentId);
 	}
