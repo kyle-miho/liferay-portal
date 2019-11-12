@@ -304,6 +304,9 @@ public interface DLContentLocalService
 	@Transactional(readOnly = true)
 	public InputStream openContentInputStream(long contentId);
 
+	@Transactional(readOnly = true)
+	public InputStream openDataInputStream(long contentId);
+
 	/**
 	 * Updates the document library content in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
 	 *
