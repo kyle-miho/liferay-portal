@@ -294,29 +294,6 @@ public class DLContentLocalServiceImpl extends DLContentLocalServiceBaseImpl {
 		return false;
 	}
 
-	@Override
-	@Transactional(readOnly = true)
-	public InputStream openContentInputStream(long contentId) {
-		try {
-			DLContentDataBlobModel dlContentDataBlobModel = getDataBlobModel(
-				contentId);
-
-			Blob blob = dlContentDataBlobModel.getDataBlob();
-
-			InputStream inputStream = blob.getBinaryStream();
-
-			if (_useTempFile) {
-				inputStream = new AutoDeleteFileInputStream(
-					_file.createTempFile(inputStream));
-			}
-
-			return inputStream;
-		}
-		catch (Exception e) {
-			throw new SystemException(e);
-		}
-	}
-
 	/**
 	 * @deprecated As of Athanasius (7.3.x), with no direct replacement
 	 */
@@ -334,19 +311,6 @@ public class DLContentLocalServiceImpl extends DLContentLocalServiceBaseImpl {
 			dLContent.setPath(newPath);
 
 			dlContentPersistence.update(dLContent);
-		}
-	}
-
-	@Activate
-	protected void activate() {
-		DB db = DBManagerUtil.getDB();
-
-		if ((db.getDBType() != DBType.DB2) &&
-			(db.getDBType() != DBType.MYSQL) &&
-			(db.getDBType() != DBType.MARIADB) &&
-			(db.getDBType() != DBType.SYBASE)) {
-
-			_useTempFile = true;
 		}
 	}
 
@@ -412,10 +376,5 @@ public class DLContentLocalServiceImpl extends DLContentLocalServiceBaseImpl {
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		DLContentLocalServiceImpl.class);
-
-	@Reference
-	private File _file;
-
-	private boolean _useTempFile;
 
 }
