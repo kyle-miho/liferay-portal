@@ -40,6 +40,9 @@
 		<property access="com.liferay.portal.dao.orm.hibernate.LiferayPropertyAccessor" name="css" type="com.liferay.portal.dao.orm.hibernate.StringClobType" />
 		<property access="com.liferay.portal.dao.orm.hibernate.LiferayPropertyAccessor" name="html" type="com.liferay.portal.dao.orm.hibernate.StringClobType" />
 		<property access="com.liferay.portal.dao.orm.hibernate.LiferayPropertyAccessor" name="js" type="com.liferay.portal.dao.orm.hibernate.StringClobType" />
+		<one-to-one access="com.liferay.portal.dao.orm.hibernate.PrivatePropertyAccessor" cascade="save-update" class="com.liferay.fragment.model.FragmentEntryContentLazyBlobModel" constrained="true" name="contentLazyBlobModel" outer-join="false" />
+		<one-to-one access="com.liferay.portal.dao.orm.hibernate.PrivatePropertyAccessor" cascade="save-update" class="com.liferay.fragment.model.FragmentEntryContentLazySecondBlobModel" constrained="true" name="contentLazySecondBlobModel" outer-join="false" />
+		<property access="com.liferay.portal.dao.orm.hibernate.LiferayPropertyAccessor" name="contentEager" type="org.hibernate.type.BlobType" />
 		<property access="com.liferay.portal.dao.orm.hibernate.LiferayPropertyAccessor" name="configuration" type="com.liferay.portal.dao.orm.hibernate.StringClobType" />
 		<property access="com.liferay.portal.dao.orm.hibernate.LiferayPropertyAccessor" name="previewFileEntryId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
 		<property access="com.liferay.portal.dao.orm.hibernate.LiferayPropertyAccessor" column="type_" name="type" type="com.liferay.portal.dao.orm.hibernate.IntegerType" />
@@ -48,6 +51,22 @@
 		<property access="com.liferay.portal.dao.orm.hibernate.LiferayPropertyAccessor" name="statusByUserId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
 		<property access="com.liferay.portal.dao.orm.hibernate.LiferayPropertyAccessor" name="statusByUserName" type="com.liferay.portal.dao.orm.hibernate.StringType" />
 		<property access="com.liferay.portal.dao.orm.hibernate.LiferayPropertyAccessor" name="statusDate" type="org.hibernate.type.TimestampType" />
+	</class>
+	<class dynamic-update="true" lazy="true" name="com.liferay.fragment.model.FragmentEntryContentLazyBlobModel" table="FragmentEntry">
+		<id column="fragmentEntryId" name="fragmentEntryId">
+			<generator class="foreign">
+				<param name="property">com.liferay.fragment.model.impl.FragmentEntryImpl</param>
+			</generator>
+		</id>
+		<property column="contentLazy" name="contentLazyBlob" type="blob" />
+	</class>
+	<class dynamic-update="true" lazy="true" name="com.liferay.fragment.model.FragmentEntryContentLazySecondBlobModel" table="FragmentEntry">
+		<id column="fragmentEntryId" name="fragmentEntryId">
+			<generator class="foreign">
+				<param name="property">com.liferay.fragment.model.impl.FragmentEntryImpl</param>
+			</generator>
+		</id>
+		<property column="contentLazySecond" name="contentLazySecondBlob" type="blob" />
 	</class>
 	<class dynamic-update="true" name="com.liferay.fragment.model.impl.FragmentEntryLinkImpl" table="FragmentEntryLink">
 		<id access="com.liferay.portal.dao.orm.hibernate.LiferayPropertyAccessor" name="fragmentEntryLinkId" type="long">

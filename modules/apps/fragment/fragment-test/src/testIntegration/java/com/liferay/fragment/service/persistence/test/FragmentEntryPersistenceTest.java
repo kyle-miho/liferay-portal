@@ -20,12 +20,14 @@ import com.liferay.fragment.model.FragmentEntry;
 import com.liferay.fragment.service.FragmentEntryLocalServiceUtil;
 import com.liferay.fragment.service.persistence.FragmentEntryPersistence;
 import com.liferay.fragment.service.persistence.FragmentEntryUtil;
+import com.liferay.portal.kernel.dao.jdbc.OutputBlob;
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
 import com.liferay.portal.kernel.dao.orm.DynamicQueryFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.ProjectionFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
+import com.liferay.portal.kernel.dao.orm.Session;
 import com.liferay.portal.kernel.test.ReflectionTestUtil;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
@@ -38,9 +40,13 @@ import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PersistenceTestRule;
 import com.liferay.portal.test.rule.TransactionalTestRule;
 
+import java.io.ByteArrayInputStream;
 import java.io.Serializable;
 
+import java.sql.Blob;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -151,6 +157,34 @@ public class FragmentEntryPersistenceTest {
 		newFragmentEntry.setHtml(RandomTestUtil.randomString());
 
 		newFragmentEntry.setJs(RandomTestUtil.randomString());
+		String newContentLazyString = RandomTestUtil.randomString();
+
+		byte[] newContentLazyBytes = newContentLazyString.getBytes("UTF-8");
+
+		Blob newContentLazyBlob = new OutputBlob(
+			new ByteArrayInputStream(newContentLazyBytes),
+			newContentLazyBytes.length);
+
+		newFragmentEntry.setContentLazy(newContentLazyBlob);
+		String newContentLazySecondString = RandomTestUtil.randomString();
+
+		byte[] newContentLazySecondBytes = newContentLazySecondString.getBytes(
+			"UTF-8");
+
+		Blob newContentLazySecondBlob = new OutputBlob(
+			new ByteArrayInputStream(newContentLazySecondBytes),
+			newContentLazySecondBytes.length);
+
+		newFragmentEntry.setContentLazySecond(newContentLazySecondBlob);
+		String newContentEagerString = RandomTestUtil.randomString();
+
+		byte[] newContentEagerBytes = newContentEagerString.getBytes("UTF-8");
+
+		Blob newContentEagerBlob = new OutputBlob(
+			new ByteArrayInputStream(newContentEagerBytes),
+			newContentEagerBytes.length);
+
+		newFragmentEntry.setContentEager(newContentEagerBlob);
 
 		newFragmentEntry.setConfiguration(RandomTestUtil.randomString());
 
@@ -169,6 +203,12 @@ public class FragmentEntryPersistenceTest {
 		newFragmentEntry.setStatusDate(RandomTestUtil.nextDate());
 
 		_fragmentEntries.add(_persistence.update(newFragmentEntry));
+
+		Session session = _persistence.openSession();
+
+		session.flush();
+
+		session.clear();
 
 		FragmentEntry existingFragmentEntry = _persistence.findByPrimaryKey(
 			newFragmentEntry.getPrimaryKey());
@@ -211,6 +251,28 @@ public class FragmentEntryPersistenceTest {
 			existingFragmentEntry.getHtml(), newFragmentEntry.getHtml());
 		Assert.assertEquals(
 			existingFragmentEntry.getJs(), newFragmentEntry.getJs());
+		Blob existingContentLazy = existingFragmentEntry.getContentLazy();
+
+		Assert.assertTrue(
+			Arrays.equals(
+				existingContentLazy.getBytes(
+					1, (int)existingContentLazy.length()),
+				newContentLazyBytes));
+		Blob existingContentLazySecond =
+			existingFragmentEntry.getContentLazySecond();
+
+		Assert.assertTrue(
+			Arrays.equals(
+				existingContentLazySecond.getBytes(
+					1, (int)existingContentLazySecond.length()),
+				newContentLazySecondBytes));
+		Blob existingContentEager = existingFragmentEntry.getContentEager();
+
+		Assert.assertTrue(
+			Arrays.equals(
+				existingContentEager.getBytes(
+					1, (int)existingContentEager.length()),
+				newContentEagerBytes));
 		Assert.assertEquals(
 			existingFragmentEntry.getConfiguration(),
 			newFragmentEntry.getConfiguration());
@@ -653,6 +715,34 @@ public class FragmentEntryPersistenceTest {
 		fragmentEntry.setHtml(RandomTestUtil.randomString());
 
 		fragmentEntry.setJs(RandomTestUtil.randomString());
+		String contentLazyString = RandomTestUtil.randomString();
+
+		byte[] contentLazyBytes = contentLazyString.getBytes("UTF-8");
+
+		Blob contentLazyBlob = new OutputBlob(
+			new ByteArrayInputStream(contentLazyBytes),
+			contentLazyBytes.length);
+
+		fragmentEntry.setContentLazy(contentLazyBlob);
+		String contentLazySecondString = RandomTestUtil.randomString();
+
+		byte[] contentLazySecondBytes = contentLazySecondString.getBytes(
+			"UTF-8");
+
+		Blob contentLazySecondBlob = new OutputBlob(
+			new ByteArrayInputStream(contentLazySecondBytes),
+			contentLazySecondBytes.length);
+
+		fragmentEntry.setContentLazySecond(contentLazySecondBlob);
+		String contentEagerString = RandomTestUtil.randomString();
+
+		byte[] contentEagerBytes = contentEagerString.getBytes("UTF-8");
+
+		Blob contentEagerBlob = new OutputBlob(
+			new ByteArrayInputStream(contentEagerBytes),
+			contentEagerBytes.length);
+
+		fragmentEntry.setContentEager(contentEagerBlob);
 
 		fragmentEntry.setConfiguration(RandomTestUtil.randomString());
 

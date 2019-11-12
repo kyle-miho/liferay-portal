@@ -21,6 +21,8 @@ import com.liferay.portal.kernel.model.ShardedModel;
 import com.liferay.portal.kernel.model.StagedGroupedModel;
 import com.liferay.portal.kernel.model.WorkflowedModel;
 
+import java.sql.Blob;
+
 import java.util.Date;
 
 import org.osgi.annotation.versioning.ProviderType;
@@ -309,6 +311,48 @@ public interface FragmentEntryModel
 	 * @param js the js of this fragment entry
 	 */
 	public void setJs(String js);
+
+	/**
+	 * Returns the content lazy of this fragment entry.
+	 *
+	 * @return the content lazy of this fragment entry
+	 */
+	public Blob getContentLazy();
+
+	/**
+	 * Sets the content lazy of this fragment entry.
+	 *
+	 * @param contentLazy the content lazy of this fragment entry
+	 */
+	public void setContentLazy(Blob contentLazy);
+
+	/**
+	 * Returns the content lazy second of this fragment entry.
+	 *
+	 * @return the content lazy second of this fragment entry
+	 */
+	public Blob getContentLazySecond();
+
+	/**
+	 * Sets the content lazy second of this fragment entry.
+	 *
+	 * @param contentLazySecond the content lazy second of this fragment entry
+	 */
+	public void setContentLazySecond(Blob contentLazySecond);
+
+	/**
+	 * Returns the content eager of this fragment entry.
+	 *
+	 * @return the content eager of this fragment entry
+	 */
+	public Blob getContentEager();
+
+	/**
+	 * Sets the content eager of this fragment entry.
+	 *
+	 * @param contentEager the content eager of this fragment entry
+	 */
+	public void setContentEager(Blob contentEager);
 
 	/**
 	 * Returns the configuration of this fragment entry.

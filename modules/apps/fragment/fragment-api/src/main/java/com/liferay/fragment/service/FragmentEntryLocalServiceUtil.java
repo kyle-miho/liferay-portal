@@ -258,6 +258,19 @@ public class FragmentEntryLocalServiceUtil {
 		return getService().getActionableDynamicQuery();
 	}
 
+	public static com.liferay.fragment.model.FragmentEntryContentLazyBlobModel
+		getContentLazyBlobModel(java.io.Serializable primaryKey) {
+
+		return getService().getContentLazyBlobModel(primaryKey);
+	}
+
+	public static
+		com.liferay.fragment.model.FragmentEntryContentLazySecondBlobModel
+			getContentLazySecondBlobModel(java.io.Serializable primaryKey) {
+
+		return getService().getContentLazySecondBlobModel(primaryKey);
+	}
+
 	public static com.liferay.portal.kernel.dao.orm.ExportActionableDynamicQuery
 		getExportActionableDynamicQuery(
 			com.liferay.exportimport.kernel.lar.PortletDataContext
@@ -437,6 +450,18 @@ public class FragmentEntryLocalServiceUtil {
 
 		return getService().moveFragmentEntry(
 			fragmentEntryId, fragmentCollectionId);
+	}
+
+	public static java.io.InputStream openContentLazyInputStream(
+		long fragmentEntryId) {
+
+		return getService().openContentLazyInputStream(fragmentEntryId);
+	}
+
+	public static java.io.InputStream openContentLazySecondInputStream(
+		long fragmentEntryId) {
+
+		return getService().openContentLazySecondInputStream(fragmentEntryId);
 	}
 
 	/**

@@ -80,6 +80,9 @@
 		<column name="css" type="String" />
 		<column name="html" type="String" />
 		<column name="js" type="String" />
+		<column name="contentLazy" type="Blob" />
+		<column name="contentLazySecond" type="Blob" />
+		<column lazy="false" name="contentEager" type="Blob" />
 		<column name="configuration" type="String" />
 		<column name="previewFileEntryId" type="long" />
 		<column name="type" type="int" />

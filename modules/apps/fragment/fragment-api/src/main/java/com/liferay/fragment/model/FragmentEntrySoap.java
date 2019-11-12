@@ -16,6 +16,8 @@ package com.liferay.fragment.model;
 
 import java.io.Serializable;
 
+import java.sql.Blob;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -46,6 +48,9 @@ public class FragmentEntrySoap implements Serializable {
 		soapModel.setCss(model.getCss());
 		soapModel.setHtml(model.getHtml());
 		soapModel.setJs(model.getJs());
+		soapModel.setContentLazy(model.getContentLazy());
+		soapModel.setContentLazySecond(model.getContentLazySecond());
+		soapModel.setContentEager(model.getContentEager());
 		soapModel.setConfiguration(model.getConfiguration());
 		soapModel.setPreviewFileEntryId(model.getPreviewFileEntryId());
 		soapModel.setType(model.getType());
@@ -227,6 +232,30 @@ public class FragmentEntrySoap implements Serializable {
 		_js = js;
 	}
 
+	public Blob getContentLazy() {
+		return _contentLazy;
+	}
+
+	public void setContentLazy(Blob contentLazy) {
+		_contentLazy = contentLazy;
+	}
+
+	public Blob getContentLazySecond() {
+		return _contentLazySecond;
+	}
+
+	public void setContentLazySecond(Blob contentLazySecond) {
+		_contentLazySecond = contentLazySecond;
+	}
+
+	public Blob getContentEager() {
+		return _contentEager;
+	}
+
+	public void setContentEager(Blob contentEager) {
+		_contentEager = contentEager;
+	}
+
 	public String getConfiguration() {
 		return _configuration;
 	}
@@ -306,6 +335,9 @@ public class FragmentEntrySoap implements Serializable {
 	private String _css;
 	private String _html;
 	private String _js;
+	private Blob _contentLazy;
+	private Blob _contentLazySecond;
+	private Blob _contentEager;
 	private String _configuration;
 	private long _previewFileEntryId;
 	private int _type;

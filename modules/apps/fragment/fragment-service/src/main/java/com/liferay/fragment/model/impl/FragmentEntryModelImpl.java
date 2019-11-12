@@ -18,8 +18,11 @@ import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.expando.kernel.util.ExpandoBridgeFactoryUtil;
 import com.liferay.exportimport.kernel.lar.StagedModelType;
 import com.liferay.fragment.model.FragmentEntry;
+import com.liferay.fragment.model.FragmentEntryContentLazyBlobModel;
+import com.liferay.fragment.model.FragmentEntryContentLazySecondBlobModel;
 import com.liferay.fragment.model.FragmentEntryModel;
 import com.liferay.fragment.model.FragmentEntrySoap;
+import com.liferay.fragment.service.FragmentEntryLocalServiceUtil;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -40,6 +43,7 @@ import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
 
+import java.sql.Blob;
 import java.sql.Types;
 
 import java.util.ArrayList;
@@ -83,10 +87,12 @@ public class FragmentEntryModelImpl
 		{"fragmentCollectionId", Types.BIGINT},
 		{"fragmentEntryKey", Types.VARCHAR}, {"name", Types.VARCHAR},
 		{"css", Types.CLOB}, {"html", Types.CLOB}, {"js", Types.CLOB},
-		{"configuration", Types.CLOB}, {"previewFileEntryId", Types.BIGINT},
-		{"type_", Types.INTEGER}, {"lastPublishDate", Types.TIMESTAMP},
-		{"status", Types.INTEGER}, {"statusByUserId", Types.BIGINT},
-		{"statusByUserName", Types.VARCHAR}, {"statusDate", Types.TIMESTAMP}
+		{"contentLazy", Types.BLOB}, {"contentLazySecond", Types.BLOB},
+		{"contentEager", Types.BLOB}, {"configuration", Types.CLOB},
+		{"previewFileEntryId", Types.BIGINT}, {"type_", Types.INTEGER},
+		{"lastPublishDate", Types.TIMESTAMP}, {"status", Types.INTEGER},
+		{"statusByUserId", Types.BIGINT}, {"statusByUserName", Types.VARCHAR},
+		{"statusDate", Types.TIMESTAMP}
 	};
 
 	public static final Map<String, Integer> TABLE_COLUMNS_MAP =
@@ -108,6 +114,9 @@ public class FragmentEntryModelImpl
 		TABLE_COLUMNS_MAP.put("css", Types.CLOB);
 		TABLE_COLUMNS_MAP.put("html", Types.CLOB);
 		TABLE_COLUMNS_MAP.put("js", Types.CLOB);
+		TABLE_COLUMNS_MAP.put("contentLazy", Types.BLOB);
+		TABLE_COLUMNS_MAP.put("contentLazySecond", Types.BLOB);
+		TABLE_COLUMNS_MAP.put("contentEager", Types.BLOB);
 		TABLE_COLUMNS_MAP.put("configuration", Types.CLOB);
 		TABLE_COLUMNS_MAP.put("previewFileEntryId", Types.BIGINT);
 		TABLE_COLUMNS_MAP.put("type_", Types.INTEGER);
@@ -119,7 +128,7 @@ public class FragmentEntryModelImpl
 	}
 
 	public static final String TABLE_SQL_CREATE =
-		"create table FragmentEntry (mvccVersion LONG default 0 not null,uuid_ VARCHAR(75) null,fragmentEntryId LONG not null primary key,groupId LONG,companyId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,fragmentCollectionId LONG,fragmentEntryKey VARCHAR(75) null,name VARCHAR(75) null,css TEXT null,html TEXT null,js TEXT null,configuration TEXT null,previewFileEntryId LONG,type_ INTEGER,lastPublishDate DATE null,status INTEGER,statusByUserId LONG,statusByUserName VARCHAR(75) null,statusDate DATE null)";
+		"create table FragmentEntry (mvccVersion LONG default 0 not null,uuid_ VARCHAR(75) null,fragmentEntryId LONG not null primary key,groupId LONG,companyId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,fragmentCollectionId LONG,fragmentEntryKey VARCHAR(75) null,name VARCHAR(75) null,css TEXT null,html TEXT null,js TEXT null,contentLazy BLOB,contentLazySecond BLOB,contentEager BLOB,configuration TEXT null,previewFileEntryId LONG,type_ INTEGER,lastPublishDate DATE null,status INTEGER,statusByUserId LONG,statusByUserName VARCHAR(75) null,statusDate DATE null)";
 
 	public static final String TABLE_SQL_DROP = "drop table FragmentEntry";
 
@@ -135,28 +144,10 @@ public class FragmentEntryModelImpl
 
 	public static final String TX_MANAGER = "liferayTransactionManager";
 
-	public static final long COMPANYID_COLUMN_BITMASK = 1L;
-
-	public static final long FRAGMENTCOLLECTIONID_COLUMN_BITMASK = 2L;
-
-	public static final long FRAGMENTENTRYKEY_COLUMN_BITMASK = 4L;
-
-	public static final long GROUPID_COLUMN_BITMASK = 8L;
-
-	public static final long NAME_COLUMN_BITMASK = 16L;
-
-	public static final long STATUS_COLUMN_BITMASK = 32L;
-
-	public static final long TYPE_COLUMN_BITMASK = 64L;
-
-	public static final long UUID_COLUMN_BITMASK = 128L;
-
 	public static void setEntityCacheEnabled(boolean entityCacheEnabled) {
-		_entityCacheEnabled = entityCacheEnabled;
 	}
 
 	public static void setFinderCacheEnabled(boolean finderCacheEnabled) {
-		_finderCacheEnabled = finderCacheEnabled;
 	}
 
 	/**
@@ -187,6 +178,9 @@ public class FragmentEntryModelImpl
 		model.setCss(soapModel.getCss());
 		model.setHtml(soapModel.getHtml());
 		model.setJs(soapModel.getJs());
+		model.setContentLazy(soapModel.getContentLazy());
+		model.setContentLazySecond(soapModel.getContentLazySecond());
+		model.setContentEager(soapModel.getContentEager());
 		model.setConfiguration(soapModel.getConfiguration());
 		model.setPreviewFileEntryId(soapModel.getPreviewFileEntryId());
 		model.setType(soapModel.getType());
@@ -409,6 +403,22 @@ public class FragmentEntryModelImpl
 		attributeSetterBiConsumers.put(
 			"js", (BiConsumer<FragmentEntry, String>)FragmentEntry::setJs);
 		attributeGetterFunctions.put(
+			"contentLazy", FragmentEntry::getContentLazy);
+		attributeSetterBiConsumers.put(
+			"contentLazy",
+			(BiConsumer<FragmentEntry, Blob>)FragmentEntry::setContentLazy);
+		attributeGetterFunctions.put(
+			"contentLazySecond", FragmentEntry::getContentLazySecond);
+		attributeSetterBiConsumers.put(
+			"contentLazySecond",
+			(BiConsumer<FragmentEntry, Blob>)
+				FragmentEntry::setContentLazySecond);
+		attributeGetterFunctions.put(
+			"contentEager", FragmentEntry::getContentEager);
+		attributeSetterBiConsumers.put(
+			"contentEager",
+			(BiConsumer<FragmentEntry, Blob>)FragmentEntry::setContentEager);
+		attributeGetterFunctions.put(
 			"configuration", FragmentEntry::getConfiguration);
 		attributeSetterBiConsumers.put(
 			"configuration",
@@ -478,8 +488,6 @@ public class FragmentEntryModelImpl
 
 	@Override
 	public void setUuid(String uuid) {
-		_columnBitmask |= UUID_COLUMN_BITMASK;
-
 		if (_originalUuid == null) {
 			_originalUuid = _uuid;
 		}
@@ -510,8 +518,6 @@ public class FragmentEntryModelImpl
 
 	@Override
 	public void setGroupId(long groupId) {
-		_columnBitmask |= GROUPID_COLUMN_BITMASK;
-
 		if (!_setOriginalGroupId) {
 			_setOriginalGroupId = true;
 
@@ -533,8 +539,6 @@ public class FragmentEntryModelImpl
 
 	@Override
 	public void setCompanyId(long companyId) {
-		_columnBitmask |= COMPANYID_COLUMN_BITMASK;
-
 		if (!_setOriginalCompanyId) {
 			_setOriginalCompanyId = true;
 
@@ -627,8 +631,6 @@ public class FragmentEntryModelImpl
 
 	@Override
 	public void setFragmentCollectionId(long fragmentCollectionId) {
-		_columnBitmask |= FRAGMENTCOLLECTIONID_COLUMN_BITMASK;
-
 		if (!_setOriginalFragmentCollectionId) {
 			_setOriginalFragmentCollectionId = true;
 
@@ -655,8 +657,6 @@ public class FragmentEntryModelImpl
 
 	@Override
 	public void setFragmentEntryKey(String fragmentEntryKey) {
-		_columnBitmask |= FRAGMENTENTRYKEY_COLUMN_BITMASK;
-
 		if (_originalFragmentEntryKey == null) {
 			_originalFragmentEntryKey = _fragmentEntryKey;
 		}
@@ -681,8 +681,6 @@ public class FragmentEntryModelImpl
 
 	@Override
 	public void setName(String name) {
-		_columnBitmask = -1L;
-
 		if (_originalName == null) {
 			_originalName = _name;
 		}
@@ -744,6 +742,85 @@ public class FragmentEntryModelImpl
 
 	@JSON
 	@Override
+	public Blob getContentLazy() {
+		if (_contentLazyBlobModel == null) {
+			try {
+				_contentLazyBlobModel =
+					FragmentEntryLocalServiceUtil.getContentLazyBlobModel(
+						getPrimaryKey());
+			}
+			catch (Exception e) {
+			}
+		}
+
+		Blob blob = null;
+
+		if (_contentLazyBlobModel != null) {
+			blob = _contentLazyBlobModel.getContentLazyBlob();
+		}
+
+		return blob;
+	}
+
+	@Override
+	public void setContentLazy(Blob contentLazy) {
+		if (_contentLazyBlobModel == null) {
+			_contentLazyBlobModel = new FragmentEntryContentLazyBlobModel(
+				getPrimaryKey(), contentLazy);
+		}
+		else {
+			_contentLazyBlobModel.setContentLazyBlob(contentLazy);
+		}
+	}
+
+	@JSON
+	@Override
+	public Blob getContentLazySecond() {
+		if (_contentLazySecondBlobModel == null) {
+			try {
+				_contentLazySecondBlobModel =
+					FragmentEntryLocalServiceUtil.getContentLazySecondBlobModel(
+						getPrimaryKey());
+			}
+			catch (Exception e) {
+			}
+		}
+
+		Blob blob = null;
+
+		if (_contentLazySecondBlobModel != null) {
+			blob = _contentLazySecondBlobModel.getContentLazySecondBlob();
+		}
+
+		return blob;
+	}
+
+	@Override
+	public void setContentLazySecond(Blob contentLazySecond) {
+		if (_contentLazySecondBlobModel == null) {
+			_contentLazySecondBlobModel =
+				new FragmentEntryContentLazySecondBlobModel(
+					getPrimaryKey(), contentLazySecond);
+		}
+		else {
+			_contentLazySecondBlobModel.setContentLazySecondBlob(
+				contentLazySecond);
+		}
+	}
+
+	@JSON
+	@Override
+	public Blob getContentEager() {
+		return _contentEager;
+	}
+
+	@Override
+	public void setContentEager(Blob contentEager) {
+		_contentEager = contentEager;
+	}
+
+	@JSON
+	@Override
 	public String getConfiguration() {
 		if (_configuration == null) {
 			return "";
@@ -777,8 +854,6 @@ public class FragmentEntryModelImpl
 
 	@Override
 	public void setType(int type) {
-		_columnBitmask |= TYPE_COLUMN_BITMASK;
-
 		if (!_setOriginalType) {
 			_setOriginalType = true;
 
@@ -811,8 +886,6 @@ public class FragmentEntryModelImpl
 
 	@Override
 	public void setStatus(int status) {
-		_columnBitmask |= STATUS_COLUMN_BITMASK;
-
 		if (!_setOriginalStatus) {
 			_setOriginalStatus = true;
 
@@ -966,10 +1039,6 @@ public class FragmentEntryModelImpl
 		}
 	}
 
-	public long getColumnBitmask() {
-		return _columnBitmask;
-	}
-
 	@Override
 	public ExpandoBridge getExpandoBridge() {
 		return ExpandoBridgeFactoryUtil.getExpandoBridge(
@@ -1109,6 +1178,10 @@ public class FragmentEntryModelImpl
 
 		fragmentEntryModelImpl._originalName = fragmentEntryModelImpl._name;
 
+		fragmentEntryModelImpl._contentLazyBlobModel = null;
+
+		fragmentEntryModelImpl._contentLazySecondBlobModel = null;
+
 		fragmentEntryModelImpl._originalType = fragmentEntryModelImpl._type;
 
 		fragmentEntryModelImpl._setOriginalType = false;
@@ -1116,8 +1189,6 @@ public class FragmentEntryModelImpl
 		fragmentEntryModelImpl._originalStatus = fragmentEntryModelImpl._status;
 
 		fragmentEntryModelImpl._setOriginalStatus = false;
-
-		fragmentEntryModelImpl._columnBitmask = 0;
 	}
 
 	@Override
@@ -1259,31 +1330,56 @@ public class FragmentEntryModelImpl
 
 	@Override
 	public String toString() {
-		Map<String, Function<FragmentEntry, Object>> attributeGetterFunctions =
-			getAttributeGetterFunctions();
+		StringBundler sb = new StringBundler(53);
 
-		StringBundler sb = new StringBundler(
-			4 * attributeGetterFunctions.size() + 2);
-
-		sb.append("{");
-
-		for (Map.Entry<String, Function<FragmentEntry, Object>> entry :
-				attributeGetterFunctions.entrySet()) {
-
-			String attributeName = entry.getKey();
-			Function<FragmentEntry, Object> attributeGetterFunction =
-				entry.getValue();
-
-			sb.append(attributeName);
-			sb.append("=");
-			sb.append(attributeGetterFunction.apply((FragmentEntry)this));
-			sb.append(", ");
-		}
-
-		if (sb.index() > 1) {
-			sb.setIndex(sb.index() - 1);
-		}
-
+		sb.append("{mvccVersion=");
+		sb.append(getMvccVersion());
+		sb.append(", uuid=");
+		sb.append(getUuid());
+		sb.append(", fragmentEntryId=");
+		sb.append(getFragmentEntryId());
+		sb.append(", groupId=");
+		sb.append(getGroupId());
+		sb.append(", companyId=");
+		sb.append(getCompanyId());
+		sb.append(", userId=");
+		sb.append(getUserId());
+		sb.append(", userName=");
+		sb.append(getUserName());
+		sb.append(", createDate=");
+		sb.append(getCreateDate());
+		sb.append(", modifiedDate=");
+		sb.append(getModifiedDate());
+		sb.append(", fragmentCollectionId=");
+		sb.append(getFragmentCollectionId());
+		sb.append(", fragmentEntryKey=");
+		sb.append(getFragmentEntryKey());
+		sb.append(", name=");
+		sb.append(getName());
+		sb.append(", css=");
+		sb.append(getCss());
+		sb.append(", html=");
+		sb.append(getHtml());
+		sb.append(", js=");
+		sb.append(getJs());
+		sb.append(", contentEager=");
+		sb.append(getContentEager());
+		sb.append(", configuration=");
+		sb.append(getConfiguration());
+		sb.append(", previewFileEntryId=");
+		sb.append(getPreviewFileEntryId());
+		sb.append(", type=");
+		sb.append(getType());
+		sb.append(", lastPublishDate=");
+		sb.append(getLastPublishDate());
+		sb.append(", status=");
+		sb.append(getStatus());
+		sb.append(", statusByUserId=");
+		sb.append(getStatusByUserId());
+		sb.append(", statusByUserName=");
+		sb.append(getStatusByUserName());
+		sb.append(", statusDate=");
+		sb.append(getStatusDate());
 		sb.append("}");
 
 		return sb.toString();
@@ -1291,29 +1387,108 @@ public class FragmentEntryModelImpl
 
 	@Override
 	public String toXmlString() {
-		Map<String, Function<FragmentEntry, Object>> attributeGetterFunctions =
-			getAttributeGetterFunctions();
-
-		StringBundler sb = new StringBundler(
-			5 * attributeGetterFunctions.size() + 4);
+		StringBundler sb = new StringBundler(82);
 
 		sb.append("<model><model-name>");
-		sb.append(getModelClassName());
+		sb.append("com.liferay.fragment.model.FragmentEntry");
 		sb.append("</model-name>");
 
-		for (Map.Entry<String, Function<FragmentEntry, Object>> entry :
-				attributeGetterFunctions.entrySet()) {
-
-			String attributeName = entry.getKey();
-			Function<FragmentEntry, Object> attributeGetterFunction =
-				entry.getValue();
-
-			sb.append("<column><column-name>");
-			sb.append(attributeName);
-			sb.append("</column-name><column-value><![CDATA[");
-			sb.append(attributeGetterFunction.apply((FragmentEntry)this));
-			sb.append("]]></column-value></column>");
-		}
+		sb.append(
+			"<column><column-name>mvccVersion</column-name><column-value><![CDATA[");
+		sb.append(getMvccVersion());
+		sb.append("]]></column-value></column>");
+		sb.append(
+			"<column><column-name>uuid</column-name><column-value><![CDATA[");
+		sb.append(getUuid());
+		sb.append("]]></column-value></column>");
+		sb.append(
+			"<column><column-name>fragmentEntryId</column-name><column-value><![CDATA[");
+		sb.append(getFragmentEntryId());
+		sb.append("]]></column-value></column>");
+		sb.append(
+			"<column><column-name>groupId</column-name><column-value><![CDATA[");
+		sb.append(getGroupId());
+		sb.append("]]></column-value></column>");
+		sb.append(
+			"<column><column-name>companyId</column-name><column-value><![CDATA[");
+		sb.append(getCompanyId());
+		sb.append("]]></column-value></column>");
+		sb.append(
+			"<column><column-name>userId</column-name><column-value><![CDATA[");
+		sb.append(getUserId());
+		sb.append("]]></column-value></column>");
+		sb.append(
+			"<column><column-name>userName</column-name><column-value><![CDATA[");
+		sb.append(getUserName());
+		sb.append("]]></column-value></column>");
+		sb.append(
+			"<column><column-name>createDate</column-name><column-value><![CDATA[");
+		sb.append(getCreateDate());
+		sb.append("]]></column-value></column>");
+		sb.append(
+			"<column><column-name>modifiedDate</column-name><column-value><![CDATA[");
+		sb.append(getModifiedDate());
+		sb.append("]]></column-value></column>");
+		sb.append(
+			"<column><column-name>fragmentCollectionId</column-name><column-value><![CDATA[");
+		sb.append(getFragmentCollectionId());
+		sb.append("]]></column-value></column>");
+		sb.append(
+			"<column><column-name>fragmentEntryKey</column-name><column-value><![CDATA[");
+		sb.append(getFragmentEntryKey());
+		sb.append("]]></column-value></column>");
+		sb.append(
+			"<column><column-name>name</column-name><column-value><![CDATA[");
+		sb.append(getName());
+		sb.append("]]></column-value></column>");
+		sb.append(
+			"<column><column-name>css</column-name><column-value><![CDATA[");
+		sb.append(getCss());
+		sb.append("]]></column-value></column>");
+		sb.append(
+			"<column><column-name>html</column-name><column-value><![CDATA[");
+		sb.append(getHtml());
+		sb.append("]]></column-value></column>");
+		sb.append(
+			"<column><column-name>js</column-name><column-value><![CDATA[");
+		sb.append(getJs());
+		sb.append("]]></column-value></column>");
+		sb.append(
+			"<column><column-name>contentEager</column-name><column-value><![CDATA[");
+		sb.append(getContentEager());
+		sb.append("]]></column-value></column>");
+		sb.append(
+			"<column><column-name>configuration</column-name><column-value><![CDATA[");
+		sb.append(getConfiguration());
+		sb.append("]]></column-value></column>");
+		sb.append(
+			"<column><column-name>previewFileEntryId</column-name><column-value><![CDATA[");
+		sb.append(getPreviewFileEntryId());
+		sb.append("]]></column-value></column>");
+		sb.append(
+			"<column><column-name>type</column-name><column-value><![CDATA[");
+		sb.append(getType());
+		sb.append("]]></column-value></column>");
+		sb.append(
+			"<column><column-name>lastPublishDate</column-name><column-value><![CDATA[");
+		sb.append(getLastPublishDate());
+		sb.append("]]></column-value></column>");
+		sb.append(
+			"<column><column-name>status</column-name><column-value><![CDATA[");
+		sb.append(getStatus());
+		sb.append("]]></column-value></column>");
+		sb.append(
+			"<column><column-name>statusByUserId</column-name><column-value><![CDATA[");
+		sb.append(getStatusByUserId());
+		sb.append("]]></column-value></column>");
+		sb.append(
+			"<column><column-name>statusByUserName</column-name><column-value><![CDATA[");
+		sb.append(getStatusByUserName());
+		sb.append("]]></column-value></column>");
+		sb.append(
+			"<column><column-name>statusDate</column-name><column-value><![CDATA[");
+		sb.append(getStatusDate());
+		sb.append("]]></column-value></column>");
 
 		sb.append("</model>");
 
@@ -1327,8 +1502,8 @@ public class FragmentEntryModelImpl
 
 	}
 
-	private static boolean _entityCacheEnabled;
-	private static boolean _finderCacheEnabled;
+	private static final boolean _entityCacheEnabled = false;
+	private static final boolean _finderCacheEnabled = false;
 
 	private long _mvccVersion;
 	private String _uuid;
@@ -1355,6 +1530,9 @@ public class FragmentEntryModelImpl
 	private String _css;
 	private String _html;
 	private String _js;
+	private FragmentEntryContentLazyBlobModel _contentLazyBlobModel;
+	private FragmentEntryContentLazySecondBlobModel _contentLazySecondBlobModel;
+	private Blob _contentEager;
 	private String _configuration;
 	private long _previewFileEntryId;
 	private int _type;
@@ -1367,7 +1545,6 @@ public class FragmentEntryModelImpl
 	private long _statusByUserId;
 	private String _statusByUserName;
 	private Date _statusDate;
-	private long _columnBitmask;
 	private FragmentEntry _escapedModel;
 
 }

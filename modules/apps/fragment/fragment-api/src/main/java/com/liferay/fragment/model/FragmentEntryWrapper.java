@@ -18,6 +18,8 @@ import com.liferay.exportimport.kernel.lar.StagedModelType;
 import com.liferay.portal.kernel.model.ModelWrapper;
 import com.liferay.portal.kernel.model.wrapper.BaseModelWrapper;
 
+import java.sql.Blob;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -58,6 +60,9 @@ public class FragmentEntryWrapper
 		attributes.put("css", getCss());
 		attributes.put("html", getHtml());
 		attributes.put("js", getJs());
+		attributes.put("contentLazy", getContentLazy());
+		attributes.put("contentLazySecond", getContentLazySecond());
+		attributes.put("contentEager", getContentEager());
 		attributes.put("configuration", getConfiguration());
 		attributes.put("previewFileEntryId", getPreviewFileEntryId());
 		attributes.put("type", getType());
@@ -163,6 +168,24 @@ public class FragmentEntryWrapper
 			setJs(js);
 		}
 
+		Blob contentLazy = (Blob)attributes.get("contentLazy");
+
+		if (contentLazy != null) {
+			setContentLazy(contentLazy);
+		}
+
+		Blob contentLazySecond = (Blob)attributes.get("contentLazySecond");
+
+		if (contentLazySecond != null) {
+			setContentLazySecond(contentLazySecond);
+		}
+
+		Blob contentEager = (Blob)attributes.get("contentEager");
+
+		if (contentEager != null) {
+			setContentEager(contentEager);
+		}
+
 		String configuration = (String)attributes.get("configuration");
 
 		if (configuration != null) {
@@ -235,6 +258,36 @@ public class FragmentEntryWrapper
 	@Override
 	public String getContent() {
 		return model.getContent();
+	}
+
+	/**
+	 * Returns the content eager of this fragment entry.
+	 *
+	 * @return the content eager of this fragment entry
+	 */
+	@Override
+	public Blob getContentEager() {
+		return model.getContentEager();
+	}
+
+	/**
+	 * Returns the content lazy of this fragment entry.
+	 *
+	 * @return the content lazy of this fragment entry
+	 */
+	@Override
+	public Blob getContentLazy() {
+		return model.getContentLazy();
+	}
+
+	/**
+	 * Returns the content lazy second of this fragment entry.
+	 *
+	 * @return the content lazy second of this fragment entry
+	 */
+	@Override
+	public Blob getContentLazySecond() {
+		return model.getContentLazySecond();
 	}
 
 	/**
@@ -615,6 +668,36 @@ public class FragmentEntryWrapper
 	@Override
 	public void setConfiguration(String configuration) {
 		model.setConfiguration(configuration);
+	}
+
+	/**
+	 * Sets the content eager of this fragment entry.
+	 *
+	 * @param contentEager the content eager of this fragment entry
+	 */
+	@Override
+	public void setContentEager(Blob contentEager) {
+		model.setContentEager(contentEager);
+	}
+
+	/**
+	 * Sets the content lazy of this fragment entry.
+	 *
+	 * @param contentLazy the content lazy of this fragment entry
+	 */
+	@Override
+	public void setContentLazy(Blob contentLazy) {
+		model.setContentLazy(contentLazy);
+	}
+
+	/**
+	 * Sets the content lazy second of this fragment entry.
+	 *
+	 * @param contentLazySecond the content lazy second of this fragment entry
+	 */
+	@Override
+	public void setContentLazySecond(Blob contentLazySecond) {
+		model.setContentLazySecond(contentLazySecond);
 	}
 
 	/**

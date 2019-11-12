@@ -44,6 +44,9 @@
 		<field name="js" type="String">
 			<hint-collection name="CLOB" />
 		</field>
+		<field name="contentLazy" type="Blob" />
+		<field name="contentLazySecond" type="Blob" />
+		<field name="contentEager" type="Blob" />
 		<field name="configuration" type="String">
 			<hint-collection name="CLOB" />
 		</field>

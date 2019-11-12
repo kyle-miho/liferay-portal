@@ -22,14 +22,18 @@ import com.liferay.exportimport.kernel.lar.StagedModelDataHandlerRegistryUtil;
 import com.liferay.exportimport.kernel.lar.StagedModelDataHandlerUtil;
 import com.liferay.exportimport.kernel.lar.StagedModelType;
 import com.liferay.fragment.model.FragmentEntry;
+import com.liferay.fragment.model.FragmentEntryContentLazyBlobModel;
+import com.liferay.fragment.model.FragmentEntryContentLazySecondBlobModel;
 import com.liferay.fragment.service.FragmentEntryLocalService;
 import com.liferay.fragment.service.persistence.FragmentCollectionPersistence;
 import com.liferay.fragment.service.persistence.FragmentEntryLinkFinder;
 import com.liferay.fragment.service.persistence.FragmentEntryLinkPersistence;
 import com.liferay.fragment.service.persistence.FragmentEntryPersistence;
+import com.liferay.petra.io.AutoDeleteFileInputStream;
 import com.liferay.portal.aop.AopService;
 import com.liferay.portal.kernel.dao.db.DB;
 import com.liferay.portal.kernel.dao.db.DBManagerUtil;
+import com.liferay.portal.kernel.dao.db.DBType;
 import com.liferay.portal.kernel.dao.jdbc.SqlUpdate;
 import com.liferay.portal.kernel.dao.jdbc.SqlUpdateFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
@@ -45,6 +49,7 @@ import com.liferay.portal.kernel.dao.orm.Projection;
 import com.liferay.portal.kernel.dao.orm.Property;
 import com.liferay.portal.kernel.dao.orm.PropertyFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
+import com.liferay.portal.kernel.dao.orm.Session;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.model.PersistedModel;
@@ -54,16 +59,21 @@ import com.liferay.portal.kernel.search.IndexableType;
 import com.liferay.portal.kernel.service.BaseLocalServiceImpl;
 import com.liferay.portal.kernel.service.PersistedModelLocalService;
 import com.liferay.portal.kernel.transaction.Transactional;
+import com.liferay.portal.kernel.util.File;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 
+import java.io.InputStream;
 import java.io.Serializable;
+
+import java.sql.Blob;
 
 import java.util.List;
 
 import javax.sql.DataSource;
 
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Reference;
 
 /**
@@ -538,6 +548,96 @@ public abstract class FragmentEntryLocalServiceBaseImpl
 	}
 
 	@Override
+	public FragmentEntryContentLazyBlobModel getContentLazyBlobModel(
+		Serializable primaryKey) {
+
+		Session session = null;
+
+		try {
+			session = fragmentEntryPersistence.openSession();
+
+			return (FragmentEntryContentLazyBlobModel)session.get(
+				FragmentEntryContentLazyBlobModel.class, primaryKey);
+		}
+		catch (Exception e) {
+			throw fragmentEntryPersistence.processException(e);
+		}
+		finally {
+			fragmentEntryPersistence.closeSession(session);
+		}
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public InputStream openContentLazyInputStream(long fragmentEntryId) {
+		try {
+			FragmentEntryContentLazyBlobModel
+				FragmentEntryContentLazyBlobModel = getContentLazyBlobModel(
+					fragmentEntryId);
+
+			Blob blob = FragmentEntryContentLazyBlobModel.getContentLazyBlob();
+
+			InputStream inputStream = blob.getBinaryStream();
+
+			if (_useTempFile) {
+				inputStream = new AutoDeleteFileInputStream(
+					_file.createTempFile(inputStream));
+			}
+
+			return inputStream;
+		}
+		catch (Exception e) {
+			throw new SystemException(e);
+		}
+	}
+
+	@Override
+	public FragmentEntryContentLazySecondBlobModel
+		getContentLazySecondBlobModel(Serializable primaryKey) {
+
+		Session session = null;
+
+		try {
+			session = fragmentEntryPersistence.openSession();
+
+			return (FragmentEntryContentLazySecondBlobModel)session.get(
+				FragmentEntryContentLazySecondBlobModel.class, primaryKey);
+		}
+		catch (Exception e) {
+			throw fragmentEntryPersistence.processException(e);
+		}
+		finally {
+			fragmentEntryPersistence.closeSession(session);
+		}
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public InputStream openContentLazySecondInputStream(long fragmentEntryId) {
+		try {
+			FragmentEntryContentLazySecondBlobModel
+				FragmentEntryContentLazySecondBlobModel =
+					getContentLazySecondBlobModel(fragmentEntryId);
+
+			Blob blob =
+				FragmentEntryContentLazySecondBlobModel.
+					getContentLazySecondBlob();
+
+			InputStream inputStream = blob.getBinaryStream();
+
+			if (_useTempFile) {
+				inputStream = new AutoDeleteFileInputStream(
+					_file.createTempFile(inputStream));
+			}
+
+			return inputStream;
+		}
+		catch (Exception e) {
+			throw new SystemException(e);
+		}
+	}
+
+	@Override
 	public Class<?>[] getAopInterfaces() {
 		return new Class<?>[] {
 			FragmentEntryLocalService.class, IdentifiableOSGiService.class,
@@ -548,6 +648,19 @@ public abstract class FragmentEntryLocalServiceBaseImpl
 	@Override
 	public void setAopProxy(Object aopProxy) {
 		fragmentEntryLocalService = (FragmentEntryLocalService)aopProxy;
+	}
+
+	@Activate
+	protected void activate() {
+		DB db = DBManagerUtil.getDB();
+
+		if ((db.getDBType() != DBType.DB2) &&
+			(db.getDBType() != DBType.MYSQL) &&
+			(db.getDBType() != DBType.MARIADB) &&
+			(db.getDBType() != DBType.SYBASE)) {
+
+			_useTempFile = true;
+		}
 	}
 
 	/**
@@ -617,5 +730,10 @@ public abstract class FragmentEntryLocalServiceBaseImpl
 
 	@Reference
 	protected FragmentEntryLinkFinder fragmentEntryLinkFinder;
+
+	@Reference
+	private File _file;
+
+	private boolean _useTempFile;
 
 }

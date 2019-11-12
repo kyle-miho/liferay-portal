@@ -16,6 +16,8 @@ package com.liferay.fragment.service;
 
 import com.liferay.exportimport.kernel.lar.PortletDataContext;
 import com.liferay.fragment.model.FragmentEntry;
+import com.liferay.fragment.model.FragmentEntryContentLazyBlobModel;
+import com.liferay.fragment.model.FragmentEntryContentLazySecondBlobModel;
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
 import com.liferay.portal.kernel.dao.orm.ExportActionableDynamicQuery;
@@ -36,6 +38,7 @@ import com.liferay.portal.kernel.transaction.Propagation;
 import com.liferay.portal.kernel.transaction.Transactional;
 import com.liferay.portal.kernel.util.OrderByComparator;
 
+import java.io.InputStream;
 import java.io.Serializable;
 
 import java.util.List;
@@ -222,6 +225,14 @@ public interface FragmentEntryLocalService
 	public ActionableDynamicQuery getActionableDynamicQuery();
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public FragmentEntryContentLazyBlobModel getContentLazyBlobModel(
+		Serializable primaryKey);
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public FragmentEntryContentLazySecondBlobModel
+		getContentLazySecondBlobModel(Serializable primaryKey);
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public ExportActionableDynamicQuery getExportActionableDynamicQuery(
 		PortletDataContext portletDataContext);
 
@@ -344,6 +355,12 @@ public interface FragmentEntryLocalService
 	public FragmentEntry moveFragmentEntry(
 			long fragmentEntryId, long fragmentCollectionId)
 		throws PortalException;
+
+	@Transactional(readOnly = true)
+	public InputStream openContentLazyInputStream(long fragmentEntryId);
+
+	@Transactional(readOnly = true)
+	public InputStream openContentLazySecondInputStream(long fragmentEntryId);
 
 	/**
 	 * Updates the fragment entry in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
