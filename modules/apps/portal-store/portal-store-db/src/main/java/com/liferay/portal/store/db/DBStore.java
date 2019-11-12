@@ -77,7 +77,7 @@ public class DBStore implements Store {
 			DLContent dlContent = _dlContentLocalService.getContent(
 				companyId, repositoryId, fileName, versionLabel);
 
-			return _dlContentLocalService.openContentInputStream(
+			return _dlContentLocalService.openDataInputStream(
 				dlContent.getContentId());
 		}
 		catch (NoSuchContentException nsce) {
