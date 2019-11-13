@@ -78,23 +78,22 @@ public class WorkflowDefinitionManagerImpl
 			title, name, new UnsyncByteArrayInputStream(bytes), serviceContext);
 	}
 
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
+	 *             #getActiveWorkflowDefinitionsCount(long)}
+	 */
+	@Deprecated
 	@Override
 	public int getActiveWorkflowDefinitionCount(long companyId)
 		throws WorkflowException {
 
-		try {
-			ServiceContext serviceContext = new ServiceContext();
-
-			serviceContext.setCompanyId(companyId);
-
-			return _kaleoDefinitionLocalService.getKaleoDefinitionsCount(
-				true, serviceContext);
-		}
-		catch (Exception e) {
-			throw new WorkflowException(e);
-		}
+		return getActiveWorkflowDefinitionsCount(companyId);
 	}
 
+	/**
+	 * @deprecated As of Athanasius (7.3.x), with no direct replacement
+	 */
+	@Deprecated
 	@Override
 	public int getActiveWorkflowDefinitionCount(long companyId, String name)
 		throws WorkflowException {
@@ -183,6 +182,23 @@ public class WorkflowDefinitionManagerImpl
 	}
 
 	@Override
+	public int getActiveWorkflowDefinitionsCount(long companyId)
+		throws WorkflowException {
+
+		try {
+			ServiceContext serviceContext = new ServiceContext();
+
+			serviceContext.setCompanyId(companyId);
+
+			return _kaleoDefinitionLocalService.getKaleoDefinitionsCount(
+				true, serviceContext);
+		}
+		catch (Exception e) {
+			throw new WorkflowException(e);
+		}
+	}
+
+	@Override
 	public WorkflowDefinition getLatestWorkflowDefinition(
 			long companyId, String name)
 		throws WorkflowException {
@@ -237,6 +253,23 @@ public class WorkflowDefinitionManagerImpl
 	}
 
 	@Override
+	public int getLatestWorkflowDefinitionsCount(long companyId)
+		throws WorkflowException {
+
+		try {
+			ServiceContext serviceContext = new ServiceContext();
+
+			serviceContext.setCompanyId(companyId);
+
+			return _kaleoDefinitionLocalService.getKaleoDefinitionsCount(
+				serviceContext);
+		}
+		catch (Exception e) {
+			throw new WorkflowException(e);
+		}
+	}
+
+	@Override
 	public WorkflowDefinition getWorkflowDefinition(
 			long companyId, String name, int version)
 		throws WorkflowException {
@@ -257,6 +290,10 @@ public class WorkflowDefinitionManagerImpl
 		}
 	}
 
+	/**
+	 * @deprecated As of Athanasius (7.3.x), with no direct replacement
+	 */
+	@Deprecated
 	@Override
 	public int getWorkflowDefinitionCount(long companyId)
 		throws WorkflowException {
@@ -270,19 +307,22 @@ public class WorkflowDefinitionManagerImpl
 		}
 	}
 
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
+	 *             #getWorkflowDefinitionsCount(long, String)}
+	 */
+	@Deprecated
 	@Override
 	public int getWorkflowDefinitionCount(long companyId, String name)
 		throws WorkflowException {
 
-		try {
-			return _kaleoDefinitionVersionLocalService.
-				getKaleoDefinitionVersionsCount(companyId, name);
-		}
-		catch (Exception e) {
-			throw new WorkflowException(e);
-		}
+		return getWorkflowDefinitionsCount(companyId, name);
 	}
 
+	/**
+	 * @deprecated As of Athanasius (7.3.x), with no direct replacement
+	 */
+	@Deprecated
 	@Override
 	public List<WorkflowDefinition> getWorkflowDefinitions(
 			long companyId, int start, int end,
@@ -336,6 +376,19 @@ public class WorkflowDefinitionManagerImpl
 		}
 		catch (WorkflowException we) {
 			throw we;
+		}
+		catch (Exception e) {
+			throw new WorkflowException(e);
+		}
+	}
+
+	@Override
+	public int getWorkflowDefinitionsCount(long companyId, String name)
+		throws WorkflowException {
+
+		try {
+			return _kaleoDefinitionVersionLocalService.
+				getKaleoDefinitionVersionsCount(companyId, name);
 		}
 		catch (Exception e) {
 			throw new WorkflowException(e);

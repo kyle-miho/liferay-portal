@@ -137,17 +137,18 @@ public class JournalArticleDemoDataCreatorImpl
 	private Map<Locale, String> _getDescriptionMap(int index)
 		throws IOException {
 
-		Class<?> clazz = getClass();
-
-		String descriptionPath = StringBundler.concat(
-			"com/liferay/journal/demo/data/creator/internal/dependencies",
-			"/article", index, "/description.txt");
-
-		String description = StringUtil.read(
-			clazz.getClassLoader(), descriptionPath, false);
-
 		return HashMapBuilder.put(
-			LocaleUtil.getSiteDefault(), description
+			LocaleUtil.getSiteDefault(),
+			() -> {
+				Class<?> clazz = getClass();
+
+				String descriptionPath = StringBundler.concat(
+					"com/liferay/journal/demo/data/creator/internal",
+					"/dependencies/article", index, "/description.txt");
+
+				return StringUtil.read(
+					clazz.getClassLoader(), descriptionPath, false);
+			}
 		).build();
 	}
 
@@ -184,17 +185,18 @@ public class JournalArticleDemoDataCreatorImpl
 	}
 
 	private Map<Locale, String> _getTitleMap(int index) throws IOException {
-		Class<?> clazz = getClass();
-
-		String titlePath = StringBundler.concat(
-			"com/liferay/journal/demo/data/creator/internal/dependencies",
-			"/article", index, "/title.txt");
-
-		String title = StringUtil.read(
-			clazz.getClassLoader(), titlePath, false);
-
 		return HashMapBuilder.put(
-			LocaleUtil.getSiteDefault(), title
+			LocaleUtil.getSiteDefault(),
+			() -> {
+				Class<?> clazz = getClass();
+
+				String titlePath = StringBundler.concat(
+					"com/liferay/journal/demo/data/creator/internal",
+					"/dependencies/article", index, "/title.txt");
+
+				return StringUtil.read(
+					clazz.getClassLoader(), titlePath, false);
+			}
 		).build();
 	}
 

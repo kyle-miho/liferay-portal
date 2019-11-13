@@ -104,7 +104,13 @@ public abstract class BaseFragmentCollectionContributor
 	public String getName() {
 		_initialize();
 
-		return _names.get(LocaleUtil.getDefault());
+		String name = _names.get(LocaleUtil.getDefault());
+
+		if (Validator.isNotNull(name)) {
+			return name;
+		}
+
+		return getFragmentCollectionKey();
 	}
 
 	@Override
@@ -118,6 +124,17 @@ public abstract class BaseFragmentCollectionContributor
 		}
 
 		return getName();
+	}
+
+	@Override
+	public Map<Locale, String> getNames() {
+		_initialize();
+
+		if (_names != null) {
+			return Collections.unmodifiableMap(_names);
+		}
+
+		return Collections.emptyMap();
 	}
 
 	@Override
@@ -148,12 +165,13 @@ public abstract class BaseFragmentCollectionContributor
 				StringPool.BLANK,
 				FragmentExportImportConstants.FILE_NAME_FRAGMENT_CONFIG, true);
 
+			_fragmentEntries = new HashMap<>();
+			_fragmentEntryNames = new HashMap<>();
+
 			if (MapUtil.isEmpty(names) || !enumeration.hasMoreElements()) {
 				return;
 			}
 
-			_fragmentEntries = new HashMap<>();
-			_fragmentEntryNames = new HashMap<>();
 			_names = names;
 
 			while (enumeration.hasMoreElements()) {

@@ -51,15 +51,12 @@ definition {
 		DMNavigator.openDocumentsAndMediaAdmin(siteURLKey = "guest");
 
 		DMDocument.addDMShortcutCP(
-			dmDocumentDescription = "DM Document Description",
 			dmDocumentTitle = "DM Document Title",
 			siteName = "Site Name");
 
 		DMNavigator.gotoDocumentCP(dmDocumentTitle = "DM Document Title");
 
-		DMDocument.viewCP(
-			dmDocumentSize = "259 B",
-			dmDocumentTitle = "DM Document Title");
+		DMDocument.viewCP(dmDocumentTitle = "DM Document Title");
 	}
 
 	@description = "This test covers LPS-88313 and LPS-92145. It ensures that a user can check in a document without changing versions."

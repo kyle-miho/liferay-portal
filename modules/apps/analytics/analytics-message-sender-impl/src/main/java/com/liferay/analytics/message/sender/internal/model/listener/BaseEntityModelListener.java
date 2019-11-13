@@ -17,6 +17,7 @@ package com.liferay.analytics.message.sender.internal.model.listener;
 import com.liferay.analytics.message.sender.client.AnalyticsMessageSenderClient;
 import com.liferay.analytics.message.sender.model.AnalyticsMessage;
 import com.liferay.analytics.settings.configuration.AnalyticsConfiguration;
+import com.liferay.analytics.settings.configuration.AnalyticsConfigurationTracker;
 import com.liferay.portal.kernel.bean.BeanPropertiesUtil;
 import com.liferay.portal.kernel.exception.ModelListenerException;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
@@ -26,7 +27,6 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.BaseModel;
 import com.liferay.portal.kernel.model.BaseModelListener;
 import com.liferay.portal.kernel.model.ShardedModel;
-import com.liferay.portal.kernel.module.configuration.ConfigurationProvider;
 import com.liferay.portal.kernel.service.UserLocalService;
 
 import java.util.ArrayList;
@@ -76,12 +76,8 @@ public abstract class BaseEntityModelListener<T extends BaseModel<T>>
 
 	protected abstract String getPrimaryKeyName();
 
-	@Reference(unbind = "-")
-	protected void setConfigurationProvider(
-		ConfigurationProvider configurationProvider) {
-
-		_configurationProvider = configurationProvider;
-	}
+	@Reference
+	protected AnalyticsConfigurationTracker analyticsConfigurationTracker;
 
 	@Reference
 	protected AnalyticsMessageSenderClient analyticsMessageSenderClient;
@@ -90,22 +86,10 @@ public abstract class BaseEntityModelListener<T extends BaseModel<T>>
 	protected UserLocalService userLocalService;
 
 	private String _getDataSourceId(long companyId) {
-		try {
-			AnalyticsConfiguration analyticsConfiguration =
-				_configurationProvider.getCompanyConfiguration(
-					AnalyticsConfiguration.class, companyId);
+		AnalyticsConfiguration analyticsConfiguration =
+			analyticsConfigurationTracker.getAnalyticsConfiguration(companyId);
 
-			return analyticsConfiguration.dataSourceId();
-		}
-		catch (Exception e) {
-			if (_log.isInfoEnabled()) {
-				_log.info(
-					"Unable to find analytics configuration for company ID " +
-						companyId);
-			}
-
-			return null;
-		}
+		return analyticsConfiguration.dataSourceId();
 	}
 
 	private List<String> _getModifiedAttributes(
@@ -144,7 +128,8 @@ public abstract class BaseEntityModelListener<T extends BaseModel<T>>
 			analyticsMessageBuilder.object(jsonObject);
 
 			analyticsMessageSenderClient.send(
-				Collections.singletonList(analyticsMessageBuilder.build()));
+				Collections.singletonList(analyticsMessageBuilder.build()),
+				shardedModel.getCompanyId());
 		}
 		catch (Exception e) {
 			if (_log.isInfoEnabled()) {
@@ -173,7 +158,5 @@ public abstract class BaseEntityModelListener<T extends BaseModel<T>>
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		BaseEntityModelListener.class);
-
-	private ConfigurationProvider _configurationProvider;
 
 }

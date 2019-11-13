@@ -25,6 +25,33 @@
 	</#if>
 </#macro>
 
+<#macro insertContentLayout
+	_layoutModel
+	_fragmentEntryModels
+>
+	${dataFactory.toInsertSQL(_layoutModel)}
+
+	${dataFactory.toInsertSQL(dataFactory.newLayoutFriendlyURLModel(_layoutModel))}
+
+	<#local fragmentEntryLinkModels = dataFactory.newFragmentEntryLinkModels(_layoutModel, _fragmentEntryModels)>
+
+	<#list fragmentEntryLinkModels as fragmentEntryLinkModel>
+		${dataFactory.toInsertSQL(fragmentEntryLinkModel)}
+
+		<#if fragmentEntryLinkModel.getHtml()?contains("lfr-widget-web-content")>
+			${dataFactory.toInsertSQL(dataFactory.newJournalContentPortletPreferencesModel(fragmentEntryLinkModel))}
+		</#if>
+	</#list>
+
+	<#local layoutPageTemplateStructureModel = dataFactory.newLayoutPageTemplateStructureModel(_layoutModel)>
+
+	${dataFactory.toInsertSQL(layoutPageTemplateStructureModel)}
+
+	<#local layoutPageTemplateStructureRelModel = dataFactory.newLayoutPageTemplateStructureRelModel(_layoutModel, layoutPageTemplateStructureModel, fragmentEntryLinkModels)>
+
+	${dataFactory.toInsertSQL(layoutPageTemplateStructureRelModel)}
+</#macro>
+
 <#macro insertDDMContent
 	_ddmStorageLinkId
 	_ddmStructureId

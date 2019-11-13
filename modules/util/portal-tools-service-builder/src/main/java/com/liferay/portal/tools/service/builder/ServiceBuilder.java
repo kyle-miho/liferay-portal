@@ -1948,6 +1948,16 @@ public class ServiceBuilder {
 		return false;
 	}
 
+	public boolean isVersionGTE_7_3_0() {
+		if (_dtdVersion.isLaterVersionThan("7.3.0") ||
+			_dtdVersion.isSameVersionAs("7.3.0")) {
+
+			return true;
+		}
+
+		return false;
+	}
+
 	public boolean isVersionLTE_7_1_0() {
 		if (_dtdVersion.isPreviousVersionThan("7.1.0") ||
 			_dtdVersion.isSameVersionAs("7.1.0")) {
@@ -4466,10 +4476,6 @@ public class ServiceBuilder {
 	}
 
 	private Map<String, Object> _getContext() throws TemplateModelException {
-		BeansWrapper beansWrapper = BeansWrapper.getDefaultInstance();
-
-		TemplateHashModel staticModels = beansWrapper.getStaticModels();
-
 		Map<String, Object> context = HashMapBuilder.<String, Object>put(
 			"apiPackagePath", _apiPackagePath
 		).put(
@@ -4495,7 +4501,14 @@ public class ServiceBuilder {
 		).put(
 			"stringUtil", StringUtil_IW.getInstance()
 		).put(
-			"textFormatter", staticModels.get(TextFormatter.class.getName())
+			"textFormatter",
+			() -> {
+				BeansWrapper beansWrapper = BeansWrapper.getDefaultInstance();
+
+				TemplateHashModel staticModels = beansWrapper.getStaticModels();
+
+				return staticModels.get(TextFormatter.class.getName());
+			}
 		).put(
 			"validator", Validator_IW.getInstance()
 		).build();

@@ -68,6 +68,7 @@ import com.liferay.portal.kernel.upgrade.DummyUpgradeStep;
 import com.liferay.portal.kernel.upgrade.UpgradeCTModel;
 import com.liferay.portal.kernel.upgrade.UpgradeMVCCVersion;
 import com.liferay.portal.upgrade.registry.UpgradeStepRegistrator;
+import com.liferay.view.count.service.ViewCountEntryLocalService;
 
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
@@ -111,15 +112,16 @@ public class DDMServiceUpgrade implements UpgradeStepRegistrator {
 			"0.0.3", "1.0.0", new UpgradeCompanyId(),
 			new com.liferay.dynamic.data.mapping.internal.upgrade.v1_0_0.
 				UpgradeDynamicDataMapping(
-					_assetEntryLocalService, _ddm, ddmFormJSONDeserializer,
-					ddmFormXSDDeserializer, ddmFormLayoutSerializer,
-					ddmFormSerializer, ddmFormValuesDeserializer,
-					ddmFormValuesSerializer, _dlFileEntryLocalService,
-					_dlFileVersionLocalService, _dlFolderLocalService,
-					_expandoRowLocalService, _expandoTableLocalService,
-					_expandoValueLocalService, _resourceActions,
-					_resourceLocalService, _resourcePermissionLocalService,
-					_store),
+					_assetEntryLocalService, _classNameLocalService, _ddm,
+					ddmFormJSONDeserializer, ddmFormXSDDeserializer,
+					ddmFormLayoutSerializer, ddmFormSerializer,
+					ddmFormValuesDeserializer, ddmFormValuesSerializer,
+					_dlFileEntryLocalService, _dlFileVersionLocalService,
+					_dlFolderLocalService, _expandoRowLocalService,
+					_expandoTableLocalService, _expandoValueLocalService,
+					_resourceActions, _resourceLocalService,
+					_resourcePermissionLocalService, _store,
+					_viewCountEntryLocalService),
 			new UpgradeLastPublishDate());
 
 		registry.register(
@@ -391,6 +393,9 @@ public class DDMServiceUpgrade implements UpgradeStepRegistrator {
 
 	@Reference(target = "(dl.store.upgrade=true)")
 	private Store _store;
+
+	@Reference
+	private ViewCountEntryLocalService _viewCountEntryLocalService;
 
 	@Reference(target = "(ddm.form.deserializer.type=xsd)")
 	private DDMFormDeserializer _xsdDDMFormDeserializer;

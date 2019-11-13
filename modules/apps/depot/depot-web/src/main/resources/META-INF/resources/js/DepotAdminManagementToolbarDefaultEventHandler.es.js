@@ -15,6 +15,8 @@
 import {DefaultEventHandler, openSimpleInputModal} from 'frontend-js-web';
 import {Config} from 'metal-state';
 
+import confirmDepotEntryDeletion from './confirmDepotEntryDeletion.es';
+
 class DepotAdminManagementToolbarDefaultEventHandler extends DefaultEventHandler {
 	addDepotEntry(itemData) {
 		openSimpleInputModal({
@@ -26,9 +28,26 @@ class DepotAdminManagementToolbarDefaultEventHandler extends DefaultEventHandler
 			spritemap: this.spritemap
 		});
 	}
+
+	deleteSelectedDepotEntries() {
+		if (confirmDepotEntryDeletion()) {
+			const form = this.one('#fm');
+
+			Liferay.Util.postForm(form, {
+				data: {
+					deleteEntryIds: Liferay.Util.listCheckedExcept(
+						form,
+						this.ns('allRowIds')
+					)
+				},
+				url: this.deleteDepotEntriesURL
+			});
+		}
+	}
 }
 
 DepotAdminManagementToolbarDefaultEventHandler.STATE = {
+	deleteDepotEntriesURL: Config.string(),
 	spritemap: Config.string()
 };
 

@@ -83,6 +83,7 @@ import com.liferay.portal.kernel.model.ResourceConstants;
 import com.liferay.portal.kernel.model.ResourcePermission;
 import com.liferay.portal.kernel.model.role.RoleConstants;
 import com.liferay.portal.kernel.security.permission.ResourceActions;
+import com.liferay.portal.kernel.service.ClassNameLocalService;
 import com.liferay.portal.kernel.service.ResourceLocalService;
 import com.liferay.portal.kernel.service.ResourcePermissionLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
@@ -111,6 +112,7 @@ import com.liferay.portal.kernel.xml.Element;
 import com.liferay.portal.kernel.xml.Node;
 import com.liferay.portal.kernel.xml.SAXReaderUtil;
 import com.liferay.portal.kernel.xml.XPath;
+import com.liferay.view.count.service.ViewCountEntryLocalService;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -143,7 +145,8 @@ import java.util.regex.Pattern;
 public class UpgradeDynamicDataMapping extends UpgradeProcess {
 
 	public UpgradeDynamicDataMapping(
-		AssetEntryLocalService assetEntryLocalService, DDM ddm,
+		AssetEntryLocalService assetEntryLocalService,
+		ClassNameLocalService classNameLocalService, DDM ddm,
 		DDMFormDeserializer ddmFormJSONDeserializer,
 		DDMFormDeserializer ddmFormXSDDeserializer,
 		DDMFormLayoutSerializer ddmFormLayoutSerializer,
@@ -159,9 +162,10 @@ public class UpgradeDynamicDataMapping extends UpgradeProcess {
 		ResourceActions resourceActions,
 		ResourceLocalService resourceLocalService,
 		ResourcePermissionLocalService resourcePermissionLocalService,
-		Store store) {
+		Store store, ViewCountEntryLocalService viewCountEntryLocalService) {
 
 		_assetEntryLocalService = assetEntryLocalService;
+		_classNameLocalService = classNameLocalService;
 		_ddm = ddm;
 		_ddmFormJSONDeserializer = ddmFormJSONDeserializer;
 		_ddmFormXSDDeserializer = ddmFormXSDDeserializer;
@@ -178,6 +182,7 @@ public class UpgradeDynamicDataMapping extends UpgradeProcess {
 		_resourceLocalService = resourceLocalService;
 		_resourcePermissionLocalService = resourcePermissionLocalService;
 		_store = store;
+		_viewCountEntryLocalService = viewCountEntryLocalService;
 
 		_dlFolderModelPermissions = ModelPermissionsFactory.create(
 			_DLFOLDER_GROUP_PERMISSIONS, _DLFOLDER_GUEST_PERMISSIONS);
@@ -1683,6 +1688,7 @@ public class UpgradeDynamicDataMapping extends UpgradeProcess {
 		Pattern.compile(_INVALID_FIELD_NAME_CHARS_REGEX);
 
 	private final AssetEntryLocalService _assetEntryLocalService;
+	private final ClassNameLocalService _classNameLocalService;
 	private final DDM _ddm;
 	private long _ddmContentClassNameId;
 	private final DDMFormDeserializer _ddmFormJSONDeserializer;
@@ -1714,6 +1720,7 @@ public class UpgradeDynamicDataMapping extends UpgradeProcess {
 		new HashMap<>();
 	private final Map<Long, Long> _templateResourceClassNameIds =
 		new HashMap<>();
+	private final ViewCountEntryLocalService _viewCountEntryLocalService;
 
 	private static class DateDDMFormFieldValueTransformer
 		implements DDMFormFieldValueTransformer {
@@ -2356,9 +2363,13 @@ public class UpgradeDynamicDataMapping extends UpgradeProcess {
 			assetEntry.setHeight(height);
 			assetEntry.setWidth(width);
 			assetEntry.setPriority(priority);
-			assetEntry.setViewCount(viewCount);
 
 			_assetEntryLocalService.updateAssetEntry(assetEntry);
+
+			_viewCountEntryLocalService.incrementViewCount(
+				companyId,
+				_classNameLocalService.getClassNameId(AssetEntry.class),
+				entryId, viewCount);
 		}
 
 		protected long addDDMDLFolder() throws Exception {

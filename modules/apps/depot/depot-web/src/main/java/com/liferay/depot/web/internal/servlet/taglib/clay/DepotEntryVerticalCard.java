@@ -22,19 +22,16 @@ import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItem;
 import com.liferay.portal.kernel.dao.search.RowChecker;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.model.BaseModel;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.HtmlUtil;
-import com.liferay.portal.kernel.util.PortalUtil;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.site.util.GroupURLProvider;
 
 import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author Alejandro Tardín
@@ -43,21 +40,16 @@ public class DepotEntryVerticalCard
 	extends BaseBaseClayCard implements VerticalCard {
 
 	public DepotEntryVerticalCard(
-		BaseModel<?> baseModel, LiferayPortletRequest liferayPortletRequest,
+		Group group, GroupURLProvider groupURLProvider,
+		LiferayPortletRequest liferayPortletRequest,
 		LiferayPortletResponse liferayPortletResponse, RowChecker rowChecker) {
 
-		super(baseModel, rowChecker);
+		super(group, rowChecker);
 
+		_group = group;
+		_groupURLProvider = groupURLProvider;
 		_liferayPortletRequest = liferayPortletRequest;
 		_liferayPortletResponse = liferayPortletResponse;
-
-		_group = (Group)baseModel;
-
-		HttpServletRequest httpServletRequest =
-			PortalUtil.getHttpServletRequest(_liferayPortletRequest);
-
-		_groupURLProvider = (GroupURLProvider)httpServletRequest.getAttribute(
-			DepotAdminWebKeys.DEPOT_ADMIN_GROUP_URL_PROVIDER);
 
 		_themeDisplay = (ThemeDisplay)liferayPortletRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
@@ -88,6 +80,15 @@ public class DepotEntryVerticalCard
 	}
 
 	@Override
+	public String getInputValue() {
+		if (Validator.isNull(super.getInputValue())) {
+			return null;
+		}
+
+		return String.valueOf(_group.getClassPK());
+	}
+
+	@Override
 	public String getTitle() {
 		try {
 			return HtmlUtil.escape(
@@ -102,7 +103,7 @@ public class DepotEntryVerticalCard
 
 	@Override
 	public boolean isSelectable() {
-		return false;
+		return true;
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(

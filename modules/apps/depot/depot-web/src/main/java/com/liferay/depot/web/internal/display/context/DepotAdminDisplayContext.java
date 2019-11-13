@@ -15,6 +15,7 @@
 package com.liferay.depot.web.internal.display.context;
 
 import com.liferay.depot.web.internal.constants.DepotAdminWebKeys;
+import com.liferay.depot.web.internal.servlet.taglib.clay.DepotEntryVerticalCard;
 import com.liferay.depot.web.internal.servlet.taglib.util.DepotActionDropdownItemsProvider;
 import com.liferay.depot.web.internal.util.DepotAdminGroupSearchProvider;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItem;
@@ -23,9 +24,12 @@ import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portlet.sitesadmin.search.SiteChecker;
 import com.liferay.portlet.usersadmin.search.GroupSearch;
+import com.liferay.site.util.GroupURLProvider;
 
 import java.util.List;
+import java.util.Objects;
 
 import javax.portlet.PortletURL;
 
@@ -47,6 +51,8 @@ public class DepotAdminDisplayContext {
 		_depotAdminGroupSearchProvider =
 			(DepotAdminGroupSearchProvider)httpServletRequest.getAttribute(
 				DepotAdminWebKeys.DEPOT_ADMIN_GROUP_SEARCH_PROVIDER);
+		_groupURLProvider = (GroupURLProvider)httpServletRequest.getAttribute(
+			DepotAdminWebKeys.DEPOT_ADMIN_GROUP_URL_PROVIDER);
 	}
 
 	public List<DropdownItem> getActionDropdownItems(Group group) {
@@ -61,6 +67,14 @@ public class DepotAdminDisplayContext {
 		return "icon";
 	}
 
+	public DepotEntryVerticalCard getDepotEntryVerticalCard(Group group) {
+		GroupSearch groupSearch = getGroupSearch();
+
+		return new DepotEntryVerticalCard(
+			group, _groupURLProvider, _liferayPortletRequest,
+			_liferayPortletResponse, groupSearch.getRowChecker());
+	}
+
 	public String getDisplayStyle() {
 		if (Validator.isNotNull(_displayStyle)) {
 			return _displayStyle;
@@ -73,12 +87,38 @@ public class DepotAdminDisplayContext {
 	}
 
 	public GroupSearch getGroupSearch() {
-		GroupSearch groupSearch = _depotAdminGroupSearchProvider.getGroupSearch(
+		if (_groupSearch != null) {
+			return _groupSearch;
+		}
+
+		_groupSearch = _depotAdminGroupSearchProvider.getGroupSearch(
 			_liferayPortletRequest, _getPortletURL());
 
-		groupSearch.setId("depotEntries");
+		_groupSearch.setId(getSearchContainerId());
 
-		return groupSearch;
+		_groupSearch.setRowChecker(new SiteChecker(_liferayPortletResponse));
+
+		return _groupSearch;
+	}
+
+	public String getHref(Group curGroup) {
+		return _groupURLProvider.getGroupURL(curGroup, _liferayPortletRequest);
+	}
+
+	public PortletURL getIteratorURL() {
+		return getGroupSearch().getIteratorURL();
+	}
+
+	public String getSearchContainerId() {
+		return "depotEntries";
+	}
+
+	public boolean isDisplayStyleDescriptive() {
+		return Objects.equals(getDisplayStyle(), "descriptive");
+	}
+
+	public boolean isDisplayStyleIcon() {
+		return Objects.equals(getDisplayStyle(), "icon");
 	}
 
 	private PortletURL _getPortletURL() {
@@ -91,6 +131,8 @@ public class DepotAdminDisplayContext {
 
 	private final DepotAdminGroupSearchProvider _depotAdminGroupSearchProvider;
 	private String _displayStyle;
+	private GroupSearch _groupSearch;
+	private final GroupURLProvider _groupURLProvider;
 	private final LiferayPortletRequest _liferayPortletRequest;
 	private final LiferayPortletResponse _liferayPortletResponse;
 

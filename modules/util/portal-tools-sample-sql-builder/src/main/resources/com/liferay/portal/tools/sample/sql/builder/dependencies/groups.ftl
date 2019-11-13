@@ -21,6 +21,8 @@
 
 	<#include "ddl.ftl">
 
+	<#include "fragment.ftl">
+
 	<#include "journal_article.ftl">
 
 	<#include "mb.ftl">

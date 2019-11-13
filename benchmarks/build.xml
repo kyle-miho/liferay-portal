@@ -17,11 +17,19 @@
 			/>
 			<fileset
 				dir="${sdk.dir}/dist"
+				includes="com.liferay.fragment.*.jar"
+			/>
+			<fileset
+				dir="${sdk.dir}/dist"
 				includes="com.liferay.friendly.url.*.jar"
 			/>
 			<fileset
 				dir="${sdk.dir}/dist"
 				includes="com.liferay.journal.*.jar"
+			/>
+			<fileset
+				dir="${sdk.dir}/dist"
+				includes="com.liferay.layout.*.jar"
 			/>
 			<fileset
 				dir="${sdk.dir}/dist"
@@ -35,6 +43,12 @@
 				dir="${sdk.dir}/dist"
 				includes="com.liferay.subscription.*.jar"
 			/>
+
+			<fileset
+				dir="${sdk.dir}/dist"
+				includes="com.liferay.view.count.*.jar"
+			/>
+
 			<fileset
 				dir="${sdk.dir}/dist"
 				includes="com.liferay.wiki.*.jar"

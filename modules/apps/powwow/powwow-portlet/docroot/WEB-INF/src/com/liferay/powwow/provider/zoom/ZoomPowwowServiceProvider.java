@@ -197,14 +197,17 @@ public class ZoomPowwowServiceProvider extends BasePowwowServiceProvider {
 		parameterMap.put("topic", name);
 		parameterMap.put("type", _MEETING_TYPE_RECURRING);
 
-		JSONObject responseJSONObject = execute(
-			powwowServer, "meeting", "create", parameterMap);
-
 		Map<String, Serializable> providerTypeMetadataMap =
 			HashMapBuilder.<String, Serializable>put(
 				"host_id", hostId
 			).put(
-				"id", responseJSONObject.getString("id")
+				"id",
+				() -> {
+					JSONObject responseJSONObject = execute(
+						powwowServer, "meeting", "create", parameterMap);
+
+					return responseJSONObject.getString("id");
+				}
 			).put(
 				"option_host_video",
 				options.get(PowwowMeetingConstants.OPTION_AUTO_START_VIDEO)
@@ -605,10 +608,8 @@ public class ZoomPowwowServiceProvider extends BasePowwowServiceProvider {
 		Map<String, Serializable> providerTypeMetadataMap =
 			powwowMeeting.getProviderTypeMetadataMap();
 
-		String hostId = getHostId(user, powwowServer);
-
 		Map<String, String> parameterMap = HashMapBuilder.put(
-			"host_id", hostId
+			"host_id", getHostId(user, powwowServer)
 		).put(
 			"id", String.valueOf(providerTypeMetadataMap.get("id"))
 		).put(

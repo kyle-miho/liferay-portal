@@ -30,10 +30,11 @@ DepotAdminManagementToolbarDisplayContext depotAdminManagementToolbarDisplayCont
 	<div class="sidenav-content">
 		<portlet:actionURL name="deleteGroups" var="deleteGroupsURL" />
 
-		<aui:form action="<%= deleteGroupsURL %>" name="fm">
+		<aui:form action="<%= depotAdminDisplayContext.getIteratorURL() %>" cssClass="container-fluid-1280" name="fm">
 			<aui:input name="redirect" type="hidden" value="<%= currentURL %>" />
 
 			<liferay-ui:search-container
+				id="<%= depotAdminDisplayContext.getSearchContainerId() %>"
 				searchContainer="<%= depotAdminDisplayContext.getGroupSearch() %>"
 			>
 				<liferay-ui:search-container-row
@@ -44,11 +45,17 @@ DepotAdminManagementToolbarDisplayContext depotAdminManagementToolbarDisplayCont
 					modelVar="curGroup"
 					rowIdProperty="groupId"
 				>
+
+					<%
+					row.setData(depotAdminManagementToolbarDisplayContext.getRowData(curGroup));
+					%>
+
 					<c:choose>
-						<c:when test='<%= Objects.equals(depotAdminDisplayContext.getDisplayStyle(), "descriptive") %>'>
+						<c:when test="<%= depotAdminDisplayContext.isDisplayStyleDescriptive() %>">
 							<liferay-ui:search-container-column-text>
 								<liferay-ui:search-container-column-icon
 									icon="repository"
+									toggleRowChecker="<%= true %>"
 								/>
 							</liferay-ui:search-container-column-text>
 
@@ -56,7 +63,9 @@ DepotAdminManagementToolbarDisplayContext depotAdminManagementToolbarDisplayCont
 								colspan="<%= 2 %>"
 							>
 								<h5>
-									<%= HtmlUtil.escape(curGroup.getDescriptiveName(locale)) %>
+									<aui:a cssClass="selector-button" href="<%= depotAdminDisplayContext.getHref(curGroup) %>">
+										<%= HtmlUtil.escape(curGroup.getDescriptiveName(locale)) %>
+									</aui:a>
 								</h5>
 							</liferay-ui:search-container-column-text>
 
@@ -67,7 +76,7 @@ DepotAdminManagementToolbarDisplayContext depotAdminManagementToolbarDisplayCont
 								/>
 							</liferay-ui:search-container-column-text>
 						</c:when>
-						<c:when test='<%= Objects.equals(depotAdminDisplayContext.getDisplayStyle(), "icon") %>'>
+						<c:when test="<%= depotAdminDisplayContext.isDisplayStyleIcon() %>">
 
 							<%
 							row.setCssClass("entry-card lfr-asset-item " + row.getCssClass());
@@ -75,7 +84,7 @@ DepotAdminManagementToolbarDisplayContext depotAdminManagementToolbarDisplayCont
 
 							<liferay-ui:search-container-column-text>
 								<clay:vertical-card
-									verticalCard="<%= new DepotEntryVerticalCard(curGroup, liferayPortletRequest, liferayPortletResponse, searchContainer.getRowChecker()) %>"
+									verticalCard="<%= depotAdminDisplayContext.getDepotEntryVerticalCard(curGroup) %>"
 								/>
 							</liferay-ui:search-container-column-text>
 						</c:when>
@@ -85,7 +94,7 @@ DepotAdminManagementToolbarDisplayContext depotAdminManagementToolbarDisplayCont
 								name="name"
 								orderable="<%= true %>"
 							>
-								<aui:a href="javascript:;" label="<%= HtmlUtil.escape(curGroup.getDescriptiveName(locale)) %>" localizeLabel="<%= false %>" />
+								<aui:a href="<%= depotAdminDisplayContext.getHref(curGroup) %>" label="<%= HtmlUtil.escape(curGroup.getDescriptiveName(locale)) %>" localizeLabel="<%= false %>" />
 							</liferay-ui:search-container-column-text>
 
 							<liferay-ui:search-container-column-text>
@@ -115,5 +124,6 @@ DepotAdminManagementToolbarDisplayContext depotAdminManagementToolbarDisplayCont
 
 <liferay-frontend:component
 	componentId="<%= depotAdminManagementToolbarDisplayContext.getDefaultEventHandler() %>"
+	context="<%= depotAdminManagementToolbarDisplayContext.getComponentContext() %>"
 	module="js/DepotAdminManagementToolbarDefaultEventHandler.es"
 />

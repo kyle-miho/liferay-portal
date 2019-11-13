@@ -205,12 +205,6 @@ public class OrganizationIndexerIndexedFieldsTest {
 	private Map<String, String> _expectedFieldValues(Organization organization)
 		throws Exception {
 
-		String countryName = organizationFixture.getCountryNames(organization);
-
-		Region region = regionService.getRegion(organization.getRegionId());
-
-		String regionName = StringUtil.toLowerCase(region.getName());
-
 		Map<String, String> map = HashMapBuilder.put(
 			Field.COMPANY_ID, String.valueOf(organization.getCompanyId())
 		).put(
@@ -233,7 +227,7 @@ public class OrganizationIndexerIndexedFieldsTest {
 		).put(
 			Field.USER_NAME, StringUtil.toLowerCase(organization.getUserName())
 		).put(
-			"country", countryName
+			"country", organizationFixture.getCountryNames(organization)
 		).put(
 			"nameTreePath", organization.getName()
 		).put(
@@ -243,7 +237,13 @@ public class OrganizationIndexerIndexedFieldsTest {
 			"parentOrganizationId",
 			String.valueOf(organization.getParentOrganizationId())
 		).put(
-			"region", regionName
+			"region",
+			() -> {
+				Region region = regionService.getRegion(
+					organization.getRegionId());
+
+				return StringUtil.toLowerCase(region.getName());
+			}
 		).build();
 
 		indexedFieldsFixture.populateUID(

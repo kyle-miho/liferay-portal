@@ -30,8 +30,6 @@ import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
-import com.liferay.portal.kernel.increment.BufferedIncrement;
-import com.liferay.portal.kernel.increment.NumberIncrement;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.search.Field;
@@ -50,8 +48,10 @@ import com.liferay.portal.kernel.transaction.Transactional;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
+import com.liferay.portal.kernel.util.ServiceProxyFactory;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.kernel.view.count.ViewCountManager;
 import com.liferay.portlet.asset.service.base.AssetEntryLocalServiceBaseImpl;
 import com.liferay.portlet.asset.service.permission.AssetCategoryPermission;
 import com.liferay.portlet.asset.util.AssetSearcher;
@@ -95,6 +95,13 @@ public class AssetEntryLocalServiceImpl extends AssetEntryLocalServiceBaseImpl {
 					tag.getTagId(), entry.getClassNameId());
 			}
 		}
+
+		// View count
+
+		_viewCountManager.deleteViewCount(
+			entry.getCompanyId(),
+			classNameLocalService.getClassNameId(AssetEntry.class),
+			entry.getEntryId());
 
 		// Social
 
@@ -418,8 +425,8 @@ public class AssetEntryLocalServiceImpl extends AssetEntryLocalServiceBaseImpl {
 		User user = userLocalService.getUser(userId);
 
 		assetEntryLocalService.incrementViewCounter(
-			user.getUserId(), assetEntry.getClassName(),
-			assetEntry.getClassPK(), 1);
+			assetEntry.getCompanyId(), user.getUserId(),
+			assetEntry.getClassName(), assetEntry.getClassPK(), 1);
 
 		if (!user.isDefaultUser()) {
 			SocialActivityManagerUtil.addActivity(
@@ -431,13 +438,13 @@ public class AssetEntryLocalServiceImpl extends AssetEntryLocalServiceBaseImpl {
 	@Override
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public AssetEntry incrementViewCounter(
-			long userId, String className, long classPK)
+			long companyId, long userId, String className, long classPK)
 		throws PortalException {
 
 		User user = userLocalService.getUser(userId);
 
 		assetEntryLocalService.incrementViewCounter(
-			user.getUserId(), className, classPK, 1);
+			companyId, user.getUserId(), className, classPK, 1);
 
 		AssetEntry assetEntry = getEntry(className, classPK);
 
@@ -450,12 +457,11 @@ public class AssetEntryLocalServiceImpl extends AssetEntryLocalServiceBaseImpl {
 		return assetEntry;
 	}
 
-	@BufferedIncrement(
-		configuration = "AssetEntry", incrementClass = NumberIncrement.class
-	)
 	@Override
+	@Transactional(enabled = false)
 	public void incrementViewCounter(
-		long userId, String className, long classPK, int increment) {
+		long companyId, long userId, String className, long classPK,
+		int increment) {
 
 		if (ExportImportThreadLocal.isImportInProcess() || (classPK <= 0)) {
 			return;
@@ -468,10 +474,9 @@ public class AssetEntryLocalServiceImpl extends AssetEntryLocalServiceBaseImpl {
 			return;
 		}
 
-		entry.setModifiedDate(entry.getModifiedDate());
-		entry.setViewCount(entry.getViewCount() + increment);
-
-		assetEntryPersistence.update(entry);
+		_viewCountManager.incrementViewCount(
+			companyId, classNameLocalService.getClassNameId(AssetEntry.class),
+			entry.getEntryId(), increment);
 	}
 
 	@Override
@@ -833,8 +838,6 @@ public class AssetEntryLocalServiceImpl extends AssetEntryLocalServiceBaseImpl {
 			if (priority == null) {
 				entry.setPriority(0);
 			}
-
-			entry.setViewCount(0);
 		}
 		else {
 			entry = assetEntryPersistence.findByPrimaryKey(entryId);
@@ -1383,6 +1386,11 @@ public class AssetEntryLocalServiceImpl extends AssetEntryLocalServiceBaseImpl {
 			}
 		}
 	}
+
+	private static volatile ViewCountManager _viewCountManager =
+		ServiceProxyFactory.newServiceTrackedInstance(
+			ViewCountManager.class, AssetEntryLocalServiceImpl.class,
+			"_viewCountManager", false, true);
 
 	private final ServiceTrackerMap
 		<String, List<AssetEntryValidatorExclusionRule>>

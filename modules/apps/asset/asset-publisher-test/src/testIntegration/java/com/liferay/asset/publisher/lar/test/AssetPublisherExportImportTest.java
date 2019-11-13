@@ -372,17 +372,20 @@ public class AssetPublisherExportImportTest
 
 		expectedAssetEntries.add(getAssetEntry(journalArticle));
 
-		long journalArticleClassNameId = PortalUtil.getClassNameId(
-			JournalArticle.class);
-
-		DDMStructure ddmStructure = journalArticle.getDDMStructure();
-
 		Map<String, String[]> preferenceMap = HashMapBuilder.put(
 			"anyAssetType",
-			new String[] {String.valueOf(journalArticleClassNameId)}
+			new String[] {
+				String.valueOf(PortalUtil.getClassNameId(JournalArticle.class))
+			}
 		).put(
 			"classTypeIds",
-			new String[] {String.valueOf(ddmStructure.getStructureId())}
+			() -> {
+				DDMStructure ddmStructure = journalArticle.getDDMStructure();
+
+				return new String[] {
+					String.valueOf(ddmStructure.getStructureId())
+				};
+			}
 		).build();
 
 		testDynamicExportImport(preferenceMap, expectedAssetEntries, true);
@@ -419,12 +422,11 @@ public class AssetPublisherExportImportTest
 	public void testDynamicExportImportOtherClassNameFiltering()
 		throws Exception {
 
-		long dlFileEntryClassNameId = PortalUtil.getClassNameId(
-			DLFileEntry.class);
-
 		Map<String, String[]> preferenceMap = HashMapBuilder.put(
 			"anyAssetType",
-			new String[] {String.valueOf(dlFileEntryClassNameId)}
+			new String[] {
+				String.valueOf(PortalUtil.getClassNameId(DLFileEntry.class))
+			}
 		).build();
 
 		testDynamicExportImport(
@@ -720,12 +722,11 @@ public class AssetPublisherExportImportTest
 			importedGroup.getGroupId(), importedDDMStructure2.getStructureId(),
 			serviceContext);
 
-		long dlFileEntryClassNameId = PortalUtil.getClassNameId(
-			DLFileEntry.class);
-
 		Map<String, String[]> preferenceMap = HashMapBuilder.put(
 			"anyAssetType",
-			new String[] {String.valueOf(dlFileEntryClassNameId)}
+			new String[] {
+				String.valueOf(PortalUtil.getClassNameId(DLFileEntry.class))
+			}
 		).put(
 			"anyClassTypeDLFileEntryAssetRendererFactory",
 			new String[] {String.valueOf(Boolean.FALSE)}
@@ -773,12 +774,11 @@ public class AssetPublisherExportImportTest
 			ddmStructure1.getDDMForm(), LocaleUtil.getDefault(),
 			serviceContext);
 
-		long journalArticleClassNameId = PortalUtil.getClassNameId(
-			JournalArticle.class);
-
 		Map<String, String[]> preferenceMap = HashMapBuilder.put(
 			"anyAssetType",
-			new String[] {String.valueOf(journalArticleClassNameId)}
+			new String[] {
+				String.valueOf(PortalUtil.getClassNameId(JournalArticle.class))
+			}
 		).put(
 			"anyClassTypeJournalArticleAssetRendererFactory",
 			new String[] {String.valueOf(Boolean.FALSE)}

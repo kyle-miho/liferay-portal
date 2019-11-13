@@ -30,6 +30,12 @@
 </tr>
 
 <tr>
+	<td>ITEM_ON_THE_TABLE_CLICK</td>
+	<td>//table[contains(@class,'table')]//a[contains(text(),'${key_ItemName}')]</td>
+	<td></td>
+</tr>
+
+<tr>
 	<td>CHECKBOX</td>
 	<td>//input[@class='custom-control-input']</td>
 	<td></td>
@@ -97,6 +103,26 @@
 	<td>//a[contains(text(),'${value1}')]</td>
 	<td></td>
 </tr>
+
+<!--EMPTY_FORM_TABLE_VIEW-->
+<tr>
+	<td>EMPTY_DROP_ZONE</td>
+	<td>//div[(@class='empty-drop-zone') or contains(@class,'ddm-empty-page')]</td>
+	<td></td>
+</tr>
+
+<tr>
+	<td>SAVE_BUTTON</td>
+	<td>//div[contains(@class,'input-group-item')]//button[contains(@class,'btn-primary')]</td>
+	<td></td>
+</tr>
+
+<tr>
+	<td>FORM_VIEW_TAB</td>
+	<td>//div[contains(@class,'navbar')]//a[contains(@class,'active') and normalize-space()='Form Views']</td>
+	<td></td>
+</tr>
+
 
 
 </tbody>
