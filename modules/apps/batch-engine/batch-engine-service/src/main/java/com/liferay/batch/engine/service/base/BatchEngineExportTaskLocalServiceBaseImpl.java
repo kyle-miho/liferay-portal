@@ -510,6 +510,19 @@ public abstract class BatchEngineExportTaskLocalServiceBaseImpl
 		}
 	}
 
+	@Activate
+	protected void activate() {
+		DB db = DBManagerUtil.getDB();
+
+		if ((db.getDBType() != DBType.DB2) &&
+			(db.getDBType() != DBType.MYSQL) &&
+			(db.getDBType() != DBType.MARIADB) &&
+			(db.getDBType() != DBType.SYBASE)) {
+
+			_useTempFile = true;
+		}
+	}
+
 	@Override
 	public Class<?>[] getAopInterfaces() {
 		return new Class<?>[] {
@@ -522,19 +535,6 @@ public abstract class BatchEngineExportTaskLocalServiceBaseImpl
 	public void setAopProxy(Object aopProxy) {
 		batchEngineExportTaskLocalService =
 			(BatchEngineExportTaskLocalService)aopProxy;
-	}
-
-	@Activate
-	protected void activate() {
-		DB db = DBManagerUtil.getDB();
-
-		if ((db.getDBType() != DBType.DB2) &&
-			(db.getDBType() != DBType.MYSQL) &&
-			(db.getDBType() != DBType.MARIADB) &&
-			(db.getDBType() != DBType.SYBASE)) {
-
-			_useTempFile = true;
-		}
 	}
 
 	/**
