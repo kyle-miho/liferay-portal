@@ -373,19 +373,6 @@ public abstract class DLContentLocalServiceBaseImpl
 		}
 	}
 
-	@Override
-	public Class<?>[] getAopInterfaces() {
-		return new Class<?>[] {
-			DLContentLocalService.class, IdentifiableOSGiService.class,
-			CTService.class, PersistedModelLocalService.class
-		};
-	}
-
-	@Override
-	public void setAopProxy(Object aopProxy) {
-		dlContentLocalService = (DLContentLocalService)aopProxy;
-	}
-
 	@Activate
 	protected void activate() {
 		DB db = DBManagerUtil.getDB();
@@ -397,6 +384,19 @@ public abstract class DLContentLocalServiceBaseImpl
 
 			_useTempFile = true;
 		}
+	}
+
+	@Override
+	public Class<?>[] getAopInterfaces() {
+		return new Class<?>[] {
+			DLContentLocalService.class, IdentifiableOSGiService.class,
+			CTService.class, PersistedModelLocalService.class
+		};
+	}
+
+	@Override
+	public void setAopProxy(Object aopProxy) {
+		dlContentLocalService = (DLContentLocalService)aopProxy;
 	}
 
 	/**

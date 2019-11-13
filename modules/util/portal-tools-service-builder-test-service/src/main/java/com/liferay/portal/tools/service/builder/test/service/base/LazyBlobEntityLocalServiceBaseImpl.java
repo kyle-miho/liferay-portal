@@ -367,6 +367,69 @@ public abstract class LazyBlobEntityLocalServiceBaseImpl
 		return lazyBlobEntityPersistence.update(lazyBlobEntity);
 	}
 
+	/**
+	 * Returns the lazy blob entity local service.
+	 *
+	 * @return the lazy blob entity local service
+	 */
+	public LazyBlobEntityLocalService getLazyBlobEntityLocalService() {
+		return lazyBlobEntityLocalService;
+	}
+
+	/**
+	 * Sets the lazy blob entity local service.
+	 *
+	 * @param lazyBlobEntityLocalService the lazy blob entity local service
+	 */
+	public void setLazyBlobEntityLocalService(
+		LazyBlobEntityLocalService lazyBlobEntityLocalService) {
+
+		this.lazyBlobEntityLocalService = lazyBlobEntityLocalService;
+	}
+
+	/**
+	 * Returns the lazy blob entity persistence.
+	 *
+	 * @return the lazy blob entity persistence
+	 */
+	public LazyBlobEntityPersistence getLazyBlobEntityPersistence() {
+		return lazyBlobEntityPersistence;
+	}
+
+	/**
+	 * Sets the lazy blob entity persistence.
+	 *
+	 * @param lazyBlobEntityPersistence the lazy blob entity persistence
+	 */
+	public void setLazyBlobEntityPersistence(
+		LazyBlobEntityPersistence lazyBlobEntityPersistence) {
+
+		this.lazyBlobEntityPersistence = lazyBlobEntityPersistence;
+	}
+
+	/**
+	 * Returns the counter local service.
+	 *
+	 * @return the counter local service
+	 */
+	public com.liferay.counter.kernel.service.CounterLocalService
+		getCounterLocalService() {
+
+		return counterLocalService;
+	}
+
+	/**
+	 * Sets the counter local service.
+	 *
+	 * @param counterLocalService the counter local service
+	 */
+	public void setCounterLocalService(
+		com.liferay.counter.kernel.service.CounterLocalService
+			counterLocalService) {
+
+		this.counterLocalService = counterLocalService;
+	}
+
 	@Override
 	public LazyBlobEntityBlob1BlobModel getBlob1BlobModel(
 		Serializable primaryKey) {
@@ -451,69 +514,6 @@ public abstract class LazyBlobEntityLocalServiceBaseImpl
 		catch (Exception e) {
 			throw new SystemException(e);
 		}
-	}
-
-	/**
-	 * Returns the lazy blob entity local service.
-	 *
-	 * @return the lazy blob entity local service
-	 */
-	public LazyBlobEntityLocalService getLazyBlobEntityLocalService() {
-		return lazyBlobEntityLocalService;
-	}
-
-	/**
-	 * Sets the lazy blob entity local service.
-	 *
-	 * @param lazyBlobEntityLocalService the lazy blob entity local service
-	 */
-	public void setLazyBlobEntityLocalService(
-		LazyBlobEntityLocalService lazyBlobEntityLocalService) {
-
-		this.lazyBlobEntityLocalService = lazyBlobEntityLocalService;
-	}
-
-	/**
-	 * Returns the lazy blob entity persistence.
-	 *
-	 * @return the lazy blob entity persistence
-	 */
-	public LazyBlobEntityPersistence getLazyBlobEntityPersistence() {
-		return lazyBlobEntityPersistence;
-	}
-
-	/**
-	 * Sets the lazy blob entity persistence.
-	 *
-	 * @param lazyBlobEntityPersistence the lazy blob entity persistence
-	 */
-	public void setLazyBlobEntityPersistence(
-		LazyBlobEntityPersistence lazyBlobEntityPersistence) {
-
-		this.lazyBlobEntityPersistence = lazyBlobEntityPersistence;
-	}
-
-	/**
-	 * Returns the counter local service.
-	 *
-	 * @return the counter local service
-	 */
-	public com.liferay.counter.kernel.service.CounterLocalService
-		getCounterLocalService() {
-
-		return counterLocalService;
-	}
-
-	/**
-	 * Sets the counter local service.
-	 *
-	 * @param counterLocalService the counter local service
-	 */
-	public void setCounterLocalService(
-		com.liferay.counter.kernel.service.CounterLocalService
-			counterLocalService) {
-
-		this.counterLocalService = counterLocalService;
 	}
 
 	@Activate
