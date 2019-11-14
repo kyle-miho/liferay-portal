@@ -10,12 +10,14 @@ import com.liferay.exportimport.kernel.lar.StagedModelDataHandlerRegistryUtil;
 import com.liferay.exportimport.kernel.lar.StagedModelDataHandlerUtil;
 import com.liferay.exportimport.kernel.lar.StagedModelType;
 import com.liferay.petra.function.UnsafeFunction;
+import com.liferay.petra.io.AutoDeleteFileInputStream;
 import com.liferay.portal.aop.AopService;
 import com.liferay.portal.kernel.bean.BeanReference;
 import com.liferay.portal.kernel.bean.PortalBeanLocatorUtil;
 import ${beanLocatorUtil};
 import com.liferay.portal.kernel.dao.db.DB;
 import com.liferay.portal.kernel.dao.db.DBManagerUtil;
+import com.liferay.portal.kernel.dao.db.DBType;
 import com.liferay.portal.kernel.dao.jdbc.SqlUpdate;
 import com.liferay.portal.kernel.dao.jdbc.SqlUpdateFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
@@ -49,13 +51,17 @@ import com.liferay.portal.kernel.service.PersistedModelLocalServiceRegistryUtil;
 import com.liferay.portal.kernel.service.change.tracking.CTService;
 import com.liferay.portal.kernel.service.persistence.change.tracking.CTPersistence;
 import com.liferay.portal.kernel.transaction.Transactional;
+import com.liferay.portal.kernel.util.File;
 import com.liferay.portal.kernel.util.InfrastructureUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.spring.extender.service.ServiceReference;
 
+import java.io.InputStream;
 import java.io.Serializable;
+
+import java.sql.Blob;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -861,27 +867,6 @@ import org.osgi.service.component.annotations.Reference;
 			}
 		</#if>
 
-		<#list entity.blobEntityColumns as entityColumn>
-			<#if entityColumn.lazy>
-				@Override
-				public ${entity.name}${entityColumn.methodName}BlobModel get${entityColumn.methodName}BlobModel(Serializable primaryKey) {
-					Session session = null;
-
-					try {
-						session = ${entity.varName}Persistence.openSession();
-
-						return (${apiPackagePath}.model.${entity.name}${entityColumn.methodName}BlobModel)session.get(${entity.name}${entityColumn.methodName}BlobModel.class, primaryKey);
-					}
-					catch (Exception e) {
-						throw ${entity.varName}Persistence.processException(e);
-					}
-					finally {
-						${entity.varName}Persistence.closeSession(session);
-					}
-				}
-			</#if>
-		</#list>
-
 		<#list entity.entityColumns as entityColumn>
 			<#if entityColumn.isCollection() && entityColumn.isMappingManyToMany()>
 				<#assign
@@ -1421,6 +1406,81 @@ import org.osgi.service.component.annotations.Reference;
 		</#list>
 	</#if>
 
+	<#assign
+		lazyBlob = entity.hasLazyBlobEntityColumn() && stringUtil.equals(sessionTypeName, "Local") && entity.hasPersistence()
+		localizedEntity = dependencyInjectorDS && stringUtil.equals(sessionTypeName, "Local") && entity.localizedEntity?? && entity.versionEntity??  && entity.hasPersistence()
+	/>
+
+	<#if lazyBlob>
+		<#list entity.blobEntityColumns as entityColumn>
+			<#if entityColumn.lazy>
+				@Override
+				public ${entity.name}${entityColumn.methodName}BlobModel get${entityColumn.methodName}BlobModel(Serializable primaryKey) {
+					Session session = null;
+
+					try {
+						session = ${entity.varName}Persistence.openSession();
+
+						return (${apiPackagePath}.model.${entity.name}${entityColumn.methodName}BlobModel)session.get(${entity.name}${entityColumn.methodName}BlobModel.class, primaryKey);
+					}
+					catch (Exception e) {
+						throw ${entity.varName}Persistence.processException(e);
+					}
+					finally {
+						${entity.varName}Persistence.closeSession(session);
+					}
+				}
+
+				@Override
+				@Transactional(readOnly = true)
+				public InputStream open${entityColumn.methodName}InputStream(long ${entity.PKVarName}) {
+					try {
+						${entity.name}${entityColumn.methodName}BlobModel
+							${entity.name}${entityColumn.methodName}BlobModel = get${entityColumn.methodName}BlobModel(
+								${entity.PKVarName});
+
+						Blob blob = ${entity.name}${entityColumn.methodName}BlobModel.get${entityColumn.methodName}Blob();
+
+						InputStream inputStream = blob.getBinaryStream();
+
+						if (_useTempFile) {
+							inputStream = new AutoDeleteFileInputStream(
+								_file.createTempFile(inputStream));
+						}
+
+						return inputStream;
+					}
+					catch (Exception e) {
+						throw new SystemException(e);
+					}
+				}
+			</#if>
+		</#list>
+	</#if>
+
+	<#if lazyBlob || localizedEntity>
+		@Activate
+		protected void activate() {
+			<#if localizedEntity>
+				<#assign localizedEntity = entity.localizedEntity />
+
+				registerListener(new ${localizedEntity.name}VersionServiceListener());
+			</#if>
+
+			<#if lazyBlob>
+				DB db = DBManagerUtil.getDB();
+
+				if ((db.getDBType() != DBType.DB2) &&
+				(db.getDBType() != DBType.MYSQL) &&
+				(db.getDBType() != DBType.MARIADB) &&
+				(db.getDBType() != DBType.SYBASE)) {
+
+					_useTempFile = true;
+				}
+			</#if>
+		}
+	</#if>
+
 	<#if dependencyInjectorDS>
 		@Override
 		public Class<?>[] getAopInterfaces() {
@@ -1441,15 +1501,6 @@ import org.osgi.service.component.annotations.Reference;
 		public void setAopProxy(Object aopProxy) {
 			${entity.varName}${sessionTypeName}Service = (${entity.name}${sessionTypeName}Service)aopProxy;
 		}
-
-		<#if stringUtil.equals(sessionTypeName, "Local") && entity.localizedEntity?? && entity.versionEntity?? && entity.hasPersistence()>
-			<#assign localizedEntity = entity.localizedEntity />
-
-			@Activate
-			protected void activate() {
-				registerListener(new ${localizedEntity.name}VersionServiceListener());
-			}
-		</#if>
 	<#else>
 		public void afterPropertiesSet() {
 			<#if stringUtil.equals(sessionTypeName, "Local") && entity.hasEntityColumns() && entity.hasPersistence()>
@@ -1918,6 +1969,13 @@ import org.osgi.service.component.annotations.Reference;
 			</#if>
 		</#if>
 	</#list>
+
+	<#if lazyBlob>
+		@Reference
+		private File _file;
+
+		private boolean _useTempFile;
+	</#if>
 
 	<#if stringUtil.equals(sessionTypeName, "Local") && entity.hasEntityColumns() && entity.hasPersistence() && !dependencyInjectorDS>
 		<#if validator.isNull(pluginName)>
