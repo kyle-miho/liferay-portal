@@ -3383,6 +3383,7 @@ log.sanitizer.enabled=false</echo>
 
 				<trycatch property="junit.failure.message">
 					<try>
+						<lstopwatch action="start" name="db.client.all.tests" />
 						<for keepgoing="true" list="check-upgrade-client-gogoshell,check-upgrade-client-gogoshell-failed-upgrade,check-upgrade-client-help,check-upgrade-client-java-version,check-upgrade-client-custom-log,check-upgrade-client-additional-settings,check-upgrade-client-sh-disconnect,check-upgrade-client-second-process,check-upgrade-client-upgrade-core-only,check-upgrade-client-zip-content,check-upgrade-properties-app-db-set,check-upgrade-properties-app-ext-set,check-upgrade-properties-db-ext-set,check-upgrade-properties-none-set" param="upgrade.test.target">
 							<sequential>
 								<lstopwatch action="start" name="db.client.timer" />
@@ -3392,8 +3393,10 @@ log.sanitizer.enabled=false</echo>
 								<lstopwatch action="total" name="db.client.timer" />
 							</sequential>
 						</for>
+						<lstopwatch action="stop" name="db.client.all.tests" />
 					</try>
 					<finally>
+						<lstopwatch action="start" name="finally.block" />
 						<condition else="0" property="junit.failure.count" value="1">
 							<isset property="junit.failure.message" />
 						</condition>
@@ -3406,11 +3409,13 @@ log.sanitizer.enabled=false</echo>
 							test.class.name="DatabaseUpgradeClient"
 							test.command.name="databaseUpgradeClient"
 						/>
+						<lstopwatch action="stop" name="finally.block" />
 					</finally>
 				</trycatch>
 			</test-action>
 
 			<test-set-up>
+				<lstopwatch action="start" name="setup.tests" />
 				<setup-test-environment />
 
 				<database-test-action database.type="mysql">
@@ -3428,6 +3433,8 @@ log.sanitizer.enabled=false</echo>
 				</antcall>
 
 				<prepare-database-upgrade-configuration />
+
+				<lstopwatch action="stop" name="setup.tests" />
 			</test-set-up>
 		</run-batch-test>
 
