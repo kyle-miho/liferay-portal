@@ -48,6 +48,17 @@ public class LazyBlobEntityLocalServiceWrapper
 		return _lazyBlobEntityLocalService.addLazyBlobEntity(lazyBlobEntity);
 	}
 
+	@Override
+	public com.liferay.portal.tools.service.builder.test.model.LazyBlobEntity
+			addLazyBlobEntity(
+				long groupId, byte[] bytes,
+				com.liferay.portal.kernel.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return _lazyBlobEntityLocalService.addLazyBlobEntity(
+			groupId, bytes, serviceContext);
+	}
+
 	/**
 	 * Creates a new lazy blob entity with the primary key. Does not add the lazy blob entity to the database.
 	 *
