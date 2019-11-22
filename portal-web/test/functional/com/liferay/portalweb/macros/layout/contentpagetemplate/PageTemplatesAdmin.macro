@@ -15,7 +15,14 @@ definition {
 			LexiconEntry.gotoAddMenuItem(menuItem = "${menuItem}");
 		}
 
-		PortletEntry.inputName(name = "${pageTemplateName}");
+		if (IsElementNotPresent(locator1 = "TextInput#NAME")) {
+			PageTemplatesAdmin.gotoPageTemplate(pageTemplateName = "Blank");
+
+			PortletEntry.inputName(name = "${pageTemplateName}");
+		}
+		else {
+			PortletEntry.inputName(name = "${pageTemplateName}");
+		}
 
 		Button.clickSave();
 	}
