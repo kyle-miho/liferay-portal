@@ -1,6 +1,7 @@
 @component-name = "portal-clustering"
 definition {
 
+	property portal.acceptance = "kyle";
 	property portal.release = "true";
 	property portal.upstream = "true";
 	property testray.main.component.name = "Clustering";
