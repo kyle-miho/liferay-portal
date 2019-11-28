@@ -63,6 +63,27 @@ definition {
 			userId = "${userId}");
 	}
 
+	@summary = "Delete a group and its child groups"
+	macro deleteGroupAndChildren {
+		Variables.assertDefined(parameterList = "${groupName}");
+
+		var groupId = JSONGroupAPI._getGroupIdByName(groupName = "${groupName}");
+
+		var childGroupIds = JSONGroupAPI._getGroups(parentGroupId = "${groupId}");
+
+		if ("${childGroupIds}" == "No child groups") {
+			JSONGroupAPI._deleteGroup(groupId = "${groupId}");
+		}
+
+		else {
+			for (var childGroupId : list "${childGroupIds}") {
+				JSONGroupAPI._deleteGroup(groupId = "${childGroupId}");
+			}
+		}
+
+		JSONGroupAPI._deleteGroup(groupId = "${groupId}");
+	}
+
 	@summary = "Delete a valid group using its groupName"
 	macro deleteGroupByName {
 		Variables.assertDefined(parameterList = "${groupName}");
