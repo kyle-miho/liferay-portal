@@ -13,6 +13,10 @@ definition {
 			groupName = "child group name",
 			parentGroupName = "group name");
 
+		JSONGroup.addChildSite(
+			groupName = "child group name 2",
+			parentGroupName = "group name");
+
 		//user
 
 		JSONUser.addUser(
@@ -36,7 +40,7 @@ definition {
 
 		//delete
 
-		JSONGroup.deleteGroupByName(groupName = "group name 2");
+		JSONGroup.deleteGroupAndChildren(groupName = "group name");
 	}
 
 }
