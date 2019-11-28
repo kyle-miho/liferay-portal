@@ -141,6 +141,33 @@ definition {
 		return "${groupNam}";
 	}
 
+	@summary = "Get child groupIds"
+	macro _getGroups {
+		Variables.assertDefined(parameterList = "${parentGroupId}");
+
+		var companyId = JSONCompany.getCompanyId();
+
+		var portalURL = JSONCompany.getPortalURL();
+
+		var curl = '''
+			${portalURL}/api/jsonws/group/get-groups/company-id/${companyId}/parent-group-id/${parentGroupId}/site/true \
+				-u test@liferay.com:test
+		''';
+
+		var groupIds = JSONCurlUtil.get("${curl}", "$..['groupId']");
+		var groupIds = StringUtil.replace("${groupIds}", "[", "");
+		var groupIds = StringUtil.replace("${groupIds}", "]", "");
+		var groupIds = StringUtil.replace("${groupIds}", "&quot;", "");
+
+		if ("${groupIds}" == "") {
+			return "No child groups";
+		}
+
+		else {
+			return "${groupIds}";
+		}
+	}
+
 	@summary = "Get the parentGroupId from any existing site by using groupName"
 	macro _getParentGroupIdByName {
 		Variables.assertDefined(parameterList = "${groupName}");
