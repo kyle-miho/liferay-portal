@@ -33,7 +33,6 @@ import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.transaction.Propagation;
-import com.liferay.portal.kernel.util.DateUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.test.rule.Inject;
@@ -106,10 +105,10 @@ public class AssetDisplayPageEntryLocalServiceTest {
 			_layoutPageTemplateEntryLocalService.getLayoutPageTemplateEntry(
 				_layoutPageTemplateEntry.getLayoutPageTemplateEntryId());
 
-		Assert.assertFalse(
-			DateUtil.equals(
-				originalModifiedDate,
-				layoutPageTemplateEntry.getModifiedDate()));
+		Date updatedModifiedDate = layoutPageTemplateEntry.getModifiedDate();
+
+		Assert.assertNotEquals(
+			originalModifiedDate.getTime(), updatedModifiedDate.getTime());
 	}
 
 	@Test
@@ -309,10 +308,10 @@ public class AssetDisplayPageEntryLocalServiceTest {
 			_layoutPageTemplateEntryLocalService.getLayoutPageTemplateEntry(
 				layoutPageTemplateEntry.getLayoutPageTemplateEntryId());
 
-		Assert.assertFalse(
-			DateUtil.equals(
-				originalModifiedDate,
-				layoutPageTemplateEntry.getModifiedDate()));
+		Date updatedModifiedDate = layoutPageTemplateEntry.getModifiedDate();
+
+		Assert.assertNotEquals(
+			originalModifiedDate.getTime(), updatedModifiedDate.getTime());
 	}
 
 	private LayoutPageTemplateEntry _getLayoutPageTemplateEntry()
