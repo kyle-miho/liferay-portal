@@ -73,7 +73,6 @@ import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.util.Constants;
-import com.liferay.portal.kernel.util.DateUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.MapUtil;
@@ -702,12 +701,13 @@ public class JournalExportImportTest extends BasePortletExportImportTestCase {
 			StagedModel stagedModel, StagedModel importedStagedModel)
 		throws Exception {
 
-		Assert.assertTrue(
-			stagedModel.getCreateDate() + " " +
-				importedStagedModel.getCreateDate(),
-			DateUtil.equals(
-				stagedModel.getCreateDate(),
-				importedStagedModel.getCreateDate()));
+		Date date = stagedModel.getCreateDate();
+		Date importedDate = importedStagedModel.getCreateDate();
+
+		if ((date != null) && (importedDate != null)) {
+			Assert.assertEquals(date.getTime(), importedDate.getTime());
+		}
+
 		Assert.assertEquals(
 			stagedModel.getUuid(), importedStagedModel.getUuid());
 
@@ -720,32 +720,43 @@ public class JournalExportImportTest extends BasePortletExportImportTestCase {
 		Assert.assertEquals(
 			article.getDescription(), importedArticle.getDescription());
 		Assert.assertEquals(article.getContent(), importedArticle.getContent());
-		Assert.assertTrue(
-			String.valueOf(article.getDisplayDate()) + StringPool.SPACE +
-				importedArticle.getDisplayDate(),
-			DateUtil.equals(
-				article.getDisplayDate(), importedArticle.getDisplayDate()));
-		Assert.assertTrue(
-			String.valueOf(article.getExpirationDate()) + StringPool.SPACE +
-				importedArticle.getExpirationDate(),
-			DateUtil.equals(
-				article.getExpirationDate(),
-				importedArticle.getExpirationDate()));
-		Assert.assertTrue(
-			String.valueOf(article.getReviewDate()) + StringPool.SPACE +
-				importedArticle.getReviewDate(),
-			DateUtil.equals(
-				article.getReviewDate(), importedArticle.getReviewDate()));
 		Assert.assertEquals(
 			article.isSmallImage(), importedArticle.isSmallImage());
 		Assert.assertEquals(
 			article.getSmallImageURL(), importedArticle.getSmallImageURL());
 		Assert.assertEquals(article.getStatus(), importedArticle.getStatus());
-		Assert.assertTrue(
-			String.valueOf(article.getStatusDate()) + StringPool.SPACE +
-				importedArticle.getStatusDate(),
-			DateUtil.equals(
-				article.getStatusDate(), importedArticle.getStatusDate()));
+
+		date = article.getDisplayDate();
+
+		importedDate = importedArticle.getDisplayDate();
+
+		if ((date != null) && (importedDate != null)) {
+			Assert.assertEquals(date.getTime(), importedDate.getTime());
+		}
+
+		date = article.getExpirationDate();
+
+		importedDate = importedArticle.getExpirationDate();
+
+		if ((date != null) && (importedDate != null)) {
+			Assert.assertEquals(date.getTime(), importedDate.getTime());
+		}
+
+		date = article.getReviewDate();
+
+		importedDate = importedArticle.getReviewDate();
+
+		if ((date != null) && (importedDate != null)) {
+			Assert.assertEquals(date.getTime(), importedDate.getTime());
+		}
+
+		date = article.getStatusDate();
+
+		importedDate = importedArticle.getStatusDate();
+
+		if ((date != null) && (importedDate != null)) {
+			Assert.assertEquals(date.getTime(), importedDate.getTime());
+		}
 
 		JournalArticleResource articleResource = article.getArticleResource();
 		JournalArticleResource importedArticleArticleResource =
