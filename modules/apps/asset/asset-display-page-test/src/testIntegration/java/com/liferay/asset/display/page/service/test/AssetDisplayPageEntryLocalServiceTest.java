@@ -33,7 +33,6 @@ import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.transaction.Propagation;
-import com.liferay.portal.kernel.util.DateUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.test.rule.Inject;
@@ -106,10 +105,9 @@ public class AssetDisplayPageEntryLocalServiceTest {
 			_layoutPageTemplateEntryLocalService.getLayoutPageTemplateEntry(
 				_layoutPageTemplateEntry.getLayoutPageTemplateEntryId());
 
-		Assert.assertFalse(
-			DateUtil.equals(
-				originalModifiedDate,
-				layoutPageTemplateEntry.getModifiedDate()));
+		Date updatedModifiedDate = layoutPageTemplateEntry.getModifiedDate();
+
+		_assertDateNotEquals(originalModifiedDate, updatedModifiedDate);
 	}
 
 	@Test
@@ -309,10 +307,22 @@ public class AssetDisplayPageEntryLocalServiceTest {
 			_layoutPageTemplateEntryLocalService.getLayoutPageTemplateEntry(
 				layoutPageTemplateEntry.getLayoutPageTemplateEntryId());
 
-		Assert.assertFalse(
-			DateUtil.equals(
-				originalModifiedDate,
-				layoutPageTemplateEntry.getModifiedDate()));
+		Date updatedModifiedDate = layoutPageTemplateEntry.getModifiedDate();
+
+		_assertDateNotEquals(originalModifiedDate, updatedModifiedDate);
+	}
+
+	private static void _assertDateNotEquals(
+		Date expectedDate, Date actualDate) {
+
+		if ((expectedDate == null) && (actualDate == null)) {
+			Assert.fail("Values should be different, but both are null");
+		}
+		else if ((expectedDate == null) || (actualDate == null)) {
+			return;
+		}
+
+		Assert.assertNotEquals(expectedDate.getTime(), actualDate.getTime());
 	}
 
 	private LayoutPageTemplateEntry _getLayoutPageTemplateEntry()

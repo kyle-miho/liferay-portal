@@ -47,7 +47,6 @@ import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.test.util.UserTestUtil;
 import com.liferay.portal.kernel.util.ContentTypes;
-import com.liferay.portal.kernel.util.DateUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
@@ -186,7 +185,7 @@ public class DLCheckInCheckOutTest {
 
 		Folder folder = DLAppServiceUtil.getFolder(_folder.getFolderId());
 
-		Date lastPostDate = folder.getLastPostDate();
+		Date originalLastPostDate = folder.getLastPostDate();
 
 		FileEntry fileEntry = DLAppServiceUtil.getFileEntry(
 			_fileEntry.getFileEntryId());
@@ -201,8 +200,10 @@ public class DLCheckInCheckOutTest {
 
 		folder = DLAppServiceUtil.getFolder(_folder.getFolderId());
 
-		Assert.assertTrue(
-			DateUtil.equals(lastPostDate, folder.getLastPostDate()));
+		Date updatedLastPostDate = folder.getLastPostDate();
+
+		Assert.assertEquals(
+			originalLastPostDate.getTime(), updatedLastPostDate.getTime());
 
 		fileEntry = DLAppServiceUtil.getFileEntry(_fileEntry.getFileEntryId());
 
@@ -406,15 +407,17 @@ public class DLCheckInCheckOutTest {
 	public void testCheckOut() throws Exception {
 		Folder folder = DLAppServiceUtil.getFolder(_folder.getFolderId());
 
-		Date lastPostDate = folder.getLastPostDate();
+		Date originalLastPostDate = folder.getLastPostDate();
 
 		DLAppServiceUtil.checkOutFileEntry(
 			_fileEntry.getFileEntryId(), _serviceContext);
 
 		folder = DLAppServiceUtil.getFolder(_folder.getFolderId());
 
-		Assert.assertTrue(
-			DateUtil.equals(lastPostDate, folder.getLastPostDate()));
+		Date updatedLastPostDate = folder.getLastPostDate();
+
+		Assert.assertEquals(
+			originalLastPostDate.getTime(), updatedLastPostDate.getTime());
 
 		FileVersion fileVersion = _fileEntry.getLatestFileVersion();
 
