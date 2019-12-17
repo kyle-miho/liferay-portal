@@ -57,13 +57,13 @@ import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.test.util.TestDataConstants;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.util.ContentTypes;
-import com.liferay.portal.kernel.util.DateUtil;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.repository.portletrepository.PortletRepository;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -574,12 +574,14 @@ public class FileEntryStagedModelDataHandlerTest
 			StagedModel stagedModel, StagedModel importedStagedModel)
 		throws Exception {
 
-		Assert.assertTrue(
-			String.valueOf(stagedModel.getCreateDate()) + StringPool.SPACE +
-				importedStagedModel.getCreateDate(),
-			DateUtil.equals(
-				stagedModel.getCreateDate(),
-				importedStagedModel.getCreateDate()));
+		Date stagedModelCreateDate = stagedModel.getCreateDate();
+
+		Date importedStagedModelCreateDate =
+			importedStagedModel.getCreateDate();
+
+		Assert.assertEquals(
+			stagedModelCreateDate.getTime(),
+			importedStagedModelCreateDate.getTime());
 
 		Assert.assertEquals(
 			stagedModel.getUuid(), importedStagedModel.getUuid());

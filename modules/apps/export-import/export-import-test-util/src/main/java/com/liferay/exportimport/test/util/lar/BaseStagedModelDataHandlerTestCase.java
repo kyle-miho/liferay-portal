@@ -52,7 +52,6 @@ import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
-import com.liferay.portal.kernel.util.DateUtil;
 import com.liferay.portal.kernel.util.LinkedHashMapBuilder;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.Time;
@@ -965,6 +964,21 @@ public abstract class BaseStagedModelDataHandlerTestCase {
 		}
 	}
 
+	protected void validateDate(
+		Date stagedModelDate, Date importedStagedModelDate) {
+
+		if ((stagedModelDate == null) && (importedStagedModelDate == null)) {
+			return;
+		}
+
+		Assert.assertNotNull(stagedModelDate);
+
+		Assert.assertNotNull(importedStagedModelDate);
+
+		Assert.assertEquals(
+			stagedModelDate.getTime(), importedStagedModelDate.getTime());
+	}
+
 	protected void validateExport(
 			PortletDataContext portletDataContext, StagedModel stagedModel,
 			Map<String, List<StagedModel>> dependentStagedModelsMap)
@@ -1070,18 +1084,13 @@ public abstract class BaseStagedModelDataHandlerTestCase {
 			StagedModel stagedModel, StagedModel importedStagedModel)
 		throws Exception {
 
-		Assert.assertTrue(
-			stagedModel.getCreateDate() + " " +
-				importedStagedModel.getCreateDate(),
-			DateUtil.equals(
-				stagedModel.getCreateDate(),
-				importedStagedModel.getCreateDate()));
-		Assert.assertTrue(
-			stagedModel.getModifiedDate() + " " +
-				importedStagedModel.getModifiedDate(),
-			DateUtil.equals(
-				stagedModel.getModifiedDate(),
-				importedStagedModel.getModifiedDate()));
+		validateDate(
+			stagedModel.getCreateDate(), importedStagedModel.getCreateDate());
+
+		validateDate(
+			stagedModel.getModifiedDate(),
+			importedStagedModel.getModifiedDate());
+
 		Assert.assertEquals(
 			stagedModel.getUuid(), importedStagedModel.getUuid());
 	}
