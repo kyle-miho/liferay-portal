@@ -85,6 +85,10 @@ definition {
 	}
 
 	macro tearDownCP {
+		var startingTime = DateUtil.getTimeInMilliseconds();
+
+		echo("startingTime=${startingTime}ms");
+
 		SignOut.signOutOfSpecificURL(url = "http://localhost:8080/");
 
 		SignIn.signInSpecificURL(url = "http://localhost:8080/");
@@ -105,6 +109,10 @@ definition {
 
 			Alert.viewSuccessMessage();
 		}
+
+		var endingTime = DateUtil.getTimeInMilliseconds();
+
+		echo("endingTime=${endingTime}ms");
 	}
 
 	macro viewCP {
