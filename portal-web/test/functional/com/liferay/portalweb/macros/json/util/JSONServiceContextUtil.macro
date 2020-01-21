@@ -33,7 +33,7 @@ definition {
 	macro _addGuestPermissions {
 		Variables.assertDefined(parameterList = "${JSON},${addGuestPermissions}");
 
-		if (!(("${addGuestPermissions}" == "true") || ("${addGuestPermissions}" == "false"))) {
+		if ("${addGuestPermissions}" != "true" && "${addGuestPermissions}" != "false") {
 			fail("Invalid addGuestPermissions: '${addGuestPermissions}' specified. Allowed values are 'true' or 'false'.");
 		}
 
