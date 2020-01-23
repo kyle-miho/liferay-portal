@@ -16,6 +16,7 @@ package com.liferay.company.generator;
 
 import com.liferay.company.generator.configuration.CompanyGeneratorConfiguration;
 import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
+import com.liferay.portal.instances.service.PortalInstancesLocalService;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -23,7 +24,6 @@ import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
 import com.liferay.portal.kernel.service.CompanyLocalService;
 import com.liferay.portal.kernel.util.Validator;
-import com.liferay.portal.util.PortalInstances;
 
 import java.util.Map;
 
@@ -67,8 +67,10 @@ public class CompanyGenerator {
 				_companyGeneratorConfiguration.virtualHostName(), "liferay.com",
 				false, 0, true);
 
-			PortalInstances.initCompany(
+			_portalInstancesLocalService.initializePortalInstance(
 				new MockServletContext(), _company.getWebId());
+
+			_portalInstancesLocalService.synchronizePortalInstances();
 
 			if (_log.isInfoEnabled()) {
 				_log.info(_company);
@@ -96,6 +98,8 @@ public class CompanyGenerator {
 		try {
 			_companyLocalService.deleteCompany(_company);
 
+			_portalInstancesLocalService.synchronizePortalInstances();
+
 			if (_log.isInfoEnabled()) {
 				_log.info(_company);
 			}
@@ -119,5 +123,8 @@ public class CompanyGenerator {
 	private CompanyLocalService _companyLocalService;
 
 	private long _oldCompanyId;
+
+	@Reference
+	private PortalInstancesLocalService _portalInstancesLocalService;
 
 }
