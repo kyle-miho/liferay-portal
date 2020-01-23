@@ -55,6 +55,8 @@ definition {
 		AntCommand(
 			locator1 = "build-test.xml",
 			value1 = "deploy-osgi-module -Dmodule.base.dir=modules/test/company-generator");
+
+		Pause(locator1 = "25000");
 	}
 
 	@summary = "Enter '${userPasswordReminderAnswer}' as password reminder"
