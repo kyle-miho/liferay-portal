@@ -60,20 +60,19 @@ public class CompanyGenerator {
 		}
 
 		try {
-			_oldCompanyId = CompanyThreadLocal.getCompanyId();
-
-			_company = _companyLocalService.addCompany(
-				_companyGeneratorConfiguration.virtualHostName(),
-				_companyGeneratorConfiguration.virtualHostName(), "liferay.com",
-				false, 0, true);
+			Company company =
+				_companyLocalService.addCompany(
+					_companyGeneratorConfiguration.virtualHostName(),
+					_companyGeneratorConfiguration.virtualHostName(), "liferay.com",
+					false, 0, true);
 
 			_portalInstancesLocalService.initializePortalInstance(
-				new MockServletContext(), _company.getWebId());
+				new MockServletContext(), company.getWebId());
 
 			_portalInstancesLocalService.synchronizePortalInstances();
 
 			if (_log.isInfoEnabled()) {
-				_log.info(_company);
+				_log.info(company);
 			}
 		}
 		catch (PortalException pe) {
@@ -95,34 +94,36 @@ public class CompanyGenerator {
 					_companyGeneratorConfiguration.virtualHostName());
 		}
 
+		Company company = _companyLocalService.fetchCompanyByVirtualHost(
+			_companyGeneratorConfiguration.virtualHostName());
+
+		if (company == null) {
+			return;
+		}
+
 		try {
-			_companyLocalService.deleteCompany(_company);
+			_companyLocalService.deleteCompany(company);
 
 			_portalInstancesLocalService.synchronizePortalInstances();
 
 			if (_log.isInfoEnabled()) {
-				_log.info(_company);
+				_log.info(company);
 			}
 		}
 		catch (Exception e) {
 			_log.error(e, e);
-		}
-		finally {
-			CompanyThreadLocal.setCompanyId(_oldCompanyId);
 		}
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		CompanyGenerator.class);
 
-	private Company _company;
 	private volatile CompanyGeneratorConfiguration
 		_companyGeneratorConfiguration;
 
 	@Reference
 	private CompanyLocalService _companyLocalService;
 
-	private long _oldCompanyId;
 
 	@Reference
 	private PortalInstancesLocalService _portalInstancesLocalService;
