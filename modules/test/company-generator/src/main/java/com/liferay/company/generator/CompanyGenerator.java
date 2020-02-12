@@ -114,10 +114,10 @@ public class CompanyGenerator {
 		}
 	}
 
-	private static final Log _log = LogFactoryUtil.getLog(
+	private final Log _log = LogFactoryUtil.getLog(
 		CompanyGenerator.class);
 
-	private static CompanyGeneratorConfiguration _companyGeneratorConfiguration;
+	private CompanyGeneratorConfiguration _companyGeneratorConfiguration;
 
 	@Reference
 	private CompanyLocalService _companyLocalService;
