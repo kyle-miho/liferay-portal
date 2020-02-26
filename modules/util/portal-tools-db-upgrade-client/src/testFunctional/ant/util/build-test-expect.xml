@@ -9,20 +9,20 @@
 		<attribute name="expect.file" />
 
 		<sequential>
-			<delete failonerror="false" file="temp.expect" />
+			<delete failonerror="false" file="~/temp.expect" />
 
 			<copy
 				failonerror="true"
 				file="${db.upgrade.client.src.dir}/src/testFunctional/dependencies/@{expect.file}"
 				force="true"
 				overwrite="true"
-				tofile="temp.expect"
+				tofile="~/temp.expect"
 			/>
 
 			<get-database-property property.name="database.host" />
 
 			<replaceregexp
-				file="temp.expect"
+				file="~/temp.expect"
 				flags="gi"
 				match="\[database.host\]"
 				replace="${database.host}"
@@ -31,7 +31,7 @@
 			<get-database-property property.name="database.password" />
 
 			<replaceregexp
-				file="temp.expect"
+				file="~/temp.expect"
 				flags="gi"
 				match="\[database.password\]"
 				replace="${database.password}"
@@ -40,7 +40,7 @@
 			<get-database-property property.name="database.port" />
 
 			<replaceregexp
-				file="temp.expect"
+				file="~/temp.expect"
 				flags="gi"
 				match="\[database.port\]"
 				replace="${database.port}"
@@ -49,28 +49,28 @@
 			<get-database-property property.name="database.username" />
 
 			<replaceregexp
-				file="temp.expect"
+				file="~/temp.expect"
 				flags="gi"
 				match="\[database.username\]"
 				replace="${database.username}"
 			/>
 
 			<replaceregexp
-				file="temp.expect"
+				file="~/temp.expectt"
 				flags="gi"
 				match="\[db.upgrade.client.home\]"
 				replace="@{db.upgrade.client.home}"
 			/>
 
 			<replaceregexp
-				file="temp.expect"
+				file="~/temp.expect"
 				flags="gi"
 				match="\[file.suffix.bat\]"
 				replace="@{file.suffix.bat}"
 			/>
 
 			<chmod
-				file="temp.expect"
+				file="~/temp.expectt"
 				perm="+x"
 			/>
 
@@ -79,7 +79,7 @@
 				perm="+x"
 			/>
 
-			<exec executable="./temp.expect" failonerror="true" logError="true" />
+			<exec executable="~/temp.expectt" failonerror="true" logError="true" />
 		</sequential>
 	</macrodef>
 </project>
