@@ -16,7 +16,7 @@
 				file="${db.upgrade.client.src.dir}/src/testFunctional/dependencies/@{expect.file}"
 				force="true"
 				overwrite="true"
-				tofile="temp.expect"
+				tofile="${db.upgrade.client.src.dir}/src/testFunctional/dependencies/temp.expect"
 			/>
 
 			<get-database-property property.name="database.host" />
@@ -70,7 +70,7 @@
 			/>
 
 			<chmod
-				file="temp.expect"
+				file="${db.upgrade.client.src.dir}/src/testFunctional/dependencies/temp.expect"
 				perm="+x"
 			/>
 
@@ -79,7 +79,7 @@
 				perm="+x"
 			/>
 
-			<exec executable="./temp.expect" failonerror="true" logError="true" />
+			<exec executable="${db.upgrade.client.src.dir}/src/testFunctional/dependencies/temp.expect" failonerror="true" logError="true" />
 		</sequential>
 	</macrodef>
 </project>
