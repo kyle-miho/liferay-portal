@@ -22,7 +22,6 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.service.CompanyLocalService;
-import com.liferay.portal.kernel.util.ProxyFactory;
 
 import java.util.Map;
 
@@ -56,8 +55,7 @@ public class CompanyGenerator {
 				false, 0, true);
 
 			_portalInstancesLocalService.initializePortalInstance(
-				ProxyFactory.newDummyInstance(ServletContext.class),
-				company.getWebId());
+				_servletContext, company.getWebId());
 
 			_portalInstancesLocalService.synchronizePortalInstances();
 
@@ -96,5 +94,10 @@ public class CompanyGenerator {
 
 	@Reference
 	private PortalInstancesLocalService _portalInstancesLocalService;
+
+	@Reference(
+		target = "(&(original.bean=true)(bean.id=javax.servlet.ServletContext))"
+	)
+	private ServletContext _servletContext;
 
 }
