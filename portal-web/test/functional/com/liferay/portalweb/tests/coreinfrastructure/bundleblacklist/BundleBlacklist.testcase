@@ -6,6 +6,10 @@ definition {
 	property testray.main.component.name = "Bundle Blacklist";
 
 	setUp {
+		OSGiConfig.deployOSGiConfigs(
+			OSGiConfigs = "",
+			OSGiConfigFileName="com.liferay.portal.bundle.blacklist.internal.BundleBlacklistConfiguration.config");
+
 		TestCase.setUpPortalInstance();
 
 		User.firstLoginPG();
