@@ -51,7 +51,7 @@ definition {
 	}
 
 	@priority = "5"
-	test BlacklistModuleJar {
+	test BlacklistModuleBundleSymbolicName {
 		property portal.acceptance = "true";
 
 		ProductMenu.gotoPortlet(
