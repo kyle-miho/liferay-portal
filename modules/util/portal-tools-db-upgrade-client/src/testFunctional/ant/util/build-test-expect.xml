@@ -11,13 +11,18 @@
 		<sequential>
 			<delete failonerror="false" file="~/temp.expect" />
 
+			<sleep seconds="2" />
+
 			<copy
 				failonerror="true"
 				file="${db.upgrade.client.src.dir}/src/testFunctional/dependencies/@{expect.file}"
 				force="true"
 				overwrite="true"
 				tofile="~/temp.expect"
+				verbose="true"
 			/>
+			
+			<sleep seconds="2" />
 
 			<get-database-property property.name="database.host" />
 
@@ -56,7 +61,7 @@
 			/>
 
 			<replaceregexp
-				file="~/temp.expectt"
+				file="~/temp.expect"
 				flags="gi"
 				match="\[db.upgrade.client.home\]"
 				replace="@{db.upgrade.client.home}"
@@ -70,7 +75,7 @@
 			/>
 
 			<chmod
-				file="~/temp.expectt"
+				file="~/temp.expect"
 				perm="+x"
 			/>
 
@@ -79,7 +84,7 @@
 				perm="+x"
 			/>
 
-			<exec executable="~/temp.expectt" failonerror="true" logError="true" />
+			<exec dir="~" executable="temp.expect" failonerror="true" logError="true" />
 		</sequential>
 	</macrodef>
 </project>
