@@ -11,12 +11,15 @@
 		<sequential>
 			<delete failonerror="false" file="~/temp.expect" />
 
+			<sleep seconds="5" /
+
 			<copy
 				failonerror="true"
 				file="${db.upgrade.client.src.dir}/src/testFunctional/dependencies/@{expect.file}"
 				force="true"
 				overwrite="true"
 				tofile="~/temp.expect"
+				verbose="true"
 			/>
 
 			<get-database-property property.name="database.host" />
