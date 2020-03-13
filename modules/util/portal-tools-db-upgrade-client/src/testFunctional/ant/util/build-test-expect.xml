@@ -9,7 +9,7 @@
 		<attribute name="expect.file" />
 
 		<sequential>
-			<delete failonerror="false" file="~/temp.expect" />
+			<delete failonerror="false" file="${db.upgrade.client.src.dir}/src/testFunctional/dependencies/temp.expect" />
 
 			<sleep seconds="2" />
 
@@ -18,7 +18,7 @@
 				file="${db.upgrade.client.src.dir}/src/testFunctional/dependencies/@{expect.file}"
 				force="true"
 				overwrite="true"
-				tofile="~/temp.expect"
+				tofile="${db.upgrade.client.src.dir}/src/testFunctional/dependencies/temp.expect"
 				verbose="true"
 			/>
 			
@@ -27,7 +27,7 @@
 			<get-database-property property.name="database.host" />
 
 			<replaceregexp
-				file="~/temp.expect"
+				file="${db.upgrade.client.src.dir}/src/testFunctional/dependencies/temp.expect"
 				flags="gi"
 				match="\[database.host\]"
 				replace="${database.host}"
@@ -36,7 +36,7 @@
 			<get-database-property property.name="database.password" />
 
 			<replaceregexp
-				file="~/temp.expect"
+				file="${db.upgrade.client.src.dir}/src/testFunctional/dependencies/temp.expect"
 				flags="gi"
 				match="\[database.password\]"
 				replace="${database.password}"
@@ -45,7 +45,7 @@
 			<get-database-property property.name="database.port" />
 
 			<replaceregexp
-				file="~/temp.expect"
+				file="${db.upgrade.client.src.dir}/src/testFunctional/dependencies/temp.expect"
 				flags="gi"
 				match="\[database.port\]"
 				replace="${database.port}"
@@ -54,28 +54,28 @@
 			<get-database-property property.name="database.username" />
 
 			<replaceregexp
-				file="~/temp.expect"
+				file="${db.upgrade.client.src.dir}/src/testFunctional/dependencies/temp.expect"
 				flags="gi"
 				match="\[database.username\]"
 				replace="${database.username}"
 			/>
 
 			<replaceregexp
-				file="~/temp.expect"
+				file="${db.upgrade.client.src.dir}/src/testFunctional/dependencies/temp.expect"
 				flags="gi"
 				match="\[db.upgrade.client.home\]"
 				replace="@{db.upgrade.client.home}"
 			/>
 
 			<replaceregexp
-				file="~/temp.expect"
+				file="${db.upgrade.client.src.dir}/src/testFunctional/dependencies/temp.expect"
 				flags="gi"
 				match="\[file.suffix.bat\]"
 				replace="@{file.suffix.bat}"
 			/>
 
 			<chmod
-				file="~/temp.expect"
+				file="${db.upgrade.client.src.dir}/src/testFunctional/dependencies/temp.expect"
 				perm="+x"
 			/>
 
@@ -84,7 +84,7 @@
 				perm="+x"
 			/>
 
-			<exec dir="~" executable="temp.expect" failonerror="true" logError="true" />
+			<exec executable="${db.upgrade.client.src.dir}/src/testFunctional/dependencies/temp.expect" failonerror="true" logError="true" />
 		</sequential>
 	</macrodef>
 </project>
