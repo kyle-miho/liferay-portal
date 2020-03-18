@@ -71,10 +71,10 @@ public class CompanyGenerator {
 
 	@Deactivate
 	protected void deactivate() {
-		Company company = _companyLocalService.fetchCompanyByVirtualHost(
-			_companyGeneratorConfiguration.virtualHostName());
-
 		try {
+			Company company = _companyLocalService.getCompanyByVirtualHost(
+				_companyGeneratorConfiguration.virtualHostName());
+
 			_companyLocalService.deleteCompany(company);
 
 			_portalInstancesLocalService.synchronizePortalInstances();
