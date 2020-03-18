@@ -149,12 +149,15 @@ public class MainServlet extends HttpServlet {
 
 		DependencyManagerSyncUtil.sync();
 
-		_portalInitializedModuleServiceLifecycleServiceRegistration.
-			unregister();
+		_systemCheckModuleServiceLifecycleServiceRegistration.unregister();
+
+		_servletContextServiceRegistration.unregister();
+
 		_portalPortletsInitializedModuleServiceLifecycleServiceRegistration.
 			unregister();
-		_servletContextServiceRegistration.unregister();
-		_systemCheckModuleServiceLifecycleServiceRegistration.unregister();
+
+		_portalInitializedModuleServiceLifecycleServiceRegistration.
+			unregister();
 
 		PortalLifecycleUtil.flushDestroys();
 
