@@ -21,7 +21,6 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Company;
-import com.liferay.portal.kernel.module.framework.ModuleServiceLifecycle;
 import com.liferay.portal.kernel.service.CompanyLocalService;
 
 import java.util.Map;
@@ -92,9 +91,6 @@ public class CompanyGenerator {
 
 	@Reference
 	private CompanyLocalService _companyLocalService;
-
-	@Reference(target = ModuleServiceLifecycle.SYSTEM_CHECK, unbind = "-")
-	private ModuleServiceLifecycle _moduleServiceLifecycle;
 
 	@Reference
 	private PortalInstancesLocalService _portalInstancesLocalService;
