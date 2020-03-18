@@ -60,8 +60,7 @@ public class CompanyGenerator {
 			_portalInstancesLocalService.synchronizePortalInstances();
 
 			if (_log.isInfoEnabled()) {
-				_log.info(
-					_companyGeneratorConfiguration.customActivationMessage());
+				_log.info(_companyGeneratorConfiguration.activationMessage());
 			}
 		}
 		catch (PortalException portalException) {

@@ -28,9 +28,9 @@ import com.liferay.portal.configuration.metatype.annotations.ExtendedObjectClass
 public interface CompanyGeneratorConfiguration {
 
 	@Meta.AD
-	public String virtualHostName();
+	public String activationMessage();
 
 	@Meta.AD
-	public String customActivationMessage();
+	public String virtualHostName();
 
 }
