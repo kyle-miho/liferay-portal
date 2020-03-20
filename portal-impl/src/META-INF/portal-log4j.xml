@@ -340,6 +340,10 @@
 		<priority value="WARN" />
 	</category>
 
+	<category name="com.liferay.portal.kernel.security.auth.CompanyThreadLocal">
+		<priority value="DEBUG" />
+	</category>
+
 	<category name="com.liferay.portal.kernel.servlet.PipingServletResponse">
 		<priority value="ERROR" />
 	</category>
@@ -510,6 +514,10 @@
 
 	<category name="com.liferay.portal.server.capabilities.ServerCapabilitiesUtil">
 		<priority value="ERROR" />
+	</category>
+
+	<category name="com.liferay.portal.service.impl.CompanyLocalServiceImpl">
+		<priority value="DEBUG" />
 	</category>
 
 	<category name="com.liferay.portal.service.impl.LayoutLocalServiceImpl">

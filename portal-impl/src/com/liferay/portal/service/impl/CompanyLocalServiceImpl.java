@@ -140,6 +140,10 @@ public class CompanyLocalServiceImpl extends CompanyLocalServiceBaseImpl {
 
 	@Override
 	public Company addCompany(Company company) {
+		if (_log.isDebugEnabled()) {
+			_log.debug("Creating company with companyId = " + company.getCompanyId());
+		}
+
 		companyInfoPersistence.update(company.getCompanyInfo());
 
 		return super.addCompany(company);
@@ -240,6 +244,10 @@ public class CompanyLocalServiceImpl extends CompanyLocalServiceBaseImpl {
 				return company;
 			}
 
+			if (_log.isDebugEnabled()) {
+				_log.debug("Creating company with companyId = " + company.getCompanyId());
+			}
+
 			return checkCompany(webId, mx);
 		}
 	}
@@ -279,6 +287,10 @@ public class CompanyLocalServiceImpl extends CompanyLocalServiceBaseImpl {
 		throws PortalException {
 
 		Company company = getCompanyByWebId(webId);
+
+		if (_log.isDebugEnabled()) {
+			_log.debug("Checking company with companyId = " + company.getCompanyId());
+		}
 
 		Locale localeThreadLocalDefaultLocale =
 			LocaleThreadLocal.getDefaultLocale();
@@ -415,6 +427,10 @@ public class CompanyLocalServiceImpl extends CompanyLocalServiceBaseImpl {
 	public Company deleteCompany(long companyId) throws PortalException {
 		if (companyId == PortalInstances.getDefaultCompanyId()) {
 			throw new RequiredCompanyException();
+		}
+
+		if (_log.isDebugEnabled()) {
+			_log.debug("Deleting company with companyId = " +companyId);
 		}
 
 		Long currentCompanyId = CompanyThreadLocal.getCompanyId();
