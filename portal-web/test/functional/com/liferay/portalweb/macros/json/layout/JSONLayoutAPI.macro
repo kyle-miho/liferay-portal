@@ -133,6 +133,8 @@ definition {
 
 		var JSON = selenium.getEval("${javaScript}");
 
+		echo("${JSON}");
+
 		return "${JSON}";
 	}
 
