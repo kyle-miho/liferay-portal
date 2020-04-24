@@ -509,7 +509,7 @@
 
 				result = {};
 
-				var getterFn = this.isFunction(attributeGetter);
+				var getterFn = typeof attributeGetter === 'function';
 				var getterString = typeof attributeGetter === 'string';
 
 				var attrs = el.attributes;
@@ -799,6 +799,9 @@
 			return viewable;
 		},
 
+		/**
+		 * @deprecated As of Athanasius (7.3.x), replaced by `typeof val === 'function'`
+		 */
 		isFunction(val) {
 			return typeof val === 'function';
 		},
@@ -921,6 +924,9 @@
 			document.all[id].focus();
 		},
 
+		/**
+		 * @deprecated As of Athanasius (7.3.x), with no direct replacement
+		 */
 		randomInt() {
 			return Math.ceil(Math.random() * new Date().getTime());
 		},
@@ -1298,7 +1304,7 @@
 			var toggleBox = document.getElementById(toggleBoxId);
 
 			if (selectBox && toggleBox) {
-				var dynamicValue = this.isFunction(value);
+				var dynamicValue = typeof value === 'function';
 
 				var toggle = function() {
 					var currentValue = selectBox.value;

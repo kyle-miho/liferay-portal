@@ -12,6 +12,7 @@
 import ClayButton from '@clayui/button';
 import ClayDropDown from '@clayui/drop-down';
 import ClayIcon from '@clayui/icon';
+import ClayList from '@clayui/list';
 import {ClayTooltipProvider} from '@clayui/tooltip';
 import PropTypes from 'prop-types';
 import React, {useState} from 'react';
@@ -35,21 +36,25 @@ export default function Keywords({currentPage, languageTag}) {
 	);
 
 	return (
-		<table className="table-autofit table-keywords">
-			<thead>
-				<tr>
-					<th>
-						{Liferay.Language.get('best-keyword')}
-						<span className="text-secondary">
-							<Hint
-								message={Liferay.Language.get(
-									'best-keyword-help'
-								)}
-								title={Liferay.Language.get('best-keyword')}
-							/>
+		<ClayList className="list-group-keywords-list">
+			<ClayList.Item flex>
+				<ClayList.ItemField expand>
+					<ClayList.ItemTitle className="text-truncate-inline">
+						<span className="text-truncate">
+							{Liferay.Language.get('best-keyword')}
+							<span className="text-secondary">
+								<Hint
+									message={Liferay.Language.get(
+										'best-keyword-help'
+									)}
+									title={Liferay.Language.get('best-keyword')}
+								/>
+							</span>
 						</span>
-					</th>
-					<th className="text-right">
+					</ClayList.ItemTitle>
+				</ClayList.ItemField>
+				<ClayList.ItemField>
+					<ClayList.ItemTitle>
 						<ClayDropDown
 							active={isDropdownOpen}
 							onActiveChange={isActive =>
@@ -61,7 +66,7 @@ export default function Keywords({currentPage, languageTag}) {
 									displayType="link"
 									small
 								>
-									<span className="font-weight-bold">
+									<span className="font-weight-semi-bold">
 										<span className="pr-2">
 											{keywordValueType.label}
 										</span>
@@ -97,14 +102,14 @@ export default function Keywords({currentPage, languageTag}) {
 								))}
 							</ClayDropDown.ItemList>
 						</ClayDropDown>
-					</th>
-				</tr>
-			</thead>
-			<tbody>
-				{currentPage.data.keywords.map(keyword => {
-					return (
-						<tr key={keyword.title}>
-							<td className="table-cell-expand">
+					</ClayList.ItemTitle>
+				</ClayList.ItemField>
+			</ClayList.Item>
+			{currentPage.data.keywords.map(keyword => {
+				return (
+					<ClayList.Item flex key={keyword.title}>
+						<ClayList.ItemField expand>
+							<ClayList.ItemText>
 								<ClayTooltipProvider>
 									<span
 										className="text-truncate-inline"
@@ -116,8 +121,10 @@ export default function Keywords({currentPage, languageTag}) {
 										</span>
 									</span>
 								</ClayTooltipProvider>
-							</td>
-							<td align="right" className="text-secondary">
+							</ClayList.ItemText>
+						</ClayList.ItemField>
+						<ClayList.ItemField expand>
+							<span className="align-self-end">
 								{numberFormat(
 									languageTag,
 									keywordValueType.name === 'traffic'
@@ -126,12 +133,12 @@ export default function Keywords({currentPage, languageTag}) {
 										? keyword.volume
 										: keyword.position
 								)}
-							</td>
-						</tr>
-					);
-				})}
-			</tbody>
-		</table>
+							</span>
+						</ClayList.ItemField>
+					</ClayList.Item>
+				);
+			})}
+		</ClayList>
 	);
 }
 
