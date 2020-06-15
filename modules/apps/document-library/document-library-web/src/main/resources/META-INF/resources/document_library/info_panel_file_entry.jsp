@@ -239,10 +239,6 @@ long assetClassPK = DLAssetHelperUtil.getAssetClassPK(fileEntry, fileVersion);
 						}
 
 						String urlInputId = liferayPortletResponse.getNamespace() + "urlInput";
-
-						Map<String, String> urlButtonData = HashMapBuilder.put(
-							"clipboard-target", "#" + urlInputId
-						).build();
 						%>
 
 						<div class="form-group">
@@ -255,11 +251,11 @@ long assetClassPK = DLAssetHelperUtil.getAssetClassPK(fileEntry, fileVersion);
 
 								<span class="input-group-append input-group-item input-group-item-shrink">
 									<clay:button
-										data="<%= urlButtonData %>"
-										elementClasses="btn-secondary dm-infopanel-copy-clipboard lfr-portal-tooltip"
+										cssClass="dm-infopanel-copy-clipboard lfr-portal-tooltip"
+										data-clipboard-target='<%= "#" + urlInputId %>'
+										displayType="secondary"
 										icon="paste"
-										style="secondary"
-										title='<%= LanguageUtil.get(resourceBundle, "copy-link") %>'
+										title="copy-link"
 									/>
 								</span>
 							</div>
@@ -271,17 +267,13 @@ long assetClassPK = DLAssetHelperUtil.getAssetClassPK(fileEntry, fileVersion);
 							String webDavHelpMessage = null;
 
 							if (BrowserSnifferUtil.isWindows(request)) {
-								webDavHelpMessage = LanguageUtil.format(request, "webdav-windows-help", new Object[] {"https://support.microsoft.com/en-us/kb/892211", "https://dev.liferay.com/discover/portal/-/knowledge_base/7-0/publishing-files#desktop-access-to-documents-and-media"}, false);
+								webDavHelpMessage = LanguageUtil.format(request, "webdav-windows-help", new Object[] {"https://support.microsoft.com/en-us/kb/892211", "https://help.liferay.com/hc/en-us/articles/360028720352-Desktop-Access-to-Documents-and-Media"}, false);
 							}
 							else {
-								webDavHelpMessage = LanguageUtil.format(request, "webdav-help", "https://dev.liferay.com/discover/portal/-/knowledge_base/7-0/publishing-files#desktop-access-to-documents-and-media", false);
+								webDavHelpMessage = LanguageUtil.format(request, "webdav-help", "https://help.liferay.com/hc/en-us/articles/360028720352-Desktop-Access-to-Documents-and-Media", false);
 							}
 
 							String webDavURLInputId = liferayPortletResponse.getNamespace() + "webDavURLInput";
-
-							Map<String, String> webDavButtonData = HashMapBuilder.put(
-								"clipboard-target", "#" + webDavURLInputId
-							).build();
 							%>
 
 							<div class="form-group">
@@ -298,11 +290,11 @@ long assetClassPK = DLAssetHelperUtil.getAssetClassPK(fileEntry, fileVersion);
 
 									<span class="input-group-append input-group-item input-group-item-shrink">
 										<clay:button
-											data="<%= webDavButtonData %>"
-											elementClasses="btn-secondary dm-infopanel-copy-clipboard lfr-portal-tooltip"
+											cssClass="dm-infopanel-copy-clipboard lfr-portal-tooltip"
+											data-clipboard-target='<%= "#" + webDavURLInputId %>'
+											displayType="secondary"
 											icon="paste"
-											style="secondary"
-											title='<%= LanguageUtil.get(resourceBundle, "copy-link") %>'
+											title="copy-link"
 										/>
 									</span>
 								</div>

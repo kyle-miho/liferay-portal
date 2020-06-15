@@ -414,7 +414,7 @@ definition {
 		Audit.viewAuditDetails(
 			additionalInformation = "Incorrect email one-time password",
 			resourceAction = "MFA_EMAIL_OTP_VERIFICATION_FAILURE",
-			resourceName = "MFAEmailOTPMFABrowserChecker",
+			resourceName = "EmailOTPBrowserMFAChecker",
 			userName = "Test Test");
 	}
 

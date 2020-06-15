@@ -314,11 +314,24 @@ public class JournalArticleInfoItemFormProvider
 
 			journalArticleFieldValues.add(
 				new InfoFieldValue<>(
-					_titleInfoField, journalArticle.getTitle()));
-
+					_titleInfoField,
+					InfoLocalizedValue.builder(
+					).defaultLocale(
+						LocaleUtil.fromLanguageId(
+							journalArticle.getDefaultLanguageId())
+					).addValues(
+						journalArticle.getTitleMap()
+					).build()));
 			journalArticleFieldValues.add(
 				new InfoFieldValue<>(
-					_descriptionInfoField, journalArticle.getDescription()));
+					_descriptionInfoField,
+					InfoLocalizedValue.builder(
+					).defaultLocale(
+						LocaleUtil.fromLanguageId(
+							journalArticle.getDefaultLanguageId())
+					).addValues(
+						journalArticle.getDescriptionMap()
+					).build()));
 
 			if (themeDisplay != null) {
 				journalArticleFieldValues.add(
@@ -443,7 +456,8 @@ public class JournalArticleInfoItemFormProvider
 
 	private final InfoField _descriptionInfoField = new InfoField(
 		TextInfoFieldType.INSTANCE,
-		InfoLocalizedValue.localize(getClass(), "description"), "description");
+		InfoLocalizedValue.localize(getClass(), "description"), true,
+		"description");
 	private final InfoField _displayPageUrlInfoField = new InfoField(
 		URLInfoFieldType.INSTANCE,
 		InfoLocalizedValue.localize(
@@ -487,7 +501,7 @@ public class JournalArticleInfoItemFormProvider
 		"smallImage");
 	private final InfoField _titleInfoField = new InfoField(
 		TextInfoFieldType.INSTANCE,
-		InfoLocalizedValue.localize(getClass(), "title"), "title");
+		InfoLocalizedValue.localize(getClass(), "title"), true, "title");
 
 	@Reference
 	private UserLocalService _userLocalService;

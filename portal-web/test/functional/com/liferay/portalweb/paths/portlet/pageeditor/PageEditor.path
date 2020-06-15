@@ -24,6 +24,11 @@
 	<td></td>
 </tr>
 <tr>
+	<td>EMPTY_NESTED_FRAGMENT_DROP_TARGET</td>
+	<td>//div[contains(@class,'page-editor__topper') and contains(.,'${key_targetFragmentName}')]//div[contains(@class,'page-editor__topper__content')]/div[contains(@class,'empty')]</td>
+	<td></td>
+</tr>
+<tr>
 	<td>FRAGMENT_DROP_TARGET</td>
 	<td>//div[contains(@class,'page-editor__root page-editor__topper')]</td>
 	<td></td>
@@ -202,7 +207,7 @@
 </tr>
 <tr>
 	<td>FRAGMENT_SIDEBAR_COLLECTION_PANEL_EXPANDED</td>
-	<td>//*[contains(@class,'sheet-subtitle') and not(contains(@class,'collapsed'))][normalize-space()='${key_collectionName}']</td>
+	<td>//*[contains(@class,'collapse-icon sheet-subtitle')][normalize-space()='${key_collectionName}']</td>
 	<td></td>
 </tr>
 <tr>
@@ -556,6 +561,11 @@
 <tr>
 	<td>COLLECTION_ITEM_CONTENT</td>
 	<td>//div[contains(@class,'page-editor__topper') and contains(.,'${key_fragmentName}')]//div[contains(@class,'page-editor__collection')]/div[@class='row'][${key_rowPosition}]/div[contains(@class,'col')][${key_colPosition}]//*[contains(@class,'content') and contains(.,'${key_entryContent}')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>COLLECTION_ITEM_IMAGE</td>
+	<td>//div[contains(@class,'page-editor__topper') and contains(.,'${key_fragmentName}')]//div[contains(@class,'page-editor__collection')]/div[@class='row'][${key_rowPosition}]/div[contains(@class,'col')][${key_colPosition}]//*[contains(@style,'${key_entryImage}')]</td>
 	<td></td>
 </tr>
 </tbody>

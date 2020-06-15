@@ -33,8 +33,8 @@ import com.liferay.dynamic.data.mapping.form.web.internal.constants.DDMFormWebKe
 import com.liferay.dynamic.data.mapping.form.web.internal.display.context.util.DDMFormAdminRequestHelper;
 import com.liferay.dynamic.data.mapping.form.web.internal.display.context.util.FormInstancePermissionCheckerHelper;
 import com.liferay.dynamic.data.mapping.form.web.internal.instance.lifecycle.AddDefaultSharedFormLayoutPortalInstanceLifecycleListener;
-import com.liferay.dynamic.data.mapping.form.web.internal.search.FormInstanceRowChecker;
-import com.liferay.dynamic.data.mapping.form.web.internal.search.FormInstanceSearch;
+import com.liferay.dynamic.data.mapping.form.web.internal.search.DDMFormInstanceRowChecker;
+import com.liferay.dynamic.data.mapping.form.web.internal.search.DDMFormInstanceSearch;
 import com.liferay.dynamic.data.mapping.io.DDMFormFieldTypesSerializer;
 import com.liferay.dynamic.data.mapping.io.DDMFormFieldTypesSerializerSerializeRequest;
 import com.liferay.dynamic.data.mapping.io.DDMFormFieldTypesSerializerSerializeResponse;
@@ -850,7 +850,7 @@ public class DDMFormAdminDisplayContext {
 
 		portletURL.setParameter("displayStyle", displayStyle);
 
-		FormInstanceSearch formInstanceSearch = new FormInstanceSearch(
+		DDMFormInstanceSearch ddmFormInstanceSearch = new DDMFormInstanceSearch(
 			renderRequest, portletURL);
 
 		String orderByCol = getOrderByCol();
@@ -859,24 +859,24 @@ public class DDMFormAdminDisplayContext {
 		OrderByComparator<DDMFormInstance> orderByComparator =
 			getDDMFormInstanceOrderByComparator(orderByCol, orderByType);
 
-		formInstanceSearch.setOrderByCol(orderByCol);
-		formInstanceSearch.setOrderByComparator(orderByComparator);
-		formInstanceSearch.setOrderByType(orderByType);
+		ddmFormInstanceSearch.setOrderByCol(orderByCol);
+		ddmFormInstanceSearch.setOrderByComparator(orderByComparator);
+		ddmFormInstanceSearch.setOrderByType(orderByType);
 
-		if (formInstanceSearch.isSearch()) {
-			formInstanceSearch.setEmptyResultsMessage("no-forms-were-found");
+		if (ddmFormInstanceSearch.isSearch()) {
+			ddmFormInstanceSearch.setEmptyResultsMessage("no-forms-were-found");
 		}
 		else {
-			formInstanceSearch.setEmptyResultsMessage("there-are-no-forms");
+			ddmFormInstanceSearch.setEmptyResultsMessage("there-are-no-forms");
 		}
 
-		formInstanceSearch.setRowChecker(
-			new FormInstanceRowChecker(renderResponse));
+		ddmFormInstanceSearch.setRowChecker(
+			new DDMFormInstanceRowChecker(renderResponse));
 
-		setDDMFormInstanceSearchResults(formInstanceSearch);
-		setDDMFormInstanceSearchTotal(formInstanceSearch);
+		setDDMFormInstanceSearchResults(ddmFormInstanceSearch);
+		setDDMFormInstanceSearchTotal(ddmFormInstanceSearch);
 
-		return formInstanceSearch;
+		return ddmFormInstanceSearch;
 	}
 
 	public String getSearchActionURL() {
@@ -1431,7 +1431,7 @@ public class DDMFormAdminDisplayContext {
 	}
 
 	protected void setDDMFormInstanceSearchResults(
-		FormInstanceSearch ddmFormInstanceSearch) {
+		DDMFormInstanceSearch ddmFormInstanceSearch) {
 
 		List<DDMFormInstance> results = _ddmFormInstanceService.search(
 			formAdminRequestHelper.getCompanyId(),
@@ -1443,7 +1443,7 @@ public class DDMFormAdminDisplayContext {
 	}
 
 	protected void setDDMFormInstanceSearchTotal(
-		FormInstanceSearch ddmFormInstanceSearch) {
+		DDMFormInstanceSearch ddmFormInstanceSearch) {
 
 		int total = _ddmFormInstanceService.searchCount(
 			formAdminRequestHelper.getCompanyId(),

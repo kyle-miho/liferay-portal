@@ -59,12 +59,14 @@ definition {
 	}
 
 	macro contentDateRange {
-		ScrollWebElementIntoView(locator1 = "Button#PUBLISH");
+		if (IsElementPresent(locator1 = "Button#PUBLISH")) {
+			ScrollWebElementIntoView(locator1 = "Button#PUBLISH");
+		}
+
+		var browserType = PropsUtil.get("browser.type");
 
 		if ("${contentDateRange}" == "All") {
 			Click(locator1 = "StagingPublishToLive#CONTENT_ALL");
-
-			Click(locator1 = "Link#REFRESH_COUNTS");
 		}
 
 		if ("${contentDateRange}" == "Date Range") {
@@ -79,16 +81,21 @@ definition {
 			Type(
 				locator1 = "Select#DATE_RANGE_END_DATE",
 				value1 = "${dateRangeEndDate}");
-
 		}
 
-		if ("${contentDateRange}" == "Last") {
+		if (("${contentDateRange}" == "Last") && ("${browserType}" == "safari")) {
+			Click.javaScriptClick(locator1 = "StagingPublishToLive#CONTENT_LAST");
+		}
+		else if ("${contentDateRange}" == "Last") {
 			Click.clickNoMouseOverNoWaitForVisible(locator1 = "StagingPublishToLive#CONTENT_LAST");
+		}
 
+		if ("${browserType}" == "safari") {
+			Click.javaScriptClick(locator1 = "Link#REFRESH_COUNTS");
+		}
+		else {
 			Click(locator1 = "Link#REFRESH_COUNTS");
 		}
-
-		Click(locator1 = "Link#REFRESH_COUNTS");
 	}
 
 	macro contentDeletion {

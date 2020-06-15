@@ -191,6 +191,29 @@ public class LayoutPageTemplateEntryLocalServiceImpl
 
 		validate(groupId, name, type);
 
+		if ((type == LayoutPageTemplateEntryTypeConstants.TYPE_WIDGET_PAGE) &&
+			(layoutPrototypeId == 0)) {
+
+			LayoutPrototype layoutPrototype =
+				_layoutPrototypeLocalService.addLayoutPrototype(
+					userId, user.getCompanyId(),
+					Collections.singletonMap(
+						LocaleUtil.getMostRelevantLocale(), name),
+					Collections.emptyMap(), true, serviceContext);
+
+			LayoutPageTemplateEntry layoutPageTemplateEntry =
+				fetchFirstLayoutPageTemplateEntry(
+					layoutPrototype.getLayoutPrototypeId());
+
+			if (layoutPageTemplateEntry != null) {
+				layoutPageTemplateEntry.setLayoutPageTemplateCollectionId(
+					layoutPageTemplateCollectionId);
+
+				return layoutPageTemplateEntryPersistence.update(
+					layoutPageTemplateEntry);
+			}
+		}
+
 		long layoutPageTemplateEntryId = counterLocalService.increment();
 
 		LayoutPageTemplateEntry layoutPageTemplateEntry =
@@ -748,7 +771,6 @@ public class LayoutPageTemplateEntryLocalServiceImpl
 
 		_fragmentEntryLinkLocalService.updateFragmentEntryLinks(
 			serviceContext.getUserId(), layoutPageTemplateEntry.getGroupId(),
-			classNameLocalService.getClassNameId(Layout.class.getName()),
 			layoutPageTemplateEntry.getPlid(), fragmentEntryIds, editableValues,
 			serviceContext);
 

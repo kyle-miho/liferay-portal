@@ -31,9 +31,11 @@ import com.liferay.portal.kernel.search.SearchContextFactory;
 import com.liferay.portal.kernel.search.SearchResult;
 import com.liferay.portal.kernel.search.SearchResultUtil;
 import com.liferay.portal.kernel.search.Sort;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 
 import java.util.List;
@@ -65,26 +67,18 @@ public class ContentDashboardItemSearchContainerFactory {
 	public SearchContainer<ContentDashboardItem<?>> create()
 		throws PortletException {
 
-		PortletURL portletURL = PortletURLUtil.clone(
-			_renderResponse.createRenderURL(), _renderResponse);
-
 		SearchContainer<ContentDashboardItem<?>> searchContainer =
 			new SearchContainer<>(
-				_renderRequest, portletURL, null, "there-is-no-content");
+				_renderRequest, _getPortletURL(), null, "there-is-no-content");
 
-		String orderByCol = ParamUtil.getString(
-			_renderRequest, "orderByCol", "modified-date");
+		searchContainer.setOrderByCol(_getOrderByCol());
 
-		searchContainer.setOrderByCol(orderByCol);
-
-		String orderByType = ParamUtil.getString(
-			_renderRequest, "orderByType", "desc");
-
-		searchContainer.setOrderByType(orderByType);
+		searchContainer.setOrderByType(_getOrderByType());
 
 		Hits hits = _getHits(
-			orderByCol, orderByType, _portal.getLocale(_renderRequest),
-			searchContainer.getEnd(), searchContainer.getStart());
+			_getOrderByCol(), _getOrderByType(),
+			_portal.getLocale(_renderRequest), searchContainer.getEnd(),
+			searchContainer.getStart());
 
 		searchContainer.setResults(
 			_getContentDashboardItems(hits, _portal.getLocale(_renderRequest)));
@@ -135,12 +129,19 @@ public class ContentDashboardItemSearchContainerFactory {
 		SearchContext searchContext = SearchContextFactory.getInstance(
 			_portal.getHttpServletRequest(_renderRequest));
 
-		searchContext.setAttribute("latest", Boolean.TRUE);
-		searchContext.setAttribute("status", WorkflowConstants.STATUS_ANY);
+		Integer status = _getStatus();
+
+		if (status == WorkflowConstants.STATUS_APPROVED) {
+			searchContext.setAttribute("head", Boolean.TRUE);
+		}
+		else {
+			searchContext.setAttribute("latest", Boolean.TRUE);
+		}
+
+		searchContext.setAttribute("status", status);
 		searchContext.setEnd(end);
 		searchContext.setGroupIds(null);
-		searchContext.setKeywords(
-			ParamUtil.getString(_renderRequest, "keywords"));
+		searchContext.setKeywords(_getKeywords());
 		searchContext.setSorts(_getSort(orderByCol, orderByType, locale));
 		searchContext.setStart(start);
 
@@ -150,6 +151,58 @@ public class ContentDashboardItemSearchContainerFactory {
 		catch (PortalException portalException) {
 			throw new PortletException(portalException);
 		}
+	}
+
+	private String _getKeywords() {
+		return ParamUtil.getString(_renderRequest, "keywords");
+	}
+
+	private String _getOrderByCol() {
+		return ParamUtil.getString(
+			_renderRequest, "orderByCol", "modified-date");
+	}
+
+	private String _getOrderByType() {
+		return ParamUtil.getString(_renderRequest, "orderByType", "desc");
+	}
+
+	private PortletURL _getPortletURL() throws PortletException {
+		PortletURL portletURL = PortletURLUtil.clone(
+			_renderResponse.createRenderURL(), _renderResponse);
+
+		String delta = ParamUtil.getString(_renderRequest, "delta");
+
+		if (Validator.isNotNull(delta)) {
+			portletURL.setParameter("delta", delta);
+		}
+
+		String deltaEntry = ParamUtil.getString(_renderRequest, "deltaEntry");
+
+		if (Validator.isNotNull(deltaEntry)) {
+			portletURL.setParameter("deltaEntry", deltaEntry);
+		}
+
+		String keywords = _getKeywords();
+
+		if (Validator.isNotNull(keywords)) {
+			portletURL.setParameter("keywords", keywords);
+		}
+
+		String orderByCol = _getOrderByCol();
+
+		if (Validator.isNotNull(orderByCol)) {
+			portletURL.setParameter("orderByCol", orderByCol);
+		}
+
+		String orderByType = _getOrderByType();
+
+		if (Validator.isNotNull(orderByType)) {
+			portletURL.setParameter("orderByType", orderByType);
+		}
+
+		portletURL.setParameter("status", String.valueOf(_getStatus()));
+
+		return portletURL;
 	}
 
 	private Sort _getSort(
@@ -169,6 +222,12 @@ public class ContentDashboardItemSearchContainerFactory {
 		}
 
 		return new Sort(Field.MODIFIED_DATE, Sort.LONG_TYPE, !orderByAsc);
+	}
+
+	private int _getStatus() {
+		return GetterUtil.getInteger(
+			ParamUtil.getInteger(
+				_renderRequest, "status", WorkflowConstants.STATUS_ANY));
 	}
 
 	private Optional<ContentDashboardItem<?>> _toContentDashboardItemOptional(

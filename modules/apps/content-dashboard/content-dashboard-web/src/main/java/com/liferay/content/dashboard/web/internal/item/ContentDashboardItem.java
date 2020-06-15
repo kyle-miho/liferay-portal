@@ -14,7 +14,10 @@
 
 package com.liferay.content.dashboard.web.internal.item;
 
+import com.liferay.portal.kernel.theme.ThemeDisplay;
+
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -28,9 +31,7 @@ public interface ContentDashboardItem<T> {
 
 	public Date getPublishDate();
 
-	public String getStatusLabel(Locale locale);
-
-	public String getStatusStyle();
+	public List<Status> getStatuses(Locale locale);
 
 	public String getSubtype(Locale locale);
 
@@ -39,5 +40,29 @@ public interface ContentDashboardItem<T> {
 	public long getUserId();
 
 	public String getUserName();
+
+	public String getViewURL(ThemeDisplay themeDisplay);
+
+	public boolean isViewURLEnabled(ThemeDisplay themeDisplay);
+
+	public static class Status {
+
+		public Status(String label, String style) {
+			_label = label;
+			_style = style;
+		}
+
+		public String getLabel() {
+			return _label;
+		}
+
+		public String getStyle() {
+			return _style;
+		}
+
+		private final String _label;
+		private final String _style;
+
+	}
 
 }

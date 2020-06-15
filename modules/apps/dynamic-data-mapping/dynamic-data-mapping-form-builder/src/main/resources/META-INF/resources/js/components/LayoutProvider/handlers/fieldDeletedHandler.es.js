@@ -14,6 +14,7 @@
 
 import {FormSupport, PagesVisitor} from 'dynamic-data-mapping-form-renderer';
 
+import {FIELD_TYPE_FIELDSET} from '../../../util/constants.es';
 import RulesSupport from '../../RuleBuilder/RulesSupport.es';
 import {updateField} from '../util/settingsContext.es';
 
@@ -78,6 +79,13 @@ export const removeField = (props, pages, fieldName) => {
 					: [];
 
 				field = updateField(props, field, 'nestedFields', nestedFields);
+
+				if (field.type !== FIELD_TYPE_FIELDSET) {
+					return {
+						...field,
+						nestedFields,
+					};
+				}
 
 				const visitor = new PagesVisitor([
 					{

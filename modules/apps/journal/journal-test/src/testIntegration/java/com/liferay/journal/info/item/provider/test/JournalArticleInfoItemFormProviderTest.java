@@ -21,23 +21,30 @@ import com.liferay.dynamic.data.mapping.io.DDMFormDeserializerDeserializeRespons
 import com.liferay.dynamic.data.mapping.model.DDMForm;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.test.util.DDMStructureTestUtil;
+import com.liferay.info.field.InfoField;
 import com.liferay.info.field.InfoFieldValue;
 import com.liferay.info.field.InfoFormValues;
+import com.liferay.info.form.InfoForm;
 import com.liferay.info.item.InfoItemClassPKReference;
 import com.liferay.info.item.provider.InfoItemFormProvider;
-import com.liferay.info.item.provider.InfoItemFormProviderTracker;
+import com.liferay.info.item.provider.InfoItemServiceTracker;
 import com.liferay.journal.model.JournalArticle;
+import com.liferay.journal.service.JournalArticleLocalService;
 import com.liferay.journal.test.util.JournalTestUtil;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.kernel.test.util.GroupTestUtil;
+import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.util.FileUtil;
+import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -63,10 +70,87 @@ public class JournalArticleInfoItemFormProviderTest {
 	}
 
 	@Test
+	public void testGetInfoForm() throws Exception {
+		InfoItemFormProvider infoItemFormProvider =
+			_infoItemServiceTracker.getInfoItemService(
+				InfoItemFormProvider.class, JournalArticle.class.getName());
+
+		JournalArticle journalArticle = _getJournalArticle();
+
+		InfoForm infoForm = infoItemFormProvider.getInfoForm(journalArticle);
+
+		List<InfoField> infoFields = infoForm.getAllInfoFields();
+
+		infoFields.sort(Comparator.comparing(InfoField::getName));
+
+		Assert.assertEquals(infoFields.toString(), 12, infoFields.size());
+
+		InfoField infoField = infoFields.get(0);
+
+		Assert.assertEquals("DDM_Text", infoField.getName());
+		Assert.assertTrue(infoField.isLocalizable());
+
+		infoField = infoFields.get(1);
+
+		Assert.assertEquals("authorName", infoField.getName());
+		Assert.assertFalse(infoField.isLocalizable());
+
+		infoField = infoFields.get(2);
+
+		Assert.assertEquals("authorProfileImage", infoField.getName());
+		Assert.assertFalse(infoField.isLocalizable());
+
+		infoField = infoFields.get(3);
+
+		Assert.assertEquals("categories", infoField.getName());
+		Assert.assertFalse(infoField.isLocalizable());
+
+		infoField = infoFields.get(4);
+
+		Assert.assertEquals("description", infoField.getName());
+		Assert.assertTrue(infoField.isLocalizable());
+
+		infoField = infoFields.get(5);
+
+		Assert.assertEquals("displayPageURL", infoField.getName());
+		Assert.assertFalse(infoField.isLocalizable());
+
+		infoField = infoFields.get(6);
+
+		Assert.assertEquals("lastEditorName", infoField.getName());
+		Assert.assertFalse(infoField.isLocalizable());
+
+		infoField = infoFields.get(7);
+
+		Assert.assertEquals("lastEditorProfileImage", infoField.getName());
+		Assert.assertFalse(infoField.isLocalizable());
+
+		infoField = infoFields.get(8);
+
+		Assert.assertEquals("publishDate", infoField.getName());
+		Assert.assertFalse(infoField.isLocalizable());
+
+		infoField = infoFields.get(9);
+
+		Assert.assertEquals("smallImage", infoField.getName());
+		Assert.assertFalse(infoField.isLocalizable());
+
+		infoField = infoFields.get(10);
+
+		Assert.assertEquals("tagNames", infoField.getName());
+		Assert.assertFalse(infoField.isLocalizable());
+
+		infoField = infoFields.get(11);
+
+		Assert.assertEquals("title", infoField.getName());
+		Assert.assertTrue(infoField.isLocalizable());
+	}
+
+	@Test
 	public void testGetInfoFormValues() throws Exception {
 		InfoItemFormProvider infoItemFormProvider =
-			_infoItemFormProviderTracker.getInfoItemFormProvider(
-				JournalArticle.class.getName());
+			_infoItemServiceTracker.getInfoItemService(
+				InfoItemFormProvider.class, JournalArticle.class.getName());
 
 		JournalArticle journalArticle = _getJournalArticle();
 
@@ -89,12 +173,25 @@ public class JournalArticleInfoItemFormProviderTest {
 		Assert.assertEquals(
 			infoFieldValues.toString(), 9, infoFieldValues.size());
 
+		InfoFieldValue<Object> descriptionInfoFieldValue =
+			infoFormValues.getInfoFieldValue("description");
+
+		Assert.assertEquals(
+			"Description",
+			descriptionInfoFieldValue.getValue(LocaleUtil.getDefault()));
+		Assert.assertEquals(
+			"Descripción",
+			descriptionInfoFieldValue.getValue(LocaleUtil.SPAIN));
+
 		InfoFieldValue<Object> titleInfoFieldValue =
 			infoFormValues.getInfoFieldValue("title");
 
 		Assert.assertEquals(
 			"Test Article",
 			titleInfoFieldValue.getValue(LocaleUtil.getDefault()));
+		Assert.assertEquals(
+			"Artículo de prueba",
+			titleInfoFieldValue.getValue(LocaleUtil.SPAIN));
 
 		InfoFieldValue<Object> ddmTextInfoFieldValue =
 			infoFormValues.getInfoFieldValue("DDM_Text");
@@ -147,10 +244,33 @@ public class JournalArticleInfoItemFormProviderTest {
 		DDMStructure ddmStructure = DDMStructureTestUtil.addStructure(
 			_group.getGroupId(), JournalArticle.class.getName(), ddmForm);
 
-		return JournalTestUtil.addArticleWithXMLContent(
-			_group.getGroupId(),
-			_readFileToString("dependencies/test-journal-content.xml"),
-			ddmStructure.getStructureKey(), null);
+		JournalArticle journalArticle =
+			JournalTestUtil.addArticleWithXMLContent(
+				_group.getGroupId(),
+				_readFileToString("dependencies/test-journal-content.xml"),
+				ddmStructure.getStructureKey(), null);
+
+		journalArticle.setDescriptionMap(
+			HashMapBuilder.put(
+				LocaleUtil.getDefault(), "Description"
+			).put(
+				LocaleUtil.SPAIN, "Descripción"
+			).build());
+
+		journalArticle = _journalArticleLocalService.updateArticleTranslation(
+			journalArticle.getGroupId(), journalArticle.getArticleId(),
+			journalArticle.getVersion(), LocaleUtil.getDefault(),
+			journalArticle.getTitle(), "Description",
+			journalArticle.getContent(), null,
+			ServiceContextTestUtil.getServiceContext(
+				journalArticle.getGroupId()));
+
+		return _journalArticleLocalService.updateArticleTranslation(
+			journalArticle.getGroupId(), journalArticle.getArticleId(),
+			journalArticle.getVersion(), LocaleUtil.SPAIN, "Artículo de prueba",
+			"Descripción", journalArticle.getContent(), null,
+			ServiceContextTestUtil.getServiceContext(
+				journalArticle.getGroupId()));
 	}
 
 	private String _readFileToString(String s) throws Exception {
@@ -164,6 +284,9 @@ public class JournalArticleInfoItemFormProviderTest {
 	private Group _group;
 
 	@Inject
-	private InfoItemFormProviderTracker _infoItemFormProviderTracker;
+	private InfoItemServiceTracker _infoItemServiceTracker;
+
+	@Inject
+	private JournalArticleLocalService _journalArticleLocalService;
 
 }

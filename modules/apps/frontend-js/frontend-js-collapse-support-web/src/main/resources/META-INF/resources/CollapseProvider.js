@@ -186,7 +186,9 @@ class CollapseProvider {
 	}
 
 	_getPanel(trigger) {
-		return document.querySelector(trigger.getAttribute('href'));
+		return document.querySelector(
+			trigger.getAttribute('href') || trigger.dataset.target
+		);
 	}
 
 	_getTrigger(panel) {

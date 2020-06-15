@@ -17,6 +17,7 @@ import custom from './custom';
 import documents from './documents';
 import dxp from './dxp';
 import forms from './forms';
+import read from './read';
 import resolution from './resolution';
 import scrolling from './scrolling';
 import timing from './timing';
@@ -27,6 +28,7 @@ export {
 	documents,
 	dxp,
 	forms,
+	read,
 	resolution,
 	scrolling,
 	timing,
@@ -43,6 +45,7 @@ export default [
 	documents,
 	dxp,
 	forms,
+	read,
 	scrolling,
 	timing,
 	webContents,

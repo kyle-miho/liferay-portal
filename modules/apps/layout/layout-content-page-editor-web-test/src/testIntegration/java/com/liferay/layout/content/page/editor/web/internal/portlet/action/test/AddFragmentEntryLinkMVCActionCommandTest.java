@@ -43,7 +43,6 @@ import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
-import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
@@ -142,10 +141,7 @@ public class AddFragmentEntryLinkMVCActionCommandTest {
 			fragmentEntry.getFragmentEntryId(),
 			persistedFragmentEntryLink.getFragmentEntryId());
 		Assert.assertEquals(
-			PortalUtil.getClassNameId(Layout.class.getName()),
-			persistedFragmentEntryLink.getClassNameId());
-		Assert.assertEquals(
-			_layout.getPlid(), persistedFragmentEntryLink.getClassPK());
+			_layout.getPlid(), persistedFragmentEntryLink.getPlid());
 		Assert.assertEquals(
 			fragmentEntry.getCss(), persistedFragmentEntryLink.getCss());
 		Assert.assertEquals(
@@ -164,10 +160,8 @@ public class AddFragmentEntryLinkMVCActionCommandTest {
 		FragmentEntry fragmentEntry = _getFragmentEntry(_group.getGroupId());
 
 		List<FragmentEntryLink> originalFragmentEntryLinks =
-			_fragmentEntryLinkLocalService.getFragmentEntryLinks(
-				_group.getGroupId(),
-				PortalUtil.getClassNameId(Layout.class.getName()),
-				_layout.getPlid());
+			_fragmentEntryLinkLocalService.getFragmentEntryLinksByPlid(
+				_group.getGroupId(), _layout.getPlid());
 
 		MockLiferayPortletActionRequest actionRequest =
 			_getMockLiferayPortletActionRequest(_group.getGroupId());
@@ -180,10 +174,8 @@ public class AddFragmentEntryLinkMVCActionCommandTest {
 			new Class<?>[] {ActionRequest.class}, actionRequest);
 
 		List<FragmentEntryLink> actualFragmentEntryLinks =
-			_fragmentEntryLinkLocalService.getFragmentEntryLinks(
-				_group.getGroupId(),
-				PortalUtil.getClassNameId(Layout.class.getName()),
-				_layout.getPlid());
+			_fragmentEntryLinkLocalService.getFragmentEntryLinksByPlid(
+				_group.getGroupId(), _layout.getPlid());
 
 		Assert.assertEquals(
 			actualFragmentEntryLinks.toString(),

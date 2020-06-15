@@ -235,6 +235,10 @@ public class MasterLayoutActionDropdownItemsProvider {
 	private UnsafeConsumer<DropdownItem, Exception>
 		_getDiscardDraftActionUnsafeConsumer() {
 
+		if (_draftLayout == null) {
+			return null;
+		}
+
 		PortletURL discardDraftURL = PortletURLFactoryUtil.create(
 			_httpServletRequest, LayoutAdminPortletKeys.GROUP_PAGES,
 			PortletRequest.ACTION_PHASE);
@@ -271,15 +275,13 @@ public class MasterLayoutActionDropdownItemsProvider {
 	private UnsafeConsumer<DropdownItem, Exception>
 		_getEditMasterLayoutActionUnsafeConsumer() {
 
-		Layout layout = LayoutLocalServiceUtil.fetchLayout(
-			_layoutPageTemplateEntry.getPlid());
-
-		Layout draftLayout = LayoutLocalServiceUtil.fetchLayout(
-			PortalUtil.getClassNameId(Layout.class), layout.getPlid());
+		if (_draftLayout == null) {
+			return null;
+		}
 
 		return dropdownItem -> {
 			String layoutFullURL = PortalUtil.getLayoutFullURL(
-				draftLayout, _themeDisplay);
+				_draftLayout, _themeDisplay);
 
 			layoutFullURL = HttpUtil.setParameter(
 				layoutFullURL, "p_l_back_url", _themeDisplay.getURLCurrent());

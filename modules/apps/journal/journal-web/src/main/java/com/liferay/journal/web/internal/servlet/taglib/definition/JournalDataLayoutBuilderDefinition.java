@@ -40,7 +40,7 @@ public class JournalDataLayoutBuilderDefinition
 
 	@Override
 	public boolean allowRules() {
-		return true;
+		return false;
 	}
 
 	@Override

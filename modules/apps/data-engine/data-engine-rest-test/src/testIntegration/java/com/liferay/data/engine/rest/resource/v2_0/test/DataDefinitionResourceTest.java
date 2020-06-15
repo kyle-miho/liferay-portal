@@ -52,6 +52,7 @@ public class DataDefinitionResourceTest
 	extends BaseDataDefinitionResourceTestCase {
 
 	@Override
+	@Test
 	public void testGetDataDefinitionDataDefinitionFieldFieldTypes()
 		throws Exception {
 
@@ -60,20 +61,6 @@ public class DataDefinitionResourceTest
 				getDataDefinitionDataDefinitionFieldFieldTypes();
 
 		Assert.assertTrue(Validator.isNotNull(fieldTypes));
-	}
-
-	@Override
-	public void testGetDataDefinitionDataDefinitionFieldLinks()
-		throws Exception {
-
-		DataDefinition postDataDefinition =
-			testGetDataDefinition_addDataDefinition();
-
-		String fieldLinks =
-			dataDefinitionResource.getDataDefinitionDataDefinitionFieldLinks(
-				postDataDefinition.getId(), "");
-
-		Assert.assertTrue(Validator.isNotNull(fieldLinks));
 	}
 
 	@Override
@@ -181,6 +168,7 @@ public class DataDefinitionResourceTest
 	}
 
 	@Override
+	@Test
 	public void testGraphQLGetSiteDataDefinitionByContentTypeByDataDefinitionKeyNotFound()
 		throws Exception {
 

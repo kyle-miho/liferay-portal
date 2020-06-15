@@ -30,6 +30,16 @@ public class InfoField implements InfoFieldSetEntry {
 
 	public InfoField(
 		InfoFieldType infoFieldType,
+		InfoLocalizedValue<String> labelInfoLocalizedValue, boolean localizable,
+		String name) {
+
+		this(infoFieldType, labelInfoLocalizedValue, name);
+
+		_localizable = localizable;
+	}
+
+	public InfoField(
+		InfoFieldType infoFieldType,
 		InfoLocalizedValue<String> labelInfoLocalizedValue, String name) {
 
 		_infoFieldType = infoFieldType;
@@ -38,16 +48,16 @@ public class InfoField implements InfoFieldSetEntry {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
+	public boolean equals(Object object) {
+		if (this == object) {
 			return true;
 		}
 
-		if (!(obj instanceof InfoField)) {
+		if (!(object instanceof InfoField)) {
 			return false;
 		}
 
-		InfoField infoDisplayField = (InfoField)obj;
+		InfoField infoDisplayField = (InfoField)object;
 
 		if (Objects.equals(_infoFieldType, infoDisplayField._infoFieldType) &&
 			Objects.equals(
@@ -89,6 +99,10 @@ public class InfoField implements InfoFieldSetEntry {
 		return HashUtil.hash(hash, _name);
 	}
 
+	public boolean isLocalizable() {
+		return _localizable;
+	}
+
 	@Override
 	public String toString() {
 		StringBundler sb = new StringBundler(5);
@@ -104,6 +118,7 @@ public class InfoField implements InfoFieldSetEntry {
 
 	private final InfoFieldType _infoFieldType;
 	private final InfoLocalizedValue<String> _labelInfoLocalizedValue;
+	private boolean _localizable;
 	private final String _name;
 
 }

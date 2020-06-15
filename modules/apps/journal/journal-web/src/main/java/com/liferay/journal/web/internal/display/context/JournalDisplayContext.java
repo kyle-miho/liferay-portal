@@ -49,6 +49,7 @@ import com.liferay.journal.web.internal.security.permission.resource.JournalArti
 import com.liferay.journal.web.internal.security.permission.resource.JournalFolderPermission;
 import com.liferay.journal.web.internal.servlet.taglib.util.JournalArticleActionDropdownItemsProvider;
 import com.liferay.journal.web.internal.servlet.taglib.util.JournalFolderActionDropdownItems;
+import com.liferay.journal.web.internal.util.ExportTranslationUtil;
 import com.liferay.journal.web.internal.util.JournalArticleTranslation;
 import com.liferay.journal.web.internal.util.JournalArticleTranslationRowChecker;
 import com.liferay.journal.web.internal.util.JournalPortletUtil;
@@ -112,6 +113,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import javax.portlet.PortletURL;
+import javax.portlet.ResourceURL;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -357,6 +359,13 @@ public class JournalDisplayContext {
 			availableActions.add("moveEntries");
 		}
 
+		if (JournalArticlePermission.contains(
+				_themeDisplay.getPermissionChecker(), article,
+				ActionKeys.VIEW)) {
+
+			availableActions.add("exportTranslation");
+		}
+
 		return com.liferay.petra.string.StringUtil.merge(
 			availableActions, StringPool.COMMA);
 	}
@@ -528,6 +537,41 @@ public class JournalDisplayContext {
 
 	public String[] getDisplayViews() {
 		return _journalWebConfiguration.displayViews();
+	}
+
+	public Map<String, Object> getExportTranslationData() {
+		ResourceURL exportTranslationURL =
+			_liferayPortletResponse.createResourceURL();
+
+		exportTranslationURL.setResourceID("/journal/export_translation");
+
+		ResourceURL getExportTranslationAvailableLocalesURL =
+			_liferayPortletResponse.createResourceURL();
+
+		getExportTranslationAvailableLocalesURL.setResourceID(
+			"/journal/get_export_translation_available_locales");
+
+		return HashMapBuilder.<String, Object>put(
+			"context",
+			Collections.singletonMap(
+				"namespace", _liferayPortletResponse.getNamespace())
+		).put(
+			"props",
+			HashMapBuilder.<String, Object>put(
+				"availableTargetLocales",
+				ExportTranslationUtil.getLocalesJSONJArray(
+					_themeDisplay.getLocale(),
+					LanguageUtil.getAvailableLocales(
+						_themeDisplay.getSiteGroupId()))
+			).put(
+				"exportTranslationURL", exportTranslationURL.toString()
+			).put(
+				"getExportTranslationAvailableLocalesURL",
+				getExportTranslationAvailableLocalesURL.toString()
+			).put(
+				"pathModule", PortalUtil.getPathModule()
+			).build()
+		).build();
 	}
 
 	public JournalFolder getFolder() {

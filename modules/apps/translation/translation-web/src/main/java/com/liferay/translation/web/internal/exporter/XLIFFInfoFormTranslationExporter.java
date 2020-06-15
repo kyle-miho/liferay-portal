@@ -20,6 +20,7 @@ import com.liferay.info.field.InfoFormValues;
 import com.liferay.info.item.InfoItemClassPKReference;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.xml.Document;
 import com.liferay.portal.kernel.xml.Element;
 import com.liferay.portal.kernel.xml.SAXReaderUtil;
@@ -29,11 +30,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Locale;
-import java.util.Set;
 
 import org.osgi.service.component.annotations.Component;
 
@@ -55,15 +53,14 @@ public class XLIFFInfoFormTranslationExporter<T>
 
 		Document document = SAXReaderUtil.createDocument();
 
-		Element xliffElement = document.addElement("xliff");
+		Element xliffElement = document.addElement(
+			"xliff", "urn:oasis:names:tc:xliff:document:2.0");
 
 		xliffElement.addAttribute(
-			"srcLang", LocaleUtil.toLanguageId(sourceLocale));
+			"srcLang", LocaleUtil.toBCP47LanguageId(sourceLocale));
 		xliffElement.addAttribute(
-			"trgLang", LocaleUtil.toLanguageId(targetLocale));
+			"trgLang", LocaleUtil.toBCP47LanguageId(targetLocale));
 		xliffElement.addAttribute("version", "2.0");
-		xliffElement.addAttribute(
-			"xmlns", "urn:oasis:names:tc:xliff:document:2.0");
 
 		Element fileElement = xliffElement.addElement("file");
 
@@ -81,7 +78,13 @@ public class XLIFFInfoFormTranslationExporter<T>
 		for (InfoFieldValue<Object> infoFieldValue : infoFieldValues) {
 			InfoField infoField = infoFieldValue.getInfoField();
 
-			if (_blacklistedFieldNames.contains(infoField.getName())) {
+			if (!infoField.isLocalizable()) {
+				continue;
+			}
+
+			Object sourceValue = infoFieldValue.getValue(sourceLocale);
+
+			if (Validator.isNull(sourceValue)) {
 				continue;
 			}
 
@@ -93,13 +96,12 @@ public class XLIFFInfoFormTranslationExporter<T>
 
 			Element sourceElement = segmentElement.addElement("source");
 
-			sourceElement.addCDATA(
-				(String)infoFieldValue.getValue(sourceLocale));
+			sourceElement.addCDATA(_getStringValue(sourceValue));
 
 			Element targetElement = segmentElement.addElement("target");
 
 			targetElement.addCDATA(
-				(String)infoFieldValue.getValue(targetLocale));
+				_getStringValue(infoFieldValue.getValue(targetLocale)));
 		}
 
 		String formattedString = document.formattedString();
@@ -107,9 +109,12 @@ public class XLIFFInfoFormTranslationExporter<T>
 		return new ByteArrayInputStream(formattedString.getBytes());
 	}
 
-	private static final Set<String> _blacklistedFieldNames = new HashSet<>(
-		Arrays.asList(
-			"authorName", "lastEditorName", "publishDate", "categories",
-			"tagNames"));
+	private String _getStringValue(Object value) {
+		if (value == null) {
+			return null;
+		}
+
+		return value.toString();
+	}
 
 }

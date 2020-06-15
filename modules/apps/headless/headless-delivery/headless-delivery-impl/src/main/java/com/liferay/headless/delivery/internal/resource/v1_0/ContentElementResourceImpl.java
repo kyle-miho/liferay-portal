@@ -30,6 +30,7 @@ import com.liferay.portal.kernel.search.Sort;
 import com.liferay.portal.kernel.search.filter.BooleanFilter;
 import com.liferay.portal.kernel.search.filter.Filter;
 import com.liferay.portal.kernel.search.generic.BooleanQueryImpl;
+import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.odata.entity.EntityModel;
 import com.liferay.portal.vulcan.dto.converter.DTOConverter;
 import com.liferay.portal.vulcan.dto.converter.DTOConverterRegistry;
@@ -37,6 +38,7 @@ import com.liferay.portal.vulcan.dto.converter.DefaultDTOConverterContext;
 import com.liferay.portal.vulcan.pagination.Page;
 import com.liferay.portal.vulcan.pagination.Pagination;
 import com.liferay.portal.vulcan.util.LocalizedMapUtil;
+import com.liferay.portlet.asset.util.AssetSearcher;
 
 import java.util.HashMap;
 
@@ -71,19 +73,19 @@ public class ContentElementResourceImpl extends BaseContentElementResourceImpl {
 		SearchContext searchContext = _getAssetSearchContext(
 			filter, search, siteId, sorts, pagination);
 
-		AssetEntryQuery assetEntryQuery = new AssetEntryQuery();
+		AssetSearcher assetSearcher =
+			(AssetSearcher)AssetSearcher.getInstance();
+
+		assetSearcher.setAssetEntryQuery(new AssetEntryQuery());
 
 		return Page.of(
 			new HashMap<>(),
 			transform(
 				_assetHelper.getAssetEntries(
-					_assetHelper.search(
-						searchContext, assetEntryQuery,
-						pagination.getStartPosition(),
-						pagination.getEndPosition())),
+					assetSearcher.search(searchContext)),
 				this::_toContentElement),
 			pagination,
-			_assetHelper.searchCount(searchContext, assetEntryQuery));
+			_assetHelper.searchCount(searchContext, new AssetEntryQuery()));
 	}
 
 	private SearchContext _getAssetSearchContext(
@@ -98,6 +100,9 @@ public class ContentElementResourceImpl extends BaseContentElementResourceImpl {
 					BooleanFilter booleanFilter = new BooleanFilter();
 
 					booleanFilter.add(filter, BooleanClauseOccur.MUST);
+					booleanFilter.addRequiredTerm(
+						Field.STATUS, WorkflowConstants.STATUS_APPROVED);
+					booleanFilter.addRequiredTerm("head", true);
 
 					setPreBooleanFilter(booleanFilter);
 				}
@@ -138,7 +143,7 @@ public class ContentElementResourceImpl extends BaseContentElementResourceImpl {
 	}
 
 	private ContentElement _toContentElement(AssetEntry assetEntry) {
-		DTOConverter dtoConverter = _dtoConverterRegistry.getDTOConverter(
+		DTOConverter<?, ?> dtoConverter = _dtoConverterRegistry.getDTOConverter(
 			assetEntry.getClassName());
 
 		return new ContentElement() {

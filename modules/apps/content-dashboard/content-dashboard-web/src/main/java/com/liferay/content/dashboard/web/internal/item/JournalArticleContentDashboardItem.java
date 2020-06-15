@@ -14,12 +14,24 @@
 
 package com.liferay.content.dashboard.web.internal.item;
 
+import com.liferay.asset.display.page.portlet.AssetDisplayPageFriendlyURLProvider;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.journal.model.JournalArticle;
+import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.language.Language;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 /**
  * @author Cristina González
@@ -27,8 +39,14 @@ import java.util.Locale;
 public class JournalArticleContentDashboardItem
 	implements ContentDashboardItem<JournalArticle> {
 
-	public JournalArticleContentDashboardItem(JournalArticle journalArticle) {
+	public JournalArticleContentDashboardItem(
+		AssetDisplayPageFriendlyURLProvider assetDisplayPageFriendlyURLProvider,
+		JournalArticle journalArticle, Language language) {
+
+		_assetDisplayPageFriendlyURLProvider =
+			assetDisplayPageFriendlyURLProvider;
 		_journalArticle = journalArticle;
+		_language = language;
 	}
 
 	@Override
@@ -47,13 +65,32 @@ public class JournalArticleContentDashboardItem
 	}
 
 	@Override
-	public String getStatusLabel(Locale locale) {
-		return WorkflowConstants.getStatusLabel(_journalArticle.getStatus());
-	}
+	public List<Status> getStatuses(Locale locale) {
+		List<Status> statuses = new ArrayList<>();
 
-	@Override
-	public String getStatusStyle() {
-		return WorkflowConstants.getStatusStyle(_journalArticle.getStatus());
+		statuses.add(
+			new Status(
+				_language.get(
+					locale,
+					WorkflowConstants.getStatusLabel(
+						_journalArticle.getStatus())),
+				WorkflowConstants.getStatusStyle(_journalArticle.getStatus())));
+
+		if (_journalArticle.hasApprovedVersion() &&
+			!_journalArticle.isApproved()) {
+
+			statuses.add(
+				0,
+				new Status(
+					_language.get(
+						locale,
+						WorkflowConstants.getStatusLabel(
+							WorkflowConstants.STATUS_APPROVED)),
+					WorkflowConstants.getStatusStyle(
+						WorkflowConstants.STATUS_APPROVED)));
+		}
+
+		return Collections.unmodifiableList(statuses);
 	}
 
 	@Override
@@ -78,6 +115,53 @@ public class JournalArticleContentDashboardItem
 		return _journalArticle.getUserName();
 	}
 
+	@Override
+	public String getViewURL(ThemeDisplay themeDisplay) {
+		try {
+			ThemeDisplay clonedThemeDisplay =
+				(ThemeDisplay)themeDisplay.clone();
+
+			clonedThemeDisplay.setScopeGroupId(_journalArticle.getGroupId());
+
+			return Optional.ofNullable(
+				_assetDisplayPageFriendlyURLProvider.getFriendlyURL(
+					JournalArticle.class.getName(),
+					_journalArticle.getResourcePrimKey(), clonedThemeDisplay)
+			).orElse(
+				StringPool.BLANK
+			);
+		}
+		catch (CloneNotSupportedException cloneNotSupportedException) {
+			_log.error(cloneNotSupportedException, cloneNotSupportedException);
+
+			return StringPool.BLANK;
+		}
+		catch (PortalException portalException) {
+			_log.error(portalException, portalException);
+
+			return StringPool.BLANK;
+		}
+	}
+
+	@Override
+	public boolean isViewURLEnabled(ThemeDisplay themeDisplay) {
+		if (!_journalArticle.hasApprovedVersion()) {
+			return false;
+		}
+
+		if (Validator.isNull(getViewURL(themeDisplay))) {
+			return false;
+		}
+
+		return true;
+	}
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		JournalArticleContentDashboardItem.class);
+
+	private final AssetDisplayPageFriendlyURLProvider
+		_assetDisplayPageFriendlyURLProvider;
 	private final JournalArticle _journalArticle;
+	private final Language _language;
 
 }

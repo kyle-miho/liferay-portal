@@ -12,9 +12,10 @@
  * details.
  */
 
+import {PropTypes} from 'prop-types';
 import React from 'react';
 
-import MappingField from './MappingField';
+import MappingField from './components/MappingField';
 
 function SeoMapping({
 	description,
@@ -23,14 +24,12 @@ function SeoMapping({
 	selectedSource,
 	title,
 }) {
-	const ns = (obj) => Liferay.Util.ns(portletNamespace, obj);
-
 	return (
 		<>
 			<MappingField
 				fields={fields}
 				label={Liferay.Language.get('html-title')}
-				name={ns('title')}
+				name={`${portletNamespace}title`}
 				selectedField={
 					fields.find(({key}) => key === title) || fields[0]
 				}
@@ -40,7 +39,7 @@ function SeoMapping({
 			<MappingField
 				fields={fields}
 				label={Liferay.Language.get('description')}
-				name={ns('description')}
+				name={`${portletNamespace}description`}
 				selectedField={
 					fields.find(({key}) => key === description) || fields[0]
 				}
@@ -49,6 +48,17 @@ function SeoMapping({
 		</>
 	);
 }
+
+SeoMapping.propTypes = {
+	description: PropTypes.string.isRequired,
+	fields: PropTypes.arrayOf(
+		PropTypes.shape({
+			key: PropTypes.string,
+			label: PropTypes.string,
+		})
+	).isRequired,
+	title: PropTypes.string.isRequired,
+};
 
 export default function (props) {
 	return (

@@ -54,10 +54,6 @@ public class LocalizedValueUtil {
 		return localizedValues.get(LocaleUtil.toLanguageId(locale));
 	}
 
-	/**
-	 * @deprecated As of Athanasius (7.3.x), with no direct replacement
-	 */
-	@Deprecated
 	public static <V> JSONObject toJSONObject(Map<String, V> map) {
 		JSONObject jsonObject = JSONFactoryUtil.createJSONObject();
 

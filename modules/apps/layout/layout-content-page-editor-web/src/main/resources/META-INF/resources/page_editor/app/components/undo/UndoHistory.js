@@ -23,13 +23,13 @@ import {config} from '../../config/index';
 import {useDispatch, useSelector} from '../../store/index';
 import multipleUndo from '../../thunks/multipleUndo';
 import getSegmentsExperienceName from '../../utils/getSegmentsExperienceName';
-import {getActionLabel} from './getActionLabel';
+import getActionLabel from './getActionLabel';
 
 export default function UndoHistory() {
 	const dispatch = useDispatch();
 	const store = useSelector((state) => state);
-	const redoHistory = useSelector((state) => state.redoHistory);
-	const undoHistory = useSelector((state) => state.undoHistory);
+	const redoHistory = useSelector((state) => state.redoHistory || []);
+	const undoHistory = useSelector((state) => state.undoHistory || []);
 
 	const [active, setActive] = useState(false);
 
@@ -44,7 +44,7 @@ export default function UndoHistory() {
 					<ClayButtonWithIcon
 						aria-label={Liferay.Language.get('undo-history')}
 						className="btn-monospaced"
-						disabled={!undoHistory}
+						disabled={!undoHistory.length && !redoHistory.length}
 						displayType="secondary"
 						small
 						symbol="time"
@@ -57,6 +57,7 @@ export default function UndoHistory() {
 					<History actions={undoHistory} type={UNDO_TYPES.undo} />
 					<ClayDropDownDivider />
 					<ClayDropDown.Item
+						disabled={!undoHistory.length}
 						onClick={(event) => {
 							event.preventDefault();
 

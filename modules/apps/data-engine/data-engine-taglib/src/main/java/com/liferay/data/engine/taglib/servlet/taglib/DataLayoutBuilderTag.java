@@ -16,6 +16,7 @@ package com.liferay.data.engine.taglib.servlet.taglib;
 
 import com.liferay.data.engine.taglib.servlet.taglib.base.BaseDataLayoutBuilderTag;
 import com.liferay.data.engine.taglib.servlet.taglib.util.DataLayoutTaglibUtil;
+import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -55,7 +56,9 @@ public class DataLayoutBuilderTag extends BaseDataLayoutBuilderTag {
 					"data-engine-taglib/data_layout_builder/js" +
 						"/DataLayoutBuilder.es"));
 
-			if (Validator.isNull(getDataLayoutId())) {
+			if (Validator.isNotNull(getDataDefinitionId()) &&
+				Validator.isNull(getDataLayoutId())) {
+
 				setDataLayoutId(
 					DataLayoutTaglibUtil.getDefaultDataLayoutId(
 						getDataDefinitionId(), httpServletRequest));
@@ -142,7 +145,14 @@ public class DataLayoutBuilderTag extends BaseDataLayoutBuilderTag {
 				).put(
 					"sidebarPanelId", "fields"
 				).build()
-			).put(
+			).build();
+
+		JSONObject dataLayoutConfigJSONObject =
+			DataLayoutTaglibUtil.getDataLayoutConfigJSONObject(
+				getContentType(), httpServletRequest.getLocale());
+
+		if (dataLayoutConfigJSONObject.getBoolean("allowRules")) {
+			sidebarPanels.put(
 				"rules",
 				HashMapBuilder.<String, Object>put(
 					"icon", "rules"
@@ -157,8 +167,8 @@ public class DataLayoutBuilderTag extends BaseDataLayoutBuilderTag {
 							"/rules-sidebar/index.es")
 				).put(
 					"sidebarPanelId", "rules"
-				).build()
-			).build();
+				).build());
+		}
 
 		List<Map<String, Object>> additionalPanels = getAdditionalPanels();
 

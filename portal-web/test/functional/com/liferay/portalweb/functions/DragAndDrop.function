@@ -87,41 +87,48 @@ definition {
 		selenium.assertLiferayErrors();
 	}
 
-	function javaScriptDragAndDropFragmentIE {
+	function javaScriptDragAndDropObjectToBottomOfNestedObject {
 		WaitForSPARefresh();
 
 		var javaScript = '''
 Simulate = {
-	dragAndDrop: function (source, target) {
-		const dispatchEvent = function (type, element) {
+	dragAndDrop: async function(source, target, offset = 44) {
+		const dataTransfer = new DataTransfer();
+
+		const dispatchEvent = async(type, element) => {
 			const rect = element.getBoundingClientRect();
-			const event = document.createEvent('customEvent');
-			event.initEvent(type, true, true);
-			event.relatedTarget = element;
-			(event.clientX = rect.left + rect.width / 2),
-				(event.clientY = rect.top + rect.height / 2),
-				element.dispatchEvent(event);
-			return Promise.resolve();
+
+			const event = new DragEvent(
+				type,{
+					bubbles: true,
+					clientX: rect.left + (rect.width / 2),
+					clientY: rect.top + rect.height - offset,
+					dataTransfer: dataTransfer,
+					relatedTarget: element
+				});
+
+			element.dispatchEvent(event);
 		};
-		dispatchEvent('dragstart', source)
-			.then(function () {
-				dispatchEvent('dragover', target);
-			})
-			.then(function () {
-				dispatchEvent('drop', target);
-			})
-			.then(function () {
-				dispatchEvent('dragend', source);
-			});
+
+		await dispatchEvent('dragstart', source);
+
+		await dispatchEvent('dragover', target);
+
+		await dispatchEvent('drop', target);
+
+		await dispatchEvent('dragend', source);
 	}
 };
-Simulate.dragAndDrop(
-	document.querySelectorAll('.page-editor__fragments-widgets__tab-item')[${fragmentOrder}],
-	document.querySelector('.page-editor__root')
-);
+
+function getWebElement(locator) {
+	return document.evaluate(locator, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+}
+
+Simulate.dragAndDrop(getWebElement(arguments[0]), getWebElement(arguments[1]));
+
 		''';
 
-		selenium.executeJavaScript("${javaScript}");
+		selenium.executeJavaScript("${javaScript}", "${locator1}", "${locator2}");
 
 		selenium.assertJavaScriptErrors();
 
@@ -190,6 +197,47 @@ Simulate.dragAndDrop(getWebElement(arguments[0]), getWebElement(arguments[1]));
 		selenium.mouseOver("${locator2}");
 
 		selenium.javaScriptDragAndDropToObject("${locator1}", "${locator2}");
+
+		selenium.assertJavaScriptErrors();
+
+		selenium.assertLiferayErrors();
+	}
+
+	function javaScriptDragAndDropToObjectPrimitive {
+		WaitForSPARefresh();
+
+		var javaScript = '''
+Simulate = {
+	dragAndDrop: function (source, target) {
+		const dispatchEvent = function (type, element) {
+			const rect = element.getBoundingClientRect();
+			const event = document.createEvent('customEvent');
+			event.initEvent(type, true, true);
+			event.relatedTarget = element;
+			(event.clientX = rect.left + rect.width / 2),
+				(event.clientY = rect.top + rect.height / 2),
+				element.dispatchEvent(event);
+			return Promise.resolve();
+		};
+		dispatchEvent('dragstart', source)
+			.then(function () {
+				dispatchEvent('dragover', target);
+			})
+			.then(function () {
+				dispatchEvent('drop', target);
+			})
+			.then(function () {
+				dispatchEvent('dragend', source);
+			});
+	}
+};
+Simulate.dragAndDrop(
+	document.querySelectorAll('.page-editor__fragments-widgets__tab-item')[${fragmentOrder}],
+	document.querySelector('.page-editor__root')
+);
+		''';
+
+		selenium.executeJavaScript("${javaScript}");
 
 		selenium.assertJavaScriptErrors();
 

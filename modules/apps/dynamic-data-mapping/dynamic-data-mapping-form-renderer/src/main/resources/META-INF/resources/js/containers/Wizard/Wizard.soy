@@ -44,6 +44,10 @@
 		{if $pageIndex == $activePage}
 			{sp}active
 		{/if}
+
+		{if $pageIndex < $activePage}
+			{sp}complete
+		{/if}
 	{/let}
 
 	{let $itemAttributes kind="attributes"}

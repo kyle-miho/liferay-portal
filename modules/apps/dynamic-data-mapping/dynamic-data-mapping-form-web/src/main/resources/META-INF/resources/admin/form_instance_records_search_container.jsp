@@ -56,11 +56,9 @@ PortletURL portletURL = ddmFormViewFormInstanceRecordsDisplayContext.getPortletU
 			>
 
 				<%
-				DDMFormValues ddmFormValues = ddmFormViewFormInstanceRecordsDisplayContext.getDDMFormValues(formInstanceRecord);
+				Map<String, List<DDMFormFieldValue>> ddmFormFieldValuesMap = ddmFormViewFormInstanceRecordsDisplayContext.getDDMFormFieldValues(formInstanceRecord);
 
-				Map<String, List<DDMFormFieldValue>> ddmFormFieldValuesMap = ddmFormValues.getDDMFormFieldValuesMap();
-
-				DDMForm ddmForm = ddmFormValues.getDDMForm();
+				DDMForm ddmForm = ddmFormViewFormInstanceRecordsDisplayContext.getDDMForm(formInstanceRecord);
 
 				Map<String, DDMFormField> ddmFormFieldsMap = ddmForm.getDDMFormFieldsMap(true);
 

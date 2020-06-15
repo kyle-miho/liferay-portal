@@ -40,7 +40,7 @@
 	<aui:form action="<%= String.valueOf(ddmFormBrowserDisplayContext.getPortletURL()) %>" method="post" name="selectDDMFormFm">
 		<liferay-ui:search-container
 			id="<%= ddmFormBrowserDisplayContext.getSearchContainerId() %>"
-			searchContainer="<%= ddmFormBrowserDisplayContext.getFormInstanceSearch() %>"
+			searchContainer="<%= ddmFormBrowserDisplayContext.getDDMFormInstanceSearch() %>"
 		>
 			<liferay-ui:search-container-row
 				className="com.liferay.dynamic.data.mapping.model.DDMFormInstance"

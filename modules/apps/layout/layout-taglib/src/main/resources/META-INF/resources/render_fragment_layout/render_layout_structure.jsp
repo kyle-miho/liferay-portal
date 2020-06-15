@@ -198,6 +198,12 @@ for (String childrenItemId : childrenItemIds) {
 			defaultFragmentRendererContext.setPreviewClassPK(previewClassPK);
 			defaultFragmentRendererContext.setPreviewType(previewType);
 			defaultFragmentRendererContext.setSegmentsExperienceIds(segmentsExperienceIds);
+
+			LayoutStructureItem parentLayoutStructureItem = layoutStructure.getLayoutStructureItem(fragmentLayoutStructureItem.getParentItemId());
+
+			if (parentLayoutStructureItem instanceof CollectionItemLayoutStructureItem) {
+				defaultFragmentRendererContext.setUseCachedContent(false);
+			}
 			%>
 
 			<%= fragmentRendererController.render(defaultFragmentRendererContext, request, response) %>

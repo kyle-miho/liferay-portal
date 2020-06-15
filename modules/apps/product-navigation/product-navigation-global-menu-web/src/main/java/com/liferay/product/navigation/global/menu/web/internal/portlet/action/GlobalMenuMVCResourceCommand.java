@@ -27,7 +27,6 @@ import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
-import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Organization;
@@ -41,7 +40,6 @@ import com.liferay.portal.kernel.service.PortletLocalService;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.Portal;
-import com.liferay.portal.kernel.util.ResourceBundleUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.product.navigation.global.menu.web.internal.constants.ProductNavigationGlobalMenuPortletKeys;
 import com.liferay.site.util.GroupSearchProvider;
@@ -50,7 +48,6 @@ import com.liferay.site.util.RecentGroupManager;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ResourceBundle;
 
 import javax.portlet.PortletURL;
 import javax.portlet.ResourceRequest;
@@ -239,22 +236,18 @@ public class GlobalMenuMVCResourceCommand extends BaseMVCResourceCommand {
 	}
 
 	private JSONArray _getSitesJSONArray(
-		List<Group> groups, ResourceRequest resourceRequest,
-		ThemeDisplay themeDisplay) {
+			List<Group> groups, ResourceRequest resourceRequest,
+			ThemeDisplay themeDisplay)
+		throws Exception {
 
 		JSONArray recentSitesJSONArray = JSONFactoryUtil.createJSONArray();
-
-		ResourceBundle resourceBundle = ResourceBundleUtil.getBundle(
-			themeDisplay.getLocale(), getClass());
 
 		for (Group group : groups) {
 			recentSitesJSONArray.put(
 				JSONUtil.put(
 					"key", group.getGroupKey()
 				).put(
-					"label",
-					LanguageUtil.get(
-						resourceBundle, group.getName(themeDisplay.getLocale()))
+					"label", group.getDescriptiveName(themeDisplay.getLocale())
 				).put(
 					"logoURL", group.getLogoURL(themeDisplay, true)
 				).put(

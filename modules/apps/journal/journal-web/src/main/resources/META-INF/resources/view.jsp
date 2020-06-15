@@ -146,4 +146,11 @@ if (Validator.isNotNull(title)) {
 			</c:choose>
 		</aui:form>
 	</div>
+
+	<div>
+		<react:component
+			data="<%= journalDisplayContext.getExportTranslationData() %>"
+			module="js/export_translation/ExportTranslation.es"
+		/>
+	</div>
 </clay:container-fluid>

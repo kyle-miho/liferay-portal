@@ -96,7 +96,10 @@ const Numeric = ({
 			onChange={(event) => {
 				const {value: newValue} = event.target;
 
-				if (newValue.substr(-1) === symbols.decimalSymbol) {
+				if (
+					dataType === 'integer' &&
+					newValue.substr(-1) === symbols.decimalSymbol
+				) {
 					return;
 				}
 

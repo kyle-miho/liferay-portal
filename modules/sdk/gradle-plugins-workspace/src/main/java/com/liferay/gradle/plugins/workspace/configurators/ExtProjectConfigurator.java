@@ -20,6 +20,7 @@ import com.liferay.gradle.plugins.workspace.WorkspaceExtension;
 import com.liferay.gradle.plugins.workspace.WorkspacePlugin;
 import com.liferay.gradle.plugins.workspace.internal.util.GradleUtil;
 import com.liferay.gradle.util.FileUtil;
+import com.liferay.gradle.util.Validator;
 
 import groovy.lang.Closure;
 
@@ -32,6 +33,7 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -58,6 +60,22 @@ public class ExtProjectConfigurator extends BaseProjectConfigurator {
 			WorkspacePlugin.PROPERTY_PREFIX + NAME +
 				".default.repository.enabled",
 			_DEFAULT_REPOSITORY_ENABLED);
+
+		String defaultRootDirNames = GradleUtil.getProperty(
+			settings, getDefaultRootDirPropertyName(), (String)null);
+
+		if (Validator.isNotNull(defaultRootDirNames)) {
+			_defaultRootDirs = new HashSet<>();
+
+			for (String dirName : defaultRootDirNames.split("\\s*,\\s*")) {
+				_defaultRootDirs.add(new File(settings.getRootDir(), dirName));
+			}
+		}
+		else {
+			File dir = new File(settings.getRootDir(), getDefaultRootDirName());
+
+			_defaultRootDirs = Collections.singleton(dir);
+		}
 	}
 
 	@Override
@@ -76,6 +94,11 @@ public class ExtProjectConfigurator extends BaseProjectConfigurator {
 		_configureRootTaskDistBundle(project, extPlugin);
 
 		configureLiferay(project, workspaceExtension);
+	}
+
+	@Override
+	public Iterable<File> getDefaultRootDirs() {
+		return _defaultRootDirs;
 	}
 
 	@Override
@@ -184,5 +207,6 @@ public class ExtProjectConfigurator extends BaseProjectConfigurator {
 	};
 
 	private final boolean _defaultRepositoryEnabled;
+	private final Set<File> _defaultRootDirs;
 
 }

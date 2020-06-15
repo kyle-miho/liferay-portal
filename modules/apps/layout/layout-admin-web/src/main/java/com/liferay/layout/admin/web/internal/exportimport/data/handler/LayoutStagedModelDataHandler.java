@@ -43,6 +43,7 @@ import com.liferay.fragment.service.FragmentEntryLinkLocalService;
 import com.liferay.friendly.url.model.FriendlyURLEntry;
 import com.liferay.friendly.url.service.FriendlyURLEntryLocalService;
 import com.liferay.layout.admin.web.internal.exportimport.data.handler.helper.LayoutPageTemplateStructureDataHandlerHelper;
+import com.liferay.layout.configuration.LayoutExportImportConfiguration;
 import com.liferay.layout.friendly.url.LayoutFriendlyURLEntryHelper;
 import com.liferay.layout.model.LayoutClassedModelUsage;
 import com.liferay.layout.page.template.model.LayoutPageTemplateStructure;
@@ -54,6 +55,7 @@ import com.liferay.petra.reflect.ReflectionUtil;
 import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
+import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.kernel.backgroundtask.BackgroundTaskThreadLocal;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.NoSuchLayoutException;
@@ -133,13 +135,17 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Máté Thurzó
  */
-@Component(immediate = true, service = StagedModelDataHandler.class)
+@Component(
+	configurationPid = "com.liferay.layout.configuration.LayoutExportImportConfiguration",
+	immediate = true, service = StagedModelDataHandler.class
+)
 public class LayoutStagedModelDataHandler
 	extends BaseStagedModelDataHandler<Layout> {
 
@@ -267,6 +273,12 @@ public class LayoutStagedModelDataHandler
 		return true;
 	}
 
+	@Activate
+	protected void activate(Map<String, Object> properties) {
+		_layoutExportImportConfiguration = ConfigurableUtil.createConfigurable(
+			LayoutExportImportConfiguration.class, properties);
+	}
+
 	protected String[] appendPortletIds(
 		String[] portletIds, String[] newPortletIds, String portletsMergeMode) {
 
@@ -342,7 +354,9 @@ public class LayoutStagedModelDataHandler
 			}
 		}
 
-		_exportDraftLayout(portletDataContext, layout, layoutElement);
+		if (_layoutExportImportConfiguration.exportDraftLayout()) {
+			_exportDraftLayout(portletDataContext, layout, layoutElement);
+		}
 
 		_exportMasterLayout(portletDataContext, layout, layoutElement);
 
@@ -354,18 +368,18 @@ public class LayoutStagedModelDataHandler
 			StagedModelDataHandlerUtil.exportReferenceStagedModel(
 				portletDataContext, layout, layoutFriendlyURL,
 				PortletDataContext.REFERENCE_TYPE_DEPENDENCY);
-		}
 
-		List<FriendlyURLEntry> friendlyURLEntries = _getFriendlyURLEntries(
-			layout);
+			List<FriendlyURLEntry> friendlyURLEntries = _getFriendlyURLEntries(
+				layoutFriendlyURL);
 
-		for (FriendlyURLEntry friendlyURLEntry : friendlyURLEntries) {
-			StagedModelDataHandlerUtil.exportStagedModel(
-				portletDataContext, friendlyURLEntry);
+			for (FriendlyURLEntry friendlyURLEntry : friendlyURLEntries) {
+				StagedModelDataHandlerUtil.exportStagedModel(
+					portletDataContext, friendlyURLEntry);
 
-			StagedModelDataHandlerUtil.exportReferenceStagedModel(
-				portletDataContext, layout, friendlyURLEntry,
-				PortletDataContext.REFERENCE_TYPE_DEPENDENCY);
+				StagedModelDataHandlerUtil.exportReferenceStagedModel(
+					portletDataContext, layout, friendlyURLEntry,
+					PortletDataContext.REFERENCE_TYPE_DEPENDENCY);
+			}
 		}
 
 		LayoutSEOEntry layoutSEOEntry =
@@ -903,8 +917,6 @@ public class LayoutStagedModelDataHandler
 		}
 
 		importAssets(portletDataContext, layout, importedLayout);
-
-		importFriendlyURLEntries(portletDataContext, layout, importedLayout);
 		importLayoutFriendlyURLs(portletDataContext, layout, importedLayout);
 
 		importLayoutPageTemplateStructures(
@@ -1410,8 +1422,7 @@ public class LayoutStagedModelDataHandler
 
 		_fragmentEntryLinkLocalService.
 			deleteLayoutPageTemplateEntryFragmentEntryLinks(
-				portletDataContext.getScopeGroupId(),
-				_portal.getClassNameId(Layout.class), importedLayout.getPlid());
+				portletDataContext.getScopeGroupId(), importedLayout.getPlid());
 
 		List<Element> fragmentEntryLinkElements =
 			portletDataContext.getReferenceDataElements(
@@ -1428,6 +1439,7 @@ public class LayoutStagedModelDataHandler
 			fragmentEntryLink.setClassNameId(
 				_portal.getClassNameId(Layout.class));
 			fragmentEntryLink.setClassPK(importedLayout.getPlid());
+			fragmentEntryLink.setPlid(importedLayout.getPlid());
 
 			StagedModelDataHandlerUtil.importStagedModel(
 				portletDataContext, fragmentEntryLink);
@@ -1525,6 +1537,8 @@ public class LayoutStagedModelDataHandler
 				portletDataContext, layoutFriendlyURL);
 		}
 
+		importFriendlyURLEntries(portletDataContext, layout, importedLayout);
+
 		deleteMissingLayoutFriendlyURLs(portletDataContext, importedLayout);
 	}
 
@@ -1618,9 +1632,8 @@ public class LayoutStagedModelDataHandler
 			ServiceContextThreadLocal.getServiceContext();
 
 		List<FragmentEntryLink> fragmentEntryLinks =
-			_fragmentEntryLinkLocalService.getFragmentEntryLinks(
-				layout.getGroupId(), _portal.getClassNameId(Layout.class),
-				layout.getPlid());
+			_fragmentEntryLinkLocalService.getFragmentEntryLinksByPlid(
+				layout.getGroupId(), layout.getPlid());
 
 		for (Element portletElement : portletsElement.elements()) {
 			String portletId = portletElement.attributeValue("portlet-id");
@@ -2294,9 +2307,8 @@ public class LayoutStagedModelDataHandler
 		}
 
 		List<FragmentEntryLink> fragmentEntryLinks =
-			_fragmentEntryLinkLocalService.getFragmentEntryLinks(
-				layout.getGroupId(), _portal.getClassNameId(Layout.class),
-				layout.getPlid());
+			_fragmentEntryLinkLocalService.getFragmentEntryLinksByPlid(
+				layout.getGroupId(), layout.getPlid());
 
 		for (FragmentEntryLink fragmentEntryLink : fragmentEntryLinks) {
 			StagedModelDataHandlerUtil.exportReferenceStagedModel(
@@ -2348,12 +2360,14 @@ public class LayoutStagedModelDataHandler
 			"master-layout-id", String.valueOf(masterLayout.getLayoutId()));
 	}
 
-	private List<FriendlyURLEntry> _getFriendlyURLEntries(Layout layout) {
+	private List<FriendlyURLEntry> _getFriendlyURLEntries(
+		LayoutFriendlyURL layoutFriendlyURL) {
+
 		return _friendlyURLEntryLocalService.getFriendlyURLEntries(
-			layout.getGroupId(),
+			layoutFriendlyURL.getGroupId(),
 			_layoutFriendlyURLEntryHelper.getClassNameId(
-				layout.isPrivateLayout()),
-			layout.getPlid());
+				layoutFriendlyURL.isPrivateLayout()),
+			layoutFriendlyURL.getPlid());
 	}
 
 	private String _getLayoutPrototypeUuid(
@@ -2430,6 +2444,9 @@ public class LayoutStagedModelDataHandler
 	@Reference
 	private LayoutClassedModelUsageLocalService
 		_layoutClassedModelUsageLocalService;
+
+	private volatile LayoutExportImportConfiguration
+		_layoutExportImportConfiguration;
 
 	@Reference
 	private LayoutFriendlyURLEntryHelper _layoutFriendlyURLEntryHelper;

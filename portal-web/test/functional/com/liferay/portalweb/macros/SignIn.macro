@@ -112,6 +112,8 @@ definition {
 
 		Button.clickSave();
 
+		Pause(locator1 = "3000");
+
 		WaitForElementPresent(locator1 = "//script[contains(@src,'ClayToast.js')]");
 
 		Alert.viewSuccessMessage();

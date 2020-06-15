@@ -30,6 +30,9 @@ import com.liferay.info.display.contributor.InfoDisplayContributorTracker;
 import com.liferay.info.display.contributor.InfoDisplayObjectProvider;
 import com.liferay.info.display.url.provider.InfoEditURLProvider;
 import com.liferay.info.display.url.provider.InfoEditURLProviderTracker;
+import com.liferay.info.field.InfoFieldValue;
+import com.liferay.info.item.provider.InfoItemFormProvider;
+import com.liferay.info.item.provider.InfoItemServiceTracker;
 import com.liferay.layout.page.template.model.LayoutPageTemplateEntry;
 import com.liferay.layout.page.template.service.LayoutPageTemplateEntryService;
 import com.liferay.petra.string.CharPool;
@@ -51,6 +54,7 @@ import com.liferay.portal.kernel.util.WebKeys;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Function;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -103,23 +107,29 @@ public abstract class BaseAssetDisplayPageFriendlyURLResolver
 			_getVersionClassPK(friendlyURL));
 
 		Locale locale = portal.getLocale(httpServletRequest);
+		Layout layout = _getInfoDisplayObjectProviderLayout(
+			infoDisplayObjectProvider);
 
 		portal.setPageDescription(
 			HtmlUtil.unescape(
 				HtmlUtil.stripHtml(
-					infoDisplayObjectProvider.getDescription(locale))),
+					_getMappedField(
+						infoDisplayObjectProvider, locale,
+						layout::getDescription,
+						infoDisplayObjectProvider::getDescription))),
 			httpServletRequest);
+
 		portal.setPageKeywords(
 			infoDisplayObjectProvider.getKeywords(locale), httpServletRequest);
 		portal.setPageTitle(
-			infoDisplayObjectProvider.getTitle(locale), httpServletRequest);
+			_getMappedField(
+				infoDisplayObjectProvider, locale, layout::getTitle,
+				infoDisplayObjectProvider::getTitle),
+			httpServletRequest);
 
 		AssetEntry assetEntry = _getAssetEntry(infoDisplayObjectProvider);
 
 		httpServletRequest.setAttribute(WebKeys.LAYOUT_ASSET_ENTRY, assetEntry);
-
-		Layout layout = _getInfoDisplayObjectProviderLayout(
-			infoDisplayObjectProvider);
 
 		return portal.getLayoutActualURL(layout, mainPath);
 	}
@@ -163,6 +173,9 @@ public abstract class BaseAssetDisplayPageFriendlyURLResolver
 
 	@Reference
 	protected InfoEditURLProviderTracker infoEditURLProviderTracker;
+
+	@Reference
+	protected InfoItemServiceTracker infoItemServiceTracker;
 
 	@Reference
 	protected LayoutLocalService layoutLocalService;
@@ -280,6 +293,31 @@ public abstract class BaseAssetDisplayPageFriendlyURLResolver
 		List<String> paths = StringUtil.split(friendlyURL, CharPool.SLASH);
 
 		return CharPool.SLASH + paths.get(0) + CharPool.SLASH;
+	}
+
+	private String _getMappedField(
+		InfoDisplayObjectProvider<?> infoDisplayObjectProvider, Locale locale,
+		Function<Locale, String> mappedFieldNameFunction,
+		Function<Locale, String> defaultValueFunction) {
+
+		if (infoDisplayObjectProvider != null) {
+			InfoItemFormProvider infoItemFormProvider =
+				infoItemServiceTracker.getInfoItemService(
+					InfoItemFormProvider.class,
+					portal.getClassName(
+						infoDisplayObjectProvider.getClassNameId()));
+
+			InfoFieldValue<Object> infoFieldValue =
+				infoItemFormProvider.getInfoFieldValue(
+					infoDisplayObjectProvider.getDisplayObject(),
+					mappedFieldNameFunction.apply(locale));
+
+			if (infoFieldValue != null) {
+				return String.valueOf(infoFieldValue.getValue(locale));
+			}
+		}
+
+		return defaultValueFunction.apply(locale);
 	}
 
 	private String _getUrlTitle(String friendlyURL) {

@@ -142,6 +142,9 @@ public class JournalArticleActionDropdownItemsProvider {
 			() -> hasViewPermission && hasUpdatePermission,
 			_getViewHistoryArticleActionUnsafeConsumer()
 		).add(
+			() -> hasViewPermission,
+			_getExportForTranslationActionUnsafeConsumer()
+		).add(
 			() -> hasViewPermission && (availableLanguageIds.length > 1),
 			_getDeleteArticleTranslationsActionUnsafeConsumer()
 		).add(
@@ -425,6 +428,18 @@ public class JournalArticleActionDropdownItemsProvider {
 			dropdownItem.putData("expireURL", expireURL.toString());
 			dropdownItem.setLabel(
 				LanguageUtil.get(_httpServletRequest, "expire"));
+		};
+	}
+
+	private UnsafeConsumer<DropdownItem, Exception>
+		_getExportForTranslationActionUnsafeConsumer() {
+
+		return dropdownItem -> {
+			dropdownItem.putData("action", "exportTranslation");
+			dropdownItem.putData("articleEntryId", _article.getArticleId());
+			dropdownItem.setLabel(
+				LanguageUtil.get(
+					_httpServletRequest, "export-for-translation"));
 		};
 	}
 

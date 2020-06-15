@@ -92,12 +92,25 @@ ContentDashboardAdminManagementToolbarDisplayContext contentDashboardAdminManage
 					/>
 
 					<liferay-ui:search-container-column-text
+						cssClass="text-nowrap"
 						name="status"
 					>
-						<clay:label
-							label="<%= StringUtil.toUpperCase(contentDashboardItem.getStatusLabel(locale)) %>"
-							style="<%= contentDashboardItem.getStatusStyle() %>"
-						/>
+
+						<%
+						List<ContentDashboardItem.Status> statuses = contentDashboardItem.getStatuses(locale);
+
+						for (ContentDashboardItem.Status status : statuses) {
+						%>
+
+							<clay:label
+								label="<%= StringUtil.toUpperCase(status.getLabel()) %>"
+								style="<%= status.getStyle() %>"
+							/>
+
+						<%
+						}
+						%>
+
 					</liferay-ui:search-container-column-text>
 
 					<liferay-ui:search-container-column-date
@@ -113,6 +126,11 @@ ContentDashboardAdminManagementToolbarDisplayContext contentDashboardAdminManage
 					<liferay-ui:search-container-column-date
 						name="expiration-date"
 						value="<%= contentDashboardItem.getExpirationDate() %>"
+					/>
+
+					<liferay-ui:search-container-column-jsp
+						cssClass="entry-action"
+						path="/content_dashboard_action.jsp"
 					/>
 				</liferay-ui:search-container-row>
 

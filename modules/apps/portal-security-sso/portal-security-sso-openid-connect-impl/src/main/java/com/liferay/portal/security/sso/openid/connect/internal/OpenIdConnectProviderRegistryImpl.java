@@ -42,6 +42,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.osgi.framework.Constants;
 import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedServiceFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 
 /**
@@ -83,7 +84,8 @@ public class OpenIdConnectProviderRegistryImpl
 
 		if (openIdConnectProvider == null) {
 			throw new OpenIdConnectServiceException.ProviderException(
-				"Unable to find an OpenId Connect provider with name " + name);
+				"Unable to find an OpenId Connect provider with name \"" +
+					name + "\"");
 		}
 
 		return openIdConnectProvider;
@@ -105,7 +107,9 @@ public class OpenIdConnectProviderRegistryImpl
 					_companyIdProviderNameOpenIdConnectProviders.get(companyId);
 
 		if (openIdConnectProviderMap == null) {
-			return null;
+			openIdConnectProviderMap =
+				_companyIdProviderNameOpenIdConnectProviders.get(
+					CompanyConstants.SYSTEM);
 		}
 
 		return openIdConnectProviderMap.get(name);
@@ -120,7 +124,9 @@ public class OpenIdConnectProviderRegistryImpl
 					_companyIdProviderNameOpenIdConnectProviders.get(companyId);
 
 		if (openIdConnectProviderMap == null) {
-			return Collections.emptySet();
+			openIdConnectProviderMap =
+				_companyIdProviderNameOpenIdConnectProviders.get(
+					CompanyConstants.SYSTEM);
 		}
 
 		return Collections.unmodifiableSet(openIdConnectProviderMap.keySet());
@@ -157,6 +163,12 @@ public class OpenIdConnectProviderRegistryImpl
 		_rebuild(companyId);
 	}
 
+	@Activate
+	protected void activate() {
+		_companyIdProviderNameOpenIdConnectProviders.putIfAbsent(
+			CompanyConstants.SYSTEM, Collections.emptyMap());
+	}
+
 	protected OpenIdConnectProvider<OIDCClientMetadata, OIDCProviderMetadata>
 			createOpenIdConnectProvider(
 				OpenIdConnectProviderConfiguration
@@ -176,8 +188,8 @@ public class OpenIdConnectProviderRegistryImpl
 			throw new ConfigurationException(
 				null,
 				StringBundler.concat(
-					"Unable to instantiate provider metadata factory for ",
-					openIdConnectProviderConfiguration.providerName(), ": ",
+					"Unable to instantiate provider metadata factory for \"",
+					openIdConnectProviderConfiguration.providerName(), "\": ",
 					exception.getMessage()),
 				exception);
 		}

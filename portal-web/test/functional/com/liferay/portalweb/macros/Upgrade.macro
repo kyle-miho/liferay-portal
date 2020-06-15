@@ -246,6 +246,8 @@ definition {
 	}
 
 	macro addForm {
+		Navigator.openURL();
+
 		ProductMenu.gotoPortlet(
 			category = "Content &amp; Data",
 			panel = "Site Administration",
@@ -1357,6 +1359,44 @@ definition {
 			user = "Test Test");
 	}
 
+	macro viewAndEditCustomMetaTag {
+		var portalURL = PropsUtil.get("portal.url");
+
+		User.logoutPG();
+
+		Navigator.openSpecificURL(url = "${portalURL}/web/test-site-name/test-page-name");
+
+		CustomMetaTags.viewTags(customMetaTagsList = '''property="custom Tag 1 property" content="custom Tag 1 content",property="custom Tag 2 property" content="custom Tag 2 content"''');
+
+		User.loginUserPG(
+			password = "test",
+			userEmailAddress = "test@liferay.com");
+
+		SitePages.openPagesAdmin(siteURLKey = "test-site-name");
+
+		SitePages.gotoPageMenuItem(
+			menuItem = "Configure",
+			pageName = "Test Page Name");
+
+		Navigator.gotoNavTab(navTab = "Custom Meta Tags");
+
+		CustomMetaTags.editTag(
+			customContent = "custom Tag 1 content",
+			customProperty = "custom Tag 1 property",
+			newCustomContent = "custom Tag 1 content edit",
+			newCustomProperty = "custom Tag 1 property edit");
+
+		CustomMetaTags.removeTag(tagNum = "2");
+
+		CustomMetaTags.addMultipleTags(customTagsList = "custom Tag 3");
+
+		User.logoutPG();
+
+		Navigator.openSpecificURL(url = "${portalURL}/web/test-site-name/test-page-name");
+
+		CustomMetaTags.viewTags(customMetaTagsList = '''property="custom Tag 1 property edit" content="custom Tag 1 content edit",property="custom Tag 3 property" content="custom Tag 3 content"''');
+	}
+
 	macro viewAndEditGoogleDriveDocuments {
 		Navigator.gotoPage(pageName = "Documents and Media Page");
 
@@ -1415,6 +1455,101 @@ definition {
 			key_dmDocumentTitle = "Edited Google Document",
 			locator1 = "DocumentsAndMedia#DESCRIPTIVE_LIST_DOCUMENT_TITLE",
 			value1 = "Edited Google Document");
+	}
+
+	macro viewAndEditOpenGraph {
+		var portalURL = PropsUtil.get("portal.url");
+		var siteName = TestCase.getSiteName(siteName = "${siteName}");
+
+		SitePages.openPagesAdmin(siteURLKey = "test-site-name");
+
+		SitePages.gotoPageMenuItem(
+			menuItem = "Configure",
+			pageName = "Test Page Name");
+
+		Navigator.gotoNavTab(navTab = "Open Graph");
+
+		Page.viewPreview(
+			description = "This is a custom description",
+			htmlTitle = "This is a custom title - Test Site Name - ${siteName}",
+			key_imageName = "Document_1.jpg",
+			openGraph = "true",
+			portalURL = "${portalURL}",
+			siteNameURL = "test-site-name");
+
+		var siteID = Site.getSiteId();
+
+		User.logoutPG();
+
+		Navigator.openSpecificURL(url = "${portalURL}/web/test-site-name/test-page-name");
+
+		OpenGraph.viewOpenGraphProperties(ogPropertyList = '''"og:title" content="This is a custom title","og:description" content="This is a custom description","og:image" content="${portalURL}/documents/${siteID}/0/Document_1.jpg''');
+
+		User.loginUserPG(
+			password = "test",
+			userEmailAddress = "test@liferay.com");
+
+		SitePages.openPagesAdmin(siteURLKey = "test-site-name");
+
+		SitePages.gotoPageMenuItem(
+			menuItem = "Configure",
+			pageName = "Test Page Name");
+
+		Navigator.gotoNavTab(navTab = "Open Graph");
+
+		OpenGraph.configureOpenGraph(
+			customDescription = "This is a custom description edit",
+			customImage = "true",
+			customTitle = "This is a custom title edit",
+			pageName = "Test Page Name",
+			uploadFileName = "Document_2.jpg");
+
+		Page.viewPreview(
+			description = "This is a custom description edit",
+			htmlTitle = "This is a custom title edit - Test Site Name - ${siteName}",
+			key_imageName = "Document_2.jpg",
+			openGraph = "true",
+			portalURL = "${portalURL}",
+			siteNameURL = "test-site-name");
+
+		User.logoutPG();
+
+		Navigator.openSpecificURL(url = "${portalURL}/web/test-site-name/test-page-name");
+
+		OpenGraph.viewOpenGraphProperties(ogPropertyList = '''"og:title" content="This is a custom title edit","og:description" content="This is a custom description edit","og:image" content="${portalURL}/documents/${siteID}/0/Document_2.jpg''');
+	}
+
+	macro viewAndEditSERPPreview {
+		var portalURL = PropsUtil.get("portal.url");
+		var siteName = TestCase.getSiteName(siteName = "${siteName}");
+
+		Navigator.gotoPage(pageName = "Test Page");
+
+		Navigator.gotoEditPageViaControlMenu(pageName = "Test Page");
+
+		Navigator.gotoNavTab(navTab = "SEO");
+
+		Page.viewPreview(
+			description = "Page Description",
+			htmlTitle = "Page HTML Title - ${siteName}",
+			pageName = "Test Page",
+			portalURL = "${portalURL}");
+
+		PortletEntry.inputText(
+			fieldLabel = "HTML Title",
+			text = "Page HTML Title Edit");
+
+		PortletEntry.inputTextArea(
+			fieldId = "GroupPagesPortlet_description",
+			text = "Page Description Edit");
+
+		Button.clickSave();
+
+		Page.viewPreview(
+			description = "Page Description Edit",
+			htmlTitle = "Page HTML Title Edit - ${siteName}",
+			pageName = "Test Page",
+			portalURL = "${portalURL}");
 	}
 
 	macro viewAndEditUser {

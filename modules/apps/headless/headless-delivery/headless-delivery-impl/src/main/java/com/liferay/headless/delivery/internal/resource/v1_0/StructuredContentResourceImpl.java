@@ -71,6 +71,7 @@ import com.liferay.portal.kernel.security.auth.PrincipalException;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
 import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermission;
+import com.liferay.portal.kernel.service.ClassNameLocalService;
 import com.liferay.portal.kernel.service.LayoutLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.UserLocalService;
@@ -340,13 +341,15 @@ public class StructuredContentResourceImpl
 
 	@Override
 	public String getStructuredContentRenderedContentTemplate(
-			Long structuredContentId, Long templateId)
+			Long structuredContentId, String templateId)
 		throws Exception {
 
 		JournalArticle journalArticle = _journalArticleService.getLatestArticle(
 			structuredContentId);
 
 		DDMTemplate ddmTemplate = _ddmTemplateLocalService.getTemplate(
+			journalArticle.getGroupId(),
+			_classNameLocalService.getClassNameId(DDMStructure.class),
 			templateId);
 
 		JournalArticleDisplay journalArticleDisplay =
@@ -1082,6 +1085,9 @@ public class StructuredContentResourceImpl
 				ddmFormValuesValidationException);
 		}
 	}
+
+	@Reference
+	private ClassNameLocalService _classNameLocalService;
 
 	@Reference
 	private DDM _ddm;

@@ -168,7 +168,7 @@ definition {
 
 	@priority = "4"
 	test AssertIndexOnStartup {
-		property test.assert.warning.exceptions = "true";
+		property portal.upstream = "quarantine";
 		property test.name.skip.portal.instance = "Search#AssertIndexOnStartup";
 
 		JSONWebcontent.addWebContent(
@@ -443,7 +443,14 @@ definition {
 
 		SitePages.addPublicPage(pageName = "Search Page");
 
-		Navigator.gotoPage(pageName = "Search Page");
+		var browserType = PropsUtil.get("browser.type");
+
+		if ("${browserType}" == "safari") {
+			Navigator.openSpecificURL(url = "http://localhost:8080/web/guest/search-page");
+		}
+		else {
+			Navigator.gotoPage(pageName = "Search Page");
+		}
 
 		Portlet.addPG(portletName = "Search Results");
 
@@ -1055,11 +1062,13 @@ definition {
 
 		ContentPages.addPage(pageName = "Test Content Page Name");
 
-		for (var portletName : list "Search Bar,Search Results") {
-			PageEditor.addWidget(portletName = "${portletName}");
+		PageEditor.addWidget(portletName = "Search Bar");
 
-			Refresh();
-		}
+		Refresh();
+
+		PageEditor.addWidget(
+			portletName = "Search Results",
+			targetFragmentName = "Search Bar");
 
 		PageEditor.clickPublish();
 
@@ -2057,7 +2066,6 @@ definition {
 	@description = "This is a use case for LPS-84035."
 	@priority = "5"
 	test ViewCreatedSearchPagePermissions {
-		property portal.acceptance = "quarantine";
 		property custom.properties = "jsonws.web.service.paths.excludes=";
 
 		JSONUser.addUser(

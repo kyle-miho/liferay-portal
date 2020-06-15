@@ -400,10 +400,10 @@ export const getThreads = (
 	filter += ')';
 
 	if (keywords) {
-		filter = `keywords/any(x:x eq '${keywords}')`;
+		filter += ` and keywords/any(x:x eq '${keywords}')`;
 	}
 	else if (creatorId) {
-		filter = `creator/id eq ${creatorId}`;
+		filter += ` and creator/id eq ${creatorId}`;
 	}
 
 	return client
@@ -456,12 +456,12 @@ export const getThreadsQuery = gql`
 				hasValidAnswer
 				headline
 				id
+				keywords
 				messageBoardSection {
 					numberOfMessageBoardSections
 					title
 				}
 				numberOfMessageBoardMessages
-				keywords
 				viewCount
 			}
 			page
@@ -647,8 +647,8 @@ export const getUserActivityQuery = gql`
 				articleBody
 				creator {
 					id
-					name
 					image
+					name
 				}
 				creatorStatistics {
 					postsNumber
@@ -669,6 +669,7 @@ export const getUserActivityQuery = gql`
 					taxonomyCategoryId
 					taxonomyCategoryName
 				}
+				viewCount
 			}
 			page
 			pageSize

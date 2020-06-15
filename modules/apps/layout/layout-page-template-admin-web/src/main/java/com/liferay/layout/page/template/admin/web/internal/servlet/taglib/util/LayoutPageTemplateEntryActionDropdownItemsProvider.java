@@ -238,6 +238,10 @@ public class LayoutPageTemplateEntryActionDropdownItemsProvider {
 	private UnsafeConsumer<DropdownItem, Exception>
 		_getDiscardDraftActionUnsafeConsumer() {
 
+		if (_draftLayout == null) {
+			return null;
+		}
+
 		PortletURL discardDraftURL = PortletURLFactoryUtil.create(
 			_httpServletRequest, LayoutAdminPortletKeys.GROUP_PAGES,
 			PortletRequest.ACTION_PHASE);

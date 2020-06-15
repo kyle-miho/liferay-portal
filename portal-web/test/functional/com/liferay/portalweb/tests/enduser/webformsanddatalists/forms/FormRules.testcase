@@ -39,7 +39,7 @@ definition {
 	@description = "This is a use case for LPS-70446."
 	@priority = "5"
 	test ConfigureAutofillRule {
-		property portal.acceptance = "quarantine";
+		property portal.acceptance = "true";
 		property test.name.skip.portal.instance = "FormRules#ConfigureAutofillRule";
 		var portalURL = PropsUtil.get("portal.url");
 
@@ -117,28 +117,9 @@ definition {
 
 		FormsAdminNavigator.gotoFormBuilder();
 
-		Form.save();
+		Form.publishForm();
 
-		ProductMenu.gotoPortlet(
-			category = "Site Builder",
-			panel = "Site Administration",
-			portlet = "Pages");
-
-		SitePages.addPublicPage(pageName = "Form Page");
-
-		Navigator.gotoPage(pageName = "Form Page");
-
-		Portlet.addPG(
-			pageName = "Form Page",
-			portletName = "Form");
-
-		FormPortletNavigator.gotoSelectForm();
-
-		FormPortletConfiguration.selectForm();
-
-		PortletEntry.save();
-
-		Navigator.gotoPage(pageName = "Form Page");
+		FormsAdminNavigator.gotoPublishedForm();
 
 		Pause(locator1 = "5000");
 
@@ -146,21 +127,21 @@ definition {
 			fieldLabel = "Text Field",
 			fieldName = "TextField");
 
-		Pause(locator1 = "5000");
-
 		FormFields.editText(
 			fieldName = "TextField",
 			fieldValue = "test");
+
+		Pause(locator1 = "2000");
 
 		FormFields.viewSelectOptionsList(
 			fieldName = "Countries",
 			selectOption = "Option");
 
-		Refresh();
-
 		FormFields.editText(
 			fieldName = "TextField",
 			fieldValue = "country");
+
+		Pause(locator1 = "2000");
 
 		FormFields.viewSelectOptionsList(
 			fieldName = "Countries",
@@ -496,6 +477,8 @@ definition {
 
 		SearchAdministration.executeSearchActions(actionsDescription = "Reindex all search indexes.");
 
+		Navigator.openURL();
+
 		ProductMenu.gotoPortlet(
 			category = "Content &amp; Data",
 			panel = "Site Administration",
@@ -778,6 +761,13 @@ definition {
 		FormsAdminNavigator.gotoFormBuilder();
 
 		Form.save();
+
+		ProductMenu.gotoPortlet(
+			category = "Content &amp; Data",
+			panel = "Site Administration",
+			portlet = "Forms");
+
+		FormsAdminNavigator.gotoEditFormByName();
 
 		Form.publishForm();
 
@@ -1133,6 +1123,13 @@ definition {
 		FormsAdminNavigator.gotoFormBuilder();
 
 		Form.save();
+
+		ProductMenu.gotoPortlet(
+			category = "Content &amp; Data",
+			panel = "Site Administration",
+			portlet = "Forms");
+
+		FormsAdminNavigator.gotoEditFormByName(formName = "Test Form");
 
 		Form.publishForm();
 

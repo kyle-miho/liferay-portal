@@ -14,9 +14,12 @@
 
 package com.liferay.content.dashboard.web.internal.item;
 
+import com.liferay.asset.display.page.portlet.AssetDisplayPageFriendlyURLProvider;
 import com.liferay.journal.model.JournalArticle;
 import com.liferay.journal.service.JournalArticleLocalService;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.language.Language;
+import com.liferay.portal.kernel.workflow.WorkflowConstants;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -33,10 +36,20 @@ public class JournalArticleContentDashboardInfoItemFactory
 		throws PortalException {
 
 		return new JournalArticleContentDashboardItem(
-			_journalArticleLocalService.getLatestArticle(classPK));
+			_assetDisplayPageFriendlyURLProvider,
+			_journalArticleLocalService.getLatestArticle(
+				classPK, WorkflowConstants.STATUS_ANY, false),
+			_language);
 	}
 
 	@Reference
+	private AssetDisplayPageFriendlyURLProvider
+		_assetDisplayPageFriendlyURLProvider;
+
+	@Reference
 	private JournalArticleLocalService _journalArticleLocalService;
+
+	@Reference
+	private Language _language;
 
 }

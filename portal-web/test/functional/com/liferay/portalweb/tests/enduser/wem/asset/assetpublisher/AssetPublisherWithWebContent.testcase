@@ -476,7 +476,7 @@ definition {
 			category = "Content &amp; Data",
 			panel = "Site Administration",
 			portlet = "Web Content",
-			site = "Guest");
+			site = "${siteName}");
 
 		WebContentNavigator.gotoAddCP();
 

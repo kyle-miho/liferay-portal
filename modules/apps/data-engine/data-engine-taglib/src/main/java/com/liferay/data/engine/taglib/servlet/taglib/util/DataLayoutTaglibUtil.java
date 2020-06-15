@@ -14,6 +14,7 @@
 
 package com.liferay.data.engine.taglib.servlet.taglib.util;
 
+import com.liferay.data.engine.field.type.util.LocalizedValueUtil;
 import com.liferay.data.engine.renderer.DataLayoutRenderer;
 import com.liferay.data.engine.renderer.DataLayoutRendererContext;
 import com.liferay.data.engine.rest.dto.v2_0.DataDefinition;
@@ -793,7 +794,9 @@ public class DataLayoutTaglibUtil {
 				dataRuleJSONObject.put(
 					"conditions", jsonArray
 				).put(
-					"logical-operator", dataRule.getLogicalOperator()
+					"logicalOperator", dataRule.getLogicalOperator()
+				).put(
+					"name", LocalizedValueUtil.toJSONObject(dataRule.getName())
 				);
 
 				dataRulesJSONArray.put(dataRuleJSONObject);

@@ -184,7 +184,7 @@ public class UpgradeLayoutPageTemplateStructureRel extends UpgradeProcess {
 			}
 
 			_updatePortletPreferences(
-				newNamespace, oldNamespace, fragmentEntryLink.getClassPK(),
+				newNamespace, oldNamespace, fragmentEntryLink.getPlid(),
 				segmentsExperienceId);
 
 			FragmentEntryLink newFragmentEntryLink =
@@ -193,9 +193,9 @@ public class UpgradeLayoutPageTemplateStructureRel extends UpgradeProcess {
 					fragmentEntryLink.getGroupId(),
 					fragmentEntryLink.getOriginalFragmentEntryLinkId(),
 					fragmentEntryLink.getFragmentEntryId(),
-					segmentsExperienceId, fragmentEntryLink.getClassNameId(),
-					fragmentEntryLink.getClassPK(), fragmentEntryLink.getCss(),
-					fragmentEntryLink.getHtml(), fragmentEntryLink.getJs(),
+					segmentsExperienceId, fragmentEntryLink.getPlid(),
+					fragmentEntryLink.getCss(), fragmentEntryLink.getHtml(),
+					fragmentEntryLink.getJs(),
 					fragmentEntryLink.getConfiguration(),
 					EditableValuesTransformerUtil.getEditableValues(
 						editableValuesJSONObject.toString(),
