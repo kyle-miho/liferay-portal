@@ -31,6 +31,8 @@ definition {
 
 		var output = FileUtil.read("${liferayHome}/${outputFile}");
 
+        echo("output of ${mysqlStatement}: ${output}");
+
         return "${output}";
     }
 

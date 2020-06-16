@@ -18,6 +18,7 @@ definition {
 	@priority = "4"
 	test AddNewCompany {
 		property custom.properties = "database.partition.enabled=true${line.separator}database.partition.instance.id=testPartition";
+		property portal.acceptance = "kyle";
 		property test.name.skip.portal.instance = "DatabasePartitioning#AddNewCompany";
 
 		PortalInstances.openVirtualInstancesAdmin();
@@ -47,6 +48,8 @@ definition {
 		DMNavigator.gotoDocumentCP(dmDocumentTitle = "DM Document Title");
 
 		DMDocument.viewCP(dmDocumentTitle = "DM Document Title");
+
+		SQL.executeMySQLStatement(mysqlStatement = "SHOW DATABASES;");
 		
 		SQL.assertDatabaseCount(
 			databaseFilter = "testPartition%",
@@ -57,6 +60,7 @@ definition {
 	priority = "5"
 	test AddMultipleCompanies {
 		property custom.properties = "database.partition.enabled=true${line.separator}database.partition.instance.id=testPartition";
+		property portal.acceptance = "kyle";
 		property test.name.skip.portal.instance = "DatabasePartitioning#AddMultipleCompanies";
 
 		PortalInstances.openVirtualInstancesAdmin();
@@ -114,6 +118,8 @@ definition {
 		DMNavigator.gotoDocumentCP(dmDocumentTitle = "DM Document Title");
 
 		DMDocument.viewCP(dmDocumentTitle = "DM Document Title");
+
+		SQL.executeMySQLStatement(mysqlStatement = "SHOW DATABASES;");
 		
 		SQL.assertDatabaseCount(
 			databaseFilter = "testPartition%",
