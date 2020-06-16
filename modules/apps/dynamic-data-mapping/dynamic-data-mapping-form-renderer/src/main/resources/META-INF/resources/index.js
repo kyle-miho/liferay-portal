@@ -25,3 +25,9 @@ export {
 export {PagesVisitor, RulesVisitor} from './js/util/visitors.es';
 
 export * as FormSupport from './js/components/FormRenderer/FormSupport.es';
+
+export {PageProvider, usePage, EVENT_TYPES} from './js/hooks/usePage.es';
+
+export * as DefaultVariant from './js/components/PageRenderer/DefaultVariant.es';
+
+export {Layout} from './js/components/PageRenderer/Layout.es';

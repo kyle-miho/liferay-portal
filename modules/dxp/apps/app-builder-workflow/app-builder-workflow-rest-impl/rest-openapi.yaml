@@ -1,22 +1,35 @@
 components:
     schemas:
-        AppWorkflowAction:
-            properties:
-                name:
-                    type: string
-                primary:
-                    type: boolean
-                transitionTo:
-                    type: string
-            type: object
-        AppWorkflowTask:
+        AppWorkflow:
             properties:
                 appId:
                     format: int64
                     type: integer
-                appWorkflowActions:
+                appWorkflowStates:
                     items:
-                        $ref: "#/components/schemas/AppWorkflowAction"
+                        $ref: "#/components/schemas/AppWorkflowState"
+                    type: array
+                appWorkflowTasks:
+                    items:
+                        $ref: "#/components/schemas/AppWorkflowTask"
+                    type: array
+            type: object
+        AppWorkflowState:
+            properties:
+                appWorkflowTransitions:
+                    items:
+                        $ref: "#/components/schemas/AppWorkflowTransition"
+                    type: array
+                initial:
+                    type: boolean
+                name:
+                    type: string
+            type: object
+        AppWorkflowTask:
+            properties:
+                appWorkflowTransitions:
+                    items:
+                        $ref: "#/components/schemas/AppWorkflowTransition"
                     type: array
                 dataLayoutIds:
                     items:
@@ -24,6 +37,15 @@ components:
                         type: integer
                     type: array
                 name:
+                    type: string
+            type: object
+        AppWorkflowTransition:
+            properties:
+                name:
+                    type: string
+                primary:
+                    type: boolean
+                transitionTo:
                     type: string
             type: object
 info:
@@ -37,9 +59,9 @@ info:
     version: v1.0
 openapi: 3.0.1
 paths:
-    "/apps/{appId}/app-workflow-tasks":
+    "/apps/{appId}/app-workflows":
         get:
-            operationId: getAppWorkflowTasksPage
+            operationId: getAppWorkflow
             parameters:
                 - in: path
                   name: appId
@@ -52,19 +74,15 @@ paths:
                     content:
                         application/json:
                             schema:
-                                items:
-                                    $ref: "#/components/schemas/AppWorkflowTask"
-                                type: array
+                                $ref: "#/components/schemas/AppWorkflow"
                         application/xml:
                             schema:
-                                items:
-                                    $ref: "#/components/schemas/AppWorkflowTask"
-                                type: array
+                                $ref: "#/components/schemas/AppWorkflow"
                     description:
                         ""
-            tags: ["AppWorkflowTask"]
+            tags: ["AppWorkflow"]
         post:
-            operationId: postAppWorkflowTasks
+            operationId: postAppWorkflow
             parameters:
                 - in: path
                   name: appId
@@ -76,27 +94,48 @@ paths:
                 content:
                     application/json:
                         schema:
-                            items:
-                                $ref: "#/components/schemas/AppWorkflowTask"
-                            type: array
+                            $ref: "#/components/schemas/AppWorkflow"
                     application/xml:
                         schema:
-                            items:
-                                $ref: "#/components/schemas/AppWorkflowTask"
-                            type: array
+                            $ref: "#/components/schemas/AppWorkflow"
             responses:
                 200:
                     content:
                         application/json:
                             schema:
-                                items:
-                                    $ref: "#/components/schemas/AppWorkflowTask"
-                                type: array
+                                $ref: "#/components/schemas/AppWorkflow"
                         application/xml:
                             schema:
-                                items:
-                                    $ref: "#/components/schemas/AppWorkflowTask"
-                                type: array
+                                $ref: "#/components/schemas/AppWorkflow"
                     description:
                         ""
-            tags: ["AppWorkflowTask"]
+            tags: ["AppWorkflow"]
+        put:
+            operationId: putAppWorkflow
+            parameters:
+                - in: path
+                  name: appId
+                  required: true
+                  schema:
+                      format: int64
+                      type: integer
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/AppWorkflow"
+                    application/xml:
+                        schema:
+                            $ref: "#/components/schemas/AppWorkflow"
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/AppWorkflow"
+                        application/xml:
+                            schema:
+                                $ref: "#/components/schemas/AppWorkflow"
+                    description:
+                        ""
+            tags: ["AppWorkflow"]

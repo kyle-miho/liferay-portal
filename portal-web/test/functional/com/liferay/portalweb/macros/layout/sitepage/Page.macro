@@ -486,6 +486,8 @@ definition {
 	}
 
 	macro selectMobileDeviceFamily {
+		WaitForLiferayEvent.initializeLiferayEventLog();
+
 		AssertClick(
 			locator1 = "Button#SELECT_MOBILE_DEVICE_RULES",
 			value1 = "Select");

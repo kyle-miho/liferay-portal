@@ -6490,16 +6490,6 @@ go</echo>
 		<delete dir="/tmp/sprite" />
 	</target>
 
-	<target name="delete-portal-elasticsearch-dir">
-		<delete includeemptydirs="true">
-			<fileset
-				dir="${liferay.home}/data/"
-			>
-				<include name="elasticsearch*/" />
-			</fileset>
-		</delete>
-	</target>
-
 	<target name="deploy-dependency-jars">
 		<get-testcase-property property.name="liferay.training.dependency.jars" />
 
@@ -7171,6 +7161,19 @@ go</echo>
 				</unzip>
 			</then>
 		</if>
+	</target>
+
+	<target name="execute-mysql">
+		<loadfile
+			property="mysql.statement"
+			srcfile="${mysql.input.file}"
+		/>
+
+		<sql classpath="${app.server.lib.global.dir}/${jdbc.mysql.driver}" driver="${database.mysql.driver}" onerror="continue" output="${mysql.output.file}" password="${database.mysql.password}" print="true" url="${database.mysql.url}" userid="${database.mysql.username}">
+			<![CDATA[
+				${mysql.statement}
+			]]>
+		</sql>
 	</target>
 
 	<target name="generate-changelog">

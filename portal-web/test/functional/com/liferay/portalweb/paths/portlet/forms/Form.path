@@ -92,7 +92,7 @@
 </tr>
 <tr>
     <td>PAGE_CONTROLS_DELETE_CURRENT_PAGE</td>
-    <td>xpath=(//li[contains(@class,'dropdown-item')]//a[text()='Remove Page'] | //button[contains(@class,'dropdown-item') and contains(text(),'Remove Page')])[${key_formPageNumber}]</td>
+    <td>//button[contains(@class,'dropdown-item') and contains(text(),'Remove Page')][${key_formDropDownNumber}]</td>
     <td></td>
 </tr>
 <tr>
@@ -140,6 +140,11 @@
     <td></td>
 </tr>
 <tr>
+    <td>ADD_IMAGE_DESCRIPTION</td>
+    <td>xpath=(//div[contains(@class,'form-group') ]//input[@placeholder='Add image description.'])[${descriptionPosition}]</td>
+    <td></td>
+</tr>
+<tr>
     <td></td>
     <td></td>
     <td></td>
@@ -152,7 +157,7 @@
 </tr>
 <tr>
     <td>SUCCESS_PAGE_DESCRIPTION_FIELD</td>
-    <td>//div[@class='form-builder-layout']//input[contains(@class,'form-builder-page-header-description')][@value='Your information was successfully received. Thank you for filling out the form.'] </td>
+    <td>//div[contains(@class,'form-builder-success-page')]//input[contains(@class,'form-builder-page-header-description')]</td>
     <td></td>
 </tr>
 <tr>

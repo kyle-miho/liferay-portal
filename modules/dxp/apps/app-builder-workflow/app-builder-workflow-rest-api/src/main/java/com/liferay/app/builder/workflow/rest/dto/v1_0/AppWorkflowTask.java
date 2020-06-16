@@ -52,48 +52,24 @@ public class AppWorkflowTask {
 	}
 
 	@Schema
-	public Long getAppId() {
-		return appId;
-	}
-
-	public void setAppId(Long appId) {
-		this.appId = appId;
-	}
-
-	@JsonIgnore
-	public void setAppId(UnsafeSupplier<Long, Exception> appIdUnsafeSupplier) {
-		try {
-			appId = appIdUnsafeSupplier.get();
-		}
-		catch (RuntimeException re) {
-			throw re;
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	@GraphQLField
-	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
-	protected Long appId;
-
-	@Schema
 	@Valid
-	public AppWorkflowAction[] getAppWorkflowActions() {
-		return appWorkflowActions;
+	public AppWorkflowTransition[] getAppWorkflowTransitions() {
+		return appWorkflowTransitions;
 	}
 
-	public void setAppWorkflowActions(AppWorkflowAction[] appWorkflowActions) {
-		this.appWorkflowActions = appWorkflowActions;
+	public void setAppWorkflowTransitions(
+		AppWorkflowTransition[] appWorkflowTransitions) {
+
+		this.appWorkflowTransitions = appWorkflowTransitions;
 	}
 
 	@JsonIgnore
-	public void setAppWorkflowActions(
-		UnsafeSupplier<AppWorkflowAction[], Exception>
-			appWorkflowActionsUnsafeSupplier) {
+	public void setAppWorkflowTransitions(
+		UnsafeSupplier<AppWorkflowTransition[], Exception>
+			appWorkflowTransitionsUnsafeSupplier) {
 
 		try {
-			appWorkflowActions = appWorkflowActionsUnsafeSupplier.get();
+			appWorkflowTransitions = appWorkflowTransitionsUnsafeSupplier.get();
 		}
 		catch (RuntimeException re) {
 			throw re;
@@ -105,7 +81,7 @@ public class AppWorkflowTask {
 
 	@GraphQLField
 	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
-	protected AppWorkflowAction[] appWorkflowActions;
+	protected AppWorkflowTransition[] appWorkflowTransitions;
 
 	@Schema
 	public Long[] getDataLayoutIds() {
@@ -188,29 +164,19 @@ public class AppWorkflowTask {
 
 		sb.append("{");
 
-		if (appId != null) {
+		if (appWorkflowTransitions != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
 
-			sb.append("\"appId\": ");
-
-			sb.append(appId);
-		}
-
-		if (appWorkflowActions != null) {
-			if (sb.length() > 1) {
-				sb.append(", ");
-			}
-
-			sb.append("\"appWorkflowActions\": ");
+			sb.append("\"appWorkflowTransitions\": ");
 
 			sb.append("[");
 
-			for (int i = 0; i < appWorkflowActions.length; i++) {
-				sb.append(String.valueOf(appWorkflowActions[i]));
+			for (int i = 0; i < appWorkflowTransitions.length; i++) {
+				sb.append(String.valueOf(appWorkflowTransitions[i]));
 
-				if ((i + 1) < appWorkflowActions.length) {
+				if ((i + 1) < appWorkflowTransitions.length) {
 					sb.append(", ");
 				}
 			}

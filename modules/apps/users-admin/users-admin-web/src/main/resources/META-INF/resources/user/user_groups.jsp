@@ -35,7 +35,7 @@ currentURLObj.setParameter("historyKey", renderResponse.getNamespace() + "userGr
 	cssClass="sheet-subtitle"
 >
 	<clay:content-col
-		expand="true"
+		expand="<%= true %>"
 	>
 		<span class="heading-text"><liferay-ui:message key="user-groups" /></span>
 	</clay:content-col>
@@ -156,26 +156,7 @@ currentURLObj.setParameter("historyKey", renderResponse.getNamespace() + "userGr
 			'.modify-link'
 		);
 
-		Liferay.on('<portlet:namespace />enableRemovedUserGroups', function (event) {
-			event.selectors.each(function (item, index, collection) {
-				var userGroupId = item.attr('data-usergroupid');
-
-				if (deleteUserGroupIds.indexOf(userGroupId) != -1) {
-					Util.toggleDisabled(item, false);
-				}
-			});
-		});
-
 		A.one('#<portlet:namespace />openUserGroupsLink').on('click', function (event) {
-			var searchContainerData = searchContainer.getData();
-
-			if (!searchContainerData.length) {
-				searchContainerData = [];
-			}
-			else {
-				searchContainerData = searchContainerData.split(',');
-			}
-
 			Util.selectEntity(
 				{
 					dialog: {
@@ -189,7 +170,7 @@ currentURLObj.setParameter("historyKey", renderResponse.getNamespace() + "userGr
 
 					id: '<%= eventName %>',
 
-					selectedData: searchContainerData,
+					selectedData: searchContainer.getData(true),
 					title:
 						'<liferay-ui:message arguments="user-group" key="select-x" />',
 

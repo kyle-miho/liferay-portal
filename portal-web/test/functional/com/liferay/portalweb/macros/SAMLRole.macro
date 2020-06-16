@@ -19,6 +19,8 @@ definition {
 	}
 
 	macro configureCertificateAndPrivateKey {
+		WaitForLiferayEvent.initializeLiferayEventLog();
+
 		AssertClick(
 			key_certificateUsage = "${certificateUsage}",
 			locator1 = "Button#CREATE_CERTIFICATE",

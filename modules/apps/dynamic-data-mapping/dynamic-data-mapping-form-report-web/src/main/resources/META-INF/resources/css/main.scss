@@ -179,6 +179,16 @@ body,
 	display: flex;
 	flex-direction: column;
 
+	.sidebar-backdrop {
+		background-color: #393a4a;
+		height: 100vh;
+		left: 0;
+		opacity: 0.8;
+		position: fixed;
+		top: 0;
+		width: 100vw;
+	}
+
 	.sidebar-container {
 		width: 720px !important;
 
@@ -246,6 +256,16 @@ body,
 	ul {
 		list-style-type: none;
 	}
+}
+
+.loading-wrapper {
+	display: none;
+	height: 31px;
+	left: 50%;
+	position: absolute;
+	top: 50%;
+	width: 31px;
+	z-index: 1000;
 }
 
 .recharts-responsive-container {

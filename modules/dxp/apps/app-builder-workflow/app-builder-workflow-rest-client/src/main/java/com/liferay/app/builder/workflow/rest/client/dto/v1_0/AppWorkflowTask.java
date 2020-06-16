@@ -32,46 +32,29 @@ public class AppWorkflowTask implements Cloneable {
 		return AppWorkflowTaskSerDes.toDTO(json);
 	}
 
-	public Long getAppId() {
-		return appId;
+	public AppWorkflowTransition[] getAppWorkflowTransitions() {
+		return appWorkflowTransitions;
 	}
 
-	public void setAppId(Long appId) {
-		this.appId = appId;
+	public void setAppWorkflowTransitions(
+		AppWorkflowTransition[] appWorkflowTransitions) {
+
+		this.appWorkflowTransitions = appWorkflowTransitions;
 	}
 
-	public void setAppId(UnsafeSupplier<Long, Exception> appIdUnsafeSupplier) {
+	public void setAppWorkflowTransitions(
+		UnsafeSupplier<AppWorkflowTransition[], Exception>
+			appWorkflowTransitionsUnsafeSupplier) {
+
 		try {
-			appId = appIdUnsafeSupplier.get();
+			appWorkflowTransitions = appWorkflowTransitionsUnsafeSupplier.get();
 		}
 		catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	protected Long appId;
-
-	public AppWorkflowAction[] getAppWorkflowActions() {
-		return appWorkflowActions;
-	}
-
-	public void setAppWorkflowActions(AppWorkflowAction[] appWorkflowActions) {
-		this.appWorkflowActions = appWorkflowActions;
-	}
-
-	public void setAppWorkflowActions(
-		UnsafeSupplier<AppWorkflowAction[], Exception>
-			appWorkflowActionsUnsafeSupplier) {
-
-		try {
-			appWorkflowActions = appWorkflowActionsUnsafeSupplier.get();
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	protected AppWorkflowAction[] appWorkflowActions;
+	protected AppWorkflowTransition[] appWorkflowTransitions;
 
 	public Long[] getDataLayoutIds() {
 		return dataLayoutIds;

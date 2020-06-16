@@ -101,6 +101,7 @@ definition {
 	}
 
 	macro deleteCurrentPage {
+		var key_formDropDownNumber = "${formDropDownNumber}";
 		var key_formPageNumber = "${formPageNumber}";
 
 		//AssertElementPresent(locator1 = "FormPortlet#FORM_PAGE_ACTIVE");
@@ -231,6 +232,14 @@ definition {
 		AssertTextEquals(
 			locator1 = "Form#FIELD_LABEL",
 			value1 = "${fieldValue}");
+	}
+
+	macro editImageDescription {
+		var descriptionPosition = "${descriptionPosition}";
+
+		Type(
+			locator1 = "Form#ADD_IMAGE_DESCRIPTION",
+			value1 = "${descriptionContent}");
 	}
 
 	macro editName {
@@ -381,6 +390,7 @@ definition {
 		AssertClick(
 			locator1 = "Form#SIDEBAR_AUTOCOMPLETE_TAB",
 			value1 = "Autocomplete");
+
 		Pause(locator1 = "1000");
 	}
 
@@ -395,6 +405,7 @@ definition {
 				locator1 = "Form#SIDEBAR_BASIC_TAB",
 				value1 = "Basic");
 		}
+
 		Pause(locator1 = "1000");
 	}
 
@@ -427,6 +438,20 @@ definition {
 		var key_page = "${page}";
 
 		Click(locator1 = "Form#ALT_PAGINATION_PAGE");
+	}
+
+	macro gotoPropertiesTab {
+		if (isSet(key_localeAdvanced)) {
+			AssertClick(
+				locator1 = "Form#SIDEBAR_PROPERTIES_TAB",
+				value1 = "Properties");
+		}
+		else {
+			AssertClick(
+				locator1 = "Form#SIDEBAR_PROPERTIES_TAB",
+				value1 = "Properties");
+		}
+		Pause(locator1 = "1000");
 	}
 
 	macro previewForm {

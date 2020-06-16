@@ -269,8 +269,7 @@ public abstract class BaseTagAttributesCheck extends BaseFileCheck {
 
 				if (_escapeQuotes ||
 					!attributeValue.contains(StringPool.QUOTE) ||
-					(attributeValue.contains("'\"") &&
-					 attributeValue.contains("\"'"))) {
+					!_name.contains(StringPool.COLON)) {
 
 					delimeter = StringPool.QUOTE;
 				}

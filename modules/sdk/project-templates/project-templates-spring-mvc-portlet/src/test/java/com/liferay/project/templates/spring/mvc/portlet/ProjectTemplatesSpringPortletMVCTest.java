@@ -96,10 +96,11 @@ public class ProjectTemplatesSpringPortletMVCTest
 			temporaryFolder, "gradle", "gradleWS", _liferayVersion,
 			mavenExecutor);
 
-		File gradleWorkspaceWarsDir = new File(gradleWorkspaceDir, "wars");
+		File gradleWorkspaceModulesDir = new File(
+			gradleWorkspaceDir, "modules");
 
 		File gradleProjectDir = _buildSpringMVCTemplate(
-			gradleWorkspaceWarsDir, "gradle", _framework,
+			gradleWorkspaceModulesDir, "gradle", _framework,
 			_frameworkDependencies, _viewType, _liferayVersion);
 
 		testNotContains(
@@ -208,10 +209,10 @@ public class ProjectTemplatesSpringPortletMVCTest
 			temporaryFolder, "maven", "mavenWS", _liferayVersion,
 			mavenExecutor);
 
-		File mavenWarsDir = new File(mavenWorkspaceDir, "wars");
+		File mavenModulesDir = new File(mavenWorkspaceDir, "modules");
 
 		File mavenProjectDir = _buildSpringMVCTemplate(
-			mavenWarsDir, "maven", _framework, _frameworkDependencies,
+			mavenModulesDir, "maven", _framework, _frameworkDependencies,
 			_viewType, _liferayVersion);
 
 		if (isBuildProjects()) {
@@ -221,7 +222,7 @@ public class ProjectTemplatesSpringPortletMVCTest
 			buildProjects(
 				_gradleDistribution, mavenExecutor, gradleWorkspaceDir,
 				mavenProjectDir, gradleOutputDir, mavenOutputDir,
-				":wars:sampleSpringMVCPortlet" + GRADLE_TASK_PATH_BUILD);
+				":modules:sampleSpringMVCPortlet" + GRADLE_TASK_PATH_BUILD);
 		}
 	}
 

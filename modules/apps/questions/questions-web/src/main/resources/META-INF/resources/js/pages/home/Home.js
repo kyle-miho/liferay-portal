@@ -72,7 +72,7 @@ export default () => {
 												displayType="text"
 												truncate={false}
 											>
-												<span>
+												<span className="x-questions">
 													{lang.sub(
 														Liferay.Language.get(
 															'x-questions'

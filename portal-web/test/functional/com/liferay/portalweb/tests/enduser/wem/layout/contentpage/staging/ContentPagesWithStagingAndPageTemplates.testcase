@@ -181,7 +181,8 @@ definition {
 
 		PageEditor.addFragment(
 			collectionName = "Basic Components",
-			fragmentName = "Button");
+			fragmentName = "Button",
+			targetFragmentName = "Rich Text");
 
 		PageEditor.waitForAutoSave();
 

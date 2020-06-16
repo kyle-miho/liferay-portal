@@ -177,9 +177,10 @@ public class AssetAutoTaggerOSGiCommandsTest
 			"model.class.name", AssetEntry.class.getName()
 		).build();
 
-		ServiceRegistration<AssetAutoTagProvider>
+		ServiceRegistration<AssetAutoTagProvider<?>>
 			assetAutoTagProviderServiceRegistration = registry.registerService(
-				AssetAutoTagProvider.class,
+				(Class<AssetAutoTagProvider<?>>)
+					(Class<?>)AssetAutoTagProvider.class,
 				model -> Arrays.asList(ASSET_TAG_NAME_AUTO), properties);
 
 		String className = RandomTestUtil.randomString();
@@ -293,14 +294,15 @@ public class AssetAutoTaggerOSGiCommandsTest
 	@Inject
 	private AssetEntryLocalService _assetEntryLocalService;
 
-	private class TestAssetRendererFactory extends BaseAssetRendererFactory {
+	private class TestAssetRendererFactory
+		extends BaseAssetRendererFactory<Object> {
 
 		public TestAssetRendererFactory(String className) {
 			_className = className;
 		}
 
 		@Override
-		public AssetRenderer<?> getAssetRenderer(long classPK, int type) {
+		public AssetRenderer<Object> getAssetRenderer(long classPK, int type) {
 			return new BaseAssetRenderer() {
 
 				@Override

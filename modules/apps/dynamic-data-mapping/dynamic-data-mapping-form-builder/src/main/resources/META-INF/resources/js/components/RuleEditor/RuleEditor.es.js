@@ -20,7 +20,7 @@ import 'clay-button';
 
 import 'clay-modal';
 
-import 'dynamic-data-mapping-form-renderer/js/components/PageRenderer/PageRenderer.es';
+import 'dynamic-data-mapping-form-renderer/js/components/Field/ReactFieldAdapter.es';
 import {PagesVisitor} from 'dynamic-data-mapping-form-renderer';
 import {makeFetch} from 'dynamic-data-mapping-form-renderer/js/util/fetch.es';
 import Component from 'metal-component';
@@ -338,7 +338,9 @@ class RuleEditor extends Component {
 			};
 		});
 
-		let {actionTypes} = this;
+		let actionTypes = this.actionTypes.map((actionType) => ({
+			...actionType,
+		}));
 
 		if (pages.length < 3) {
 			actionTypes = this.actionTypes.filter((obj) => {
@@ -356,7 +358,7 @@ class RuleEditor extends Component {
 
 	syncPages(pages) {
 		const {actions} = this;
-		let {conditions} = this;
+		let conditions = this._getConditions();
 
 		const visitor = new PagesVisitor(pages);
 
@@ -457,7 +459,7 @@ class RuleEditor extends Component {
 
 	_clearAllConditionFieldValues(index) {
 		const {secondOperandSelectedList} = this;
-		let {conditions} = this;
+		let conditions = this._getConditions();
 
 		conditions = this._clearFirstOperandValue(conditions, index);
 		conditions = this._clearOperatorValue(conditions, index);
@@ -536,6 +538,13 @@ class RuleEditor extends Component {
 
 	_conditionsFieldOptionsValueFn(omittedFieldsList) {
 		return this._getFieldOptions(omittedFieldsList);
+	}
+
+	_getConditions() {
+		return this.conditions.map((condition) => ({
+			...condition,
+			operands: condition.operands.map((operand) => ({...operand})),
+		}));
 	}
 
 	_getDeletedFields(visitor) {
@@ -687,8 +696,7 @@ class RuleEditor extends Component {
 		});
 	}
 
-	_handleActionSelection(event) {
-		const {fieldInstance, value} = event;
+	_handleActionSelection({fieldInstance, value}) {
 		const index = parseInt(
 			this._getIndex(fieldInstance, '.action-type'),
 			10
@@ -750,8 +758,7 @@ class RuleEditor extends Component {
 		});
 	}
 
-	_handleDataProviderInputEdited(event) {
-		const {fieldInstance, value} = event;
+	_handleDataProviderInputEdited({fieldInstance, value}) {
 		const {actions} = this;
 		const actionIndex = this._getIndex(fieldInstance, '.action');
 		const inputIndex = this._getIndex(
@@ -770,8 +777,7 @@ class RuleEditor extends Component {
 		});
 	}
 
-	_handleDataProviderOutputEdited(event) {
-		const {fieldInstance, value} = event;
+	_handleDataProviderOutputEdited({fieldInstance, value}) {
 		const actionIndex = this._getIndex(fieldInstance, '.action');
 		const outputIndex = this._getIndex(
 			fieldInstance,
@@ -790,8 +796,7 @@ class RuleEditor extends Component {
 		});
 	}
 
-	_handleDeleteAction(event) {
-		const {currentTarget} = event;
+	_handleDeleteAction({currentTarget}) {
 		const index = currentTarget.getAttribute('data-index');
 
 		this.refs.confirmationModalAction.show();
@@ -800,8 +805,7 @@ class RuleEditor extends Component {
 		});
 	}
 
-	_handleDeleteCondition(event) {
-		const {currentTarget} = event;
+	_handleDeleteCondition({currentTarget}) {
 		const index = currentTarget.getAttribute('data-index');
 
 		this.refs.confirmationModalCondition.show();
@@ -817,11 +821,11 @@ class RuleEditor extends Component {
 		this.setState({actions});
 	}
 
-	_handleFirstOperandFieldEdited(event) {
-		const {fieldInstance, value} = event;
+	_handleFirstOperandFieldEdited({fieldInstance, value}) {
 		const index = this._getIndex(fieldInstance, '.condition-if');
 		const {actions, pages} = this;
-		let {conditions} = this;
+
+		let conditions = this._getConditions();
 
 		if (value && value.length > 0 && value[0]) {
 			const fieldName = value[0];
@@ -891,8 +895,7 @@ class RuleEditor extends Component {
 		});
 	}
 
-	_handleLogicalOperationChange(event) {
-		const {target} = event;
+	_handleLogicalOperationChange({target}) {
 		const {value} = target.dataset;
 
 		if (value !== this.logicalOperator) {
@@ -939,9 +942,8 @@ class RuleEditor extends Component {
 		}
 	}
 
-	_handleOperatorEdited(event) {
-		const {fieldInstance, value} = event;
-		let {conditions} = this;
+	_handleOperatorEdited({fieldInstance, value}) {
+		let conditions = this._getConditions();
 		let operatorValue = '';
 
 		if (value && value.length > 0 && value[0]) {
@@ -987,9 +989,8 @@ class RuleEditor extends Component {
 		this.emit('ruleCancelled', {});
 	}
 
-	_handleSecondOperandFieldEdited(event) {
+	_handleSecondOperandFieldEdited({fieldInstance, value}) {
 		const {conditions} = this;
-		const {fieldInstance, value} = event;
 		let fieldValue = '';
 
 		if (value && typeof value == 'object' && value[0]) {
@@ -1033,9 +1034,8 @@ class RuleEditor extends Component {
 		});
 	}
 
-	_handleSecondOperandTypeEdited(event) {
-		let {conditions} = this;
-		const {fieldInstance, value} = event;
+	_handleSecondOperandTypeEdited({fieldInstance, value}) {
+		let conditions = this._getConditions();
 		const index = this._getIndex(fieldInstance, '.condition-type');
 		const {operands} = conditions[index];
 		const secondOperand = operands[1];
@@ -1079,9 +1079,8 @@ class RuleEditor extends Component {
 		});
 	}
 
-	_handleSecondOperandValueEdited(event) {
+	_handleSecondOperandValueEdited({fieldInstance, value}) {
 		const {conditions} = this;
-		const {fieldInstance, value} = event;
 		const index = this._getIndex(fieldInstance, '.condition-type-value');
 		const secondOperandValue = Array.isArray(value) ? value[0] : value;
 
@@ -1104,8 +1103,7 @@ class RuleEditor extends Component {
 		});
 	}
 
-	_handleTargetSelection(event) {
-		const {fieldInstance, value} = event;
+	_handleTargetSelection({fieldInstance, value}) {
 		const {actions} = this;
 		const id = value[0];
 		const index = this._getIndex(fieldInstance, '.target-action');

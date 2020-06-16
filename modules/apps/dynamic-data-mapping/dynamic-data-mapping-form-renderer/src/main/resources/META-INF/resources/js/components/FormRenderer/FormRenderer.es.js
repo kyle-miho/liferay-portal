@@ -12,15 +12,7 @@
  * details.
  */
 
-import '../../containers/Pagination/Pagination.es';
-
-import '../../containers/PaginationControls/PaginationControls.es';
-
-import '../../containers/Tabs/Tabs.es';
-
-import '../../containers/Wizard/Wizard.es';
-
-import '../PageRenderer/PageRenderer.es';
+import '../PageRenderer/index';
 
 import 'clay-button';
 import Component from 'metal-component';
@@ -28,8 +20,6 @@ import Soy from 'metal-soy';
 import {Config} from 'metal-state';
 
 import templates from './FormRenderer.soy';
-
-import '../SuccessPage/SuccessPage.es';
 
 /**
  * FormRenderer.
@@ -111,6 +101,15 @@ FormRenderer.STATE = {
 	 */
 
 	displayable: Config.bool().valueFn('_getDisplayableFn'),
+
+	/**
+	 * @default undefined
+	 * @memberof FormRenderer
+	 * @type {?(object|undefined)}
+	 * @required
+	 */
+
+	dnd: Config.object(),
 
 	/**
 	 * @default false

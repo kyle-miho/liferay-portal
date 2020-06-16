@@ -35,7 +35,7 @@ JournalDDMTemplateHelper journalDDMTemplateHelper = (JournalDDMTemplateHelper)re
 				md="3"
 			>
 				<div class="search" id="<portlet:namespace />paletteSearchContainer">
-					<input class="form-control mb-3" id="<portlet:namespace />paletteSearch" placeholder='<liferay-ui:message key="search" />' type="text" />
+					<input class="form-control mb-3" id="<portlet:namespace />paletteSearch" placeholder="<liferay-ui:message key="search" />" type="text" />
 				</div>
 
 				<div class="lfr-template-palette" id="<portlet:namespace />paletteDataContainer">
@@ -102,23 +102,19 @@ JournalDDMTemplateHelper journalDDMTemplateHelper = (JournalDDMTemplateHelper)re
 			%>
 
 			<clay:alert
-				closeable="true"
-				componentId="languageMessageContainer"
-				destroyOnHide="true"
-				elementClasses='<%= ((ddmTemplate == null) && (templateLanguageTypes.length > 1)) || ((ddmTemplate != null) && !Objects.equals(ddmTemplate.getLanguage(), journalEditDDMTemplateDisplayContext.getLanguage())) ? "mb-3" : "hide mb-3" %>'
-				message='<%= LanguageUtil.get(request, "changing-the-language-does-not-automatically-translate-the-existing-template-script") %>'
-				style="warning"
-				title='<%= LanguageUtil.get(request, "warning") %>'
+				cssClass='<%= ((ddmTemplate == null) && (templateLanguageTypes.length > 1)) || ((ddmTemplate != null) && !Objects.equals(ddmTemplate.getLanguage(), journalEditDDMTemplateDisplayContext.getLanguage())) ? "mb-3" : "hide mb-3" %>'
+				dismissible="<%= true %>"
+				displayType="warning"
+				id="languageMessageContainer"
+				message="changing-the-language-does-not-automatically-translate-the-existing-template-script"
 			/>
 
 			<clay:alert
-				closeable="true"
-				componentId="cacheableMessageContainer"
-				destroyOnHide="true"
-				elementClasses='<%= journalEditDDMTemplateDisplayContext.isCacheable() ? "mb-3" : "hide mb-3" %>'
-				message='<%= LanguageUtil.get(request, "this-template-is-marked-as-cacheable.-avoid-using-code-that-uses-request-handling,-the-cms-query-api,-taglibs,-or-other-dynamic-features.-uncheck-the-cacheable-property-if-dynamic-behavior-is-needed") %>'
-				style="warning"
-				title='<%= LanguageUtil.get(request, "warning") %>'
+				cssClass='<%= journalEditDDMTemplateDisplayContext.isCacheable() ? "mb-3" : "hide mb-3" %>'
+				dismissible="<%= true %>"
+				displayType="warning"
+				id="cacheableMessageContainer"
+				message="this-template-is-marked-as-cacheable.-avoid-using-code-that-uses-request-handling,-the-cms-query-api,-taglibs,-or-other-dynamic-features.-uncheck-the-cacheable-property-if-dynamic-behavior-is-needed"
 			/>
 
 			<div class="lfr-rich-editor" id="<portlet:namespace />richEditor"></div>

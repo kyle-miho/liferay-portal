@@ -152,7 +152,7 @@ public class LayoutsAdminDisplayContext {
 
 		portletURL.setParameter(
 			"mvcPath", "/select_layout_page_template_entry.jsp");
-		portletURL.setParameter("backURL", _getBackURL());
+		portletURL.setParameter("backURL", getBackURL());
 		portletURL.setParameter("portletResource", getPortletResource());
 		portletURL.setParameter("groupId", String.valueOf(getGroupId()));
 		portletURL.setParameter(
@@ -160,9 +160,9 @@ public class LayoutsAdminDisplayContext {
 		portletURL.setParameter(
 			"stagingGroupId", String.valueOf(getStagingGroupId()));
 		portletURL.setParameter(
-			"parentLayoutId", String.valueOf(getParentLayoutId()));
-		portletURL.setParameter(
 			"privateLayout", String.valueOf(isPrivateLayout()));
+		portletURL.setParameter(
+			"parentLayoutId", String.valueOf(getParentLayoutId()));
 		portletURL.setParameter("explicitCreation", Boolean.TRUE.toString());
 
 		String type = ParamUtil.getString(httpServletRequest, "type");
@@ -193,12 +193,43 @@ public class LayoutsAdminDisplayContext {
 				ActionRequest.ACTION_NAME, "/layout/add_simple_layout");
 		}
 
+		if (Objects.equals(type, LayoutConstants.TYPE_COLLECTION)) {
+			String collectionPK = ParamUtil.getString(
+				httpServletRequest, "collectionPK");
+
+			portletURL.setParameter("collectionPK", collectionPK);
+
+			String collectionType = ParamUtil.getString(
+				httpServletRequest, "collectionType");
+
+			portletURL.setParameter("collectionType", collectionType);
+
+			portletURL.setParameter(
+				ActionRequest.ACTION_NAME, "/layout/add_collection_layout");
+		}
+
 		return portletURL.toString();
 	}
 
 	public List<SiteNavigationMenu> getAutoSiteNavigationMenus() {
 		return SiteNavigationMenuLocalServiceUtil.getAutoSiteNavigationMenus(
 			themeDisplay.getScopeGroupId());
+	}
+
+	public String getBackURL() {
+		if (_backURL != null) {
+			return _backURL;
+		}
+
+		String backURL = ParamUtil.getString(_liferayPortletRequest, "backURL");
+
+		if (Validator.isNull(backURL)) {
+			backURL = getRedirect();
+		}
+
+		_backURL = backURL;
+
+		return _backURL;
 	}
 
 	public String getConfigureLayoutURL(Layout layout) {
@@ -297,8 +328,7 @@ public class LayoutsAdminDisplayContext {
 	}
 
 	public String getDiscardDraftURL(Layout layout) {
-		Layout draftLayout = LayoutLocalServiceUtil.fetchLayout(
-			PortalUtil.getClassNameId(Layout.class), layout.getPlid());
+		Layout draftLayout = layout.fetchDraftLayout();
 
 		PortletURL discardDraftURL = _liferayPortletResponse.createActionURL();
 
@@ -331,10 +361,7 @@ public class LayoutsAdminDisplayContext {
 			return StringPool.BLANK;
 		}
 
-		Layout draftLayout = LayoutLocalServiceUtil.fetchLayout(
-			PortalUtil.getClassNameId(Layout.class), layout.getPlid());
-
-		if (draftLayout == null) {
+		if (layout.fetchDraftLayout() == null) {
 			return StringPool.BLANK;
 		}
 
@@ -845,6 +872,31 @@ public class LayoutsAdminDisplayContext {
 		return portletURL;
 	}
 
+	public String getSelectLayoutCollectionURL(
+		long selPlid, String selectedTab, boolean privateLayout) {
+
+		PortletURL selectLayoutCollectionsURL =
+			_liferayPortletResponse.createRenderURL();
+
+		selectLayoutCollectionsURL.setParameter(
+			"mvcPath", "/select_layout_collections.jsp");
+		selectLayoutCollectionsURL.setParameter("redirect", getRedirect());
+		selectLayoutCollectionsURL.setParameter(
+			"backURL", themeDisplay.getURLCurrent());
+		selectLayoutCollectionsURL.setParameter(
+			"groupId", String.valueOf(getSelGroupId()));
+		selectLayoutCollectionsURL.setParameter(
+			"selPlid", String.valueOf(selPlid));
+		selectLayoutCollectionsURL.setParameter(
+			"privateLayout", String.valueOf(privateLayout));
+
+		if (Validator.isNotNull(selectedTab)) {
+			selectLayoutCollectionsURL.setParameter("selectedTab", selectedTab);
+		}
+
+		return selectLayoutCollectionsURL.toString();
+	}
+
 	public String getSelectLayoutPageTemplateEntryURL(boolean privateLayout)
 		throws PortalException {
 
@@ -993,11 +1045,8 @@ public class LayoutsAdminDisplayContext {
 		String layoutFullURL = null;
 
 		if (layout.isDenied() || layout.isPending()) {
-			Layout draftLayout = LayoutLocalServiceUtil.fetchLayout(
-				PortalUtil.getClassNameId(Layout.class), layout.getPlid());
-
 			layoutFullURL = PortalUtil.getLayoutFullURL(
-				draftLayout, themeDisplay);
+				layout.fetchDraftLayout(), themeDisplay);
 		}
 		else {
 			layoutFullURL = PortalUtil.getLayoutFullURL(layout, themeDisplay);
@@ -1074,11 +1123,8 @@ public class LayoutsAdminDisplayContext {
 	}
 
 	public boolean isConversionDraft(Layout layout) {
-		Layout draftLayout = LayoutLocalServiceUtil.fetchLayout(
-			PortalUtil.getClassNameId(Layout.class), layout.getPlid());
-
 		if (Objects.equals(layout.getType(), LayoutConstants.TYPE_PORTLET) &&
-			(draftLayout != null)) {
+			(layout.fetchDraftLayout() != null)) {
 
 			return true;
 		}
@@ -1271,8 +1317,7 @@ public class LayoutsAdminDisplayContext {
 		}
 
 		if (layout.isTypeContent()) {
-			Layout draftLayout = LayoutLocalServiceUtil.fetchLayout(
-				PortalUtil.getClassNameId(Layout.class), layout.getPlid());
+			Layout draftLayout = layout.fetchDraftLayout();
 
 			boolean published = false;
 
@@ -1318,8 +1363,7 @@ public class LayoutsAdminDisplayContext {
 			return false;
 		}
 
-		Layout draftLayout = LayoutLocalServiceUtil.fetchLayout(
-			PortalUtil.getClassNameId(Layout.class), layout.getPlid());
+		Layout draftLayout = layout.fetchDraftLayout();
 
 		if (draftLayout == null) {
 			return false;
@@ -1487,16 +1531,6 @@ public class LayoutsAdminDisplayContext {
 	protected final HttpServletRequest httpServletRequest;
 	protected final ThemeDisplay themeDisplay;
 
-	private String _getBackURL() {
-		if (_backURL != null) {
-			return _backURL;
-		}
-
-		_backURL = ParamUtil.getString(_liferayPortletRequest, "backURL");
-
-		return _backURL;
-	}
-
 	private BreadcrumbEntry _getBreadcrumbEntry(
 		long plid, boolean privateLayout, String title) {
 
@@ -1515,8 +1549,7 @@ public class LayoutsAdminDisplayContext {
 	}
 
 	private String _getDraftLayoutURL(Layout layout) throws Exception {
-		Layout draftLayout = LayoutLocalServiceUtil.fetchLayout(
-			PortalUtil.getClassNameId(Layout.class), layout.getPlid());
+		Layout draftLayout = layout.fetchDraftLayout();
 
 		if (draftLayout == null) {
 			UnicodeProperties unicodeProperties =

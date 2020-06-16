@@ -33,7 +33,7 @@ UnicodeProperties layoutTypeSettings = selLayout.getTypeSettingsProperties();
 %>
 
 <liferay-util:html-top>
-	<link href='<%= PortalUtil.getStaticResourceURL(request, application.getContextPath() + "/css/main.css") %>' rel="stylesheet" type="text/css" />
+	<link href="<%= PortalUtil.getStaticResourceURL(request, application.getContextPath() + "/css/main.css") %>" rel="stylesheet" type="text/css" />
 </liferay-util:html-top>
 
 <portlet:actionURL copyCurrentRenderParameters="<%= true %>" name="/layout/edit_seo" var="editSEOURL" />
@@ -61,7 +61,7 @@ UnicodeProperties layoutTypeSettings = selLayout.getTypeSettingsProperties();
 			<aui:model-context bean="<%= selLayout %>" model="<%= Layout.class %>" />
 
 			<c:choose>
-				<c:when test="<%= layoutsSEODisplayContext.isDisplayPageTemplate() %>">
+				<c:when test="<%= selLayout.isTypeAssetDisplay() %>">
 					<div class="dpt-mapping">
 						<aui:model-context bean="<%= null %>" model="<%= null %>" />
 
@@ -78,7 +78,7 @@ UnicodeProperties layoutTypeSettings = selLayout.getTypeSettingsProperties();
 						/>
 					</div>
 				</c:when>
-				<c:when test="<%= !selLayout.isTypeAssetDisplay() %>">
+				<c:otherwise>
 					<aui:input helpMessage="html-title-help" id="title" label="html-title" name="title" placeholder="title" />
 					<aui:input helpMessage="description-help" id="descriptionSEO" name="description" placeholder="description" />
 
@@ -90,8 +90,7 @@ UnicodeProperties layoutTypeSettings = selLayout.getTypeSettingsProperties();
 						var="infoCanonicalURL"
 					>
 						<clay:alert
-							message='<%= LanguageUtil.get(resourceBundle, "use-custom-canonical-url-alert-info") %>'
-							title='<%= LanguageUtil.get(request, "info") + ":" %>'
+							message="use-custom-canonical-url-alert-info"
 						/>
 					</liferay-util:buffer>
 
@@ -107,7 +106,7 @@ UnicodeProperties layoutTypeSettings = selLayout.getTypeSettingsProperties();
 								</aui:input>
 							</div>
 
-							<div class='<%= selLayoutSEOEntry.isCanonicalURLEnabled() ? StringPool.BLANK : "hide" %>' id="<portlet:namespace />canonicalURLAlert">
+							<div class="<%= selLayoutSEOEntry.isCanonicalURLEnabled() ? StringPool.BLANK : "hide" %>" id="<portlet:namespace />canonicalURLAlert">
 								<%= infoCanonicalURL %>
 							</div>
 
@@ -177,7 +176,7 @@ UnicodeProperties layoutTypeSettings = selLayout.getTypeSettingsProperties();
 						module="js/seo/seo.es"
 						servletContext="<%= application %>"
 					/>
-				</c:when>
+				</c:otherwise>
 			</c:choose>
 
 			<aui:input name="robots" placeholder="robots" />
@@ -185,7 +184,7 @@ UnicodeProperties layoutTypeSettings = selLayout.getTypeSettingsProperties();
 			<c:if test="<%= PortalUtil.isLayoutSitemapable(selLayout) %>">
 				<h4><liferay-ui:message key="sitemap" /></h4>
 
-				<div class='alert alert-warning layout-prototype-info-message <%= selLayout.isLayoutPrototypeLinkActive() ? StringPool.BLANK : "hide" %>'>
+				<div class="alert alert-warning layout-prototype-info-message <%= selLayout.isLayoutPrototypeLinkActive() ? StringPool.BLANK : "hide" %>">
 					<liferay-ui:message arguments='<%= new String[] {"inherit-changes", "general"} %>' key="some-page-settings-are-unavailable-because-x-is-enabled" />
 				</div>
 

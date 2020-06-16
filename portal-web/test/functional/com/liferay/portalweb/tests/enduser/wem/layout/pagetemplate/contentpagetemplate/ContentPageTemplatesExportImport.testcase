@@ -620,6 +620,8 @@ definition {
 
 			PageTemplatesAdmin.gotoPageTemplate(pageTemplateName = "Page Template Name");
 
+			WaitForLiferayEvent.initializeLiferayEventLog();
+
 			MouseOver.mouseOverNotVisible(
 				key_portletName = "Sites Directory",
 				locator1 = "Portlet#SPECIFIC_BORDERLESS_ELLIPSIS_ICON");
@@ -734,7 +736,7 @@ definition {
 
 			MenuItem.click(menuItem = "Import");
 
-			SelectFrame(locator1 = "IFrame#DIALOG");
+			SelectFrame(locator1 = "IFrame#MODAL_BODY");
 
 			var pageTemplateZipFileName = TestCase.getDownloadedTempFileName(fileNamePattern = "page-template-*.zip");
 
@@ -969,7 +971,7 @@ definition {
 
 			MenuItem.click(menuItem = "Import");
 
-			SelectFrame(locator1 = "IFrame#DIALOG");
+			SelectFrame(locator1 = "IFrame#MODAL_BODY");
 
 			var pageTemplateZipFileName = TestCase.getDownloadedTempFileName(fileNamePattern = "page-template-*.zip");
 

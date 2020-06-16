@@ -956,9 +956,7 @@ public class LayoutLocalServiceImpl extends LayoutLocalServiceBaseImpl {
 
 		// Draft layout
 
-		Layout draftLayout = fetchLayout(
-			classNameLocalService.getClassNameId(Layout.class),
-			layout.getPlid());
+		Layout draftLayout = layout.fetchDraftLayout();
 
 		if (draftLayout != null) {
 			layoutLocalService.deleteLayout(draftLayout);
@@ -1102,6 +1100,12 @@ public class LayoutLocalServiceImpl extends LayoutLocalServiceBaseImpl {
 		}
 
 		return null;
+	}
+
+	@Override
+	public Layout fetchDraftLayout(long plid) {
+		return fetchLayout(
+			classNameLocalService.getClassNameId(Layout.class), plid);
 	}
 
 	@Override
@@ -3098,9 +3102,7 @@ public class LayoutLocalServiceImpl extends LayoutLocalServiceBaseImpl {
 		layout.setModifiedDate(now);
 		layout.setParentLayoutId(parentLayoutId);
 
-		Layout draftLayout = fetchLayout(
-			classNameLocalService.getClassNameId(Layout.class),
-			layout.getPlid());
+		Layout draftLayout = layout.fetchDraftLayout();
 
 		if (draftLayout != null) {
 			updateParentLayoutId(
@@ -3164,9 +3166,7 @@ public class LayoutLocalServiceImpl extends LayoutLocalServiceBaseImpl {
 		layout.setParentPlid(parentPlid);
 		layout.setParentLayoutId(parentLayoutId);
 
-		Layout draftLayout = fetchLayout(
-			classNameLocalService.getClassNameId(Layout.class),
-			layout.getPlid());
+		Layout draftLayout = layout.fetchDraftLayout();
 
 		if (draftLayout != null) {
 			updateParentLayoutId(draftLayout.getPlid(), parentPlid);
@@ -3191,9 +3191,7 @@ public class LayoutLocalServiceImpl extends LayoutLocalServiceBaseImpl {
 
 		Layout layout = updateParentLayoutId(plid, parentPlid);
 
-		Layout draftLayout = fetchLayout(
-			classNameLocalService.getClassNameId(Layout.class),
-			layout.getPlid());
+		Layout draftLayout = layout.fetchDraftLayout();
 
 		if (draftLayout != null) {
 			layoutLocalService.updatePriority(draftLayout.getPlid(), priority);
@@ -3226,9 +3224,7 @@ public class LayoutLocalServiceImpl extends LayoutLocalServiceBaseImpl {
 
 			layout = layoutPersistence.update(layout);
 
-			Layout draftLayout = fetchLayout(
-				classNameLocalService.getClassNameId(Layout.class),
-				layout.getPlid());
+			Layout draftLayout = layout.fetchDraftLayout();
 
 			if (draftLayout != null) {
 				draftLayout.setPriority(nextPriority);
@@ -3270,9 +3266,7 @@ public class LayoutLocalServiceImpl extends LayoutLocalServiceBaseImpl {
 
 		layout = layoutPersistence.update(layout);
 
-		Layout draftLayout = fetchLayout(
-			classNameLocalService.getClassNameId(Layout.class),
-			layout.getPlid());
+		Layout draftLayout = layout.fetchDraftLayout();
 
 		if (draftLayout != null) {
 			draftLayout.setPriority(nextPriority);
@@ -3318,9 +3312,7 @@ public class LayoutLocalServiceImpl extends LayoutLocalServiceBaseImpl {
 
 			curLayout = layoutPersistence.update(curLayout);
 
-			draftLayout = fetchLayout(
-				classNameLocalService.getClassNameId(Layout.class),
-				curLayout.getPlid());
+			draftLayout = curLayout.fetchDraftLayout();
 
 			if (draftLayout != null) {
 				draftLayout.setPriority(nextPriority);

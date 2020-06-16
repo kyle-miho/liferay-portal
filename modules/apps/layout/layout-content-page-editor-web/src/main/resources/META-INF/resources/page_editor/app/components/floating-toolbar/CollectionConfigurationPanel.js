@@ -38,12 +38,10 @@ const LAYOUT_OPTIONS = [
 
 const LIST_STYLE_GRID = '';
 
-const DEFAULT_LIST_STYLES = [
-	{
-		label: Liferay.Language.get('grid'),
-		value: LIST_STYLE_GRID,
-	},
-];
+const DEFAULT_LIST_STYLE = {
+	label: Liferay.Language.get('grid'),
+	value: LIST_STYLE_GRID,
+};
 
 export const CollectionConfigurationPanel = ({item}) => {
 	const collectionLayoutId = useId();
@@ -65,9 +63,9 @@ export const CollectionConfigurationPanel = ({item}) => {
 
 	const [availableListItemStyles, setAvailableListItemStyles] = useState([]);
 
-	const [availableListStyles, setAvailableListStyles] = useState(
-		DEFAULT_LIST_STYLES
-	);
+	const [availableListStyles, setAvailableListStyles] = useState([
+		DEFAULT_LIST_STYLE,
+	]);
 
 	const collectionItemType = item.config.collection
 		? item.config.collection.itemType
@@ -80,12 +78,16 @@ export const CollectionConfigurationPanel = ({item}) => {
 			})
 				.then((response) => {
 					setAvailableListStyles([
-						...DEFAULT_LIST_STYLES,
-						...response,
+						DEFAULT_LIST_STYLE,
+						{
+							label: Liferay.Language.get('templates'),
+							options: response,
+							type: 'group',
+						},
 					]);
 				})
 				.catch(() => {
-					setAvailableListStyles(DEFAULT_LIST_STYLES);
+					setAvailableListStyles([DEFAULT_LIST_STYLE]);
 				});
 		}
 	}, [collectionItemType]);

@@ -88,7 +88,7 @@ public abstract class BaseAssetDisplayPageFriendlyURLResolver
 				AssetDisplayPageWebKeys.INFO_DISPLAY_OBJECT_PROVIDER,
 				infoDisplayObjectProvider);
 
-			InfoEditURLProvider infoEditURLProvider =
+			InfoEditURLProvider<?> infoEditURLProvider =
 				infoEditURLProviderTracker.getInfoEditURLProvider(
 					portal.getClassName(
 						infoDisplayObjectProvider.getClassNameId()));
@@ -301,7 +301,7 @@ public abstract class BaseAssetDisplayPageFriendlyURLResolver
 		Function<Locale, String> defaultValueFunction) {
 
 		if (infoDisplayObjectProvider != null) {
-			InfoItemFormProvider infoItemFormProvider =
+			InfoItemFormProvider<Object> infoItemFormProvider =
 				infoItemServiceTracker.getInfoItemService(
 					InfoItemFormProvider.class,
 					portal.getClassName(

@@ -259,6 +259,8 @@ definition {
 
 		FormsAdminNavigator.gotoPublishedForm();
 
+		FormPortlet.waitFormRenderer(text = "Submit");
+
 		FormFields.viewTextLabel(
 			fieldLabel = "Text Field Required",
 			fieldName = "${fieldName1}");
@@ -662,6 +664,8 @@ definition {
 
 		Navigator.gotoPage(pageName = "Form Page");
 
+		FormPortlet.waitFormRenderer(text = "Enviar");
+
 		FormFields.viewTextLabel(
 			fieldLabel = "Text Field On Spanish Portal",
 			fieldName = "TextFieldOnSpanishPortal");
@@ -752,8 +756,6 @@ definition {
 		FormsAdminNavigator.gotoEditFormByName();
 
 		FormsAdminNavigator.gotoEditField(fieldName = "Testing Title");
-
-		Pause(locator1 = "2000");
 
 		FormFields.changeFieldType(selectOption = "Text");
 
@@ -982,6 +984,8 @@ definition {
 
 		FormsAdminNavigator.gotoPublishedForm();
 
+		FormPortlet.waitFormRenderer(text = "Submit");
+
 		FormFields.selectSelectOption(
 			fieldName = "TestingTitle",
 			selectOption = "Select 2");
@@ -1055,8 +1059,6 @@ definition {
 			configurationName = "Forms",
 			configurationScope = "Site Scope");
 
-		Pause(locator1 = "2000");
-
 		FormFields.viewTextLabel(
 			fieldLabel = "Autosave Interval",
 			fieldName = "autosaveInterval");
@@ -1107,6 +1109,62 @@ definition {
 		LexiconEntry.gotoEntryMenuItem(
 			menuItem = "Edit",
 			rowEntry = "Created Form Name");
+	}
+
+	@description = "This is a use case for LPS-98073."
+	@priority = "5"
+	test CreateReadUpdateDeleteImageField {
+		property test.name.skip.portal.instance = "Forms#SubmitFormWithRequiredImageField";
+		ProductMenu.gotoPortlet(
+			category = "Content &amp; Data",
+			panel = "Site Administration",
+			portlet = "Forms");
+
+		FormsAdminNavigator.gotoAddForm();
+
+		Refresh();
+
+		Form.editName(formName = "Form");
+
+		Form.editPageTitle(
+			formPageName = "Created Form Page Name",
+			formTitleNumber = "1");
+
+		Form.editDescription();
+
+		Form.gotoAddField(
+			fieldPositionNumber = "1",
+			fieldType = "Image");
+
+		Type.clickAtType(
+			locator1 = "FormFields#FIELD_HELPER_EDIT",
+			value1 = "help");
+
+		Form.save();
+
+		FormsAdminNavigator.gotoEditField(fieldName = "Image");
+
+		FormFields.editText(
+			fieldName = "label",
+			fieldValue = "Image Field");
+
+		Type.clickAtType(
+			locator1 = "FormFields#FIELD_HELPER_EDIT",
+			value1 = "Help Text");
+
+		Form.gotoPropertiesTab();
+
+		Type.clickAtType(
+			locator1 = "FormFields#FIELD_NAME_EDIT",
+			value1 = "Image Field Name");
+
+		Click(locator1 = "FormFields#UPLOAD_PREDEFINED_VALUE");
+
+		ItemSelector.uploadFile(
+			navTab = "Documents and Media",
+			uploadFileName = "Document_1.jpg");
+
+		Form.publishForm();
 	}
 
 	@description = "This is a use case for LPS-64379."
@@ -1198,6 +1256,8 @@ definition {
 
 		Navigator.gotoPage(pageName = "Form Page");
 
+		FormPortlet.waitFormRenderer(text = "Submit");
+
 		FormFields.viewTextField(
 			fieldLabel = "Text Field",
 			fieldName = "TextField");
@@ -1214,7 +1274,7 @@ definition {
 			fieldName = "DateField",
 			fieldValue = "01/01/2016");
 
-		FormPortlet.submit();
+		FormPortlet.submitSuccessfully();
 
 		Navigator.openURL();
 
@@ -1293,7 +1353,9 @@ definition {
 			successPageDescription = "Thank you for filling out the Form.",
 			successPageTitle = "Success Page Title");
 
-		Form.deleteCurrentPage(formPageNumber = "2");
+		Form.deleteCurrentPage(
+			formDropDownNumber = "1",
+			formPageNumber = "2");
 
 		Form.deleteSuccessPage(formPageNumber = "2");
 
@@ -1346,6 +1408,8 @@ definition {
 		Form.publishForm();
 
 		FormsAdminNavigator.gotoPublishedForm();
+
+		FormPortlet.waitFormRenderer(text = "Submit");
 
 		FormFields.selectSelectOption(
 			fieldName = "Select",
@@ -1582,8 +1646,6 @@ definition {
 		FormFields.editOptionsRowNameField(
 			optionValue = "Option2Name",
 			rowNumber = "2");
-
-		Pause(locator1 = "3000");
 
 		Form.closeSidebar();
 
@@ -2262,7 +2324,7 @@ definition {
 
 		FormsAdminNavigator.gotoPublishedForm();
 
-		Pause(locator1 = "5000");
+		FormPortlet.waitFormRenderer(text = "Submit");
 
 		FormFields.viewTextField(
 			fieldLabel = "Text Field",
@@ -2425,6 +2487,8 @@ definition {
 
 		Navigator.gotoPage(pageName = "Form Page");
 
+		FormPortlet.waitFormRenderer(text = "Submit");
+
 		for (var fieldValue : list "${fieldValueList}") {
 			FormFields.editText(
 				fieldName = "TextField",
@@ -2519,6 +2583,8 @@ definition {
 
 		FormsAdminNavigator.gotoPublishedForm();
 
+		FormPortlet.waitFormRenderer(text = "Submit");
+
 		FormFields.selectSelectWithMultipleOptions(
 			fieldName = "Select",
 			selectOptionsList = "Select 1,Select 2,Select 3");
@@ -2558,7 +2624,7 @@ definition {
 	@priority = "5"
 	test SubmitFormAfterEditingFields {
 		property test.name.skip.portal.instance = "Forms#SubmitFormAfterEditingFields";
-		property portal.acceptance = "quarantine";
+		property portal.acceptance = "true";
 		property testray.component.names = "Training";
 
 		Navigator.openURL();
@@ -2668,6 +2734,8 @@ definition {
 
 		Navigator.gotoPage(pageName = "Form Page");
 
+		FormPortlet.waitFormRenderer(text = "Submit");
+
 		FormFields.viewParagraphField(
 			fieldTitle = "Paragraph",
 			fieldValue = "Paragraph body text.");
@@ -2715,9 +2783,7 @@ definition {
 			panel = "Site Administration",
 			portlet = "Forms");
 
-		LexiconEntry.gotoEntryMenuItem(
-			menuItem = "Edit",
-			rowEntry = "Created Form Name");
+		FormsAdminNavigator.gotoEditFormByName();
 
 		FormsAdminNavigator.gotoEditField(fieldName = "Paragraph");
 
@@ -2772,6 +2838,8 @@ definition {
 		Form.save();
 
 		Navigator.gotoPage(pageName = "Form Page");
+
+		FormPortlet.waitFormRenderer(text = "Submit");
 
 		FormFields.viewParagraphField(
 			fieldName = "Paragraph",
@@ -2857,6 +2925,8 @@ definition {
 
 		Pause(locator1 = "5000");
 
+		Navigator.openURL();
+
 		GlobalMenu.gotoPortlet(
 			category = "Sites",
 			panel = "Control Panel",
@@ -2919,6 +2989,10 @@ definition {
 		FormsAdmin.viewCheckboxEntry(
 			fieldName = "NewCheckbox",
 			fieldValue = "Checkbox 1");
+
+		Navigator.openURL();
+
+		Site.tearDownCP();
 	}
 
 	@priority = "4"
@@ -2976,6 +3050,8 @@ definition {
 		PortletEntry.save();
 
 		Navigator.gotoPage(pageName = "Form Page");
+
+		FormPortlet.waitFormRenderer(text = "Submit");
 
 		FormFields.viewTextLabel(
 			fieldLabel = "Text Field",
@@ -3082,6 +3158,8 @@ definition {
 				Navigator.openSpecificURL(url = "${publishedFormPublicURL}");
 			}
 
+			FormPortlet.waitFormRenderer(text = "Submit");
+
 			FormFields.viewTextField(
 				fieldLabel = "Text Field",
 				fieldName = "TextField");
@@ -3106,7 +3184,7 @@ definition {
 	@priority = "5"
 	test SubmitFormWithAllFieldTypesAndThreePages {
 		property test.name.skip.portal.instance = "Forms#SubmitFormWithAllFieldTypesAndThreePages";
-		property portal.acceptance = "quarantine";
+		property portal.acceptance = "true";
 		property testray.component.names = "Training";
 
 		Navigator.openURL();
@@ -3291,6 +3369,8 @@ definition {
 
 		Navigator.gotoPage(pageName = "Form Page");
 
+		FormPortlet.waitFormRenderer(text = "Next");
+
 		FormFields.viewParagraphField(
 			fieldTitle = "Paragraph",
 			fieldValue = "Paragraph body text.");
@@ -3333,13 +3413,21 @@ definition {
 			formPageCurrent = "Page 2",
 			formPageNext = "Page 3");
 
+		FormFields.viewUploadField(
+			fieldLabel = "Upload Field",
+			fieldName = "UploadField");
+
+		AssertNotEditable(
+			key_fieldName = "UploadField",
+			locator1 = "FormFields#UPLOAD_FIELD");
+
 		ItemSelector.gotoItemSelectorViaSelectButton();
 
 		ItemSelector.uploadFile(
 			navTab = "Documents and Media",
 			uploadFileName = "Document_1.jpg");
 
-		FormPortlet.submit();
+		FormPortlet.submitSuccessfully();
 
 		Navigator.openURL();
 
@@ -3467,11 +3555,11 @@ definition {
 
 		Navigator.gotoPage(pageName = "Form Page");
 
+		FormPortlet.waitFormRenderer(text = "Submit");
+
 		FormFields.viewTextLabel(
 			fieldLabel = "Text",
 			fieldName = "Text");
-
-		Pause(locator1 = "5000");
 
 		FormFields.editText(
 			fieldName = "Text",
@@ -3483,7 +3571,9 @@ definition {
 			fieldName = "Text",
 			fieldValue = "test");
 
-		FormPortlet.submit();
+		FormPortlet.waitForValidationErrorNotPresent(validationErrorMessage = "Text must contain &apos;&apos;Test&apos;&apos;");
+
+		FormPortlet.submitSuccessfully();
 
 		Navigator.openURL();
 
@@ -3595,6 +3685,8 @@ definition {
 
 		Navigator.gotoPage(pageName = "Form Page");
 
+		FormPortlet.waitFormRenderer(text = "Submit");
+
 		FormFields.viewTextLabel(
 			fieldLabel = "Text Field",
 			fieldName = "TextField");
@@ -3627,7 +3719,7 @@ definition {
 			fieldName = "SelectField",
 			selectOption = "Select 2");
 
-		FormPortlet.submit();
+		FormPortlet.submitSuccessfully();
 
 		Navigator.openURL();
 
@@ -3735,6 +3827,8 @@ definition {
 
 		Navigator.gotoPage(pageName = "Form Page");
 
+		FormPortlet.waitFormRenderer(text = "Submit");
+
 		FormFields.viewCheckboxLabel(
 			fieldLabel = "Checkbox Field",
 			fieldName = "CheckboxField");
@@ -3747,7 +3841,9 @@ definition {
 			checkboxOption = "Checkbox 1",
 			fieldName = "CheckboxField");
 
-		FormPortlet.submit();
+		FormPortlet.waitForValidationErrorNotPresent();
+
+		FormPortlet.submitSuccessfully();
 
 		Navigator.openURL();
 
@@ -3761,6 +3857,101 @@ definition {
 		FormsAdmin.viewFormTableEntry(
 			fieldLabel = "Checkbox Field",
 			fieldValue = "Checkbox 1");
+	}
+
+	@description = "This is a use case for LPS-98073."
+	@priority = "5"
+	test SubmitFormWithRequiredImageField {
+		property test.name.skip.portal.instance = "Forms#SubmitFormWithRequiredImageField";
+		ProductMenu.gotoPortlet(
+			category = "Content &amp; Data",
+			panel = "Site Administration",
+			portlet = "Forms");
+
+		FormsAdminNavigator.gotoAddForm();
+
+		Refresh();
+
+		Form.editName(formName = "Form");
+
+		Form.editPageTitle(
+			formPageName = "Created Form Page Name",
+			formTitleNumber = "1");
+
+		Form.editDescription();
+
+		Form.gotoAddField(
+			fieldPositionNumber = "1",
+			fieldType = "Image");
+
+		FormFields.enableSwitcher(fieldName = "Required Field");
+
+		Type.clickAtType(
+			locator1 = "FormFields#FIELD_HELPER_EDIT",
+			value1 = "help");
+
+		Form.gotoPropertiesTab();
+
+		FormFields.enableSwitcher(fieldName = "Repeatable");
+
+		Form.publishForm();
+
+		Form.assertFormWasPublished();
+		ProductMenu.gotoPortlet(
+			category = "Site Builder",
+			panel = "Site Administration",
+			portlet = "Pages");
+
+		SitePages.addPublicPage(pageName = "Form Page");
+
+		Navigator.gotoPage(pageName = "Form Page");
+
+		Portlet.addPG(
+			pageName = "Form Page",
+			portletName = "Form");
+
+		FormPortletNavigator.gotoSelectForm();
+
+		FormPortletConfiguration.selectForm(formName = "Form");
+
+		PortletEntry.save();
+
+		Navigator.gotoPage(pageName = "Form Page");
+
+		FormPortlet.submitWithValidationError(validationErrorMessage = "This field is required.");
+
+		Click(locator1 = "FormFields#FIELD_ADD_DUPLICATE");
+
+		Click(locator1 = "FormFields#UPLOAD_ON_WIDGET");
+
+		ItemSelector.uploadFile(
+			navTab = "Documents and Media",
+			uploadFileName = "Document_1.jpg");
+
+		Form.editImageDescription(
+			descriptionContent = "Description 1",
+			descriptionPosition = "1");
+
+		Click(locator1 = "FormFields#UPLOAD_ON_DUPLICATE_FIELD");
+
+		ItemSelector.uploadFile(
+			navTab = "Documents and Media",
+			uploadFileName = "Document_1.jpg");
+
+		Form.editImageDescription(
+			descriptionContent = "Description 2",
+			descriptionPosition = "2");
+
+		FormPortlet.clickSubmit();
+
+		ProductMenu.gotoPortlet(
+			category = "Content &amp; Data",
+			panel = "Site Administration",
+			portlet = "Forms");
+
+		FormsAdminNavigator.gotoViewEntries(formName = "Form");
+
+		FormsAdmin.viewImageTableEntry();
 	}
 
 	@description = "This is a use case for LPS-59997."
@@ -3813,6 +4004,8 @@ definition {
 
 		Navigator.gotoPage(pageName = "Form Page");
 
+		FormPortlet.waitFormRenderer(text = "Submit");
+
 		FormFields.viewTextLabel(
 			fieldLabel = "Text Field",
 			fieldName = "TextField");
@@ -3827,7 +4020,9 @@ definition {
 			fieldName = "TextField",
 			fieldValue = "Text Field Value");
 
-		FormPortlet.submit();
+		FormPortlet.waitForValidationErrorNotPresent();
+
+		FormPortlet.submitSuccessfully();
 
 		Navigator.openURL();
 
@@ -3901,6 +4096,8 @@ definition {
 
 		Navigator.gotoPage(pageName = "Form Page");
 
+		FormPortlet.waitFormRenderer(text = "Submit");
+
 		FormFields.viewRadioLabel(
 			fieldLabel = "Radio Field",
 			fieldName = "RadioField");
@@ -3913,7 +4110,9 @@ definition {
 			fieldName = "RadioField",
 			radioOption = "Option 1");
 
-		FormPortlet.submit();
+		FormPortlet.waitForValidationErrorNotPresent();
+
+		FormPortlet.submitSuccessfully();
 
 		Navigator.openURL();
 
@@ -3983,11 +4182,11 @@ definition {
 
 		Navigator.gotoPage(pageName = "Form Page");
 
+		FormPortlet.waitFormRenderer(text = "Submit");
+
 		FormFields.addRepeatableField(
 			fieldName = "TextField",
 			repeatableFieldNumber = "1");
-
-		Pause(locator1 = "2000");
 
 		FormFields.editRepeatingText(
 			fieldName = "TextField",
@@ -4061,6 +4260,8 @@ definition {
 
 		Navigator.gotoPage(pageName = "Form Page");
 
+		FormPortlet.waitFormRenderer(text = "Submit");
+
 		FormFields.viewTextLabel(
 			fieldLabel = "Text Field",
 			fieldName = "TextField");
@@ -4073,7 +4274,9 @@ definition {
 			fieldName = "TextField",
 			fieldValue = "Text Field Value");
 
-		FormPortlet.submit();
+		FormPortlet.waitForValidationErrorNotPresent();
+
+		FormPortlet.submitSuccessfully();
 
 		Navigator.openURL();
 
@@ -4151,6 +4354,8 @@ definition {
 
 		Navigator.gotoPage(pageName = "Form Page");
 
+		FormPortlet.waitFormRenderer(text = "Submit");
+
 		FormFields.viewSwitcherLabel(
 			fieldLabel = "Checkbox Field",
 			fieldName = "CheckboxField");
@@ -4222,6 +4427,8 @@ definition {
 
 		FormsAdminNavigator.gotoPublishedForm();
 
+		FormPortlet.waitFormRenderer(text = "Submit");
+
 		FormFields.viewUploadField(
 			fieldLabel = "Upload Field",
 			fieldName = "UploadField");
@@ -4236,7 +4443,7 @@ definition {
 			navTab = "Documents and Media",
 			uploadFileName = "Document_1.jpg");
 
-		FormPortlet.submit();
+		FormPortlet.submitSuccessfully();
 
 		Navigator.openURL();
 
@@ -4297,6 +4504,8 @@ definition {
 
 		FormsAdminNavigator.gotoPublishedForm();
 
+		FormPortlet.waitFormRenderer(text = "Submit");
+
 		FormFields.viewDateField(
 			fieldLabel = "Date Field",
 			fieldName = "DateField");
@@ -4321,7 +4530,9 @@ definition {
 			fieldName = "DateField",
 			fieldValue = "01/01/2016");
 
-		FormPortlet.submit();
+		FormPortlet.waitForValidationErrorNotPresent();
+
+		FormPortlet.submitSuccessfully();
 
 		Navigator.openURL();
 
@@ -4457,7 +4668,7 @@ definition {
 
 		FormsAdminNavigator.gotoPublishedForm();
 
-		Pause(locator1 = "2000");
+		FormPortlet.waitFormRenderer(text = "Submit");
 
 		FormFields.viewTextField(
 			fieldLabel = ",-+!@#$%^*()=.?/;:{}[]\|",
@@ -4534,6 +4745,8 @@ definition {
 		Form.publishForm();
 
 		FormsAdminNavigator.gotoPublishedForm();
+
+		FormPortlet.waitFormRenderer(text = "Next");
 
 		FormFields.editText(
 			fieldName = "TextField",
@@ -4625,6 +4838,8 @@ definition {
 
 		Navigator.gotoPage(pageName = "Form Page");
 
+		FormPortlet.waitFormRenderer(text = "Submit");
+
 		FormFields.viewSwitcher(fieldName = "MultipleSelection");
 
 		FormFields.viewSwitcherLabelNotPresent(
@@ -4685,11 +4900,11 @@ definition {
 
 		Navigator.gotoPage(pageName = "Form Page");
 
+		FormPortlet.waitFormRenderer(text = "Submit");
+
 		FormFields.addRepeatableField(
 			fieldName = "TextField",
 			repeatableFieldNumber = "1");
-
-		Pause(locator1 = "2000");
 
 		FormFields.viewRepeatableTextFieldLabel(
 			fieldLabel = "Text Field",
@@ -4783,6 +4998,8 @@ definition {
 
 		Navigator.gotoPage(pageName = "Form Page");
 
+		FormPortlet.waitFormRenderer(text = "Submit");
+
 		FormFields.viewTextLabel(
 			fieldLabel = "Text Field",
 			fieldName = "TextField");
@@ -4791,7 +5008,7 @@ definition {
 			fieldName = "TextField",
 			fieldValue = "Text Field Value");
 
-		FormPortlet.submit();
+		FormPortlet.submitSuccessfully();
 
 		FormPortlet.viewSuccessPage(
 			successPageDescription = "Edited: Your information was successfully received. Thank you for filling out the form.",

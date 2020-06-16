@@ -283,7 +283,7 @@ definition {
 			samlEntityID = "samlsp",
 			spURL = "http://www.able.com:9080/");
 
-		Navigator.openSpecificURL(url = "http://www.able.com:9080/c/portal/saml/metadata");
+		Open.openNoError(locator1 = "http://www.able.com:9080/c/portal/saml/metadata");
 
 		AssertHTMLSourceTextNotPresent(value1 = "http://www.w3.org/2000/09/xmldsig#rsa-sha1");
 

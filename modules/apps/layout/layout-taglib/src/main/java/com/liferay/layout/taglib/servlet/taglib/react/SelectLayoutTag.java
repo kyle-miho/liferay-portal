@@ -185,8 +185,7 @@ public class SelectLayoutTag extends IncludeTag {
 			return false;
 		}
 
-		Layout draftLayout = LayoutLocalServiceUtil.fetchLayout(
-			PortalUtil.getClassNameId(Layout.class), layout.getPlid());
+		Layout draftLayout = layout.fetchDraftLayout();
 
 		if (draftLayout != null) {
 			boolean published = GetterUtil.getBoolean(

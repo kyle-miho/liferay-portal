@@ -17,7 +17,10 @@ package com.liferay.message.boards.service.impl;
 import com.liferay.asset.kernel.model.AssetEntry;
 import com.liferay.asset.kernel.model.AssetLinkConstants;
 import com.liferay.comment.configuration.CommentGroupServiceConfiguration;
+import com.liferay.document.library.kernel.model.DLFileEntry;
+import com.liferay.document.library.kernel.model.DLFolder;
 import com.liferay.document.library.kernel.model.DLFolderConstants;
+import com.liferay.document.library.kernel.service.DLFileEntryLocalService;
 import com.liferay.message.boards.constants.MBCategoryConstants;
 import com.liferay.message.boards.constants.MBConstants;
 import com.liferay.message.boards.constants.MBMessageConstants;
@@ -73,7 +76,7 @@ import com.liferay.portal.kernel.notifications.UserNotificationDefinition;
 import com.liferay.portal.kernel.parsers.bbcode.BBCodeTranslatorUtil;
 import com.liferay.portal.kernel.portlet.PortletProvider;
 import com.liferay.portal.kernel.portlet.PortletProviderUtil;
-import com.liferay.portal.kernel.portletfilerepository.PortletFileRepositoryUtil;
+import com.liferay.portal.kernel.portletfilerepository.PortletFileRepository;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.repository.model.Folder;
 import com.liferay.portal.kernel.sanitizer.Sanitizer;
@@ -445,7 +448,7 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 		if (ListUtil.isNotEmpty(inputStreamOVPs)) {
 			Folder folder = message.addAttachmentsFolder();
 
-			PortletFileRepositoryUtil.addPortletFileEntries(
+			_portletFileRepository.addPortletFileEntries(
 				message.getGroupId(), userId, MBMessage.class.getName(),
 				message.getMessageId(), MBConstants.SERVICE_NAME,
 				folder.getFolderId(), inputStreamOVPs);
@@ -533,7 +536,7 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 
 		Folder folder = message.addAttachmentsFolder();
 
-		PortletFileRepositoryUtil.addPortletFileEntry(
+		_portletFileRepository.addPortletFileEntry(
 			message.getGroupId(), userId, MBMessage.class.getName(),
 			message.getMessageId(), MBConstants.SERVICE_NAME,
 			folder.getFolderId(), file, fileName, mimeType, true);
@@ -660,7 +663,7 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 		long folderId = message.getAttachmentsFolderId();
 
 		if (folderId != DLFolderConstants.DEFAULT_PARENT_FOLDER_ID) {
-			PortletFileRepositoryUtil.deletePortletFolder(folderId);
+			_portletFileRepository.deletePortletFolder(folderId);
 		}
 
 		// Thread
@@ -677,7 +680,7 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 			if (threadAttachmentsFolderId !=
 					DLFolderConstants.DEFAULT_PARENT_FOLDER_ID) {
 
-				PortletFileRepositoryUtil.deletePortletFolder(
+				_portletFileRepository.deletePortletFolder(
 					threadAttachmentsFolderId);
 			}
 
@@ -880,7 +883,7 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 			return;
 		}
 
-		PortletFileRepositoryUtil.deletePortletFileEntry(
+		_portletFileRepository.deletePortletFileEntry(
 			message.getGroupId(), folderId, fileName);
 	}
 
@@ -896,7 +899,7 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 			return;
 		}
 
-		PortletFileRepositoryUtil.deletePortletFileEntries(
+		_portletFileRepository.deletePortletFileEntries(
 			message.getGroupId(), folderId);
 	}
 
@@ -919,7 +922,7 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 			return;
 		}
 
-		PortletFileRepositoryUtil.deletePortletFileEntries(
+		_portletFileRepository.deletePortletFileEntries(
 			message.getGroupId(), folderId, WorkflowConstants.STATUS_IN_TRASH);
 	}
 
@@ -1576,10 +1579,10 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 
 		long folderId = message.getAttachmentsFolderId();
 
-		FileEntry fileEntry = PortletFileRepositoryUtil.getPortletFileEntry(
+		FileEntry fileEntry = _portletFileRepository.getPortletFileEntry(
 			message.getGroupId(), folderId, fileName);
 
-		PortletFileRepositoryUtil.movePortletFileEntryToTrash(
+		_portletFileRepository.movePortletFileEntryToTrash(
 			userId, fileEntry.getFileEntryId());
 
 		return fileEntry.getFileEntryId();
@@ -1594,7 +1597,7 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 
 		Folder folder = message.addAttachmentsFolder();
 
-		PortletFileRepositoryUtil.restorePortletFileEntryFromTrash(
+		_portletFileRepository.restorePortletFileEntryFromTrash(
 			message.getGroupId(), userId, folder.getFolderId(),
 			deletedFileName);
 	}
@@ -1699,7 +1702,7 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 		if (ListUtil.isNotEmpty(inputStreamOVPs)) {
 			Folder folder = message.addAttachmentsFolder();
 
-			PortletFileRepositoryUtil.addPortletFileEntries(
+			_portletFileRepository.addPortletFileEntries(
 				message.getGroupId(), userId, MBMessage.class.getName(),
 				message.getMessageId(), MBConstants.SERVICE_NAME,
 				folder.getFolderId(), inputStreamOVPs);
@@ -2568,10 +2571,21 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 	private long _getFileEntryMessageId(long fileEntryId)
 		throws PortalException {
 
-		FileEntry fileEntry = PortletFileRepositoryUtil.getPortletFileEntry(
+		// See LPS-110554
+
+		DLFileEntry dlFileEntry = _dlFileEntryLocalService.fetchDLFileEntry(
 			fileEntryId);
 
-		Folder folder = PortletFileRepositoryUtil.getPortletFolder(
+		if (dlFileEntry != null) {
+			DLFolder dlFolder = dlFileEntry.getFolder();
+
+			return GetterUtil.getLong(dlFolder.getName());
+		}
+
+		FileEntry fileEntry = _portletFileRepository.getPortletFileEntry(
+			fileEntryId);
+
+		Folder folder = _portletFileRepository.getPortletFolder(
 			fileEntry.getFolderId());
 
 		return GetterUtil.getLong(folder.getName());
@@ -2818,6 +2832,9 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 	private ConfigurationProvider _configurationProvider;
 
 	@Reference
+	private DLFileEntryLocalService _dlFileEntryLocalService;
+
+	@Reference
 	private Http _http;
 
 	@Reference
@@ -2837,6 +2854,9 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 
 	@Reference
 	private Portal _portal;
+
+	@Reference
+	private PortletFileRepository _portletFileRepository;
 
 	@Reference
 	private SubscriptionLocalService _subscriptionLocalService;

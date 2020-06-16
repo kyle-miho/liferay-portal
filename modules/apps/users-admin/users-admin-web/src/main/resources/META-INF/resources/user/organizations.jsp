@@ -38,7 +38,7 @@ currentURLObj.setParameter("historyKey", renderResponse.getNamespace() + "organi
 	cssClass="sheet-subtitle"
 >
 	<clay:content-col
-		expand="true"
+		expand="<%= true %>"
 	>
 		<span class="heading-text"><liferay-ui:message key="organizations" /></span>
 	</clay:content-col>
@@ -191,31 +191,12 @@ currentURLObj.setParameter("historyKey", renderResponse.getNamespace() + "organi
 			'.modify-link'
 		);
 
-		Liferay.on('<portlet:namespace />enableRemovedOrganizations', function (event) {
-			event.selectors.each(function (item, index, collection) {
-				var organizationId = item.attr('data-entityid');
-
-				if (deleteOrganizationIds.indexOf(organizationId) != -1) {
-					Util.toggleDisabled(item, false);
-				}
-			});
-		});
-
 		var selectOrganizationLink = A.one(
 			'#<portlet:namespace />selectOrganizationLink'
 		);
 
 		if (selectOrganizationLink) {
 			selectOrganizationLink.on('click', function (event) {
-				var searchContainerData = searchContainer.getData();
-
-				if (!searchContainerData.length) {
-					searchContainerData = [];
-				}
-				else {
-					searchContainerData = searchContainerData.split(',');
-				}
-
 				Util.selectEntity(
 					{
 						dialog: {
@@ -223,7 +204,7 @@ currentURLObj.setParameter("historyKey", renderResponse.getNamespace() + "organi
 							modal: true,
 						},
 						id: '<portlet:namespace />selectOrganization',
-						selectedData: searchContainerData,
+						selectedData: searchContainer.getData(true),
 						title:
 							'<liferay-ui:message arguments="organization" key="select-x" />',
 						uri:

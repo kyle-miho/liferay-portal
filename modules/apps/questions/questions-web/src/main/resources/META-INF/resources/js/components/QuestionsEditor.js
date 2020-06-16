@@ -33,10 +33,16 @@ const getToolbarSet = (toolbarSet) => {
 export function getCKEditorConfig() {
 	const config = {
 		allowedContent: true,
+		codeSnippet_languages: {
+			html: 'HTML',
+			java: 'Java',
+			javascript: 'JavaScript',
+		},
 		codeSnippet_theme: 'monokai_sublime',
 		extraPlugins: 'codesnippet,itemselector',
 		height: 216,
 		removePlugins: 'elementspath',
+		tabSpaces: 4,
 	};
 
 	config.toolbar = [
@@ -86,6 +92,31 @@ const QuestionsEditor = ({
 		window
 	);
 
+	const insertTextAtCursor = (el, text) => {
+		const val = el.value;
+		let endIndex;
+		let range;
+		if (
+			typeof el.selectionStart != 'undefined' &&
+			typeof el.selectionEnd != 'undefined'
+		) {
+			endIndex = el.selectionEnd;
+			el.value =
+				val.slice(0, el.selectionStart) + text + val.slice(endIndex);
+			el.selectionStart = el.selectionEnd = endIndex + text.length;
+		}
+		else if (
+			typeof document.selection != 'undefined' &&
+			typeof document.selection.createRange != 'undefined'
+		) {
+			el.focus();
+			range = document.selection.createRange();
+			range.collapse(false);
+			range.text = text;
+			range.select();
+		}
+	};
+
 	return (
 		<div className={cssClass} id={`${name}Container`}>
 			<Editor
@@ -96,6 +127,14 @@ const QuestionsEditor = ({
 				onBeforeLoad={(CKEDITOR) => {
 					if (CKEDITOR) {
 						CKEDITOR.disableAutoInline = true;
+
+						if (!CKEDITOR.plugins.externals) {
+							CKEDITOR.plugins.addExternal(
+								'tab',
+								'/plugins/tab/plugin.js'
+							);
+						}
+
 						CKEDITOR.getNextZIndex = () => 1000;
 						CKEDITOR.dtd.$removeEmpty.i = 0;
 						CKEDITOR.dtd.$removeEmpty.span = 0;
@@ -109,6 +148,32 @@ const QuestionsEditor = ({
 									name
 								);
 							}
+
+							editor.on('dialogShow', ({data}) => {
+								if (data._.name === 'codeSnippet') {
+									const {code, lang} = data._.contents.info;
+
+									document.getElementById(
+										lang._.inputId
+									).value = 'java';
+
+									const textarea = document.getElementById(
+										code._.inputId
+									);
+									textarea.onkeydown = (ev) => {
+										if (ev.keyCode === 9) {
+											insertTextAtCursor(
+												textarea,
+												'    '
+											);
+											ev.preventDefault();
+											ev.stopPropagation();
+
+											return false;
+										}
+									};
+								}
+							});
 						});
 					}
 				}}

@@ -114,8 +114,7 @@ public class EditOpenGraphMVCActionCommand extends BaseMVCActionCommand {
 			openGraphImageFileEntryId, openGraphTitleEnabled, openGraphTitleMap,
 			serviceContext);
 
-		Layout draftLayout = _layoutLocalService.fetchLayout(
-			_portal.getClassNameId(Layout.class), layout.getPlid());
+		Layout draftLayout = layout.fetchDraftLayout();
 
 		if (draftLayout != null) {
 			_layoutSEOEntryService.updateLayoutSEOEntry(

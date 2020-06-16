@@ -42,7 +42,7 @@ request.setAttribute("edit_site_navigation_menu.jsp-siteNavigationMenuItemId", s
 			<div class="card-body site-navigation-menu-item__card">
 				<div class="card-row">
 					<clay:content-col
-						cssClass="site-navigation-menu-item__drag-ico"
+						cssClass="site-navigation-menu-item__drag-icon"
 					>
 						<liferay-ui:icon
 							icon="drag"
@@ -51,8 +51,8 @@ request.setAttribute("edit_site_navigation_menu.jsp-siteNavigationMenuItemId", s
 					</clay:content-col>
 
 					<clay:content-col
-						expand="true"
-						gutters="true"
+						expand="<%= true %>"
+						gutters="<%= true %>"
 					>
 						<p class="card-title">
 							<span class="text-truncate">

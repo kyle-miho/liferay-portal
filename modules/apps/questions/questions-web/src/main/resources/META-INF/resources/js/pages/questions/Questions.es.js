@@ -14,7 +14,7 @@
 
 import ClayButton from '@clayui/button';
 import {ClayResultsBar} from '@clayui/management-toolbar';
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {withRouter} from 'react-router-dom';
 
 import {AppContext} from '../../AppContext.es';
@@ -125,6 +125,8 @@ export default withRouter(
 			);
 		};
 
+		const sectionChange = useCallback((section) => setSection(section), []);
+
 		return (
 			<section className="questions-section questions-section-list">
 				<div className="questions-container">
@@ -133,19 +135,19 @@ export default withRouter(
 							<QuestionsNavigationBar
 								filterChange={setFilter}
 								searchChange={loadSearch}
-								sectionChange={(section) => setSection(section)}
+								sectionChange={sectionChange}
 							/>
 						</div>
 
 						{!!search && (
-							<div className="c-mt-5 c-mt-md-1 c-px-0 col-xl-12">
-								<ClayResultsBar>
+							<div className="c-mt-5 c-mx-auto c-px-0 col-xl-12">
+								<ClayResultsBar className="c-mt-5">
 									<ClayResultsBar.Item expand>
 										<span className="component-text text-truncate-inline">
 											<span className="text-truncate">
 												{lang.sub(
 													Liferay.Language.get(
-														'found-x-results-for-x'
+														'x-results-for-x'
 													),
 													[
 														questions.totalCount,
@@ -170,7 +172,7 @@ export default withRouter(
 							</div>
 						)}
 
-						<div className="c-mt-5 c-mx-auto c-px-0 col-xl-10">
+						<div className="c-mx-auto c-px-0 col-xl-10">
 							<PaginatedList
 								activeDelta={pageSize}
 								activePage={page}

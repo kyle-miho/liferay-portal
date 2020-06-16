@@ -39,16 +39,17 @@ export default function UndoHistory() {
 				active={active}
 				alignmentPosition={Align.BottomRight}
 				className="mr-3"
+				menuElementAttrs={{className: 'page-editor__undo-history'}}
 				onActiveChange={setActive}
 				trigger={
 					<ClayButtonWithIcon
-						aria-label={Liferay.Language.get('undo-history')}
+						aria-label={Liferay.Language.get('history')}
 						className="btn-monospaced"
 						disabled={!undoHistory.length && !redoHistory.length}
 						displayType="secondary"
 						small
 						symbol="time"
-						title={Liferay.Language.get('undo-history')}
+						title={Liferay.Language.get('history')}
 					/>
 				}
 			>
@@ -114,7 +115,8 @@ const History = ({actions = [], type}) => {
 
 			{action.type !== SELECT_SEGMENTS_EXPERIENCE &&
 				action.segmentsExperienceId !==
-					config.defaultSegmentsExperienceId && (
+					config.defaultSegmentsExperienceId &&
+				!config.singleSegmentsExperienceMode && (
 					<span>
 						{getSegmentsExperienceName(
 							action.segmentsExperienceId,

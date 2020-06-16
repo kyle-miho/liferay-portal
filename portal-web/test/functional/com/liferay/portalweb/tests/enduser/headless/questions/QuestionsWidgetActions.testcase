@@ -104,6 +104,61 @@ definition {
 			locator1 = "Questions#ASK_QUESTION_SEARCH_QUESTION");
 	}
 
+	@description = "Validate if the anonymous user can ask questions and redirected to login."
+	@priority = "4"
+	test AskQuestionsThroughAnonymousUser {
+		GlobalMenu.gotoPortlet(
+			category = "Configuration",
+			panel = "Control Panel",
+			portlet = "Service Access Policy");
+
+		ServiceAccessPolicy.addServiceAccessPolicy(
+			defaultSwitch = "true",
+			enabled = "true",
+			policyName = "QUESTIONS",
+			title = "QUESTIONS");
+
+		var allowedServiceSignature = '''
+			com.liferay.expando.kernel.service.ExpandoValueService#getData
+			com.liferay.message.boards.service.MBCategoryService#getCategoriesCount
+			com.liferay.message.boards.service.MBCategoryService#getCategory
+			com.liferay.message.boards.service.MBMessageService#fetchMBMessageByUrlSubject
+			com.liferay.message.boards.service.MBMessageService#getMessage
+		''';
+
+		ServiceAccessPolicy.editServiceAccessPolicy(
+			allowedServiceSignature = "${allowedServiceSignature}",
+			policyName = "QUESTIONS");
+
+		MessageBoardsAdmin.openMessageBoardsAdmin(siteURLKey = "guest");
+
+		MessageboardsCategory.addCP(categoryName = "Questions Test Category");
+
+		Navigator.gotoPage(pageName = "Questions Page");
+
+		User.logoutPG();
+
+		Navigator.gotoPage(pageName = "Questions Page");
+
+		Click(
+			key_questionNameField = "Questions Test Category",
+			locator1 = "Questions#QUESTIONS_NAME_FIELD");
+
+		Questions.askQuestionFillingTheMandatoryFields(
+			anonymousUser = "true",
+			kbArticleContent = "Body Anonymous User Ask questions",
+			password = "test",
+			titleField = "Title Anonymous User Ask questions",
+			userEmailAddress = "test@liferay.com");
+
+		Click(locator1 = "Questions#ASK_QUESTION_POST_YOUR_QUESTION_BUTTON");
+
+		AssertTextEquals(
+			key_questionTitle = "Title Anonymous User Ask questions",
+			locator1 = "Questions#QUESTIONS_TITLE",
+			value1 = "Title Anonymous User Ask questions");
+	}
+
 	@description = "Validate if the My Activity tab appears"
 	@priority = "4"
 	test ValidateIfTheMyActivityAppears {
@@ -160,6 +215,69 @@ definition {
 		Click(locator1 = "Pagination#NEXT_LINK");
 
 		Questions.viewPaginationResults(results = "Showing 9 to 10 of 10");
+	}
+
+	@description = "Validate if the user can select the filter and view the related results."
+	@priority = "4"
+	test ViewQuestionsWithConfiguredFilter {
+		JSONMBMessage.addCategory(
+			categoryDescription = "Description",
+			categoryName = "Questions Test Category",
+			userEmailAddress = "test@liferay.com");
+
+		for (var num : list "1,2") {
+			Questions.addQuestionByAPI(
+				bodyField = "Question Body ${num}",
+				categoryName = "Questions Test Category",
+				tagField = "test tag",
+				titleField = "Question ${num}");
+		}
+
+		MessageBoardsAdmin.openMessageBoardsAdmin(siteURLKey = "guest");
+
+		MessageboardsCategory.gotoCP(categoryName = "Questions Test Category");
+
+		MessageboardsThread.gotoCP(threadSubject = "Question 1");
+
+		MessageboardsThread.editCP(
+			threadBodyEdit = "Question Body 1 Edit",
+			threadSubjectEdit = "Question 1 Edit");
+
+		Navigator.gotoPage(pageName = "Questions Page");
+
+		Click(
+			key_questionNameField = "Questions Test Category",
+			locator1 = "Questions#QUESTIONS_NAME_FIELD");
+
+		Pause(locator = "3000");
+
+		Questions.configureFilter(filterBy = "Latest Edited");
+
+		Questions.viewFilterResults(
+			lastQuestionTitle = "Question 2",
+			questionTitle = "Question 1 Edit");
+
+		Questions.configureFilter(filterBy = "Voted in the Last Week");
+
+		for (var num : list "1 Edit,2") {
+			AssertElementNotPresent(
+				key_questionTitle = "Question ${num}",
+				locator1 = "Questions#QUESTIONS_TITLE");
+		}
+
+		Questions.configureFilter(filterBy = "Voted in the Last Month");
+
+		for (var num : list "1 Edit,2") {
+			AssertElementNotPresent(
+				key_questionTitle = "Question ${num}",
+				locator1 = "Questions#QUESTIONS_TITLE");
+		}
+
+		Questions.configureFilter(filterBy = "Latest Created");
+
+		Questions.viewFilterResults(
+			lastQuestionTitle = "Question 1 Edit",
+			questionTitle = "Question 2");
 	}
 
 }
