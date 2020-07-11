@@ -26,6 +26,8 @@ import com.liferay.portal.kernel.dao.orm.SessionCustomizer;
 import com.liferay.portal.kernel.dao.orm.SessionWrapper;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.BaseModel;
 import com.liferay.portal.kernel.model.PersistedModel;
 import com.liferay.portal.kernel.model.Portlet;
@@ -431,22 +433,37 @@ public class DataGuardTestRule
 			String originBundleSymbolicName)
 		throws Exception {
 
+		_log.info("Inside _installTransactionExecutor");
+		_log.info("originBundleSymbolicName=" + originBundleSymbolicName);
+
 		if (originBundleSymbolicName == null) {
+			_log.info("Returning, since originalSymbolicName=null");
+
 			return () -> {
 			};
 		}
 
 		ClassLoader classLoader = PortalClassLoaderUtil.getClassLoader();
 
+		_log.info("classLoader = " +  classLoader.toString());
+
 		Class<?> clazz = classLoader.loadClass(
 			"com.liferay.portal.spring.transaction." +
 				"TransactionExecutorThreadLocal");
 
+		_log.info("clazz=" + clazz.toString());
+
 		Field field = clazz.getDeclaredField("_transactionExecutorThreadLocal");
+
+		_log.info("field=" + field.toString());
 
 		field.setAccessible(true);
 
+		_log.info("field=" + field.toString());
+
 		Registry registry = RegistryUtil.getRegistry();
+
+		_log.info("registry=" + registry.toString());
 
 		ServiceReference<?>[] serviceReferences =
 			registry.getAllServiceReferences(
@@ -454,7 +471,11 @@ public class DataGuardTestRule
 				"(origin.bundle.symbolic.name=" + originBundleSymbolicName +
 					")");
 
+		_log.info("serviceReferences=" + serviceReferences.toString());
+
 		if (serviceReferences == null) {
+			_log.info("serviceReferences=null, returning");
+
 			return () -> {
 			};
 		}
@@ -467,26 +488,43 @@ public class DataGuardTestRule
 
 		ServiceReference<?> serviceReference = serviceReferences[0];
 
+		_log.info("serviceReference=" + serviceReference.toString());
+
 		Object portletTransactionExecutor = registry.getService(
 			serviceReference);
+
+		_log.info("portletTransactionExecutor=" + portletTransactionExecutor.toString());
 
 		ThreadLocal<Deque<Object>> transactionExecutorsThreadLocal =
 			(ThreadLocal<Deque<Object>>)field.get(null);
 
+		_log.info("transactionExecutorsThreadLocal=" + transactionExecutorsThreadLocal.toString());
+
 		Deque<Object> transactionExecutors =
 			transactionExecutorsThreadLocal.get();
 
+		_log.info("transactionExecutors=" + transactionExecutors.toString());
+
 		if (portletTransactionExecutor == transactionExecutors.peek()) {
+
+			_log.info("returning, portletTransactionExecutor = transactionExecutors.peek");
+
 			return () -> {
 			};
 		}
 
 		transactionExecutors.push(portletTransactionExecutor);
 
+		_log.info("transactionExecutors" + transactionExecutors.toString());
+
 		return () -> {
 			transactionExecutors.pop();
 
+			_log.info("transactionExecutors" + transactionExecutors.toString());
+
 			registry.ungetService(serviceReference);
+
+			_log.info("registry=" + registry.toString());
 		};
 	}
 
@@ -647,5 +685,8 @@ public class DataGuardTestRule
 		private final Map<String, Map<Serializable, String>> _records;
 
 	}
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		DataGuardTestRule.class);
 
 }
