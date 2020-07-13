@@ -304,7 +304,6 @@ public class DataGuardTestRule
 		throws Exception {
 
 		_log.info("Inside _installTransactionExecutor");
-		_log.info("originBundleSymbolicName=" + originBundleSymbolicName);
 
 		if (originBundleSymbolicName == null) {
 			_log.info("Returning, since originalSymbolicName=null");
@@ -312,6 +311,8 @@ public class DataGuardTestRule
 			return () -> {
 			};
 		}
+
+		_log.info("originBundleSymbolicName=" + originBundleSymbolicName);
 
 		ClassLoader classLoader = PortalClassLoaderUtil.getClassLoader();
 
@@ -341,14 +342,14 @@ public class DataGuardTestRule
 				"(origin.bundle.symbolic.name=" + originBundleSymbolicName +
 					")");
 
-		_log.info("serviceReferences=" + serviceReferences.toString());
-
 		if (serviceReferences == null) {
 			_log.info("serviceReferences=null, returning");
 
 			return () -> {
 			};
 		}
+
+		_log.info("serviceReferences=" + serviceReferences.toString());
 
 		Assert.assertEquals(
 			StringBundler.concat(
