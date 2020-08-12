@@ -45,6 +45,7 @@ import java.util.zip.ZipEntry;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -165,6 +166,7 @@ public class FileInstallDeployTest {
 		}
 	}
 
+	@Ignore
 	@Test
 	public void testDeployAndChangeModifiedDate() throws Exception {
 		String dummyJarSymbolicName = _TEST_JAR_SYMBOLIC_NAME + "Dummy";
