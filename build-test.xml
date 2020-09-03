@@ -6506,6 +6506,7 @@ go</echo>
 							</then>
 						</if>
 
+						<echo>DELETING LIFERAY LOGS</echo>
 						<delete dir="${test.app.server.liferay.home}/logs" />
 						<delete dir="${test.app.server.liferay.home}/work" />
 
