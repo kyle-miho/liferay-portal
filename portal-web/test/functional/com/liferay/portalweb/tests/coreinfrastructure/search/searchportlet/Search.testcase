@@ -311,7 +311,7 @@ definition {
 
 		Navigator.openSpecificURL(url = "${portalURL}/web/guest/search");
 
-		Portlet.addPG(portletName = "Suggestions");
+		SearchPortlets.addWidgets(searchPortletList = "Suggestions");
 
 		SearchPortlets.gotoConfigureSuggestionsOptions();
 
@@ -382,7 +382,7 @@ definition {
 			Navigator.gotoPage(pageName = "Search Page");
 		}
 
-		Portlet.addPG(portletName = "Search Results");
+		SearchPortlets.addWidgets(searchPortletList = "Search Results");
 
 		Portlet.gotoPortletOptions(
 			portletName = "Search Results",
@@ -984,7 +984,13 @@ definition {
 
 		Refresh();
 
-		PageEditor.addWidget(
+		// Workaround for LPS-120037
+
+		//PageEditor.addWidget(
+		//	portletName = "Search Results",
+		//	targetFragmentName = "Search Bar");
+
+		SearchResultPortlet.addToContentPage(
 			portletName = "Search Results",
 			targetFragmentName = "Search Bar");
 
@@ -1497,7 +1503,7 @@ definition {
 
 		Navigator.openSpecificURL(url = "${portalURL}/web/guest/search");
 
-		Portlet.addPG(portletName = "Custom Facet");
+		SearchPortlets.addWidgets(searchPortletList = "Custom Facet");
 
 		SearchFacetPortlet.configureCustomFacet(aggregationField = "version");
 
@@ -2613,7 +2619,7 @@ definition {
 
 		SearchPortlets.searchEmbedded(searchTerm = "Content");
 
-		Portlet.addPG(portletName = "Sort");
+		SearchPortlets.addWidgets(searchPortletList = "Sort");
 
 		Refresh();
 

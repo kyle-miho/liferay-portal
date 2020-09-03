@@ -488,6 +488,14 @@ definition {
 			Pause(locator1 = "3000");
 		}
 
+		if (isSet(backgroundColor)) {
+			PageEditor.selectColorSwatchItem(
+				colorSwatchItem = "${backgroundColor}",
+				fieldLabel = "Background Color");
+
+			Pause(locator1 = "3000");
+		}
+
 		if (isSet(borderColor)) {
 			PageEditor.selectColorSwatchItem(
 				colorSwatchItem = "${borderColor}",
@@ -688,6 +696,26 @@ definition {
 		Click(locator1 = "Button#DELETE_FRAGMENT_COMMENT");
 
 		AssertTextNotPresent(value1 = "${fragmentComment}");
+	}
+
+	macro deleteExperience {
+		var key_experienceName = "${newExperience}";
+
+		Click(locator1 = "PageEditor#EXPERIENCE_DEFAULT_BUTTON_NAME");
+
+		ClickNoError(locator1 = "PageEditor#EXPERIENCE_DELETE_BUTTON");
+
+		AssertConfirm(value1 = "Do you want to delete this experience? Its content will be deleted.");
+
+		Alert.viewSuccessMessage();
+
+		Click(locator1 = "PageEditor#EXPERIENCE_DEFAULT_BUTTON_NAME");
+
+		AssertElementNotPresent(
+			key_experienceName = "${newExperience}",
+			locator1 = "PageEditor#EXPERIENCE_SELECT_ITEM");
+
+		Click(locator1 = "PageEditor#EXPERIENCE_DEFAULT_BUTTON_NAME");
 	}
 
 	macro editCollectionDisplay {
@@ -891,6 +919,40 @@ definition {
 		}
 	}
 
+	macro editExperience {
+		var key_experienceName = "${newExperience}";
+
+		Click(locator1 = "PageEditor#EXPERIENCE_DEFAULT_BUTTON_NAME");
+
+		Click(locator1 = "PageEditor#EXPERIENCE_EDIT_BUTTON");
+
+		Click(locator1 = "PageEditor#EXPERIENCE_CREATE_SEGMENT");
+
+		Segmentation.addProperties(propertyOption = "Email Address");
+
+		Segmentation.fillTitle(titleField = "AddSegmentUserEmailAddressContains Test 2");
+
+		Segmentation.changeCriterionInputEmailAddress(criterionInputOption = "Contains");
+
+		Segmentation.fillProperty(PropertyField = "liferay2");
+
+		Button.clickSave();
+
+		Type(
+			locator1 = "PageEditor#EXPERIENCE_NAME",
+			value1 = "${key_experienceName}");
+
+		Click(locator1 = "Button#SAVE");
+
+		Click(locator1 = "PageEditor#EXPERIENCE_DEFAULT_BUTTON_NAME");
+
+		AssertElementPresent(
+			key_experienceName = "${newExperience}",
+			locator1 = "PageEditor#EXPERIENCE_SELECT_ITEM");
+
+		Click(locator1 = "PageEditor#EXPERIENCE_DEFAULT_BUTTON_NAME");
+	}
+
 	macro editFragmentHTML {
 		PageEditor.gotoEditableFieldEdit(
 			fragmentName = "${fragmentName}",
@@ -926,6 +988,11 @@ definition {
 			ItemSelector.selectDMImage(
 				imageFileName = "${imageFileName}",
 				navTab = "Documents and Media");
+		}
+		if (isSet(imageSourceURL)) {
+			ItemSelector.addFromURL(
+				imageSourceURL = "${imageSourceURL}",
+				navTab = "URL");
 		}
 		else {
 			SelectFrame(locator1 = "IFrame#MODAL_BODY");
@@ -1112,6 +1179,15 @@ definition {
 				Pause(locator1 = "3000");
 			}
 
+			if (isSet(boxShadow)) {
+				Select(
+					key_fieldLabel = "Shadow",
+					locator1 = "Select#GENERIC_SELECT_FIELD",
+					value1 = "${boxShadow}");
+
+				Pause(locator1 = "3000");
+			}
+
 			if (isSet(containerWidth)) {
 				Select(
 					key_fieldLabel = "Container Width",
@@ -1148,15 +1224,6 @@ definition {
 						Pause(locator1 = "3000");
 					}
 				}
-			}
-
-			if (isSet(dropShadow)) {
-				Select(
-					key_fieldLabel = "Drop Shadow",
-					locator1 = "Select#GENERIC_SELECT_FIELD",
-					value1 = "${dropShadow}");
-
-				Pause(locator1 = "3000");
 			}
 
 			if (isSet(marginBottom)) {
@@ -1825,6 +1892,13 @@ definition {
 				locator1 = "PageEditor#CONTAINER_CONFIGURATION_BORDER_WIDTH");
 		}
 
+		if (isSet(boxShadow)) {
+			AssertElementPresent(
+				key_boxShadow = "${boxShadow}",
+				key_position = "${position}",
+				locator1 = "PageEditor#CONTAINER_CONFIGURATION_BOX_SHADOW");
+		}
+
 		if (isSet(containerWidth)) {
 			if ("${containerWidth}" == "Fixed Width") {
 				AssertElementNotPresent(
@@ -1855,13 +1929,6 @@ definition {
 				key_contentDisplay = "${contentDisplay}",
 				key_position = "${position}",
 				locator1 = "PageEditor#CONTAINER_CONFIGURATION_CONTENT_DISPLAY");
-		}
-
-		if (isSet(dropShadow)) {
-			AssertElementPresent(
-				key_dropShadow = "${dropShadow}",
-				key_position = "${position}",
-				locator1 = "PageEditor#CONTAINER_CONFIGURATION_DROP_SHADOW");
 		}
 
 		if (isSet(horizontalAlign)) {
@@ -2008,6 +2075,15 @@ definition {
 				locator1 = "Fragment#FRAGMENT_CONFIGURATION_ALIGNMENT");
 		}
 
+		if (isSet(backgroundColor)) {
+			var fragmentName = StringUtil.upperCaseFirstLetter("${fragmentName}");
+
+			AssertElementPresent(
+				key_fragmentName = "${fragmentName}",
+				key_paletteItem = "${backgroundColor}",
+				locator1 = "Fragment#FRAGMENT_CONFIGURATION_BACKGROUND_COLOR");
+		}
+
 		if (isSet(borderColor)) {
 			var fragmentName = StringUtil.upperCaseFirstLetter("${fragmentName}");
 
@@ -2075,6 +2151,69 @@ definition {
 				key_fragmentName = "${fragmentName}",
 				key_marginBottom = "${marginBottom}",
 				locator1 = "Fragment#FRAGMENT_CONFIGURATION_MARGIN_BOTTOM");
+		}
+
+		if (isSet(marginLeft)) {
+			var fragmentName = StringUtil.upperCaseFirstLetter("${fragmentName}");
+
+			AssertElementPresent(
+				key_fragmentName = "${fragmentName}",
+				key_marginLeft = "${marginLeft}",
+				locator1 = "Fragment#FRAGMENT_CONFIGURATION_MARGIN_LEFT");
+		}
+
+		if (isSet(marginRight)) {
+			var fragmentName = StringUtil.upperCaseFirstLetter("${fragmentName}");
+
+			AssertElementPresent(
+				key_fragmentName = "${fragmentName}",
+				key_marginRight = "${marginRight}",
+				locator1 = "Fragment#FRAGMENT_CONFIGURATION_MARGIN_RIGHT");
+		}
+
+		if (isSet(marginTop)) {
+			var fragmentName = StringUtil.upperCaseFirstLetter("${fragmentName}");
+
+			AssertElementPresent(
+				key_fragmentName = "${fragmentName}",
+				key_marginTop = "${marginTop}",
+				locator1 = "Fragment#FRAGMENT_CONFIGURATION_MARGIN_TOP");
+		}
+
+		if (isSet(paddingBottom)) {
+			var fragmentName = StringUtil.upperCaseFirstLetter("${fragmentName}");
+
+			AssertElementPresent(
+				key_fragmentName = "${fragmentName}",
+				key_paddingBottom = "${paddingBottom}",
+				locator1 = "Fragment#FRAGMENT_CONFIGURATION_PADDING_BOTTOM");
+		}
+
+		if (isSet(paddingLeft)) {
+			var fragmentName = StringUtil.upperCaseFirstLetter("${fragmentName}");
+
+			AssertElementPresent(
+				key_fragmentName = "${fragmentName}",
+				key_paddingLeft = "${paddingLeft}",
+				locator1 = "Fragment#FRAGMENT_CONFIGURATION_PADDING_LEFT");
+		}
+
+		if (isSet(paddingRight)) {
+			var fragmentName = StringUtil.upperCaseFirstLetter("${fragmentName}");
+
+			AssertElementPresent(
+				key_fragmentName = "${fragmentName}",
+				key_paddingRight = "${paddingRight}",
+				locator1 = "Fragment#FRAGMENT_CONFIGURATION_PADDING_RIGHT");
+		}
+
+		if (isSet(paddingTop)) {
+			var fragmentName = StringUtil.upperCaseFirstLetter("${fragmentName}");
+
+			AssertElementPresent(
+				key_fragmentName = "${fragmentName}",
+				key_paddingTop = "${paddingTop}",
+				locator1 = "Fragment#FRAGMENT_CONFIGURATION_PADDING_TOP");
 		}
 
 		if (isSet(size)) {

@@ -178,6 +178,65 @@ definition {
 			noImageFileName = "Document_1.jpg");
 	}
 
+	@description = "This test ensures that web contents can filter by the current site in the item selector."
+	@priority = "5"
+	test FilterWCByCurrentSite {
+		JSONGroup.addGroup(groupName = "Site Name");
+
+		JSONDepot.addDepot(
+			depotDescription = "This is the description of a depot",
+			depotName = "Test Depot Name");
+
+		JSONLayout.addPublicLayout(
+			groupName = "Site Name",
+			layoutName = "Web Content Display Page");
+
+		JSONLayout.addWidgetToPublicLayout(
+			column = "1",
+			groupName = "Site Name",
+			layoutName = "Web Content Display Page",
+			widgetName = "Web Content Display");
+
+		JSONWebcontent.addWebContent(
+			content = "Web Content Content From Depot",
+			groupName = "Test Depot Name",
+			site = "false",
+			title = "Web Content From Depot");
+
+		JSONWebcontent.addWebContent(
+			content = "Web Content Content From Site",
+			groupName = "Site Name",
+			title = "Web Content From Site");
+
+		DepotNavigator.openDepotAdmin();
+
+		DepotNavigator.gotoEdit(depotName = "Test Depot Name");
+
+		DepotNavigator.gotoSites(depotName = "Test Depot Name");
+
+		Depot.connectSite(siteList = "Site Name");
+
+		Navigator.gotoSitePage(
+			pageName = "Web Content Display Page",
+			siteName = "Site Name");
+
+		Portlet.gotoPortletOptions(
+			portletName = "Web Content Display",
+			portletOption = "Configuration");
+
+		SelectFrame(locator1 = "IFrame#MODAL_BODY");
+
+		AssertClick(
+			locator1 = "WCDConfiguration#SELECT_WEB_CONTENT_BUTTON",
+			value1 = "Select");
+
+		SelectFrame.selectSecondFrame(locator1 = "IFrame#MODAL_BODY");
+
+		ItemSelector.viewWCCurrentSiteFilterResults(
+			noWebContentTitle = "Web Content From Depot",
+			webContentTitle = "Web Content From Site");
+	}
+
 	@description = "This ensures that the background image of a fragment can be added."
 	@priority = "5"
 	test FragmentSmoke {
@@ -364,9 +423,9 @@ definition {
 		SikuliAssertElementPresent(locator1 = "BlogsEntry#CONTENT_INLINE_IMAGE_PREVIEW");
 	}
 
-	@description = "This ensures that the location info of a blog image can be viewed through Blogs."
-	@priority = "5"
-	test ViewBlogsImageLocationInfo {
+	@description = "This test covers LPS-119709. It ensures that the blog images can not filter by the everywhere and the current site."
+	@priority = "4"
+	test ViewBlogsImageNoScopeFilter {
 		JSONGroup.addGroup(groupName = "Site Name");
 
 		BlogsNavigator.openBlogsAdmin(siteURLKey = "site-name");
@@ -385,13 +444,14 @@ definition {
 
 		BlogsNavigator.gotoBrowseImage();
 
-		ItemSelector.viewLocationInfoViaBlogs(
-			locationName = "Site Name",
-			navTab = "Blog Images",
-			titleList = "Document_1.jpg");
+		SelectFrame(locator1 = "ItemSelector#ITEM_SELECTOR_IFRAME");
+
+		for (var subheaderItem : list "Everywhere,Current Site") {
+			ManagementBar.viewNoSubheaderInFilterAndOrder(subheaderItem = "${subheaderItem}");
+		}
 	}
 
-	@description = "This ensures that the location info of depot documents can be viewed through Blogs on a connected site."
+	@description = "This ensures that the location info of the documents can be viewed through Blogs on a connected site."
 	@priority = "5"
 	test ViewDocumentsLocationInfo {
 		JSONGroup.addGroup(groupName = "Site Name");
@@ -400,8 +460,6 @@ definition {
 			depotDescription = "This is the description of a depot",
 			depotName = "Test Depot Name");
 
-		DepotNavigator.openDepotAdmin();
-
 		JSONDocument.addFileWithUploadedFile(
 			dmDocumentDescription = "DM Document Description",
 			dmDocumentTitle = "Document_1.jpg",
@@ -409,15 +467,37 @@ definition {
 			mimeType = "image/jpeg",
 			sourceFileName = "Document_1.jpg");
 
-		DMNavigator.openDocumentsAndMediaAdmin(siteURLKey = "test-depot-name");
-
-		DMFolder.addCP(dmFolderName = "DM Folder Name");
+		JSONDocument.addFolder(
+			dmFolderDescription = "DM Folder Description",
+			dmFolderName = "DM Folder Name",
+			groupName = "Test Depot Name",
+			site = "false");
 
 		JSONDocument.addFileWithUploadedFile(
 			dmDocumentDescription = "DM Document Description",
 			dmDocumentTitle = "Document_2.jpg",
 			folderName = "DM Folder Name",
 			groupName = "Test Depot Name",
+			mimeType = "image/jpeg",
+			sourceFileName = "Document_2.jpg");
+
+		JSONDocument.addFileWithUploadedFile(
+			dmDocumentDescription = "DM Document Description",
+			dmDocumentTitle = "Document_1.jpg",
+			groupName = "Site Name",
+			mimeType = "image/jpeg",
+			sourceFileName = "Document_1.jpg");
+
+		JSONDocument.addFolder(
+			dmFolderDescription = "DM Folder Description",
+			dmFolderName = "DM Folder Name",
+			groupName = "Site Name");
+
+		JSONDocument.addFileWithUploadedFile(
+			dmDocumentDescription = "DM Document Description",
+			dmDocumentTitle = "Document_2.jpg",
+			folderName = "DM Folder Name",
+			groupName = "Site Name",
 			mimeType = "image/jpeg",
 			sourceFileName = "Document_2.jpg");
 
@@ -429,16 +509,18 @@ definition {
 
 		Depot.connectSite(siteList = "Site Name");
 
-		BlogsNavigator.openBlogsAdmin(siteURLKey = "site-name");
+		for (var locationName : list "Test Depot Name,Site Name") {
+			BlogsNavigator.openBlogsAdmin(siteURLKey = "site-name");
 
-		BlogsNavigator.gotoAddEntry();
+			BlogsNavigator.gotoAddEntry();
 
-		BlogsNavigator.gotoSelectFile();
+			BlogsNavigator.gotoSelectFile();
 
-		ItemSelector.viewLocationInfoViaBlogs(
-			locationName = "Test Depot Name",
-			navTab = "Documents and Media",
-			titleList = "Document_1.jpg,Document_2.jpg,DM Folder Name");
+			ItemSelector.viewLocationInfoViaBlogs(
+				locationName = "${locationName}",
+				navTab = "Documents and Media",
+				titleList = "Document_1.jpg,Document_2.jpg,DM Folder Name");
+		}
 	}
 
 	@description = "This test covers LPS-118808. It ensures that an image in the depot folder can be viewed through everywhere filter on a connected site."
@@ -482,6 +564,82 @@ definition {
 			navTab = "Documents and Media");
 	}
 
+	@description = "This test covers LPS-119707. It ensures that the web content in the depot folder can be viewed through everywhere filter on a connected site."
+	@priority = "4"
+	test ViewFolderWCViaFilterResults {
+		JSONGroup.addGroup(groupName = "Site Name");
+
+		JSONDepot.addDepot(
+			depotDescription = "This is the description of a depot",
+			depotName = "Test Depot Name");
+
+		JSONWebcontent.addFolder(
+			folderDescription = "WC Folder Description",
+			folderName = "WC Folder Name",
+			groupName = "Test Depot Name",
+			site = "false");
+
+		JSONWebcontent.addWebContent(
+			content = "Webcontent Content",
+			folderName = "WC Folder Name",
+			groupName = "Test Depot Name",
+			site = "false",
+			title = "WC WebContent From Depot");
+
+		JSONWebcontent.addWebContent(
+			content = "WC WebContent Site",
+			groupName = "Site Name",
+			title = "WC WebContent From Site");
+
+		DepotNavigator.openDepotAdmin();
+
+		DepotNavigator.gotoEdit(depotName = "Test Depot Name");
+
+		DepotNavigator.gotoSites(depotName = "Test Depot Name");
+
+		Depot.connectSite(siteList = "Site Name");
+
+		WebContentNavigator.openWebContentAdmin(siteURLKey = "site-name");
+
+		NavItem.gotoStructures();
+
+		WebContentStructures.addCP(
+			structureDescription = "WC Structure Description",
+			structureName = "WC Structure Name");
+
+		DynamicDataMapping.addField(
+			field = "Web Content",
+			fieldFieldLabel = "Web Content",
+			fieldName = "WebContent");
+
+		WebContentStructures.saveCP(structureName = "WC Structure Name");
+
+		WebContentNavigator.openWebContentAdmin(siteURLKey = "site-name");
+
+		NavItem.gotoTemplates();
+
+		WebContentTemplates.addCP(
+			structureName = "WC Structure Name",
+			templateDescription = "WC Template Description",
+			templateName = "WC Template Name");
+
+		WebContentNavigator.openWebContentAdmin(siteURLKey = "site-name");
+
+		WebContentNavigator.gotoAddWithStructureCP(structureName = "WC Structure Name");
+
+		AssertClick(
+			key_fieldName = "WebContent",
+			locator1 = "Button#SELECT_CONTENT",
+			value1 = "Select");
+
+		ItemSelector.viewWCEverywhereFilterResults(
+			folderWebContentTitle = "WC WebContent From Depot",
+			siteName = "Test Depot Name",
+			viewFolderWC = "true",
+			wcFolderName = "WC Folder Name",
+			webContentTitle = "WC WebContent From Site");
+	}
+
 	@description = "This ensures that the location info of depot web content can be viewed through WCD on a connected site."
 	@priority = "5"
 	test ViewWCLocationInfo {
@@ -504,7 +662,12 @@ definition {
 			content = "WC WebContent Depot",
 			groupName = "Test Depot Name",
 			site = "false",
-			title = "WC WebContent Title");
+			title = "WC WebContent From Depot");
+
+		JSONWebcontent.addWebContent(
+			content = "WC WebContent Site",
+			groupName = "Site Name",
+			title = "WC WebContent From Site");
 
 		DepotNavigator.openDepotAdmin();
 
@@ -520,7 +683,15 @@ definition {
 
 		ItemSelector.viewLocationInfoViaWCD(
 			locationName = "Test Depot Name",
-			titleList = "WC WebContent Title");
+			titleList = "WC WebContent From Depot");
+
+		Navigator.gotoSitePage(
+			pageName = "Page Name",
+			siteName = "Site Name");
+
+		ItemSelector.viewLocationInfoViaWCD(
+			locationName = "Site Name",
+			titleList = "WC WebContent From Site");
 	}
 
 }

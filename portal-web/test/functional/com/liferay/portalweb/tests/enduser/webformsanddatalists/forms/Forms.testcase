@@ -71,7 +71,7 @@ definition {
 	@priority = "4"
 	test Add30Fields {
 		property test.name.skip.portal.instance = "Forms#Add30Fields";
-		property portal.acceptance = "quarantine";
+		property portal.acceptance = "true";
 
 		Navigator.openURL();
 
@@ -102,7 +102,7 @@ definition {
 	test AddElementSetsWithTranslation {
 		property test.name.skip.portal.instance = "Forms#AddElementSetsWithTranslation";
 		property testray.component.names = "Training";
-		property portal.acceptance = "quarantine";
+		property portal.acceptance = "true";
 
 		Navigator.openURL();
 
@@ -587,7 +587,7 @@ definition {
 	@priority = "4"
 	test AddFormWithDuplicateTextFields {
 		property test.name.skip.portal.instance = "Forms#AddFormWithDuplicateTextFields";
-		property portal.acceptance = "quarantine";
+		property portal.acceptance = "true";
 
 		Navigator.openURL();
 
@@ -1137,7 +1137,7 @@ definition {
 	@description = "This is a use case for LPS-98073."
 	@priority = "5"
 	test CreateReadUpdateDeleteImageField {
-		property portal.acceptance = "quarantine";
+		property portal.acceptance = "true";
 		property test.name.skip.portal.instance = "Forms#SubmitFormWithRequiredImageField";
 
 		ProductMenu.gotoPortlet(
@@ -1332,7 +1332,7 @@ definition {
 	@priority = "5"
 	test DeletePages {
 		property test.name.skip.portal.instance = "Forms#DeletePages";
-		property portal.acceptance = "quarantine";
+		property portal.acceptance = "true";
 
 		Navigator.openURL();
 
@@ -1551,7 +1551,7 @@ definition {
 	@priority = "4"
 	test EditAllFormFieldNames {
 		property test.name.skip.portal.instance = "Forms#EditAllFormFieldNames";
-		property portal.acceptance = "quarantine";
+		property portal.acceptance = "true";
 
 		Navigator.openURL();
 
@@ -1918,7 +1918,7 @@ definition {
 	@priority = "2"
 	test EditFormWithUpdatedSiteAndUserLocale {
 		property test.name.skip.portal.instance = "Forms#EditFormWithUpdatedSiteAndUserLocale";
-		property portal.acceptance = "quarantine";
+		property portal.acceptance = "true";
 
 		Navigator.openURL();
 
@@ -1998,7 +1998,7 @@ definition {
 	@priority = "4"
 	test EditTranslatedGridField {
 		property test.name.skip.portal.instance = "Forms#EditTranslatedGridField";
-		property portal.acceptance = "quarantine";
+		property portal.acceptance = "true";
 
 		Navigator.openURL();
 
@@ -2230,7 +2230,7 @@ definition {
 	test PreviewAndPublishForm {
 		property app.server.types = "jboss,tcserver,tomcat,weblogic,websphere,wildfly";
 		property database.types = "db2,hypersonic,mariadb,mysql,oracle,postgresql,sqlserver,sybase";
-		property portal.acceptance = "quarantine";
+		property portal.acceptance = "true";
 
 		Navigator.openURL();
 
@@ -3566,7 +3566,7 @@ definition {
 	@priority = "4"
 	test SubmitFormWithMultipleFieldsAndViewEntriesViaDescriptiveDisplay {
 		property test.name.skip.portal.instance = "Forms#SubmitFormWithMultipleFieldsAndViewEntriesViaDescriptiveDisplay";
-		property portal.acceptance = "true";
+		property portal.acceptance = "quarantine";
 
 		Navigator.openURL();
 
@@ -3839,7 +3839,7 @@ definition {
 	@priority = "5"
 	test SubmitFormWithRequiredImageField {
 		property test.name.skip.portal.instance = "Forms#SubmitFormWithRequiredImageField";
-		property portal.acceptance = "quarantine";
+		property portal.acceptance = "true";
 
 		ProductMenu.gotoPortlet(
 			category = "Content &amp; Data",
@@ -4596,7 +4596,7 @@ definition {
 	@priority = "4"
 	test ViewDefaultFieldNamesWithPunctuationCharacters {
 		property test.name.skip.portal.instance = "Forms#ViewDefaultFieldNamesWithPunctuationCharacters";
-		property portal.acceptance = "quarantine";
+		property portal.acceptance = "true";
 
 		Navigator.openURL();
 
@@ -4659,7 +4659,7 @@ definition {
 	@priority = "4"
 	test ViewFieldValidationIsNotBypassedWhenNextButtonIsHitTwice {
 		property test.name.skip.portal.instance = "Forms#ViewFieldValidationIsNotBypassedWhenNextButtonIsHitTwice";
-		property portal.acceptance = "quarantine";
+		property portal.acceptance = "true";
 
 		Navigator.openURL();
 
@@ -4920,7 +4920,7 @@ definition {
 	test ViewSuccessPage {
 		property test.name.skip.portal.instance = "Forms#ViewSuccessPage";
 		property testray.component.names = "Training";
-		property portal.acceptance = "quarantine";
+		property portal.acceptance = "true";
 
 		Navigator.openURL();
 

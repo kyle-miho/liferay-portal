@@ -14,8 +14,11 @@
 
 import React, {useContext, useState} from 'react';
 
+import {ITEM_TYPES} from '../config/constants/itemTypes';
+import {LAYOUT_DATA_ITEM_TYPES} from '../config/constants/layoutDataItemTypes';
+import {useSelectorCallback} from '../store/index';
 import {CollectionItemContext, INITIAL_STATE} from './CollectionItemContext';
-import {useIsActive} from './Controls';
+import {useActiveItemId, useActiveItemType, useIsActive} from './Controls';
 
 const CollectionActiveItemDispatchContext = React.createContext(() => {});
 const CollectionActiveItemStateContext = React.createContext(INITIAL_STATE);
@@ -33,11 +36,23 @@ export function CollectionActiveItemContextProvider({children}) {
 }
 
 export function useSetCollectionActiveItemContext(itemId) {
+	const activeItemId = useActiveItemId();
+	const activeItemType = useActiveItemType();
 	const isActive = useIsActive();
 	const collectionContext = useContext(CollectionItemContext);
 	const setState = useContext(CollectionActiveItemDispatchContext);
 
-	if (isActive(itemId)) {
+	const item = useSelectorCallback(
+		(state) => state.layoutData.items[itemId],
+		[itemId]
+	);
+
+	if (
+		isActive(itemId) ||
+		(item.type === LAYOUT_DATA_ITEM_TYPES.fragment &&
+			activeItemType === ITEM_TYPES.editable &&
+			activeItemId.startsWith(item.config.fragmentEntryLinkId))
+	) {
 		setState(collectionContext);
 	}
 }

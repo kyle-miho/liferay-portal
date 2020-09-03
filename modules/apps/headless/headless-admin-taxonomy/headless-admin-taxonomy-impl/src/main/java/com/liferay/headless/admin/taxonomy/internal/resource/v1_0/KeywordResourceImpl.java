@@ -126,7 +126,7 @@ public class KeywordResourceImpl
 						pagination.getEndPosition()),
 					this::_toAssetTag),
 				this::_toKeyword),
-			pagination, _getTotalCount(siteId));
+			pagination, _getTotalCount(search, siteId));
 	}
 
 	@Override
@@ -153,6 +153,7 @@ public class KeywordResourceImpl
 			queryConfig -> queryConfig.setSelectedFieldNames(
 				Field.ENTRY_CLASS_PK),
 			searchContext -> {
+				searchContext.setAttribute(Field.NAME, search);
 				searchContext.setCompanyId(contextCompany.getCompanyId());
 				searchContext.setGroupIds(new long[] {siteId});
 			},
@@ -208,21 +209,22 @@ public class KeywordResourceImpl
 		return projectionList;
 	}
 
-	private long _getTotalCount(Long siteId) {
+	private long _getTotalCount(String search, Long siteId) {
 		DynamicQuery dynamicQuery = _assetTagLocalService.dynamicQuery();
 
 		dynamicQuery.add(
 			RestrictionsFactoryUtil.eq(
 				"companyId", contextCompany.getCompanyId()));
 
+		if (!Validator.isBlank(search)) {
+			dynamicQuery.add(
+				RestrictionsFactoryUtil.ilike(
+					"name", StringUtil.quote(search, StringPool.PERCENT)));
+		}
+
 		if (siteId != null) {
 			dynamicQuery.add(RestrictionsFactoryUtil.eq("groupId", siteId));
 		}
-
-		dynamicQuery.add(
-			RestrictionsFactoryUtil.sqlRestriction(
-				"exists (select 1 from AssetEntries_AssetTags where tagId = " +
-					"this_.tagId)"));
 
 		return _assetTagLocalService.dynamicQueryCount(dynamicQuery);
 	}

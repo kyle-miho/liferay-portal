@@ -30,7 +30,7 @@ definition {
 
 			Navigator.openWithAppendToBaseURL(urlAppend = "web/test-site-name/search");
 
-			Portlet.addPG(portletName = "Search Results");
+			SearchPortlets.addWidgets(searchPortletList = "Search Results");
 
 			Navigator.openWithAppendToBaseURL(urlAppend = "web/test-site-name/search");
 

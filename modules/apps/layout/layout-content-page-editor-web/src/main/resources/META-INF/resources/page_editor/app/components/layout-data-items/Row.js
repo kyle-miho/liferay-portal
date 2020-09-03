@@ -91,7 +91,7 @@ const Row = React.forwardRef(
 		style.height = height;
 		style.maxHeight = maxHeight;
 		style.minHeight = minHeight;
-		style.opacity = opacity;
+		style.opacity = opacity ? opacity / 100 : null;
 		style.overflow = overflow;
 
 		if (!withinTopper) {
@@ -119,12 +119,12 @@ const Row = React.forwardRef(
 					`pt-${paddingTop}`,
 					{
 						empty:
-							item.config.numberOfColumns === modulesPerRow &&
-							!item.children.some(
+							!height &&
+							(!item.children.some(
 								(childId) =>
-									layoutData.items[childId].children.length
-							) &&
-							!height,
+									layoutData.items[childId]?.children.length
+							) ||
+								item.config.numberOfColumns !== modulesPerRow),
 						'flex-column': customRow && modulesPerRow === 1,
 						'flex-column-reverse':
 							item.config.numberOfColumns === 2 &&
@@ -133,7 +133,11 @@ const Row = React.forwardRef(
 						[`ml-${marginLeft}`]: marginLeft !== '0',
 						[`mr-${marginRight}`]: marginRight !== '0',
 						'no-gutters': !item.config.gutters,
-						[textAlign]: textAlign,
+						[textAlign
+							? textAlign.startsWith('text-')
+								? textAlign
+								: `text-${textAlign}`
+							: '']: textAlign,
 					}
 				)}
 				ref={ref}

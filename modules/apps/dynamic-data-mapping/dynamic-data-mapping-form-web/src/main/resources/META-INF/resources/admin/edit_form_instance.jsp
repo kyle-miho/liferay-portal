@@ -49,7 +49,6 @@ renderResponse.setTitle((formInstance == null) ? LanguageUtil.get(request, "new-
 	<div class="forms-navigation-bar">
 		<clay:navigation-bar
 			id="formsNavigationBar"
-			inverted="<%= true %>"
 			navigationItems="<%= ddmFormAdminDisplayContext.getFormBuilderNavigationItems() %>"
 		/>
 	</div>
@@ -172,7 +171,6 @@ renderResponse.setTitle((formInstance == null) ? LanguageUtil.get(request, "new-
 <liferay-portlet:resourceURL copyCurrentRenderParameters="<%= false %>" id="saveFormInstance" var="autoSaveFormInstanceURL" />
 
 <liferay-portlet:runtime
-	persistSettings="<%= false %>"
 	portletName="<%= DDMPortletKeys.DYNAMIC_DATA_MAPPING_FORM_REPORT %>"
 	queryString='<%= "formInstanceId=" + formInstanceId %>'
 />

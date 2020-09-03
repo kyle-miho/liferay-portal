@@ -167,7 +167,7 @@ class LayoutProvider extends Component {
 	getPages() {
 		const {defaultLanguageId, editingLanguageId} = this.props;
 		const {availableLanguageIds = [editingLanguageId]} = this.props;
-		const {focusedField} = this.state;
+		const {fieldHovered, focusedField} = this.state;
 		let {pages} = this.state;
 
 		const visitor = new PagesVisitor(pages);
@@ -183,12 +183,13 @@ class LayoutProvider extends Component {
 					pages: this.getLocalizedPages(settingsContext.pages),
 				};
 
-				return {
+				const newField = {
 					...getFieldProperties(
 						newSettingsContext,
 						defaultLanguageId,
 						editingLanguageId
 					),
+					hovered: fieldHovered.fieldName === field.fieldName,
 					name: generateName(field.name, {
 						instanceId: field.instanceId || generateInstanceId(),
 						repeatedIndex: getRepeatedIndex(field.name),
@@ -196,6 +197,19 @@ class LayoutProvider extends Component {
 					selected: focusedField.fieldName === field.fieldName,
 					settingsContext: newSettingsContext,
 				};
+
+				if (
+					field.type === 'select' &&
+					field.dataSourceType &&
+					field.dataSourceType.includes('data-provider')
+				) {
+					return {
+						...newField,
+						options: field.options,
+					};
+				}
+
+				return newField;
 			},
 			true,
 			true

@@ -209,7 +209,7 @@ const FragmentContent = ({
 	style.maxWidth = maxWidth;
 	style.minHeight = minHeight;
 	style.minWidth = minWidth;
-	style.opacity = opacity;
+	style.opacity = opacity ? opacity / 100 : null;
 	style.overflow = overflow;
 	style.width = width;
 
@@ -235,7 +235,11 @@ const FragmentContent = ({
 				'page-editor__fragment-content',
 				{
 					'page-editor__fragment-content--portlet-topper-hidden': !canConfigureWidgets,
-					[textAlign]: textAlign,
+					[textAlign
+						? textAlign.startsWith('text-')
+							? textAlign
+							: `text-${textAlign}`
+						: '']: textAlign,
 				}
 			)}
 			contentRef={elementRef}

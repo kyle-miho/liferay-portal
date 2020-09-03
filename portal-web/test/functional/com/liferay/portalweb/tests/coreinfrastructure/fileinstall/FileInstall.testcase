@@ -21,14 +21,13 @@ definition {
 
 	@priority = "4"
 	test UninstallJarOffline {
+		property portal.acceptance = "kyle";
+
 		property test.name.skip.portal.instance = "FileInstall#UninstallJarOffline";
 
 		FileInstall.deployFileOnServer(liferayDependencyJars = "com.liferay.cluster.test.module.jar");
 
-		ApplicationsMenu.gotoPortlet(
-			category = "System",
-			panel = "Control Panel",
-			portlet = "Gogo Shell");
+		GogoShell.openGogoShellAdmin();
 
 		AssertConsoleTextPresent(value1 = "STARTED com.liferay.cluster.test.module_");
 
@@ -44,10 +43,7 @@ definition {
 
 		Portlet.startServer(keepOSGiState = "true");
 
-		ApplicationsMenu.gotoPortlet(
-			category = "System",
-			panel = "Control Panel",
-			portlet = "Gogo Shell");
+		GogoShell.openGogoShellAdmin();
 
 		AssertConsoleTextNotPresent(value1 = "STARTED com.liferay.cluster.test.module_");
 
@@ -62,14 +58,13 @@ definition {
 
 	@priority = "4"
 	test UninstallWarOffline {
+		property portal.acceptance = "kyle";
+
 		property test.name.skip.portal.instance = "FileInstall#UninstallWarOffline";
 
 		Theme.deployThemeWar(themeName = "test-theme");
 
-		ApplicationsMenu.gotoPortlet(
-			category = "System",
-			panel = "Control Panel",
-			portlet = "Gogo Shell");
+		GogoShell.openGogoShellAdmin();
 
 		AssertConsoleTextPresent(value1 = "STARTED test-theme_");
 
@@ -85,10 +80,7 @@ definition {
 
 		Portlet.startServer(keepOSGiState = "true");
 
-		ApplicationsMenu.gotoPortlet(
-			category = "System",
-			panel = "Control Panel",
-			portlet = "Gogo Shell");
+		GogoShell.openGogoShellAdmin();
 
 		AssertConsoleTextNotPresent(value1 = "STARTED test-theme_");
 

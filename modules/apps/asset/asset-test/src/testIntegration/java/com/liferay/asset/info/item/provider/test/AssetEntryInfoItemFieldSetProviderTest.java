@@ -82,32 +82,7 @@ public class AssetEntryInfoItemFieldSetProviderTest {
 	}
 
 	@Test
-	public void testGetInfoFieldSetAssetEntryPublicEmptyVocabulary()
-		throws Exception {
-
-		ServiceContext serviceContext =
-			ServiceContextTestUtil.getServiceContext(_group.getGroupId());
-
-		AssetVocabulary assetVocabulary =
-			AssetVocabularyLocalServiceUtil.addVocabulary(
-				TestPropsValues.getUserId(), serviceContext.getScopeGroupId(),
-				RandomTestUtil.randomString(), serviceContext);
-
-		AssetEntry assetEntry = AssetTestUtil.addAssetEntry(
-			_group.getGroupId());
-
-		InfoFieldSet infoFieldSet =
-			_assetEntryInfoItemFieldSetProvider.getInfoFieldSet(assetEntry);
-
-		InfoFieldSetEntry infoFieldSetEntry = infoFieldSet.getInfoFieldSetEntry(
-			assetVocabulary.getName());
-
-		Assert.assertEquals(
-			assetVocabulary.getName(), infoFieldSetEntry.getName());
-	}
-
-	@Test
-	public void testGetInfoFieldSetAssetEntryPublicVocabularyWithCategory()
+	public void testGetInfoFieldSetAssetEntryPublicAssetVocabularyWithAssetCategory()
 		throws Exception {
 
 		ServiceContext serviceContext =
@@ -140,7 +115,32 @@ public class AssetEntryInfoItemFieldSetProviderTest {
 	}
 
 	@Test
-	public void testGetInfoFieldSetInternalAssetEntryEmptyVocabulary()
+	public void testGetInfoFieldSetAssetEntryPublicEmptyAssetVocabulary()
+		throws Exception {
+
+		ServiceContext serviceContext =
+			ServiceContextTestUtil.getServiceContext(_group.getGroupId());
+
+		AssetVocabulary assetVocabulary =
+			AssetVocabularyLocalServiceUtil.addVocabulary(
+				TestPropsValues.getUserId(), serviceContext.getScopeGroupId(),
+				RandomTestUtil.randomString(), serviceContext);
+
+		AssetEntry assetEntry = AssetTestUtil.addAssetEntry(
+			_group.getGroupId());
+
+		InfoFieldSet infoFieldSet =
+			_assetEntryInfoItemFieldSetProvider.getInfoFieldSet(assetEntry);
+
+		InfoFieldSetEntry infoFieldSetEntry = infoFieldSet.getInfoFieldSetEntry(
+			assetVocabulary.getName());
+
+		Assert.assertEquals(
+			assetVocabulary.getName(), infoFieldSetEntry.getName());
+	}
+
+	@Test
+	public void testGetInfoFieldSetInternalAssetEntryEmptyAssetVocabulary()
 		throws Exception {
 
 		ServiceContext serviceContext =
@@ -167,7 +167,7 @@ public class AssetEntryInfoItemFieldSetProviderTest {
 	}
 
 	@Test
-	public void testGetInfoFieldSetJournalArticleClassPublicEmptyVocabulary()
+	public void testGetInfoFieldSetJournalArticleClassPublicEmptyAssetVocabulary()
 		throws Exception {
 
 		long classNameId = PortalUtil.getClassNameId(
@@ -197,7 +197,7 @@ public class AssetEntryInfoItemFieldSetProviderTest {
 	}
 
 	@Test
-	public void testGetInfoFieldValuesJournalArticleAllCategories()
+	public void testGetInfoFieldValuesJournalArticleAllAssetCategories()
 		throws Exception {
 
 		AssetVocabulary internalAssetVocabulary = _addAssetVocabulary(
@@ -233,7 +233,7 @@ public class AssetEntryInfoItemFieldSetProviderTest {
 	}
 
 	@Test
-	public void testGetInfoFieldValuesJournalArticleInternalVocabularyWithCategory()
+	public void testGetInfoFieldValuesJournalArticleInternalAssetVocabularyWithAssetCategory()
 		throws Exception {
 
 		AssetVocabulary assetVocabulary = _addAssetVocabulary(
@@ -253,7 +253,7 @@ public class AssetEntryInfoItemFieldSetProviderTest {
 	}
 
 	@Test
-	public void testGetInfoFieldValuesJournalArticlePublicVocabularyWithCategory()
+	public void testGetInfoFieldValuesJournalArticlePublicAssetVocabularyWithAssetCategory()
 		throws Exception {
 
 		AssetVocabulary assetVocabulary = _addAssetVocabulary(

@@ -20,13 +20,15 @@ import Button from '../../components/button/Button.es';
 import {useKeyDown} from '../../hooks/index.es';
 import useQuery from '../../hooks/useQuery.es';
 import isClickOutside from '../../utils/clickOutside.es';
-import {addItem, parseResponse} from '../../utils/client.es';
+import {addItem, parseResponse, updateItem} from '../../utils/client.es';
 import {errorToast, successToast} from '../../utils/toast.es';
+import {getValidName} from '../../utils/utils.es';
 import ListObjects from '../object/ListObjects.es';
 import CustomObjectPopover from './CustomObjectPopover.es';
 
 export default ({history}) => {
 	const {basePortletURL, baseResourceURL, namespace} = useContext(AppContext);
+	const [editMode, setEditMode] = useState(null);
 	const addButtonRef = useRef();
 	const defaultLanguageId = Liferay.ThemeDisplay.getDefaultLanguageId();
 	const emptyStateButtonRef = useRef();
@@ -74,6 +76,46 @@ export default ({history}) => {
 		});
 	};
 
+	const onCancelRenameAction = () => {
+		return Promise.resolve(setEditMode(null));
+	};
+
+	const onRenameAction = ({originalItem}, value, refetch) => {
+		updateItem(`/o/data-engine/v2.0/data-definitions/${originalItem.id}`, {
+			...originalItem,
+			name: {
+				[originalItem.defaultLanguageId]: getValidName(
+					Liferay.Language.get('untitled-custom-object'),
+					value
+				),
+			},
+		})
+			.then(refetch)
+			.then(onCancelRenameAction)
+			.then(() =>
+				successToast(
+					Liferay.Language.get('the-object-was-renamed-successfully')
+				)
+			)
+			.catch(({errorMessage}) => {
+				errorToast(errorMessage);
+			});
+	};
+
+	const renameAction = (item, refetch) => {
+		const {id} = item;
+
+		return new Promise((resolve) =>
+			resolve(
+				setEditMode({
+					id,
+					onCancel: onCancelRenameAction,
+					onSave: (value) => onRenameAction(item, value, refetch),
+				})
+			)
+		);
+	};
+
 	const onClickAddButton = ({currentTarget}) => {
 		setAlignElement(currentTarget);
 
@@ -94,7 +136,10 @@ export default ({history}) => {
 			dataDefinitionFields: [],
 			defaultLanguageId,
 			name: {
-				[defaultLanguageId]: name,
+				[defaultLanguageId]: getValidName(
+					Liferay.Language.get('untitled-custom-object'),
+					name
+				),
 			},
 		})
 			.then(({id}) => {
@@ -111,6 +156,11 @@ export default ({history}) => {
 					);
 				}
 				else {
+					successToast(
+						Liferay.Language.get(
+							'the-object-was-created-successfully'
+						)
+					);
 					history.push(`/custom-object/${id}/form-views/`);
 				}
 			})
@@ -160,6 +210,13 @@ export default ({history}) => {
 				listViewProps={{
 					actions: [
 						{
+							name: 'divider',
+						},
+						{
+							action: renameAction,
+							name: Liferay.Language.get('rename'),
+						},
+						{
 							action: confirmDelete,
 							name: Liferay.Language.get('delete'),
 						},
@@ -176,6 +233,7 @@ export default ({history}) => {
 							/>
 						</div>
 					),
+					editMode,
 					emptyState: {
 						button: () => (
 							<Button

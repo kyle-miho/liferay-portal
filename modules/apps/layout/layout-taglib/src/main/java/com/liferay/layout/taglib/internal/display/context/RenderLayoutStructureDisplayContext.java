@@ -56,6 +56,7 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.ClassedModel;
@@ -64,11 +65,13 @@ import com.liferay.portal.kernel.model.LayoutConstants;
 import com.liferay.portal.kernel.model.LayoutSet;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.service.LayoutSetLocalServiceUtil;
+import com.liferay.portal.kernel.servlet.BrowserSnifferUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.segments.constants.SegmentsExperienceConstants;
@@ -443,12 +446,19 @@ public class RenderLayoutStructureDisplayContext {
 			cssClassSB.append(styledLayoutStructureItem.getShadow());
 		}
 
-		if (Validator.isNotNull(
-				styledLayoutStructureItem.getTextAlignCssClass()) &&
-			!Objects.equals(
-				styledLayoutStructureItem.getTextAlignCssClass(), "none")) {
+		String textAlignCssClass =
+			styledLayoutStructureItem.getTextAlignCssClass();
 
-			cssClassSB.append(StringPool.SPACE);
+		if (Validator.isNotNull(textAlignCssClass) &&
+			!Objects.equals(textAlignCssClass, "none")) {
+
+			if (!StringUtil.startsWith(textAlignCssClass, "text-")) {
+				cssClassSB.append(" text-");
+			}
+			else {
+				cssClassSB.append(StringPool.SPACE);
+			}
+
 			cssClassSB.append(styledLayoutStructureItem.getTextAlignCssClass());
 		}
 
@@ -681,7 +691,18 @@ public class RenderLayoutStructureDisplayContext {
 		JSONObject frontendTokensValuesJSONObject =
 			_getFrontendTokensJSONObject();
 
-		return frontendTokensValuesJSONObject.getString(styleValue, styleValue);
+		JSONObject styleValueJSONObject =
+			frontendTokensValuesJSONObject.getJSONObject(styleValue);
+
+		if (styleValueJSONObject == null) {
+			return styleValue;
+		}
+
+		if (BrowserSnifferUtil.isIe(_httpServletRequest)) {
+			return styleValue;
+		}
+
+		return "var(--" + styleValueJSONObject.getString("cssVariable") + ")";
 	}
 
 	private String _getBackgroundImage(JSONObject rowConfigJSONObject)
@@ -804,8 +825,11 @@ public class RenderLayoutStructureDisplayContext {
 	}
 
 	private JSONObject _getFrontendTokensJSONObject() throws Exception {
-		JSONObject frontendTokensJSONObject =
-			JSONFactoryUtil.createJSONObject();
+		if (_frontendTokensJSONObject != null) {
+			return _frontendTokensJSONObject;
+		}
+
+		_frontendTokensJSONObject = JSONFactoryUtil.createJSONObject();
 
 		StyleBookEntry styleBookEntry =
 			DefaultStyleBookEntryUtil.getDefaultStyleBookEntry(
@@ -857,12 +881,29 @@ public class RenderLayoutStructureDisplayContext {
 					JSONObject frontendTokenJSONObject =
 						frontendTokensJSONArray.getJSONObject(k);
 
+					String cssVariable = StringPool.BLANK;
+
+					JSONArray mappingsJSONArray =
+						frontendTokenJSONObject.getJSONArray("mappings");
+
+					for (int l = 0; l < mappingsJSONArray.length(); l++) {
+						JSONObject mappingJSONObject =
+							mappingsJSONArray.getJSONObject(l);
+
+						if (Objects.equals(
+								mappingJSONObject.getString("type"),
+								"cssVariable")) {
+
+							cssVariable = mappingJSONObject.getString("value");
+						}
+					}
+
+					String value = StringPool.BLANK;
+
 					String name = frontendTokenJSONObject.getString("name");
 
 					JSONObject valueJSONObject =
 						frontendTokenValuesJSONObject.getJSONObject(name);
-
-					String value = StringPool.BLANK;
 
 					if (valueJSONObject != null) {
 						value = valueJSONObject.getString("value");
@@ -872,12 +913,18 @@ public class RenderLayoutStructureDisplayContext {
 							"defaultValue");
 					}
 
-					frontendTokensJSONObject.put(name, value);
+					_frontendTokensJSONObject.put(
+						name,
+						JSONUtil.put(
+							"cssVariable", cssVariable
+						).put(
+							"value", value
+						));
 				}
 			}
 		}
 
-		return frontendTokensJSONObject;
+		return _frontendTokensJSONObject;
 	}
 
 	private ListObjectReference _getListObjectReference(
@@ -1043,6 +1090,7 @@ public class RenderLayoutStructureDisplayContext {
 	private final Map<String, Object> _fieldValues;
 	private final FrontendTokenDefinitionRegistry
 		_frontendTokenDefinitionRegistry;
+	private JSONObject _frontendTokensJSONObject;
 	private final HttpServletRequest _httpServletRequest;
 	private final HttpServletResponse _httpServletResponse;
 	private final InfoItemServiceTracker _infoItemServiceTracker;

@@ -63,7 +63,7 @@ definition {
 
 		Pause(locator1 = "5000");
 
-		AssertConsoleTextPresent(value1 = "STARTED com.liferay.portal.security.antisamy_5.0.11");
+		AssertConsoleTextPresent(value1 = "STARTED com.liferay.portal.security.antisamy");
 
 		ProductMenu.gotoPortlet(
 			category = "Content &amp; Data",

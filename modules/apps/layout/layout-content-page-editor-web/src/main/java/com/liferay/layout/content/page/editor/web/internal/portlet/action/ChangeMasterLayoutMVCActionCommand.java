@@ -14,23 +14,26 @@
 
 package com.liferay.layout.content.page.editor.web.internal.portlet.action;
 
-import static com.liferay.portal.kernel.util.GroupThreadLocal.getGroupId;
-
 import com.liferay.fragment.contributor.FragmentCollectionContributorTracker;
 import com.liferay.fragment.model.FragmentEntryLink;
 import com.liferay.fragment.renderer.FragmentRendererController;
 import com.liferay.fragment.renderer.FragmentRendererTracker;
 import com.liferay.fragment.service.FragmentEntryLinkLocalService;
 import com.liferay.fragment.util.configuration.FragmentEntryConfigurationParser;
+import com.liferay.frontend.token.definition.FrontendTokenDefinition;
+import com.liferay.frontend.token.definition.FrontendTokenDefinitionRegistry;
 import com.liferay.item.selector.ItemSelector;
 import com.liferay.layout.content.page.editor.constants.ContentPageEditorPortletKeys;
 import com.liferay.layout.content.page.editor.web.internal.util.FragmentEntryLinkUtil;
+import com.liferay.layout.content.page.editor.web.internal.util.StyleBookEntryUtil;
 import com.liferay.layout.content.page.editor.web.internal.util.layout.structure.LayoutStructureUtil;
 import com.liferay.layout.util.structure.LayoutStructure;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.model.Layout;
+import com.liferay.portal.kernel.model.LayoutSet;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.service.LayoutLocalService;
@@ -39,8 +42,11 @@ import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.segments.constants.SegmentsExperienceConstants;
+import com.liferay.style.book.model.StyleBookEntry;
+import com.liferay.style.book.util.DefaultStyleBookEntryUtil;
 
 import java.util.List;
+import java.util.Locale;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -78,12 +84,15 @@ public class ChangeMasterLayoutMVCActionCommand
 		LayoutPermissionUtil.check(
 			themeDisplay.getPermissionChecker(), layout, ActionKeys.UPDATE);
 
-		_layoutLocalService.updateMasterLayoutPlid(
+		Layout updatedLayout = _layoutLocalService.updateMasterLayoutPlid(
 			layout.getGroupId(), layout.isPrivateLayout(), layout.getLayoutId(),
 			masterLayoutPlid);
 
 		if (masterLayoutPlid == 0) {
-			return JSONFactoryUtil.createJSONObject();
+			return JSONUtil.put(
+				"styleBook",
+				_getStyleBookJSONObject(
+					updatedLayout, themeDisplay.getLocale()));
 		}
 
 		LayoutStructure layoutStructure =
@@ -123,6 +132,38 @@ public class ChangeMasterLayoutMVCActionCommand
 			"fragmentEntryLinks", fragmentEntryLinksJSONObject
 		).put(
 			"masterLayoutData", layoutStructure.toJSONObject()
+		).put(
+			"styleBook",
+			_getStyleBookJSONObject(updatedLayout, themeDisplay.getLocale())
+		);
+	}
+
+	private JSONObject _getStyleBookJSONObject(Layout layout, Locale locale)
+		throws Exception {
+
+		StyleBookEntry styleBookEntry =
+			DefaultStyleBookEntryUtil.getDefaultStyleBookEntry(layout);
+
+		LayoutSet layoutSet = layout.getLayoutSet();
+
+		FrontendTokenDefinition frontendTokenDefinition =
+			_frontendTokenDefinitionRegistry.getFrontendTokenDefinition(
+				layoutSet.getThemeId());
+
+		String defaultStyleBookEntryName = StringPool.BLANK;
+
+		if (styleBookEntry != null) {
+			defaultStyleBookEntryName = styleBookEntry.getName();
+		}
+
+		return JSONUtil.put(
+			"defaultStyleBookEntryName", defaultStyleBookEntryName
+		).put(
+			"styleBookEntryId", layout.getStyleBookEntryId()
+		).put(
+			"tokenValues",
+			StyleBookEntryUtil.getFrontendTokensValues(
+				frontendTokenDefinition, locale, styleBookEntry)
 		);
 	}
 
@@ -141,6 +182,9 @@ public class ChangeMasterLayoutMVCActionCommand
 
 	@Reference
 	private FragmentRendererTracker _fragmentRendererTracker;
+
+	@Reference
+	private FrontendTokenDefinitionRegistry _frontendTokenDefinitionRegistry;
 
 	@Reference
 	private ItemSelector _itemSelector;

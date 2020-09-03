@@ -112,7 +112,7 @@ const Container = React.forwardRef(
 		style.height = height;
 		style.maxHeight = maxHeight;
 		style.minHeight = minHeight;
-		style.opacity = opacity;
+		style.opacity = opacity ? opacity / 100 : null;
 		style.overflow = overflow;
 
 		if (!withinTopper) {
@@ -147,7 +147,11 @@ const Container = React.forwardRef(
 							widthType !== 'fixed' && !withinTopper,
 						[`mr-${marginRight}`]:
 							widthType !== 'fixed' && !withinTopper,
-						[textAlign]: textAlign,
+						[textAlign
+							? textAlign.startsWith('text-')
+								? textAlign
+								: `text-${textAlign}`
+							: '']: textAlign,
 					}
 				)}
 				ref={ref}

@@ -63,7 +63,7 @@ definition {
 		Alert.viewSuccessMessage();
 	}
 
-	macro disableChangeList {
+	macro disablePublications {
 		Uncheck.uncheckToggleSwitch(locator1 = "ChangeListSettings#CHANGE_LISTS_TOGGLE_SWITCH");
 
 		Click(locator1 = "Button#SAVE");
@@ -71,7 +71,7 @@ definition {
 		Alert.viewSuccessMessage();
 	}
 
-	macro enableChangeList {
+	macro enablePublications {
 		Pause(locator1 = "2000");
 
 		Check.checkToggleSwitch(locator1 = "ChangeListSettings#CHANGE_LISTS_TOGGLE_SWITCH");
@@ -86,7 +86,15 @@ definition {
 		Alert.viewSuccessMessage();
 	}
 
-	macro GotoViewDiffInConflictingChanges {
+	macro gotoReviewChanges {
+		Click(locator1 = "ChangeList#CHANGE_LIST_INDICATOR_BUTTON");
+
+		MenuItem.click(menuItem = "Review Changes");
+
+		Pause(locator1 = "3000");
+	}
+
+	macro gotoViewDiffInConflictingChanges {
 		Click(
 			key_entryTitle = "${entryTitle}",
 			locator1 = "ChangeList#CONFICTING_CHANGES_VIEW_BUTTON",

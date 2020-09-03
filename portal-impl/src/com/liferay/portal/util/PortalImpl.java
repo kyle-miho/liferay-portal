@@ -1374,7 +1374,6 @@ public class PortalImpl implements Portal {
 		throws PortalException {
 
 		String groupFriendlyURL = StringPool.BLANK;
-		boolean hasFriendlyURLSeparator = false;
 		boolean includeParametersURL = false;
 		String parametersURL = StringPool.BLANK;
 
@@ -1389,7 +1388,6 @@ public class PortalImpl implements Portal {
 				pos = completeURL.indexOf(urlSeparator);
 
 				if (pos != -1) {
-					hasFriendlyURLSeparator = true;
 					includeParametersURL = true;
 
 					break;
@@ -1427,9 +1425,15 @@ public class PortalImpl implements Portal {
 				getSiteDefaultLocale(layout.getGroupId()));
 		}
 
-		if (!hasFriendlyURLSeparator &&
-			(forceLayoutFriendlyURL || !layout.isFirstParent() ||
-			 Validator.isNotNull(parametersURL))) {
+		Group siteGroup = themeDisplay.getSiteGroup();
+
+		if (forceLayoutFriendlyURL ||
+			((!layout.isFirstParent() || Validator.isNotNull(parametersURL)) &&
+			 (groupFriendlyURL.contains(
+				 siteGroup.getFriendlyURL() +
+					 themeDisplay.getLayoutFriendlyURL(layout)) ||
+			  groupFriendlyURL.endsWith(
+				  StringPool.SLASH + layout.getLayoutId())))) {
 
 			canonicalLayoutFriendlyURL = defaultLayoutFriendlyURL;
 		}
@@ -2578,7 +2582,15 @@ public class PortalImpl implements Portal {
 		if (host != null) {
 			host = StringUtil.toLowerCase(host.trim());
 
-			int pos = host.indexOf(':');
+			// See RFC-3986 (section 3.2.2).
+
+			int pos = host.indexOf(']');
+
+			if ((pos > 0) && host.startsWith("[")) {
+				return host.substring(1, pos);
+			}
+
+			pos = host.indexOf(':');
 
 			if (pos >= 0) {
 				host = host.substring(0, pos);

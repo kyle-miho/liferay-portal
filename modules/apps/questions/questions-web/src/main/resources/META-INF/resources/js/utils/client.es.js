@@ -77,7 +77,34 @@ export const createCommentQuery = gql`
 	}
 `;
 
-export const createQuestionQuery = gql`
+export const createQuestionInRootQuery = gql`
+	mutation createSiteMessageBoardThread(
+		$articleBody: String!
+		$headline: String!
+		$keywords: [String]
+		$siteKey: String!
+	) {
+		createSiteMessageBoardThread(
+			siteKey: $siteKey
+			messageBoardThread: {
+				articleBody: $articleBody
+				encodingFormat: "html"
+				headline: $headline
+				keywords: $keywords
+				showAsQuestion: true
+				subscribed: true
+				viewableBy: ANYONE
+			}
+		) {
+			articleBody
+			headline
+			keywords
+			showAsQuestion
+		}
+	}
+`;
+
+export const createQuestionInASectionQuery = gql`
 	mutation createMessageBoardSectionMessageBoardThread(
 		$messageBoardSectionId: Long!
 		$articleBody: String!
@@ -112,7 +139,11 @@ export const createSubTopicQuery = gql`
 	) {
 		createMessageBoardSectionMessageBoardSection(
 			parentMessageBoardSectionId: $parentMessageBoardSectionId
-			messageBoardSection: {description: $description, title: $title}
+			messageBoardSection: {
+				description: $description
+				title: $title
+				viewableBy: ANYONE
+			}
 		) {
 			id
 			title
@@ -128,7 +159,11 @@ export const createTopicQuery = gql`
 	) {
 		createSiteMessageBoardSection(
 			siteKey: $siteKey
-			messageBoardSection: {description: $description, title: $title}
+			messageBoardSection: {
+				description: $description
+				title: $title
+				viewableBy: ANYONE
+			}
 		) {
 			id
 			title
@@ -501,7 +536,8 @@ export const getThreads = (
 		!keywords &&
 		!creatorId &&
 		!sort &&
-		!section.messageBoardSections.items.length
+		!section.messageBoardSections.items.length &&
+		section.id !== 0
 	) {
 		return client
 			.query({
@@ -591,14 +627,14 @@ export const getSectionByRootSection = (siteKey) => {
 				siteKey,
 			},
 		})
-		.then(({data}) => ({
-			actions: data.actions,
+		.then(({data: {messageBoardSections}}) => ({
+			actions: messageBoardSections.actions,
 			id: 0,
-			messageBoardSections: data.messageBoardSections,
+			messageBoardSections,
 			numberOfMessageBoardSections:
-				data.messageBoardSections &&
-				data.messageBoardSections.items &&
-				data.messageBoardSections.items.length,
+				messageBoardSections &&
+				messageBoardSections.items &&
+				messageBoardSections.items.length,
 		}));
 };
 

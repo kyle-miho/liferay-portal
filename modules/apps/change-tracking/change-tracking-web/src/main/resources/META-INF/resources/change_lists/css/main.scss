@@ -59,6 +59,12 @@
 	}
 }
 
+.change-lists-render-table {
+	.change-lists-key-td {
+		font-weight: 600;
+	}
+}
+
 .change-lists-table {
 	.change-list-description {
 		color: #6b6c7e;
@@ -126,6 +132,10 @@
 
 		.table {
 			button:hover {
+				cursor: pointer;
+			}
+
+			.cursor-pointer {
 				cursor: pointer;
 			}
 		}
