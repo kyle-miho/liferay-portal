@@ -4847,6 +4847,8 @@ org.apache.catalina.startup.ClassLoaderFactory.level=INFO]]>
 		<attribute default="0" name="app.server.explicit.stop.count" />
 
 		<sequential>
+			<echo>### STOPPING NORMAL CONTAINER ###</echo>
+
 			<set-app-server-properties
 				app.server.bin.dir="@{app.server.bin.dir}"
 				app.server.bundle.index="@{app.server.bundle.index}"
@@ -4873,6 +4875,8 @@ org.apache.catalina.startup.ClassLoaderFactory.level=INFO]]>
 			</parallel>
 
 			<wait-for-stop-app-server />
+
+			<echo>### FINISHED STOPPING NORMAL CONTAINER ###</echo>
 		</sequential>
 	</macrodef>
 
@@ -4882,6 +4886,7 @@ org.apache.catalina.startup.ClassLoaderFactory.level=INFO]]>
 		<attribute default="0" name="app.server.explicit.stop.count" />
 
 		<sequential>
+			<echo>### STOPPING DOCKER CONTAINER ###</echo>
 			<set-app-server-properties
 				app.server.bin.dir="@{app.server.bin.dir}"
 				app.server.bundle.index="@{app.server.bundle.index}"
@@ -4903,6 +4908,7 @@ org.apache.catalina.startup.ClassLoaderFactory.level=INFO]]>
 			<delete file="docker.process.pid" />
 
 			<wait-for-stop-app-server />
+			<echo>###FINISHED STOPPING DOCKER CONTAINER ###</echo>
 		</sequential>
 	</macrodef>
 
