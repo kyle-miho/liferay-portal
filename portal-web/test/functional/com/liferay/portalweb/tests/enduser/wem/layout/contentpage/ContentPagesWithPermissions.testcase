@@ -7,7 +7,7 @@ definition {
 
 	setUp {
 		task ("Set up instance and sign in") {
-			TestCase.setUpPortalInstance();
+			TestCase.setUpPortalInstance(TestCase.setUpPortalInstance(useUI = "true");
 
 			User.firstLoginPG();
 		}
@@ -34,7 +34,7 @@ definition {
 		var testPortalInstance = PropsUtil.get("test.portal.instance");
 
 		if ("${testPortalInstance}" == "true") {
-			PortalInstances.tearDownCP();
+			PortalInstances.tearDownCP(useUI = "true");
 		}
 		else {
 			JSONUser.tearDownNonAdminUsers();

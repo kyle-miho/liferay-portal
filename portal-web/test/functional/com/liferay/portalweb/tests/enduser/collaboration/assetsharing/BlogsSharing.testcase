@@ -7,7 +7,7 @@ definition {
 	property testray.main.component.name = "Asset Sharing";
 
 	setUp {
-		TestCase.setUpPortalInstance();
+		TestCase.setUpPortalInstance(useUI = "true");
 
 		User.firstLoginPG();
 
@@ -36,7 +36,7 @@ definition {
 		var testPortalInstance = PropsUtil.get("test.portal.instance");
 
 		if ("${testPortalInstance}" == "true") {
-			PortalInstances.tearDownCP();
+			PortalInstances.tearDownCP(useUI = "true");
 		}
 		else {
 			BlogsEntry.tearDownCP();

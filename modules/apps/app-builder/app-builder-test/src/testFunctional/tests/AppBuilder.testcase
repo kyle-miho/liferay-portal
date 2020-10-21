@@ -8,7 +8,7 @@ definition {
 	property testray.main.component.name = "App Builder";
 
 	setUp {
-		TestCase.setUpPortalInstance();
+		TestCase.setUpPortalInstance(useUI = "true");
 
 		User.firstLoginPG();
 
@@ -34,7 +34,7 @@ definition {
 		var testPortalInstance = PropsUtil.get("test.portal.instance");
 
 		if (("${testPortalInstance}" == "true") && (!(IsTestName(locator1 = "", value1 = "${testNameSkipPortalInstance}")))) {
-			PortalInstances.tearDownCP();
+			PortalInstances.tearDownCP(useUI = "true");
 		}
 		else {
 			Page.tearDownCP();

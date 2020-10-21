@@ -78,7 +78,11 @@ definition {
 		var testPortalInstance = PropsUtil.get("test.portal.instance");
 
 		if (("${testPortalInstance}" == "true") && (!(IsTestName(locator1 = "", value1 = "${testNameSkipPortalInstance}")))) {
-			SignIn.signInPortalInstanceSetUp();
+			if ("${useUI}" == "true") {
+				SignIn.signInPortalInstanceSetUpUI();
+			} else {
+				SignIn.signInPortalInstanceSetUpHeadless();
+			}
 		}
 	}
 
