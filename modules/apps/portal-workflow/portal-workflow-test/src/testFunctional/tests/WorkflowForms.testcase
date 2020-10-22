@@ -8,11 +8,7 @@ definition {
 	property testray.main.component.name = "Workflow";
 
 	setUp {
-		var testPortalInstance = PropsUtil.get("test.portal.instance");
-
-		if ("${testPortalInstance}" == "true") {
-			SignIn.signInPortalInstanceSetUp();
-		}
+		TestCase.setUpPortalInstance();
 
 		User.firstLoginPG();
 	}
