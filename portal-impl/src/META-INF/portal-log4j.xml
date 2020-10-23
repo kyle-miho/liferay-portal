@@ -552,6 +552,10 @@
 		<priority value="INFO" />
 	</category>
 
+	<category name="com.liferay.portal.service.impl.SystemEventLocalServiceImpl">
+		<priority value="DEBUG" />
+	</category>
+
 	<category name="com.liferay.portal.service.impl.ThemeLocalServiceImpl">
 		<priority value="INFO" />
 	</category>
