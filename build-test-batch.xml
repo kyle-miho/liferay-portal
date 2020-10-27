@@ -4484,7 +4484,7 @@ log.sanitizer.enabled=false</echo>
 	</target>
 
 	<target name="functional-smoke-weblogic122-mysql57-jdk8">
-		<run-functional-test app.server.type="weblogic" database.type="mysql" database.version="5.7" test.portal.log.assert="true" />
+		<run-functional-test app.server.type="weblogic" database.type="mysql" database.version="5.7" />
 	</target>
 
 	<target name="functional-smoke-websphere90-mysql57-jdk8">
