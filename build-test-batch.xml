@@ -4488,7 +4488,7 @@ log.sanitizer.enabled=false</echo>
 	</target>
 
 	<target name="functional-smoke-websphere90-mysql57-jdk8">
-		<run-functional-test app.server.type="websphere" database.type="mysql" database.version="5.7" test.portal.log.assert="true" />
+		<run-functional-test app.server.type="websphere" database.type="mysql" database.version="5.7" />
 	</target>
 
 	<target name="functional-smoke-wildfly140-mariadb102-jdk8">
