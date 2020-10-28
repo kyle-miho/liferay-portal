@@ -4338,7 +4338,7 @@ log.sanitizer.enabled=false</echo>
 	</target>
 
 	<target name="functional-smoke-jboss72-mysql57-jdk8">
-		<run-functional-test app.server.type="jboss" database.type="mysql" database.version="5.7" test.portal.log.assert="true" />
+		<run-functional-test app.server.type="jboss" database.type="mysql" database.version="5.7" />
 	</target>
 
 	<target name="functional-smoke-jboss72-mysql57-jdk11_open">
