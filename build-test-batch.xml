@@ -1720,6 +1720,15 @@ app.server.type=@{app.server.type}]]></echo>
 						</if>
 
 						<echo if:set="env.JENKINS_HOME">ANT_OPTS=${env.ANT_OPTS}</echo>
+
+						<echo>CLEARING OSGI STATE!!</echo>
+
+						<delete>
+							<fileset
+								dir="${liferay.home}/osgi/state"
+								includes="**/bundleFile"
+							/>
+						</delete>
 					</test-set-up>
 
 					<test-tear-down>
