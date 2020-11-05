@@ -6,7 +6,7 @@ definition {
 	property testray.main.component.name = "Users and Organizations";
 
 	setUp {
-		TestCase.setUpPortalInstance();
+		TestCase.setUpPortalInstance(useUI = "true");
 
 		User.firstLoginPG();
 	}
@@ -18,7 +18,7 @@ definition {
 			PortalInstances.tearDownCP();
 		}
 		else {
-			JSONUser.tearDownNonAdminUsers();
+			JSONUser.tearDownNonAdminUsers(useUI = "true");
 
 			Site.tearDownCP();
 
