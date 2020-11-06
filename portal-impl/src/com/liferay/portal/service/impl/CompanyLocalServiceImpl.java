@@ -70,7 +70,6 @@ import com.liferay.portal.kernel.search.facet.faceted.searcher.FacetedSearcher;
 import com.liferay.portal.kernel.search.facet.faceted.searcher.FacetedSearcherManagerUtil;
 import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
 import com.liferay.portal.kernel.security.auth.EmailAddressValidator;
-import com.liferay.portal.kernel.security.auth.PrincipalThreadLocal;
 import com.liferay.portal.kernel.transaction.Isolation;
 import com.liferay.portal.kernel.transaction.TransactionCommitCallbackUtil;
 import com.liferay.portal.kernel.transaction.Transactional;
@@ -1264,8 +1263,6 @@ public class CompanyLocalServiceImpl extends CompanyLocalServiceBaseImpl {
 		// User
 
 		_log.debug("Cleaning up users from company via actionable dynamic query.");
-
-		PrincipalThreadLocal.setName(userLocalService.getDefaultUserId(companyId));
 
 		ActionableDynamicQuery userActionableDynamicQuery =
 			userLocalService.getActionableDynamicQuery();
