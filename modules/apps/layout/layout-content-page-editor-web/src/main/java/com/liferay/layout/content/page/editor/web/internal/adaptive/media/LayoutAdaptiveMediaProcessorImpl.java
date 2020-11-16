@@ -179,10 +179,10 @@ public class LayoutAdaptiveMediaProcessorImpl
 	private String _getMediaQuery(String elementId, long fileEntryId)
 		throws PortalException {
 
-		StringBundler sb = new StringBundler();
-
 		List<MediaQuery> mediaQueries = _mediaQueryProvider.getMediaQueries(
 			_dlAppService.getFileEntry(fileEntryId));
+
+		StringBundler sb = new StringBundler();
 
 		for (MediaQuery mediaQuery : mediaQueries) {
 			List<Condition> conditions = mediaQuery.getConditions();
