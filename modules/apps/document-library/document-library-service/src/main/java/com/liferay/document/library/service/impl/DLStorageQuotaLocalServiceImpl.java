@@ -73,14 +73,14 @@ public class DLStorageQuotaLocalServiceImpl
 	public void validateStorageQuota(long companyId, long increment)
 		throws PortalException {
 
-		if (PropsValues.DATA_LIMIT_MAX_DL_STORAGE_SIZE <= 0) {
+		if (PropsValues.DATA_LIMIT_DL_STORAGE_MAX_SIZE <= 0) {
 			return;
 		}
 
 		long currentStorageSize = _getStorageSize(companyId);
 
 		if ((currentStorageSize + increment) >
-				PropsValues.DATA_LIMIT_MAX_DL_STORAGE_SIZE) {
+				PropsValues.DATA_LIMIT_DL_STORAGE_MAX_SIZE) {
 
 			throw new DLStorageQuotaExceededException(
 				"Unable to exceed maximum alowed document library storage " +

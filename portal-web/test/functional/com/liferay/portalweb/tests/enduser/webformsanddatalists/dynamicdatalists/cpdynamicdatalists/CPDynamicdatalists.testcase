@@ -34,6 +34,8 @@ definition {
 
 	@priority = "4"
 	test AddDisplayTemplateFreeMarker {
+		property portal.upstream = "quarantine";
+
 		Navigator.openURL();
 
 		ProductMenu.gotoPortlet(
@@ -64,6 +66,8 @@ definition {
 
 	@priority = "5"
 	test AddDisplayTemplateVelocity {
+		property portal.upstream = "quarantine";
+
 		Navigator.openURL();
 
 		ProductMenu.gotoPortlet(
@@ -94,7 +98,7 @@ definition {
 
 	@priority = "5"
 	test AddFormTemplate {
-		property portal.acceptance = "true";
+		property portal.acceptance = "quarantine";
 
 		Navigator.openURL();
 
@@ -806,6 +810,8 @@ definition {
 
 	@priority = "4"
 	test AddListRecordWithDecimalField {
+		property portal.upstream = "quarantine";
+
 		Navigator.openURL();
 
 		ProductMenu.gotoPortlet(
@@ -1099,6 +1105,8 @@ definition {
 
 	@priority = "4"
 	test AddListRecordWithIntegerField {
+		property portal.upstream = "quarantine";
+
 		Navigator.openURL();
 
 		ProductMenu.gotoPortlet(
@@ -1175,7 +1183,7 @@ definition {
 	@description = "This is a use case for LPS-65726"
 	@priority = "5"
 	test AddListRecordWithLinkToPageField {
-		property portal.acceptance = "true";
+		property portal.acceptance = "quarantine";
 
 		ProductMenu.gotoPortlet(
 			category = "Site Builder",
@@ -1721,6 +1729,8 @@ definition {
 
 	@priority = "3"
 	test CopyDataDefinition {
+		property portal.upstream = "quarantine";
+
 		Navigator.openURL();
 
 		ProductMenu.gotoPortlet(
@@ -1797,6 +1807,8 @@ definition {
 
 	@priority = "3"
 	test CopyDataDefinitionWithCopyDisplayTemplates {
+		property portal.upstream = "quarantine";
+
 		Navigator.openURL();
 
 		ProductMenu.gotoPortlet(
@@ -1884,6 +1896,8 @@ definition {
 
 	@priority = "3"
 	test CopyDataDefinitionWithCopyFormTemplates {
+		property portal.upstream = "quarantine";
+
 		Navigator.openURL();
 
 		ProductMenu.gotoPortlet(
@@ -1980,6 +1994,8 @@ definition {
 
 	@priority = "4"
 	test CopyDataDefinitionWithCopyFormTemplatesAndCopyDisplayTemplates {
+		property portal.upstream = "quarantine";
+
 		Navigator.openURL();
 
 		ProductMenu.gotoPortlet(
@@ -2103,6 +2119,8 @@ definition {
 
 	@priority = "4"
 	test DeleteDisplayTemplateFreeMarker {
+		property portal.upstream = "quarantine";
+
 		Navigator.openURL();
 
 		ProductMenu.gotoPortlet(
@@ -2143,6 +2161,8 @@ definition {
 
 	@priority = "4"
 	test DeleteDisplayTemplateVelocity {
+		property portal.upstream = "quarantine";
+
 		Navigator.openURL();
 
 		ProductMenu.gotoPortlet(
@@ -2183,6 +2203,8 @@ definition {
 
 	@priority = "4"
 	test DeleteFormTemplate {
+		property portal.upstream = "quarantine";
+
 		Navigator.openURL();
 
 		ProductMenu.gotoPortlet(
@@ -2697,6 +2719,8 @@ definition {
 
 	@priority = "4"
 	test EditDisplayTemplateFreeMarker {
+		property portal.upstream = "quarantine";
+
 		Navigator.openURL();
 
 		ProductMenu.gotoPortlet(
@@ -2750,6 +2774,8 @@ definition {
 
 	@priority = "4"
 	test EditDisplayTemplateVelocity {
+		property portal.upstream = "quarantine";
+
 		Navigator.openURL();
 
 		ProductMenu.gotoPortlet(
@@ -2803,6 +2829,8 @@ definition {
 
 	@priority = "4"
 	test EditFormTemplate {
+		property portal.upstream = "quarantine";
+
 		Navigator.openURL();
 
 		ProductMenu.gotoPortlet(
@@ -3584,6 +3612,8 @@ definition {
 
 	@priority = "3"
 	test ViewFormTemplateFieldReadOnlyWithEditMode {
+		property portal.upstream = "quarantine";
+
 		Navigator.openURL();
 
 		ProductMenu.gotoPortlet(
@@ -3637,6 +3667,8 @@ definition {
 
 	@priority = "3"
 	test ViewFormTemplateFields {
+		property portal.upstream = "quarantine";
+
 		Navigator.openURL();
 
 		ProductMenu.gotoPortlet(
@@ -3683,6 +3715,8 @@ definition {
 
 	@priority = "3"
 	test ViewFormTemplateFieldsAfterSaveAndContinue {
+		property portal.upstream = "quarantine";
+
 		Navigator.openURL();
 
 		ProductMenu.gotoPortlet(
@@ -3801,6 +3835,8 @@ definition {
 
 	@priority = "3"
 	test ViewNoDuplicatesInOriginalAfterCopy {
+		property portal.upstream = "quarantine";
+
 		Navigator.openURL();
 
 		ProductMenu.gotoPortlet(

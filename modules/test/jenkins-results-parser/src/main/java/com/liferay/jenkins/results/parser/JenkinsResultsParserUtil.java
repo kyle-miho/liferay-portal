@@ -85,6 +85,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -632,6 +633,39 @@ public class JenkinsResultsParserUtil {
 		return files;
 	}
 
+	public static List<File> findSiblingFiles(File file) {
+		return findSiblingFiles(file, false);
+	}
+
+	public static List<File> findSiblingFiles(File file, boolean includeFile) {
+		if ((file == null) || !file.exists()) {
+			if (includeFile) {
+				return Arrays.asList(file);
+			}
+
+			return Collections.emptyList();
+		}
+
+		File parentFile = file.getParentFile();
+
+		if ((parentFile == null) || !parentFile.exists()) {
+			if (includeFile) {
+				return Arrays.asList(file);
+			}
+
+			return Collections.emptyList();
+		}
+
+		List<File> siblingFiles = new ArrayList<>(
+			Arrays.asList(parentFile.listFiles()));
+
+		if (!includeFile) {
+			siblingFiles.remove(file);
+		}
+
+		return Collections.unmodifiableList(siblingFiles);
+	}
+
 	public static String fixFileName(String fileName) {
 		String prefix = "";
 
@@ -834,8 +868,6 @@ public class JenkinsResultsParserUtil {
 	}
 
 	public static Map<String, String> getBuildParameters(String buildURL) {
-		Map<String, String> buildParameters = new HashMap<>();
-
 		if (!buildURL.endsWith("/")) {
 			buildURL += "/";
 		}
@@ -846,39 +878,11 @@ public class JenkinsResultsParserUtil {
 		try {
 			JSONObject jsonObject = toJSONObject(buildParametersURL);
 
-			JSONArray actionsJSONArray = jsonObject.getJSONArray("actions");
-
-			for (int i = 0; i < actionsJSONArray.length(); i++) {
-				Object actions = actionsJSONArray.get(i);
-
-				if (actions == JSONObject.NULL) {
-					continue;
-				}
-
-				JSONObject actionJSONObject = actionsJSONArray.getJSONObject(i);
-
-				if (!actionJSONObject.has("parameters")) {
-					continue;
-				}
-
-				JSONArray parametersJSONArray = actionJSONObject.getJSONArray(
-					"parameters");
-
-				for (int j = 0; j < parametersJSONArray.length(); j++) {
-					JSONObject parameterJSONObject =
-						parametersJSONArray.getJSONObject(j);
-
-					buildParameters.put(
-						parameterJSONObject.getString("name"),
-						parameterJSONObject.getString("value"));
-				}
-			}
+			return JenkinsAPIUtil.getBuildParameters(jsonObject);
 		}
 		catch (IOException ioException) {
-			throw new RuntimeException();
+			throw new RuntimeException(ioException);
 		}
-
-		return buildParameters;
 	}
 
 	public static Properties getBuildProperties() throws IOException {
@@ -1163,7 +1167,7 @@ public class JenkinsResultsParserUtil {
 
 	public static String getDistinctTimeStamp() {
 		while (true) {
-			String timeStamp = String.valueOf(System.currentTimeMillis());
+			String timeStamp = String.valueOf(getCurrentTimeMillis());
 
 			if (_timeStamps.contains(timeStamp)) {
 				continue;
@@ -1502,6 +1506,10 @@ public class JenkinsResultsParserUtil {
 	public static String getJenkinsMasterName(String jenkinsSlaveName) {
 		jenkinsSlaveName = jenkinsSlaveName.replaceAll("([^\\.]+).*", "$1");
 
+		if (jenkinsSlaveName.matches("test-\\d{1,2}-\\d{1,2}")) {
+			return jenkinsSlaveName;
+		}
+
 		Map<String, List<String>> jenkinsNodeMap = getJenkinsNodeMap();
 
 		if (jenkinsNodeMap != null) {
@@ -1557,7 +1565,8 @@ public class JenkinsResultsParserUtil {
 				 "master.slaves(" + prefix + "-" + i + ")");
 			 i++) {
 
-			JenkinsMaster jenkinsMaster = new JenkinsMaster(prefix + "-" + i);
+			JenkinsMaster jenkinsMaster = JenkinsMaster.getInstance(
+				prefix + "-" + i);
 
 			if ((jenkinsMaster.getSlaveRAM() >= minimumRAM) &&
 				(jenkinsMaster.getSlavesPerHost() <= maximumSlavesPerHost)) {
@@ -1599,12 +1608,24 @@ public class JenkinsResultsParserUtil {
 								buildProperties, jenkinsMasterName, null,
 								false);
 
+							if (jenkinsSlaveNames.isEmpty()) {
+								continue;
+							}
+
 							jenkinsNodeMap.put(
 								jenkinsMasterName, jenkinsSlaveNames);
 						}
 					}
 
 					if (jenkinsNodeMap.isEmpty()) {
+						System.out.println(
+							combine(
+								"Jenkins slave name mapping properties could ",
+								"not be found. Build properties URLs will be ",
+								"reverted to their default values."));
+
+						setBuildProperties(URLS_BUILD_PROPERTIES_DEFAULT);
+
 						_checkCache = false;
 
 						throw new RuntimeException(
@@ -1822,7 +1843,7 @@ public class JenkinsResultsParserUtil {
 					blacklist, minimumRAM, maximumSlavesPerHost,
 					buildProperties);
 
-			Random random = new Random(System.currentTimeMillis());
+			Random random = new Random(getCurrentTimeMillis());
 
 			JenkinsMaster randomJenkinsMaster = availableJenkinsMasters.get(
 				random.nextInt(availableJenkinsMasters.size()));
@@ -1952,6 +1973,8 @@ public class JenkinsResultsParserUtil {
 
 				if (matchesAllPropertyOptRegexes) {
 					propertyName = propertyOptRegexEntry.getKey();
+
+					break;
 				}
 			}
 
@@ -2240,7 +2263,13 @@ public class JenkinsResultsParserUtil {
 					buildProperties.getProperty(propertyName.toString()));
 
 				for (String slave : slavesString.split(",")) {
-					slaves.add(slave.trim());
+					slave = slave.trim();
+
+					if (isNullOrEmpty(slave)) {
+						continue;
+					}
+
+					slaves.add(slave);
 				}
 			}
 		}
@@ -2313,6 +2342,25 @@ public class JenkinsResultsParserUtil {
 
 	public static File getUserHomeDir() {
 		return _userHomeDir;
+	}
+
+	public static void gzip(File sourceFile, File targetFile) {
+		try (FileOutputStream fileOutputStream = new FileOutputStream(
+				targetFile);
+			GZIPOutputStream gzipOutputStream = new GZIPOutputStream(
+				fileOutputStream);
+			FileInputStream fileInputStream = new FileInputStream(sourceFile)) {
+
+			byte[] bytes = new byte[1024];
+			int length = 0;
+
+			while ((length = fileInputStream.read(bytes)) > 0) {
+				gzipOutputStream.write(bytes, 0, length);
+			}
+		}
+		catch (IOException ioException) {
+			throw new RuntimeException(ioException);
+		}
 	}
 
 	public static boolean isCINode() {
@@ -3983,8 +4031,7 @@ public class JenkinsResultsParserUtil {
 		sb.append(" GitHub API calls out of ");
 		sb.append(limit);
 		sb.append(" remain. GitHub API call limit will reset in ");
-		sb.append(
-			toDurationString((1000 * reset) - System.currentTimeMillis()));
+		sb.append(toDurationString((1000 * reset) - getCurrentTimeMillis()));
 		sb.append(".");
 
 		return sb.toString();

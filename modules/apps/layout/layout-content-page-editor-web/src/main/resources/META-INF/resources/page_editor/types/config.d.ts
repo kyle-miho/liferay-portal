@@ -99,6 +99,7 @@ export interface Config {
 	discardDraftRedirectURL: string;
 	discardDraftURL: string;
 	draft: boolean;
+	dropdownFragmentEnabled: boolean;
 	duplicateItemURL: string;
 	duplicateSegmentsExperienceURL: string;
 	editFragmentEntryLinkCommentURL: string;
@@ -128,9 +129,9 @@ export interface Config {
 	getPageContentsURL: string;
 	imageSelectorURL: string;
 	infoItemSelectorURL: string;
-
-	layoutItemSelectorURL: String;
 	layoutConversionWarningMessages: string[] | null;
+	layoutItemSelectorURL: String;
+	layoutMappingEnabled: boolean;
 	layoutType: LayoutTypes[keyof LayoutTypes];
 	lookAndFeelURL: string;
 	mappingFieldsURL: string;

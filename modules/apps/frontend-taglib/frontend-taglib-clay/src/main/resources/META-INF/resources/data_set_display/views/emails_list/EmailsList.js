@@ -14,11 +14,13 @@
 
 import ClayLabel from '@clayui/label';
 import ClayList from '@clayui/list';
+import ClayLoadingIndicator from '@clayui/loading-indicator';
 import ClaySticker from '@clayui/sticker';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React, {useContext} from 'react';
 
+import EmptyResultMessage from '../../EmptyResultMessage';
 import ActionsDropdownRenderer from '../../data_renderers/ActionsDropdownRenderer';
 
 function Email({
@@ -136,8 +138,16 @@ Email.defaultProps = {
 	actionItems: [],
 };
 
-function EmailsList({dataSetDisplayContext, items}) {
+function EmailsList({dataLoading, dataSetDisplayContext, items}) {
 	const {style} = useContext(dataSetDisplayContext);
+
+	if (dataLoading) {
+		return <ClayLoadingIndicator className="mt-7" />;
+	}
+
+	if (!items?.length) {
+		return <EmptyResultMessage />;
+	}
 
 	return (
 		<ClayList

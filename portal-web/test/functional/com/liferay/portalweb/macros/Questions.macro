@@ -121,6 +121,12 @@ definition {
 
 		Click(locator1 = "Questions#ASK_QUESTION_POST_YOUR_QUESTION_BUTTON");
 
+		if (isSet(answeredLabel)) {
+			AssertElementPresent(
+				key_label = "Answered",
+				locator1 = "Questions#QUESTIONS_RESPONSE_DATE_LABEL");
+		}
+
 		AssertVisible(
 			key_answerBodyContent = "${contentField}",
 			locator1 = "Questions#ANSWER_BODY");
@@ -422,6 +428,46 @@ definition {
 		}
 	}
 
+	macro editAnswer {
+		Click(locator1 = "Questions#EDIT_ANSWER");
+
+		SelectFrame.selectFrameNoLoading(locator1 = "CKEditor#BODY_FIELD_IFRAME");
+
+		Type(
+			locator1 = "CKEditor#BODY",
+			value1 = "${contentField}");
+
+		SelectFrame(value1 = "relative=top");
+
+		Click(
+			key_text = "Update Your Answer",
+			locator1 = "Button#ANY");
+
+		AssertVisible(
+			key_answerBodyContent = "${contentField}",
+			locator1 = "Questions#ANSWER_BODY");
+	}
+
+	macro editRootTopic {
+		var key_categoryName = "${categoryName}";
+
+		LexiconEntry.openEntryMenu(rowEntry = "${categoryName}");
+
+		MenuItem.click(menuItem = "Edit");
+
+		PortletEntry.inputName(name = "${categoryNameEdit}");
+
+		Click(
+			locator1 = "Button#SAVE",
+			value1 = "Save");
+
+		Alert.viewSuccessMessage();
+
+		AssertTextEquals(
+			locator1 = "MessageBoards#CATEGORY_LIST_CATEGORY",
+			value1 = "${categoryNameEdit}");
+	}
+
 	macro fillName {
 		Click(locator1 = "Questions#CREATE_QUESTIONS_NAME_FIELD");
 
@@ -493,6 +539,12 @@ definition {
 		AssertClick(
 			locator1 = "Button#REPLY_LAST",
 			value1 = "Reply");
+
+		if (isSet(repliedLabel)) {
+			AssertElementPresent(
+				key_label = "Replied",
+				locator1 = "Questions#QUESTIONS_RESPONSE_DATE_LABEL");
+		}
 
 		AssertVisible(
 			key_replyBodyContent = "${commentReply}",

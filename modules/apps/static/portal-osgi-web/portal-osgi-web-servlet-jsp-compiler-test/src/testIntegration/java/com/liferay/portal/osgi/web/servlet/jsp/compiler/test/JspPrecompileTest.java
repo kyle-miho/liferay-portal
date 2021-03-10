@@ -39,6 +39,7 @@ import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.osgi.web.servlet.jsp.compiler.test.servlet.PrecompileTestServlet;
 import com.liferay.portal.test.log.CaptureAppender;
 import com.liferay.portal.test.log.Log4JLoggerTestUtil;
+import com.liferay.portal.test.log.LogEvent;
 import com.liferay.portal.util.PropsValues;
 
 import java.io.IOException;
@@ -63,9 +64,6 @@ import java.util.zip.ZipEntry;
 import javax.portlet.Portlet;
 
 import javax.servlet.http.HttpServletRequest;
-
-import org.apache.log4j.Level;
-import org.apache.log4j.spi.LoggingEvent;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -194,7 +192,7 @@ public class JspPrecompileTest {
 
 		try (CaptureAppender captureAppender =
 				Log4JLoggerTestUtil.configureLog4JLogger(
-					_CLASS_NAME_JSP_COMPILER, Level.DEBUG)) {
+					_CLASS_NAME_JSP_COMPILER, Log4JLoggerTestUtil.DEBUG)) {
 
 			_invokeJSP(_PRECOMPILE_JSP_FILE_NAME, "Precompiled");
 
@@ -212,7 +210,7 @@ public class JspPrecompileTest {
 	public void testRuntimeCompiledJsp() throws Exception {
 		try (CaptureAppender captureAppender =
 				Log4JLoggerTestUtil.configureLog4JLogger(
-					_CLASS_NAME_JSP_COMPILER, Level.DEBUG)) {
+					_CLASS_NAME_JSP_COMPILER, Log4JLoggerTestUtil.DEBUG)) {
 
 			_invokeJSP(_RUNTIME_COMPILE_JSP_FILE_NAME, "Runtime Compiled");
 
@@ -358,8 +356,8 @@ public class JspPrecompileTest {
 
 		String compilerLog = sb.toString();
 
-		for (LoggingEvent loggingEvent : captureAppender.getLoggingEvents()) {
-			String message = loggingEvent.getRenderedMessage();
+		for (LogEvent logEvent : captureAppender.getLogEvents()) {
+			String message = logEvent.getMessage();
 
 			if (message.equals(compilerLog)) {
 				return true;

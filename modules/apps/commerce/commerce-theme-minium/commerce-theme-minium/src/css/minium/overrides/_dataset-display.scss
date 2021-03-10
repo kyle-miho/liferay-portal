@@ -5,33 +5,60 @@
 		overflow: hidden;
 	}
 
-	.table {
-		td:first-child,
-		th:first-child,
-		.table-cell-start {
-			border-bottom-left-radius: 8px;
-			border-top-left-radius: 8px;
-		}
-
-		td:last-child,
-		th:last-child,
-		.table-cell-end {
-			border-bottom-right-radius: 8px;
-			border-top-right-radius: 8px;
-		}
+	.data-set-display-management-bar-wrapper .form-control {
+		border-width: 1px;
 	}
 
-	.table-list-title {
-		color: $color-fg-alt;
-		font-size: 12px;
-		font-weight: 500;
-		letter-spacing: 1.2px;
-		line-height: 1;
-		text-transform: uppercase;
+	.dnd-table {
+		background-color: transparent;
+
+		.with-bg {
+			background-color: transparent;
+		}
+
+		.dnd-td,
+		.dnd-th {
+			border-right: none;
+		}
+
+		.dnd-th-resizer {
+			background-color: $color-theme-dark;
+			transition: opacity 0.1s ease-in;
+
+			&.is-active {
+				background-color: $color-mood-bad;
+
+				&.is-allowed {
+					background-color: $color-theme;
+				}
+			}
+		}
+
+		.dnd-tr {
+			background-color: $color-bg;
+			border-bottom: none;
+			border-radius: $border-radius;
+			margin-bottom: 4px;
+			overflow: hidden;
+
+			&:last-child {
+				margin-bottom: 0;
+			}
+		}
+
+		.dnd-thead {
+			color: $color-fg-alt;
+			font-size: 12px;
+			font-weight: 500;
+			letter-spacing: 1.2px;
+			line-height: 1;
+			margin-bottom: 4px;
+			text-transform: uppercase;
+		}
 	}
 
 	.filter-resume {
-		border-color: $border-color;
+		border-color: $color-border;
 		border-radius: 8px;
 		border-width: 2px;
 		overflow: hidden;
@@ -47,7 +74,7 @@
 		}
 
 		.label-item-after {
-			background: $border-color;
+			background: $color-border;
 			height: calc(100% + 12px);
 			margin-right: -6px;
 			margin-top: -6px;

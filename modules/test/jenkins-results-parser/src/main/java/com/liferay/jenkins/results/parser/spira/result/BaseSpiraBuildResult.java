@@ -190,152 +190,164 @@ public class BaseSpiraBuildResult implements SpiraBuildResult {
 	}
 
 	private SpiraProject _getSpiraProject() {
-		long start = System.currentTimeMillis();
-
-		String spiraProjectID = System.getenv("TEST_SPIRA_PROJECT_ID");
-
-		if ((spiraProjectID == null) || !spiraProjectID.matches("\\d+")) {
-			spiraProjectID = getPortalTestSuiteProperty(
-				"test.batch.spira.project.id");
-		}
-
 		SpiraProject spiraProject = null;
+		long start = JenkinsResultsParserUtil.getCurrentTimeMillis();
 
-		if ((spiraProjectID != null) && spiraProjectID.matches("\\d+")) {
-			spiraProject = SpiraProject.getSpiraProjectByID(
-				Integer.valueOf(spiraProjectID));
+		try {
+			String spiraProjectID = System.getenv("TEST_SPIRA_PROJECT_ID");
+
+			if ((spiraProjectID == null) || !spiraProjectID.matches("\\d+")) {
+				spiraProjectID = getPortalTestSuiteProperty(
+					"test.batch.spira.project.id");
+			}
+
+			if ((spiraProjectID != null) && spiraProjectID.matches("\\d+")) {
+				spiraProject = SpiraProject.getSpiraProjectByID(
+					Integer.valueOf(spiraProjectID));
+			}
+		}
+		finally {
+			if (spiraProject != null) {
+				long duration =
+					JenkinsResultsParserUtil.getCurrentTimeMillis() - start;
+
+				System.out.println(
+					JenkinsResultsParserUtil.combine(
+						"Spira Project ", spiraProject.getURL(), " created in ",
+						JenkinsResultsParserUtil.toDurationString(duration)));
+			}
 		}
 
-		if (spiraProject != null) {
-			System.out.println(
-				JenkinsResultsParserUtil.combine(
-					"Spira Project ", spiraProject.getURL(), " created in ",
-					JenkinsResultsParserUtil.toDurationString(
-						System.currentTimeMillis() - start)));
-
-			return spiraProject;
-		}
-
-		return null;
+		return spiraProject;
 	}
 
 	private SpiraRelease _getSpiraRelease(SpiraProject spiraProject) {
-		long start = System.currentTimeMillis();
-
-		String spiraReleaseID = System.getProperty("TEST_SPIRA_RELEASE_ID");
-
 		SpiraRelease spiraRelease = null;
+		long start = JenkinsResultsParserUtil.getCurrentTimeMillis();
 
-		if ((spiraReleaseID != null) && spiraReleaseID.matches("\\d+")) {
-			spiraRelease = spiraProject.getSpiraReleaseByID(
-				Integer.valueOf(spiraReleaseID));
+		try {
+			String spiraReleaseID = System.getProperty("TEST_SPIRA_RELEASE_ID");
+
+			if ((spiraReleaseID != null) && spiraReleaseID.matches("\\d+")) {
+				spiraRelease = spiraProject.getSpiraReleaseByID(
+					Integer.valueOf(spiraReleaseID));
+			}
+
+			String spiraReleasePath = System.getProperty(
+				"TEST_SPIRA_RELEASE_PATH");
+
+			if ((spiraRelease == null) && (spiraReleasePath != null) &&
+				spiraReleasePath.matches("\\/.+")) {
+
+				spiraRelease = SpiraRelease.createSpiraReleaseByPath(
+					spiraProject, replaceEnvVars(spiraReleasePath));
+			}
+
+			spiraReleaseID = getPortalTestSuiteProperty(
+				"test.batch.spira.release.id");
+
+			if ((spiraRelease == null) && (spiraReleaseID != null) &&
+				spiraReleaseID.matches("\\d+")) {
+
+				spiraRelease = spiraProject.getSpiraReleaseByID(
+					Integer.valueOf(spiraReleaseID));
+			}
+
+			spiraReleasePath = getPortalTestSuiteProperty(
+				"test.batch.spira.release.path");
+
+			if ((spiraRelease == null) && (spiraReleasePath != null) &&
+				spiraReleasePath.matches("\\/.+")) {
+
+				spiraRelease = SpiraRelease.createSpiraReleaseByPath(
+					spiraProject, replaceEnvVars(spiraReleasePath));
+			}
+		}
+		finally {
+			if (spiraRelease != null) {
+				long duration =
+					JenkinsResultsParserUtil.getCurrentTimeMillis() - start;
+
+				System.out.println(
+					JenkinsResultsParserUtil.combine(
+						"Spira Release ", spiraRelease.getURL(), " created in ",
+						JenkinsResultsParserUtil.toDurationString(duration)));
+			}
 		}
 
-		String spiraReleasePath = System.getProperty("TEST_SPIRA_RELEASE_PATH");
-
-		if ((spiraRelease == null) && (spiraReleasePath != null) &&
-			spiraReleasePath.matches("\\/.+")) {
-
-			spiraRelease = SpiraRelease.createSpiraReleaseByPath(
-				spiraProject, replaceEnvVars(spiraReleasePath));
-		}
-
-		spiraReleaseID = getPortalTestSuiteProperty(
-			"test.batch.spira.release.id");
-
-		if ((spiraRelease == null) && (spiraReleaseID != null) &&
-			spiraReleaseID.matches("\\d+")) {
-
-			spiraRelease = spiraProject.getSpiraReleaseByID(
-				Integer.valueOf(spiraReleaseID));
-		}
-
-		spiraReleasePath = getPortalTestSuiteProperty(
-			"test.batch.spira.release.path");
-
-		if ((spiraRelease == null) && (spiraReleasePath != null) &&
-			spiraReleasePath.matches("\\/.+")) {
-
-			spiraRelease = SpiraRelease.createSpiraReleaseByPath(
-				spiraProject, replaceEnvVars(spiraReleasePath));
-		}
-
-		if (spiraRelease != null) {
-			System.out.println(
-				JenkinsResultsParserUtil.combine(
-					"Spira Release ", spiraRelease.getURL(), " created in ",
-					JenkinsResultsParserUtil.toDurationString(
-						System.currentTimeMillis() - start)));
-
-			return spiraRelease;
-		}
-
-		return null;
+		return spiraRelease;
 	}
 
 	private SpiraReleaseBuild _getSpiraReleaseBuild(
 		SpiraProject spiraProject, SpiraRelease spiraRelease) {
 
-		long start = System.currentTimeMillis();
-
-		String spiraReleaseBuildID = System.getenv("TEST_SPIRA_BUILD_ID");
-
 		SpiraReleaseBuild spiraReleaseBuild = null;
+		long start = JenkinsResultsParserUtil.getCurrentTimeMillis();
 
-		if ((spiraReleaseBuildID != null) &&
-			spiraReleaseBuildID.matches("\\d+")) {
+		try {
+			String spiraReleaseBuildID = System.getenv("TEST_SPIRA_BUILD_ID");
 
-			spiraReleaseBuild = spiraRelease.getSpiraReleaseBuildByID(
-				Integer.valueOf(spiraReleaseBuildID));
+			if ((spiraReleaseBuildID != null) &&
+				spiraReleaseBuildID.matches("\\d+")) {
+
+				spiraReleaseBuild = spiraRelease.getSpiraReleaseBuildByID(
+					Integer.valueOf(spiraReleaseBuildID));
+			}
+
+			String spiraReleaseBuildName = System.getenv(
+				"TEST_SPIRA_BUILD_NAME");
+
+			if ((spiraReleaseBuild == null) &&
+				(spiraReleaseBuildName != null) &&
+				!spiraReleaseBuildName.isEmpty()) {
+
+				spiraReleaseBuild = SpiraReleaseBuild.createSpiraReleaseBuild(
+					spiraProject, spiraRelease,
+					replaceEnvVars(spiraReleaseBuildName),
+					_getSpiraReleaseBuildDescription(),
+					_getSpiraReleaseBuildStatus(),
+					_topLevelBuild.getStartTime());
+			}
+
+			spiraReleaseBuildID = getPortalTestSuiteProperty(
+				"test.batch.spira.build.id");
+
+			if ((spiraReleaseBuild == null) && (spiraReleaseBuildID != null) &&
+				spiraReleaseBuildID.matches("\\d+")) {
+
+				spiraReleaseBuild = spiraRelease.getSpiraReleaseBuildByID(
+					Integer.valueOf(spiraReleaseBuildID));
+			}
+
+			spiraReleaseBuildName = getPortalTestSuiteProperty(
+				"test.batch.spira.build.name");
+
+			if ((spiraReleaseBuild == null) &&
+				(spiraReleaseBuildName != null) &&
+				!spiraReleaseBuildName.isEmpty()) {
+
+				spiraReleaseBuild = SpiraReleaseBuild.createSpiraReleaseBuild(
+					spiraProject, spiraRelease,
+					replaceEnvVars(spiraReleaseBuildName),
+					_getSpiraReleaseBuildDescription(),
+					_getSpiraReleaseBuildStatus(),
+					_topLevelBuild.getStartTime());
+			}
+		}
+		finally {
+			if (spiraReleaseBuild != null) {
+				long duration =
+					JenkinsResultsParserUtil.getCurrentTimeMillis() - start;
+
+				System.out.println(
+					JenkinsResultsParserUtil.combine(
+						"Spira Release Build ", spiraReleaseBuild.getURL(),
+						" created in ",
+						JenkinsResultsParserUtil.toDurationString(duration)));
+			}
 		}
 
-		String spiraReleaseBuildName = System.getenv("TEST_SPIRA_BUILD_NAME");
-
-		if ((spiraReleaseBuild == null) && (spiraReleaseBuildName != null) &&
-			!spiraReleaseBuildName.isEmpty()) {
-
-			spiraReleaseBuild = SpiraReleaseBuild.createSpiraReleaseBuild(
-				spiraProject, spiraRelease,
-				replaceEnvVars(spiraReleaseBuildName),
-				_getSpiraReleaseBuildDescription(),
-				_getSpiraReleaseBuildStatus(), _topLevelBuild.getStartTime());
-		}
-
-		spiraReleaseBuildID = getPortalTestSuiteProperty(
-			"test.batch.spira.build.id");
-
-		if ((spiraReleaseBuild == null) && (spiraReleaseBuildID != null) &&
-			spiraReleaseBuildID.matches("\\d+")) {
-
-			spiraReleaseBuild = spiraRelease.getSpiraReleaseBuildByID(
-				Integer.valueOf(spiraReleaseBuildID));
-		}
-
-		spiraReleaseBuildName = getPortalTestSuiteProperty(
-			"test.batch.spira.build.name");
-
-		if ((spiraReleaseBuild == null) && (spiraReleaseBuildName != null) &&
-			!spiraReleaseBuildName.isEmpty()) {
-
-			spiraReleaseBuild = SpiraReleaseBuild.createSpiraReleaseBuild(
-				spiraProject, spiraRelease,
-				replaceEnvVars(spiraReleaseBuildName),
-				_getSpiraReleaseBuildDescription(),
-				_getSpiraReleaseBuildStatus(), _topLevelBuild.getStartTime());
-		}
-
-		if (spiraReleaseBuild != null) {
-			System.out.println(
-				JenkinsResultsParserUtil.combine(
-					"Spira Release Build ", spiraReleaseBuild.getURL(),
-					" created in ",
-					JenkinsResultsParserUtil.toDurationString(
-						System.currentTimeMillis() - start)));
-
-			return spiraReleaseBuild;
-		}
-
-		return null;
+		return spiraReleaseBuild;
 	}
 
 	private String _getSpiraReleaseBuildDescription() {
@@ -376,66 +388,69 @@ public class BaseSpiraBuildResult implements SpiraBuildResult {
 	private SpiraTestCaseFolder _getSpiraTestCaseFolder(
 		SpiraProject spiraProject) {
 
-		long start = System.currentTimeMillis();
-
-		String spiraTestCaseFolderID = System.getenv(
-			"TEST_SPIRA_BASE_TEST_CASE_FOLDER_ID");
-
 		SpiraTestCaseFolder spiraTestCaseFolder = null;
+		long start = JenkinsResultsParserUtil.getCurrentTimeMillis();
 
-		if ((spiraTestCaseFolderID != null) &&
-			spiraTestCaseFolderID.matches("\\d+")) {
+		try {
+			String spiraTestCaseFolderID = System.getenv(
+				"TEST_SPIRA_BASE_TEST_CASE_FOLDER_ID");
 
-			spiraTestCaseFolder = spiraProject.getSpiraTestCaseFolderByID(
-				Integer.valueOf(spiraTestCaseFolderID));
+			if ((spiraTestCaseFolderID != null) &&
+				spiraTestCaseFolderID.matches("\\d+")) {
+
+				spiraTestCaseFolder = spiraProject.getSpiraTestCaseFolderByID(
+					Integer.valueOf(spiraTestCaseFolderID));
+			}
+
+			String spiraTestCaseFolderPath = System.getenv(
+				"TEST_SPIRA_BASE_TEST_CASE_FOLDER_PATH");
+
+			if ((spiraTestCaseFolder == null) &&
+				(spiraTestCaseFolderPath != null) &&
+				spiraTestCaseFolderPath.matches("\\/.+")) {
+
+				spiraTestCaseFolder =
+					SpiraTestCaseFolder.createSpiraTestCaseFolderByPath(
+						spiraProject, replaceEnvVars(spiraTestCaseFolderPath));
+			}
+
+			spiraTestCaseFolderID = getPortalTestSuiteProperty(
+				"test.batch.spira.base.test.case.folder.id");
+
+			if ((spiraTestCaseFolder == null) &&
+				(spiraTestCaseFolderID != null) &&
+				spiraTestCaseFolderID.matches("\\d+")) {
+
+				spiraTestCaseFolder = spiraProject.getSpiraTestCaseFolderByID(
+					Integer.valueOf(spiraTestCaseFolderID));
+			}
+
+			spiraTestCaseFolderPath = getPortalTestSuiteProperty(
+				"test.batch.spira.base.test.case.folder.path");
+
+			if ((spiraTestCaseFolder == null) &&
+				(spiraTestCaseFolderPath != null) &&
+				spiraTestCaseFolderPath.matches("\\/.+")) {
+
+				spiraTestCaseFolder =
+					SpiraTestCaseFolder.createSpiraTestCaseFolderByPath(
+						spiraProject, replaceEnvVars(spiraTestCaseFolderPath));
+			}
+		}
+		finally {
+			if (spiraTestCaseFolder != null) {
+				long duration =
+					JenkinsResultsParserUtil.getCurrentTimeMillis() - start;
+
+				System.out.println(
+					JenkinsResultsParserUtil.combine(
+						"Base Spira Test Case Folder ",
+						spiraTestCaseFolder.getURL(), " created in ",
+						JenkinsResultsParserUtil.toDurationString(duration)));
+			}
 		}
 
-		String spiraTestCaseFolderPath = System.getenv(
-			"TEST_SPIRA_BASE_TEST_CASE_FOLDER_PATH");
-
-		if ((spiraTestCaseFolder == null) &&
-			(spiraTestCaseFolderPath != null) &&
-			spiraTestCaseFolderPath.matches("\\/.+")) {
-
-			spiraTestCaseFolder =
-				SpiraTestCaseFolder.createSpiraTestCaseFolderByPath(
-					spiraProject, replaceEnvVars(spiraTestCaseFolderPath));
-		}
-
-		spiraTestCaseFolderID = getPortalTestSuiteProperty(
-			"test.batch.spira.base.test.case.folder.id");
-
-		if ((spiraTestCaseFolder == null) && (spiraTestCaseFolderID != null) &&
-			spiraTestCaseFolderID.matches("\\d+")) {
-
-			spiraTestCaseFolder = spiraProject.getSpiraTestCaseFolderByID(
-				Integer.valueOf(spiraTestCaseFolderID));
-		}
-
-		spiraTestCaseFolderPath = getPortalTestSuiteProperty(
-			"test.batch.spira.base.test.case.folder.path");
-
-		if ((spiraTestCaseFolder == null) &&
-			(spiraTestCaseFolderPath != null) &&
-			spiraTestCaseFolderPath.matches("\\/.+")) {
-
-			spiraTestCaseFolder =
-				SpiraTestCaseFolder.createSpiraTestCaseFolderByPath(
-					spiraProject, replaceEnvVars(spiraTestCaseFolderPath));
-		}
-
-		if (spiraTestCaseFolder != null) {
-			System.out.println(
-				JenkinsResultsParserUtil.combine(
-					"Base Spira Test Case Folder ",
-					spiraTestCaseFolder.getURL(), " created in ",
-					JenkinsResultsParserUtil.toDurationString(
-						System.currentTimeMillis() - start)));
-
-			return spiraTestCaseFolder;
-		}
-
-		return null;
+		return spiraTestCaseFolder;
 	}
 
 	private SpiraTestCaseProductVersion _getSpiraTestCaseProductVersion(
@@ -447,59 +462,61 @@ public class BaseSpiraBuildResult implements SpiraBuildResult {
 	}
 
 	private SpiraTestSet _getSpiraTestSet(SpiraProject spiraProject) {
-		long start = System.currentTimeMillis();
-
 		SpiraTestSet spiraTestSet = null;
+		long start = JenkinsResultsParserUtil.getCurrentTimeMillis();
 
-		String spiraTestSetID = System.getenv("TEST_SPIRA_TEST_SET_ID");
+		try {
+			String spiraTestSetID = System.getenv("TEST_SPIRA_TEST_SET_ID");
 
-		if ((spiraTestSetID != null) && spiraTestSetID.matches("\\d+")) {
-			spiraTestSet = spiraProject.getSpiraTestSetByID(
-				Integer.valueOf(spiraTestSetID));
+			if ((spiraTestSetID != null) && spiraTestSetID.matches("\\d+")) {
+				spiraTestSet = spiraProject.getSpiraTestSetByID(
+					Integer.valueOf(spiraTestSetID));
+			}
+
+			String spiraTestSetPath = System.getenv("TEST_SPIRA_TEST_SET_PATH");
+
+			if ((spiraTestSet == null) && (spiraTestSetPath != null) &&
+				spiraTestSetPath.matches("\\/.+")) {
+
+				spiraTestSet = SpiraTestSet.createSpiraTestSetByPath(
+					spiraProject, replaceEnvVars(spiraTestSetPath),
+					_getSpiraTestSetDescription());
+			}
+
+			spiraTestSetID = getPortalTestSuiteProperty(
+				"test.batch.spira.test.set.id");
+
+			if ((spiraTestSet == null) && (spiraTestSetID != null) &&
+				spiraTestSetID.matches("\\d+")) {
+
+				spiraTestSet = spiraProject.getSpiraTestSetByID(
+					Integer.valueOf(spiraTestSetID));
+			}
+
+			spiraTestSetPath = getPortalTestSuiteProperty(
+				"test.batch.spira.test.set.path");
+
+			if ((spiraTestSet == null) && (spiraTestSetPath != null) &&
+				spiraTestSetPath.matches("\\/.+")) {
+
+				spiraTestSet = SpiraTestSet.createSpiraTestSetByPath(
+					spiraProject, replaceEnvVars(spiraTestSetPath),
+					_getSpiraTestSetDescription());
+			}
+		}
+		finally {
+			if (spiraTestSet != null) {
+				long duration =
+					JenkinsResultsParserUtil.getCurrentTimeMillis() - start;
+
+				System.out.println(
+					JenkinsResultsParserUtil.combine(
+						"Spira Test Set created in ",
+						JenkinsResultsParserUtil.toDurationString(duration)));
+			}
 		}
 
-		String spiraTestSetPath = System.getenv("TEST_SPIRA_TEST_SET_PATH");
-
-		if ((spiraTestSet == null) && (spiraTestSetPath != null) &&
-			spiraTestSetPath.matches("\\/.+")) {
-
-			spiraTestSet = SpiraTestSet.createSpiraTestSetByPath(
-				spiraProject, replaceEnvVars(spiraTestSetPath),
-				_getSpiraTestSetDescription());
-		}
-
-		spiraTestSetID = getPortalTestSuiteProperty(
-			"test.batch.spira.test.set.id");
-
-		if ((spiraTestSet == null) && (spiraTestSetID != null) &&
-			spiraTestSetID.matches("\\d+")) {
-
-			spiraTestSet = spiraProject.getSpiraTestSetByID(
-				Integer.valueOf(spiraTestSetID));
-		}
-
-		spiraTestSetPath = getPortalTestSuiteProperty(
-			"test.batch.spira.test.set.path");
-
-		if ((spiraTestSet == null) && (spiraTestSetPath != null) &&
-			spiraTestSetPath.matches("\\/.+")) {
-
-			spiraTestSet = SpiraTestSet.createSpiraTestSetByPath(
-				spiraProject, replaceEnvVars(spiraTestSetPath),
-				_getSpiraTestSetDescription());
-		}
-
-		if (spiraTestSet != null) {
-			System.out.println(
-				JenkinsResultsParserUtil.combine(
-					"Spira Test Set created in ",
-					JenkinsResultsParserUtil.toDurationString(
-						System.currentTimeMillis() - start)));
-
-			return spiraTestSet;
-		}
-
-		return null;
+		return spiraTestSet;
 	}
 
 	private String _getSpiraTestSetDescription() {

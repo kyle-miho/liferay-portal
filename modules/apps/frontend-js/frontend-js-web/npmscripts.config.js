@@ -22,6 +22,7 @@ module.exports = {
 		'svg4everybody',
 		'uuid',
 	],
-	federation: true,
-	preset: '@liferay/npm-scripts/src/presets/standard',
+	federation: {
+		mode: 'compatible',
+	},
 };

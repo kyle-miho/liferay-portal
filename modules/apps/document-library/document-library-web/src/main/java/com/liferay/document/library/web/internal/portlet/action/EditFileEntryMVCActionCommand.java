@@ -738,7 +738,7 @@ public class EditFileEntryMVCActionCommand extends BaseMVCActionCommand {
 				themeDisplay.getLocale(),
 				"you-have-exceeded-the-x-storage-quota-for-this-instance",
 				_language.formatStorageSize(
-					PropsValues.DATA_LIMIT_MAX_DL_STORAGE_SIZE,
+					PropsValues.DATA_LIMIT_DL_STORAGE_MAX_SIZE,
 					themeDisplay.getLocale()));
 		}
 		else if (exception instanceof DuplicateFileEntryException) {

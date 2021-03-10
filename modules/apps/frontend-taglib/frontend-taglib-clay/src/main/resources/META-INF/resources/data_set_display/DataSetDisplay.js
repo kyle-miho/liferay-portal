@@ -13,7 +13,7 @@
  */
 
 import {ClayPaginationBarWithBasicItems} from '@clayui/pagination-bar';
-import {useIsMounted} from 'frontend-js-react-web';
+import {useIsMounted} from '@liferay/frontend-js-react-web';
 import {fetch, openToast} from 'frontend-js-web';
 import PropTypes from 'prop-types';
 import React, {
@@ -352,7 +352,7 @@ function DataSetDisplay({
 					readOnly
 					value={selectedItemsValue.join(',')}
 				/>
-				{items.length ||
+				{items?.length ||
 				overrideEmptyResultView ||
 				inlineAddingSettings ? (
 					<CurrentViewComponent

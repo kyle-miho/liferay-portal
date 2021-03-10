@@ -45,7 +45,7 @@ export default function FormViewUpperToolbar({newCustomObject, popUpWindow}) {
 		dataDefinitionId,
 		dataLayout,
 		dataLayoutId,
-		initialAvailableLanguageIds,
+		initialAvailableLanguageIds = [],
 	} = state;
 	const [dataLayoutBuilder] = useContext(DataLayoutBuilderContext);
 
@@ -82,6 +82,14 @@ export default function FormViewUpperToolbar({newCustomObject, popUpWindow}) {
 			},
 			type: DataLayoutBuilderActions.UPDATE_DATA_LAYOUT_NAME,
 		});
+
+		if (!dataDefinition.availableLanguageIds.includes(editingLanguageId)) {
+			dispatch({
+				payload: editingLanguageId,
+				type:
+					DataLayoutBuilderActions.UPDATE_DATA_DEFINITION_AVAILABLE_LANGUAGE,
+			});
+		}
 	};
 
 	const onKeyDown = (event) => {
@@ -203,7 +211,6 @@ export default function FormViewUpperToolbar({newCustomObject, popUpWindow}) {
 				</UpperToolbar.Group>
 
 				<UpperToolbar.Input
-					autoFocus
 					onChange={onDataLayoutNameChange}
 					onKeyDown={onKeyDown}
 					placeholder={Liferay.Language.get('untitled-form-view')}

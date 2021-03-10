@@ -16,19 +16,17 @@ package com.liferay.portal.crypto.hash.internal;
 
 import com.liferay.portal.crypto.hash.CryptoHashGenerator;
 import com.liferay.portal.crypto.hash.CryptoHashResponse;
+import com.liferay.portal.crypto.hash.CryptoHashVerificationContext;
 import com.liferay.portal.crypto.hash.exception.CryptoHashException;
 import com.liferay.portal.crypto.hash.spi.CryptoHashProvider;
+import com.liferay.portal.crypto.hash.spi.CryptoHashProviderResponse;
 
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-
-import org.osgi.service.component.annotations.Component;
 
 /**
  * @author Arthur Chan
  * @author Carlos Sierra Andrés
  */
-@Component(service = CryptoHashGenerator.class)
 public class CryptoHashGeneratorImpl implements CryptoHashGenerator {
 
 	public CryptoHashGeneratorImpl(CryptoHashProvider cryptoHashProvider)
@@ -43,16 +41,13 @@ public class CryptoHashGeneratorImpl implements CryptoHashGenerator {
 
 		byte[] salt = _cryptoHashProvider.generateSalt();
 
+		CryptoHashProviderResponse cryptoHashProviderResponse =
+			_cryptoHashProvider.generate(salt, input);
+
 		return new CryptoHashResponse(
-			_cryptoHashProvider.generate(salt, input), salt);
-	}
-
-	@Override
-	public boolean verify(byte[] input, byte[] hash, byte[] salt)
-		throws CryptoHashException {
-
-		return MessageDigest.isEqual(
-			_cryptoHashProvider.generate(salt, input), hash);
+			new CryptoHashVerificationContext(
+				cryptoHashProviderResponse.getCryptoHashProviderName(), salt),
+			cryptoHashProviderResponse.getHash());
 	}
 
 	private final CryptoHashProvider _cryptoHashProvider;

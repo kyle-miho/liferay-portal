@@ -20,6 +20,8 @@ import com.liferay.headless.delivery.dto.v1_0.NavigationMenuItem;
 import com.liferay.headless.delivery.internal.dto.v1_0.util.CreatorUtil;
 import com.liferay.headless.delivery.resource.v1_0.NavigationMenuResource;
 import com.liferay.portal.kernel.model.Layout;
+import com.liferay.portal.kernel.model.LayoutFriendlyURL;
+import com.liferay.portal.kernel.service.LayoutFriendlyURLLocalService;
 import com.liferay.portal.kernel.service.LayoutLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.UserLocalService;
@@ -31,6 +33,7 @@ import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.vulcan.pagination.Page;
 import com.liferay.portal.vulcan.pagination.Pagination;
+import com.liferay.portal.vulcan.util.JaxRsLinkUtil;
 import com.liferay.portal.vulcan.util.LocalizedMapUtil;
 import com.liferay.site.navigation.constants.SiteNavigationConstants;
 import com.liferay.site.navigation.model.SiteNavigationMenu;
@@ -483,7 +486,33 @@ public class NavigationMenuResourceImpl extends BaseNavigationMenuResourceImpl {
 							return null;
 						}
 
-						return layout.getFriendlyURL();
+						return layout.getFriendlyURL(
+							contextAcceptLanguage.getPreferredLocale());
+					});
+				setLink_i18n(
+					() -> {
+						if ((layout == null) ||
+							!contextAcceptLanguage.isAcceptAllLanguages()) {
+
+							return null;
+						}
+
+						Map<String, String> i18nMap = new HashMap<>();
+
+						List<LayoutFriendlyURL> layoutFriendlyURLs =
+							_layoutFriendlyURLLocalService.
+								getLayoutFriendlyURLs(layout.getPlid());
+
+						for (LayoutFriendlyURL layoutFriendlyURL :
+								layoutFriendlyURLs) {
+
+							i18nMap.put(
+								LocaleUtil.toBCP47LanguageId(
+									layoutFriendlyURL.getLanguageId()),
+								layoutFriendlyURL.getFriendlyURL());
+						}
+
+						return i18nMap;
 					});
 				setName(
 					() -> {
@@ -512,6 +541,26 @@ public class NavigationMenuResourceImpl extends BaseNavigationMenuResourceImpl {
 						}
 
 						return null;
+					});
+				setSitePageURL(
+					() -> {
+						if (layout == null) {
+							return null;
+						}
+
+						List<Object> arguments = new ArrayList<>();
+
+						arguments.add(layout.getGroupId());
+
+						String friendlyURL = layout.getFriendlyURL(
+							contextAcceptLanguage.getPreferredLocale());
+
+						arguments.add(friendlyURL.substring(1));
+
+						return JaxRsLinkUtil.getJaxRsLink(
+							"headless-delivery", BaseSitePageResourceImpl.class,
+							"getSiteSitePage", contextUriInfo,
+							arguments.toArray(new Object[0]));
 					});
 				setUseCustomName(
 					() -> {
@@ -600,6 +649,9 @@ public class NavigationMenuResourceImpl extends BaseNavigationMenuResourceImpl {
 				siteNavigationMenuItem.getSiteNavigationMenuItemId());
 		}
 	}
+
+	@Reference
+	private LayoutFriendlyURLLocalService _layoutFriendlyURLLocalService;
 
 	@Reference
 	private LayoutLocalService _layoutLocalService;

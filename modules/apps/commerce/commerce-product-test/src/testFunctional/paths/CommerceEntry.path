@@ -205,7 +205,7 @@
 </tr>
 <tr>
 	<td>PRODUCT_IMAGE_SELECT_FILE</td>
-	<td>//div[contains(@class,'image-selector')]//a[contains(.,'Select File')]</td>
+	<td>//div[contains(@class,'image-selector')]//button[contains(.,'Select File')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -285,7 +285,7 @@
 </tr>
 <tr>
 	<td>FIX_ISSUE_BUTTON</td>
-	<td>//tr/td[contains(.,'${key_fixIssueButtonName}')]/..//td[@class='data-set-item-actions-wrapper' or contains(@class,'entry-action-column')]/*</td>
+	<td>//tr/td[contains(.,'${key_fixIssueButtonName}')]/..//td[contains(@class,'entry-action-column')]/* | //div[text()='${key_fixIssueButtonName}']/following-sibling::div/a[text()='Fix Issue']</td>
 	<td></td>
 </tr>
 <tr>
@@ -380,7 +380,7 @@
 </tr>
 <tr>
 	<td>BODY_VERTICAL_ELLIPSIS</td>
-	<td>//tr[contains(.,'${key_value}')]//*[name()='svg'][contains(@class,'icon-ellipsis')]</td>
+	<td>//div[@class='table-list-title']/a[contains(.,'${key_value}')]/../../../div//*[name()='svg'][contains(@class,'icon-ellipsis')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -405,7 +405,12 @@
 </tr>
 <tr>
 	<td>ENTRY_NAME_BODY_VERTICAL_ELLIPSIS</td>
-	<td>//div[@class='data-set-display-wrapper' or @class='searchcontainer-content']//a[text()='${key_entryName}']/../../following-sibling::td//button</td>
+	<td>//div[@class='data-set-display-wrapper' or @class='searchcontainer-content']//a[text()='${key_entryName}']/../../following-sibling::div//button</td>
+	<td></td>
+</tr>
+<tr>
+	<td>ENTRY_NAME_BODY_VERTICAL_ELLIPSIS_2</td>
+	<td>//div[@class='data-set-display-wrapper' or @class='searchcontainer-content']//a[text()='${key_entryName}']//..//..//div[contains(@class,'dropdown')]/a</td>
 	<td></td>
 </tr>
 <tr>
@@ -415,12 +420,12 @@
 </tr>
 <tr>
 	<td>TABLE_ENTRY_NAME</td>
-	<td>//div[contains(.,'${key_table}')]//div[@class='data-set-display-wrapper' or @class='searchcontainer-content']//a[contains(.,'${key_entryName}')]</td>
+	<td>//h4[contains(.,'${key_table}')]//..//div/a[contains(.,'${key_entryName}')]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>TABLE_ENTRY_EDIT_BUTTON</td>
-	<td>//div[contains(.,'${key_table}')]//div[@class='data-set-display-wrapper']//*[contains(.,'${key_entryName}')]/../../td/a[contains(.,'Edit')]</td>
+	<td>//h4[contains(.,'${key_table}')]//..//div/a[contains(.,'${key_entryName}')]//..//..//../div/a[contains(.,'Edit')]</td>
 	<td></td>
 </tr>
 <!--CATALOGS-->

@@ -196,17 +196,29 @@ public class OpenAPIParserUtil {
 
 		Map<String, Schema> externalReferencesMap = new HashMap<>();
 
-		List<String> externalReferences = getExternalReferences(openAPIYAML);
+		String externalReference = null;
+		Set<String> visitedPaths = new HashSet<>();
 
-		for (String externalReference : externalReferences) {
+		Queue<String> queue = new LinkedList<>(
+			getExternalReferences(openAPIYAML));
+
+		while ((externalReference = queue.poll()) != null) {
 			String path = externalReference.substring(
 				0, externalReference.indexOf("#"));
 
-			File openAPIFile = new File(path);
+			if (visitedPaths.contains(path)) {
+				continue;
+			}
+
+			visitedPaths.add(path);
+
+			openAPIYAML = YAMLUtil.loadOpenAPIYAML(
+				FileUtil.read(new File(path)));
 
 			externalReferencesMap.putAll(
-				OpenAPIUtil.getAllSchemas(
-					YAMLUtil.loadOpenAPIYAML(FileUtil.read(openAPIFile))));
+				OpenAPIUtil.getAllSchemas(openAPIYAML));
+
+			queue.addAll(getExternalReferences(openAPIYAML));
 		}
 
 		return externalReferencesMap;
@@ -272,24 +284,31 @@ public class OpenAPIParserUtil {
 	public static Map<String, String> getJavaDataTypeMap(
 		ConfigYAML configYAML, OpenAPIYAML openAPIYAML) {
 
-		Map<String, Schema> allSchemas = OpenAPIUtil.getAllSchemas(openAPIYAML);
 		Map<String, String> javaDataTypeMap = new HashMap<>();
 
-		List<String> externalReferences = getExternalReferences(openAPIYAML);
+		Set<String> visitedPaths = new HashSet<>();
 
 		try {
-			for (String externalReference : externalReferences) {
-				String openAPIPath = externalReference.substring(
+			for (String externalReference :
+					getExternalReferences(openAPIYAML)) {
+
+				String path = externalReference.substring(
 					0, externalReference.indexOf("#"));
 
+				if (visitedPaths.contains(path)) {
+					continue;
+				}
+
+				visitedPaths.add(path);
+
 				String configPath = StringUtil.replace(
-					openAPIPath, "rest-openapi.yaml", "rest-config.yaml");
+					path, "rest-openapi.yaml", "rest-config.yaml");
 
 				ConfigYAML externalConfigYAML = YAMLUtil.loadConfigYAML(
 					FileUtil.read(new File(configPath)));
 
 				OpenAPIYAML externalOpenAPIYAML = YAMLUtil.loadOpenAPIYAML(
-					FileUtil.read(new File(openAPIPath)));
+					FileUtil.read(new File(path)));
 
 				Map<String, String> externalJavaDataTypeMap =
 					getJavaDataTypeMap(externalConfigYAML, externalOpenAPIYAML);
@@ -300,6 +319,8 @@ public class OpenAPIParserUtil {
 		catch (IOException ioException) {
 			throw new RuntimeException(ioException);
 		}
+
+		Map<String, Schema> allSchemas = OpenAPIUtil.getAllSchemas(openAPIYAML);
 
 		for (String schemaName : allSchemas.keySet()) {
 			StringBuilder sb = new StringBuilder();

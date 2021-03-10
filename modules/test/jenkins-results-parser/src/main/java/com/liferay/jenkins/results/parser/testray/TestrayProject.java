@@ -51,6 +51,86 @@ public class TestrayProject {
 		}
 	}
 
+	public TestrayProductVersion createTestrayProductVersion(
+		String testrayProductVersionName) {
+
+		if (testrayProductVersionName == null) {
+			throw new RuntimeException(
+				"Please set a Testray product version name");
+		}
+
+		StringBuilder sb = new StringBuilder();
+
+		sb.append("name=");
+		sb.append(testrayProductVersionName);
+		sb.append("&testrayProjectId=");
+		sb.append(getID());
+
+		String productVersionAddURL = JenkinsResultsParserUtil.combine(
+			String.valueOf(_testrayServer.getURL()),
+			"/home/-/testray/product_versions/add.json");
+
+		try {
+			JSONObject jsonObject = JenkinsResultsParserUtil.toJSONObject(
+				productVersionAddURL, sb.toString());
+
+			if (jsonObject.has("data")) {
+				return new TestrayProductVersion(
+					this, jsonObject.getJSONObject("data"));
+			}
+
+			String message = jsonObject.optString("message", "");
+
+			if (!message.equals("The product version name already exists.")) {
+				throw new RuntimeException(
+					"Failed to create a product version");
+			}
+
+			return getTestrayProductVersionByName(testrayProductVersionName);
+		}
+		catch (IOException ioException) {
+			throw new RuntimeException(ioException);
+		}
+	}
+
+	public TestrayRoutine createTestrayRoutine(String testrayRoutineName) {
+		if (JenkinsResultsParserUtil.isNullOrEmpty(testrayRoutineName)) {
+			throw new RuntimeException("Please set a Testray routine name");
+		}
+
+		StringBuilder sb = new StringBuilder();
+
+		sb.append("name=");
+		sb.append(testrayRoutineName);
+		sb.append("&testrayProjectId=");
+		sb.append(getID());
+
+		String routineAddURL = JenkinsResultsParserUtil.combine(
+			String.valueOf(_testrayServer.getURL()),
+			"/home/-/testray/routines/add.json");
+
+		try {
+			JSONObject jsonObject = JenkinsResultsParserUtil.toJSONObject(
+				routineAddURL, sb.toString());
+
+			if (jsonObject.has("data")) {
+				return new TestrayRoutine(
+					this, jsonObject.getJSONObject("data"));
+			}
+
+			String message = jsonObject.optString("message", "");
+
+			if (!message.equals("The routine name already exists.")) {
+				throw new RuntimeException("Failed to create a routine");
+			}
+
+			return getTestrayRoutineByName(testrayRoutineName);
+		}
+		catch (IOException ioException) {
+			throw new RuntimeException(ioException);
+		}
+	}
+
 	public String getDescription() {
 		return _jsonObject.getString("description");
 	}
@@ -61,6 +141,22 @@ public class TestrayProject {
 
 	public String getName() {
 		return _jsonObject.getString("name");
+	}
+
+	public TestrayProductVersion getTestrayProductVersionByID(
+		int productVersionID) {
+
+		_initTestrayProductVersions();
+
+		return _testrayProductVersionsByID.get(productVersionID);
+	}
+
+	public TestrayProductVersion getTestrayProductVersionByName(
+		String productVersionName) {
+
+		_initTestrayProductVersions();
+
+		return _testrayProductVersionsByName.get(productVersionName);
 	}
 
 	public TestrayRoutine getTestrayRoutineByID(int routineID) {
@@ -81,6 +177,46 @@ public class TestrayProject {
 
 	public URL getURL() {
 		return _url;
+	}
+
+	private synchronized void _initTestrayProductVersions() {
+		if ((_testrayProductVersionsByID != null) &&
+			(_testrayProductVersionsByName != null)) {
+
+			return;
+		}
+
+		_testrayProductVersionsByID = new HashMap<>();
+		_testrayProductVersionsByName = new HashMap<>();
+
+		TestrayServer testrayServer = getTestrayServer();
+
+		try {
+			String productVersionAPIURL = JenkinsResultsParserUtil.combine(
+				String.valueOf(testrayServer.getURL()),
+				"/home/-/testray/product_versions/index.json?",
+				"testrayProjectId=", String.valueOf(getID()));
+
+			JSONObject jsonObject = JenkinsResultsParserUtil.toJSONObject(
+				productVersionAPIURL, true);
+
+			JSONArray dataJSONArray = jsonObject.getJSONArray("data");
+
+			for (int i = 0; i < dataJSONArray.length(); i++) {
+				JSONObject dataJSONObject = dataJSONArray.getJSONObject(i);
+
+				TestrayProductVersion testrayProductVersion =
+					new TestrayProductVersion(this, dataJSONObject);
+
+				_testrayProductVersionsByID.put(
+					testrayProductVersion.getID(), testrayProductVersion);
+				_testrayProductVersionsByName.put(
+					testrayProductVersion.getName(), testrayProductVersion);
+			}
+		}
+		catch (IOException ioException) {
+			throw new RuntimeException(ioException);
+		}
 	}
 
 	private synchronized void _initTestrayRoutines() {
@@ -139,6 +275,8 @@ public class TestrayProject {
 	private static final int _DELTA = 25;
 
 	private final JSONObject _jsonObject;
+	private Map<Integer, TestrayProductVersion> _testrayProductVersionsByID;
+	private Map<String, TestrayProductVersion> _testrayProductVersionsByName;
 	private Map<Integer, TestrayRoutine> _testrayRoutinesByID;
 	private Map<String, TestrayRoutine> _testrayRoutinesByName;
 	private final TestrayServer _testrayServer;

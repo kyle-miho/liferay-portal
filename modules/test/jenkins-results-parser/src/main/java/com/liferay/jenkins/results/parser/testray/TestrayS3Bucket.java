@@ -16,17 +16,23 @@ package com.liferay.jenkins.results.parser.testray;
 
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.Protocol;
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.AccessControlList;
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.CanonicalGrantee;
 import com.amazonaws.services.s3.model.GroupGrantee;
+import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.Owner;
 import com.amazonaws.services.s3.model.Permission;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.util.IOUtils;
 
 import com.liferay.jenkins.results.parser.JenkinsResultsParserUtil;
@@ -50,7 +56,7 @@ public class TestrayS3Bucket {
 	}
 
 	public TestrayS3Object createTestrayS3Object(String key, File file) {
-		long start = System.currentTimeMillis();
+		long start = JenkinsResultsParserUtil.getCurrentTimeMillis();
 
 		try {
 			ObjectMetadata objectMetadata = new ObjectMetadata();
@@ -72,6 +78,9 @@ public class TestrayS3Bucket {
 			else if (fileName.endsWith("txt") || fileName.endsWith("txt.gz")) {
 				objectMetadata.setContentType("text/plain");
 			}
+			else if (fileName.endsWith("xml") || fileName.endsWith("xml.gz")) {
+				objectMetadata.setContentType("text/xml");
+			}
 
 			PutObjectRequest putObjectRequest = new PutObjectRequest(
 				_bucket.getName(), key, new FileInputStream(file),
@@ -81,14 +90,16 @@ public class TestrayS3Bucket {
 
 			_amazonS3.putObject(putObjectRequest);
 
-			TestrayS3Object testrayS3Object = new TestrayS3Object(this, key);
+			TestrayS3Object testrayS3Object =
+				TestrayS3ObjectFactory.newTestrayS3Object(this, key);
 
 			System.out.println(
 				JenkinsResultsParserUtil.combine(
-					"Created S3 Object ",
-					String.valueOf(testrayS3Object.getURL()), " in ",
+					"Created S3 Object ", testrayS3Object.getURLString(),
+					" in ",
 					JenkinsResultsParserUtil.toDurationString(
-						System.currentTimeMillis() - start)));
+						JenkinsResultsParserUtil.getCurrentTimeMillis() -
+							start)));
 
 			return testrayS3Object;
 		}
@@ -98,7 +109,7 @@ public class TestrayS3Bucket {
 	}
 
 	public TestrayS3Object createTestrayS3Object(String key, String value) {
-		long start = System.currentTimeMillis();
+		long start = JenkinsResultsParserUtil.getCurrentTimeMillis();
 
 		InputStream inputStream = new ByteArrayInputStream(value.getBytes());
 
@@ -120,14 +131,16 @@ public class TestrayS3Bucket {
 
 			_amazonS3.putObject(putObjectRequest);
 
-			TestrayS3Object testrayS3Object = new TestrayS3Object(this, key);
+			TestrayS3Object testrayS3Object =
+				TestrayS3ObjectFactory.newTestrayS3Object(this, key);
 
 			System.out.println(
 				JenkinsResultsParserUtil.combine(
-					"Created S3 Object ",
-					String.valueOf(testrayS3Object.getURL()), " in ",
+					"Created S3 Object ", testrayS3Object.getURLString(),
+					" in ",
 					JenkinsResultsParserUtil.toDurationString(
-						System.currentTimeMillis() - start)));
+						JenkinsResultsParserUtil.getCurrentTimeMillis() -
+							start)));
 
 			return testrayS3Object;
 		}
@@ -136,18 +149,34 @@ public class TestrayS3Bucket {
 		}
 	}
 
+	public List<TestrayS3Object> createTestrayS3Objects(File dir) {
+		return createTestrayS3Objects(null, dir);
+	}
+
 	public List<TestrayS3Object> createTestrayS3Objects(
 		String baseKey, File dir) {
 
 		List<TestrayS3Object> testrayS3Objects = new ArrayList<>();
 
+		if ((dir == null) || !dir.isDirectory()) {
+			return testrayS3Objects;
+		}
+
 		for (File file : JenkinsResultsParserUtil.findFiles(dir, ".*")) {
 			StringBuilder sb = new StringBuilder();
 
-			sb.append(baseKey);
+			if (!JenkinsResultsParserUtil.isNullOrEmpty(baseKey) &&
+				!baseKey.equals("/")) {
 
-			if (!baseKey.endsWith("/")) {
-				sb.append("/");
+				if (baseKey.startsWith("/")) {
+					baseKey = baseKey.substring(1);
+				}
+
+				sb.append(baseKey);
+
+				if (!baseKey.endsWith("/")) {
+					sb.append("/");
+				}
 			}
 
 			sb.append(JenkinsResultsParserUtil.getPathRelativeTo(file, dir));
@@ -162,20 +191,20 @@ public class TestrayS3Bucket {
 	}
 
 	public void deleteTestrayS3Object(String key) {
-		deleteTestrayS3Object(new TestrayS3Object(this, key));
+		deleteTestrayS3Object(
+			TestrayS3ObjectFactory.newTestrayS3Object(this, key));
 	}
 
 	public void deleteTestrayS3Object(TestrayS3Object testrayS3Object) {
-		long start = System.currentTimeMillis();
+		long start = JenkinsResultsParserUtil.getCurrentTimeMillis();
 
 		_amazonS3.deleteObject(_bucket.getName(), testrayS3Object.getKey());
 
 		System.out.println(
 			JenkinsResultsParserUtil.combine(
-				"Deleted S3 Object ", String.valueOf(testrayS3Object.getURL()),
-				" in ",
+				"Deleted S3 Object ", testrayS3Object.getURLString(), " in ",
 				JenkinsResultsParserUtil.toDurationString(
-					System.currentTimeMillis() - start)));
+					JenkinsResultsParserUtil.getCurrentTimeMillis() - start)));
 	}
 
 	public void deleteTestrayS3Objects(List<TestrayS3Object> testrayS3Objects) {
@@ -194,16 +223,51 @@ public class TestrayS3Bucket {
 		}
 	}
 
+	public List<TestrayS3Object> getTestrayS3Objects() {
+		List<TestrayS3Object> testrayS3Objects = new ArrayList<>();
+
+		ObjectListing objectListing = _amazonS3.listObjects(_getBucketName());
+
+		do {
+			for (S3ObjectSummary objectSummary :
+					objectListing.getObjectSummaries()) {
+
+				testrayS3Objects.add(
+					TestrayS3ObjectFactory.newTestrayS3Object(
+						this, objectSummary.getKey()));
+			}
+
+			if (testrayS3Objects.size() > _MAX_S3_OBJECT_COUNT) {
+				break;
+			}
+
+			objectListing = _amazonS3.listNextBatchOfObjects(objectListing);
+		}
+		while (objectListing.isTruncated());
+
+		return testrayS3Objects;
+	}
+
 	private TestrayS3Bucket() {
 		ClientConfiguration clientConfig = new ClientConfiguration();
 
 		clientConfig.setProtocol(Protocol.HTTPS);
 
-		_amazonS3 = new AmazonS3Client(
-			new BasicAWSCredentials(_getTestrayS3Key(), _getTestrayS3Secret()),
-			clientConfig);
+		AmazonS3ClientBuilder amazonS3ClientBuilder = AmazonS3Client.builder();
 
-		_amazonS3.setEndpoint(_getTestrayS3Host());
+		AWSCredentials awsCredentials = new BasicAWSCredentials(
+			_getTestrayS3Key(), _getTestrayS3Secret());
+
+		amazonS3ClientBuilder.setCredentials(
+			new AWSStaticCredentialsProvider(awsCredentials));
+
+		amazonS3ClientBuilder.setClientConfiguration(clientConfig);
+
+		amazonS3ClientBuilder.setEndpointConfiguration(
+			new AwsClientBuilder.EndpointConfiguration(
+				_getTestrayS3Host(), _getTestrayS3Region()));
+
+		_amazonS3 = amazonS3ClientBuilder.build();
 
 		String bucketName = _getBucketName();
 
@@ -265,6 +329,16 @@ public class TestrayS3Bucket {
 		}
 	}
 
+	private String _getTestrayS3Region() {
+		try {
+			return JenkinsResultsParserUtil.getBuildProperty(
+				"testray.s3.region");
+		}
+		catch (IOException ioException) {
+			throw new RuntimeException(ioException);
+		}
+	}
+
 	private String _getTestrayS3Secret() {
 		try {
 			return JenkinsResultsParserUtil.getBuildProperty(
@@ -274,6 +348,8 @@ public class TestrayS3Bucket {
 			throw new RuntimeException(ioException);
 		}
 	}
+
+	private static final int _MAX_S3_OBJECT_COUNT = 1000;
 
 	private static final TestrayS3Bucket _testrayS3Bucket =
 		new TestrayS3Bucket();

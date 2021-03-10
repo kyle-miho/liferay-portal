@@ -74,7 +74,7 @@ public class RelatedProductResourceImpl
 		CPDefinition cpDefinition =
 			_cpDefinitionService.
 				fetchCPDefinitionByCProductExternalReferenceCode(
-					contextCompany.getCompanyId(), externalReferenceCode);
+					externalReferenceCode, contextCompany.getCompanyId());
 
 		if (cpDefinition == null) {
 			throw new NoSuchCPDefinitionException(
@@ -116,7 +116,7 @@ public class RelatedProductResourceImpl
 		CPDefinition cpDefinition =
 			_cpDefinitionService.
 				fetchCPDefinitionByCProductExternalReferenceCode(
-					contextCompany.getCompanyId(), externalReferenceCode);
+					externalReferenceCode, contextCompany.getCompanyId());
 
 		if (cpDefinition == null) {
 			throw new NoSuchCPDefinitionException(
@@ -124,7 +124,7 @@ public class RelatedProductResourceImpl
 					externalReferenceCode);
 		}
 
-		return _upsertRelatedProduct(cpDefinition, relatedProduct);
+		return _addOrUpdateRelatedProduct(cpDefinition, relatedProduct);
 	}
 
 	@Override
@@ -140,7 +140,21 @@ public class RelatedProductResourceImpl
 				"Unable to find Product with ID: " + id);
 		}
 
-		return _upsertRelatedProduct(cpDefinition, relatedProduct);
+		return _addOrUpdateRelatedProduct(cpDefinition, relatedProduct);
+	}
+
+	private RelatedProduct _addOrUpdateRelatedProduct(
+			CPDefinition cpDefinition, RelatedProduct relatedProduct)
+		throws Exception {
+
+		CPDefinitionLink cpDefinitionLink =
+			RelatedProductUtil.upsertCPDefinitionLink(
+				_cpDefinitionLinkService, _cpDefinitionService, relatedProduct,
+				cpDefinition.getCPDefinitionId(),
+				_serviceContextHelper.getServiceContext(
+					cpDefinition.getGroupId()));
+
+		return _toRelatedProduct(cpDefinitionLink.getCPDefinitionLinkId());
 	}
 
 	private Page<RelatedProduct> _getRelatedProductPage(
@@ -193,20 +207,6 @@ public class RelatedProductResourceImpl
 		}
 
 		return relatedProducts;
-	}
-
-	private RelatedProduct _upsertRelatedProduct(
-			CPDefinition cpDefinition, RelatedProduct relatedProduct)
-		throws Exception {
-
-		CPDefinitionLink cpDefinitionLink =
-			RelatedProductUtil.upsertCPDefinitionLink(
-				_cpDefinitionLinkService, _cpDefinitionService, relatedProduct,
-				cpDefinition.getCPDefinitionId(),
-				_serviceContextHelper.getServiceContext(
-					cpDefinition.getGroupId()));
-
-		return _toRelatedProduct(cpDefinitionLink.getCPDefinitionLinkId());
 	}
 
 	@Reference

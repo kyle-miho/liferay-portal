@@ -62,6 +62,7 @@ import com.thoughtworks.qdox.model.JavaType;
 import com.thoughtworks.qdox.model.impl.AbstractBaseJavaEntity;
 import com.thoughtworks.qdox.model.impl.DefaultJavaMethod;
 import com.thoughtworks.qdox.model.impl.DefaultJavaParameterizedType;
+import com.thoughtworks.qdox.model.impl.DefaultJavaTypeVariable;
 
 import freemarker.cache.ClassTemplateLoader;
 
@@ -1627,6 +1628,45 @@ public class ServiceBuilder {
 		sb.append(StringPool.GREATER_THAN);
 
 		sb.append(getDimensions(defaultJavaParameterizedType.getDimensions()));
+
+		return sb.toString();
+	}
+
+	public String getTypeParametersDefinition(
+		List<DefaultJavaTypeVariable<?>> defaultJavaTypeVariables) {
+
+		if (ListUtil.isEmpty(defaultJavaTypeVariables)) {
+			return StringPool.BLANK;
+		}
+
+		StringBundler sb = new StringBundler();
+
+		sb.append(StringPool.LESS_THAN);
+
+		for (DefaultJavaTypeVariable<?> defaultJavaTypeVariable :
+				defaultJavaTypeVariables) {
+
+			sb.append(defaultJavaTypeVariable.getFullyQualifiedName());
+
+			List<JavaType> javaTypes = defaultJavaTypeVariable.getBounds();
+
+			if (ListUtil.isNotEmpty(javaTypes)) {
+				sb.append(" extends ");
+
+				for (JavaType javaType : javaTypes) {
+					sb.append(javaType.getFullyQualifiedName());
+					sb.append(StringPool.SPACE);
+					sb.append(StringPool.AMPERSAND);
+					sb.append(StringPool.SPACE);
+				}
+
+				sb.setIndex(sb.index() - 3);
+			}
+
+			sb.append(StringPool.COMMA_AND_SPACE);
+		}
+
+		sb.setStringAt(StringPool.GREATER_THAN, sb.index() - 1);
 
 		return sb.toString();
 	}

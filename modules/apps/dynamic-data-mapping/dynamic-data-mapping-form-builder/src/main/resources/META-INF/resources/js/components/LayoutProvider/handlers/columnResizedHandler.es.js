@@ -14,10 +14,6 @@
 
 import {FormSupport} from 'dynamic-data-mapping-form-renderer';
 
-import {
-	MAX_COLUMNS,
-	MIN_COLUMN_SIZE,
-} from '../../FormBuilder/withResizeableColumns.es';
 import {updateField} from '../util/settingsContext.es';
 
 const getColumn = (pages, nestedIndexes = []) => {
@@ -83,13 +79,7 @@ const getColumnPosition = (context, indexes) => {
 	);
 };
 
-export const handleResizeRight = (
-	props,
-	state,
-	source,
-	indexes,
-	columnTarget
-) => {
+export const handleResizeRight = (props, state, indexes, columnTarget) => {
 	const {pages} = state;
 
 	const {columnIndex, pageIndex, rowIndex} = indexes[indexes.length - 1];
@@ -150,19 +140,16 @@ export const handleResizeRight = (
 		) {
 			newCurrentColumn = {
 				...currentColumn,
-				size: Math.max(currentColumn.size - newSize, MIN_COLUMN_SIZE),
+				size: Math.max(currentColumn.size - newSize, 1),
 			};
 
 			newNextColumn = {
 				...nextColumn,
-				size: Math.min(nextColumn.size + newSize, MAX_COLUMNS),
+				size: Math.min(nextColumn.size + newSize, 12),
 			};
 		}
 		else if (columnTarget > currentColumnPosition) {
-			if (
-				nextColumn.size === MIN_COLUMN_SIZE &&
-				nextColumn.fields.length === 0
-			) {
+			if (nextColumn.size === 1 && nextColumn.fields.length === 0) {
 				newCurrentColumn = {
 					...currentColumn,
 					size: currentColumn.size + newSize,
@@ -223,7 +210,7 @@ export const handleResizeRight = (
 	return pages;
 };
 
-const handleResizeLeft = (props, state, source, indexes, columnTarget) => {
+const handleResizeLeft = (props, state, indexes, columnTarget) => {
 	const {pages} = state;
 
 	const {columnIndex, pageIndex, rowIndex} = indexes[indexes.length - 1];
@@ -272,12 +259,10 @@ const handleResizeLeft = (props, state, source, indexes, columnTarget) => {
 				size: currentColumn.size - columnTarget,
 			}
 		);
-
-		source.dataset.ddmFieldColumn = columnIndex + 1;
 	}
 	else if (
 		previousColumn &&
-		previousColumn.size === MIN_COLUMN_SIZE &&
+		previousColumn.size === 1 &&
 		previousColumn.fields.length === 0 &&
 		columnTarget <= previousColumnPosition
 	) {
@@ -288,8 +273,6 @@ const handleResizeLeft = (props, state, source, indexes, columnTarget) => {
 			columnIndex - 1
 		);
 
-		source.dataset.ddmFieldColumn = columnIndex - 1;
-
 		newContext = FormSupport.updateColumn(
 			newContext,
 			indexes.length > 1 ? 0 : pageIndex,
@@ -297,7 +280,7 @@ const handleResizeLeft = (props, state, source, indexes, columnTarget) => {
 			columnIndex - 1,
 			{
 				...currentColumn,
-				size: currentColumn.size + MIN_COLUMN_SIZE,
+				size: currentColumn.size + 1,
 			}
 		);
 	}
@@ -350,33 +333,19 @@ const handleResizeLeft = (props, state, source, indexes, columnTarget) => {
 	return pages;
 };
 
-export default (props, state, source, container, column, direction) => {
+export default ({column, direction, loc, props, state}) => {
 	const {pages} = state;
 
 	let newPages = [...pages];
 
-	const sourceIndexes = FormSupport.getNestedIndexes(container);
-
-	const currentColumn = getColumn(pages, sourceIndexes);
+	const currentColumn = getColumn(pages, loc);
 
 	if (currentColumn) {
 		if (direction === 'left') {
-			newPages = handleResizeLeft(
-				props,
-				state,
-				source,
-				sourceIndexes,
-				column
-			);
+			newPages = handleResizeLeft(props, state, loc, column);
 		}
 		else {
-			newPages = handleResizeRight(
-				props,
-				state,
-				source,
-				sourceIndexes,
-				column
-			);
+			newPages = handleResizeRight(props, state, loc, column + 1);
 		}
 	}
 

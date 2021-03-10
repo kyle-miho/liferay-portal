@@ -296,6 +296,26 @@
 	<td></td>
 </tr>
 <tr>
+	<td>EXPERIENCE_LANGUAGE_CHECKBOX</td>
+	<td>//*[contains(@aria-label,'${key_language}')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>EXPERIENCE_LANGUAGE_SELECTOR</td>
+	<td>//ul[contains(@class,'navbar-nav') and contains(@class,'start')]//button[contains(@class,'dropdown-toggle') and contains(@class,'btn-monospaced')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>EXPERIENCE_LANGUAGE_SELECTOR_LOCALE</td>
+	<td>//*[contains(@class,'dropdown-item')]//span[contains(text(), '${key_language}')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>EXPERIENCE_PRIORITIZE_BUTTON</td>
+	<td>//div[contains(@class,'toolbar-experience')]//button[contains(@title,'Prioritize Experience')]</td>
+	<td></td>
+</tr>
+<tr>
 	<td>EXPERIENCE_SEGMENT_ANYONE</td>
 	<td>//select[@id='_com_liferay_layout_content_page_editor_web_internal_portlet_ContentPageEditorPortlet_segmentsExperienceSegment']</td>
 	<td></td>
@@ -689,12 +709,6 @@
 <tr>
 	<td>GRID_CONFIGURATION_VERTICAL_ALIGNMENT</td>
 	<td>xpath=(//div[contains(@class,'page-editor__topper__bar') and contains(.,'Grid')]//following-sibling::div[contains(@class,'page-editor__topper__content')])[${key_position}]//div[contains(@class,'page-editor__row') and contains(@class,'${key_verticalAlignment}')]</td>
-	<td></td>
-</tr>
-<!--LANGUAGE_MENU-->
-<tr>
-	<td>DROPDOWN</td>
-	<td>//div[contains(@class,'management-bar')]//button[contains(@class,'dropdown-toggle')]</td>
 	<td></td>
 </tr>
 <!--MANAGEMENT_BAR-->

@@ -12,16 +12,17 @@
  * details.
  */
 
+import ClayButton from '@clayui/button';
 import ClayIcon from '@clayui/icon';
-import ClayTable from '@clayui/table';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React, {useEffect, useState} from 'react';
 
+import Cell from './dnd_table/Cell';
+
 function TableHeadCell({
 	contentRenderer,
 	expand,
-	expandableColumns,
 	fieldName,
 	hideColumnLabel,
 	label,
@@ -71,21 +72,21 @@ function TableHeadCell({
 	}
 
 	return (
-		<ClayTable.Cell
+		<Cell
 			className={classNames({
-				'table-cell-expand-small': expandableColumns && expand,
-				'table-cell-expand-smaller': !expandableColumns,
 				[`content-renderer-${contentRenderer}`]: contentRenderer,
 			})}
-			headingCell
-			headingTitle
+			columnName={String(fieldName)}
+			expand={expand}
+			heading
+			resizable
 		>
 			{sortable ? (
-				<a
-					className="inline-item text-nowrap text-truncate-inline"
-					data-senna-off
-					href="#"
+				<ClayButton
+					className="btn-sorting inline-item text-nowrap text-truncate-inline"
+					displayType="unstyled"
 					onClick={handleSortingCellClick}
+					small
 				>
 					{!hideColumnLabel && label}
 					<span className="inline-item inline-item-after sorting-icons-wrapper">
@@ -106,11 +107,11 @@ function TableHeadCell({
 							symbol="order-arrow-down"
 						/>
 					</span>
-				</a>
+				</ClayButton>
 			) : (
 				!hideColumnLabel && label
 			)}
-		</ClayTable.Cell>
+		</Cell>
 	);
 }
 

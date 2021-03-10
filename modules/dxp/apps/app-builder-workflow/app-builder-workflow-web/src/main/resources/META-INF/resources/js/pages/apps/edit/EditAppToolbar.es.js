@@ -12,9 +12,7 @@
 import ClayBadge from '@clayui/badge';
 import ClayButton, {ClayButtonWithIcon} from '@clayui/button';
 import {ClayTooltipProvider} from '@clayui/tooltip';
-import UpperToolbar, {
-	UpperToolbarInput,
-} from 'app-builder-web/js/components/upper-toolbar/UpperToolbar.es';
+import UpperToolbar from 'app-builder-web/js/components/upper-toolbar/UpperToolbar.es';
 import useDeployApp from 'app-builder-web/js/hooks/useDeployApp.es';
 import EditAppContext, {
 	UPDATE_APP,
@@ -34,7 +32,7 @@ export default function EditAppToolbar({isSaving, onCancel, onSave}) {
 		dispatch,
 		setAppChangesModalVisible,
 		setDeployModalVisible,
-		setMissingFieldsModalVisible,
+		setMissingRequiredFieldsVisible,
 		state: {app},
 	} = useContext(EditAppContext);
 	const {availableLanguageIds, defaultLanguageId} = config.dataObject;
@@ -53,6 +51,9 @@ export default function EditAppToolbar({isSaving, onCancel, onSave}) {
 		}),
 		{}
 	);
+
+	const disabledSaveButton =
+		!canDeployApp({...app, appName}, config) || isSaving;
 
 	const onAppNameChange = ({target}) => {
 		dispatch({
@@ -104,6 +105,18 @@ export default function EditAppToolbar({isSaving, onCancel, onSave}) {
 			.catch(({title}) => errorToast(title));
 	};
 
+	const getManageAppStatusOnClick = () => {
+		if (app.active) {
+			return onClickUndeploy;
+		}
+
+		if (config.formView.missingRequiredFields?.customField && appId) {
+			return () => setMissingRequiredFieldsVisible(true);
+		}
+
+		return () => setDeployModalVisible(true);
+	};
+
 	useEffect(() => {
 		if (!availableLanguageIds.includes(editingLanguageId)) {
 			setEditingLanguageId(defaultLanguageId);
@@ -123,9 +136,6 @@ export default function EditAppToolbar({isSaving, onCancel, onSave}) {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [availableLanguageIds, defaultLanguageId]);
 
-	const isDisabledSaveButton =
-		!canDeployApp({...app, appName}, config) || isSaving;
-
 	return (
 		<UpperToolbar className="align-items-center">
 			<TranslationManager
@@ -137,7 +147,7 @@ export default function EditAppToolbar({isSaving, onCancel, onSave}) {
 				translatedLanguageIds={app.name}
 			/>
 
-			<UpperToolbarInput
+			<UpperToolbar.Input
 				maxLength={30}
 				onChange={onAppNameChange}
 				placeholder={Liferay.Language.get('untitled-app')}
@@ -165,7 +175,7 @@ export default function EditAppToolbar({isSaving, onCancel, onSave}) {
 				</UpperToolbar.Button>
 
 				<UpperToolbar.Button
-					disabled={isDisabledSaveButton}
+					disabled={disabledSaveButton}
 					displayType="secondary"
 					onClick={onClickSave}
 				>
@@ -174,16 +184,9 @@ export default function EditAppToolbar({isSaving, onCancel, onSave}) {
 
 				<ClayButton.Group className="ml-2">
 					<ClayButton
-						disabled={!app.active && isDisabledSaveButton}
+						disabled={!app.active && disabledSaveButton}
 						displayType={app.active ? 'secondary' : 'primary'}
-						onClick={
-							app.active
-								? onClickUndeploy
-								: config.formView.missingRequiredFields
-										?.customField && appId
-								? () => setMissingFieldsModalVisible(true)
-								: () => setDeployModalVisible(true)
-						}
+						onClick={getManageAppStatusOnClick()}
 						small
 					>
 						{app.active

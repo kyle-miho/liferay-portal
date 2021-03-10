@@ -16,6 +16,7 @@ import {sub} from 'app-builder-web/js/utils/lang.es';
 import React from 'react';
 
 export default function MissingRequiredFieldsPopover({
+	alignPosition = 'left',
 	dataObjectName,
 	message = {},
 	nativeField,
@@ -67,7 +68,8 @@ export default function MissingRequiredFieldsPopover({
 
 	return (
 		<ClayPopover
-			alignPosition="left"
+			alignPosition={alignPosition}
+			className="missing-required-fields-popover"
 			disableScroll
 			header={
 				<>
@@ -93,19 +95,16 @@ export default function MissingRequiredFieldsPopover({
 				</div>
 			}
 		>
-			<>
-				{props[propsType].message}
-
-				<ClayButton
-					className="mt-3"
-					displayType="secondary"
-					onClick={onClick}
-				>
-					<span className="text-secondary">
-						{Liferay.Language.get('edit-form-view')}
-					</span>
-				</ClayButton>
-			</>
+			<div>{props[propsType].message}</div>
+			<ClayButton
+				className="mt-3"
+				displayType="secondary"
+				onClick={onClick}
+			>
+				<span className="text-secondary">
+					{Liferay.Language.get('edit-form-view')}
+				</span>
+			</ClayButton>
 		</ClayPopover>
 	);
 }

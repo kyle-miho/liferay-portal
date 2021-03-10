@@ -17,6 +17,7 @@ package com.liferay.commerce.internal.order;
 import com.liferay.commerce.account.constants.CommerceAccountConstants;
 import com.liferay.commerce.account.model.CommerceAccount;
 import com.liferay.commerce.configuration.CommerceOrderCheckoutConfiguration;
+import com.liferay.commerce.constants.CommerceCheckoutWebKeys;
 import com.liferay.commerce.constants.CommerceConstants;
 import com.liferay.commerce.constants.CommerceOrderConstants;
 import com.liferay.commerce.constants.CommercePortletKeys;
@@ -285,8 +286,9 @@ public class CommerceOrderHttpHelperImpl implements CommerceOrderHttpHelper {
 	}
 
 	@Override
-	public String getCookieName(long groupId) {
-		return CommerceOrder.class.getName() + StringPool.POUND + groupId;
+	public String getCookieName(long commerceChannelId) {
+		return CommerceOrder.class.getName() + StringPool.POUND +
+			commerceChannelId;
 	}
 
 	@Override
@@ -356,6 +358,9 @@ public class CommerceOrderHttpHelperImpl implements CommerceOrderHttpHelper {
 			PermissionThreadLocal.getPermissionChecker();
 
 		if (permissionChecker.isSignedIn()) {
+			httpServletRequest.setAttribute(
+				CommerceCheckoutWebKeys.COMMERCE_ORDER, commerceOrder);
+
 			return;
 		}
 
@@ -468,7 +473,17 @@ public class CommerceOrderHttpHelperImpl implements CommerceOrderHttpHelper {
 		CommerceOrder commerceOrder = _commerceOrderThreadLocal.get();
 
 		if (commerceOrder != null) {
-			return commerceOrder;
+			CommerceOrder persistenceCommerceOrder =
+				_commerceOrderLocalService.fetchCommerceOrder(
+					commerceOrder.getCommerceOrderId());
+
+			if (persistenceCommerceOrder == null) {
+				return commerceOrder;
+			}
+
+			_commerceOrderThreadLocal.set(persistenceCommerceOrder);
+
+			return persistenceCommerceOrder;
 		}
 
 		CommerceChannel commerceChannel =
@@ -490,7 +505,8 @@ public class CommerceOrderHttpHelperImpl implements CommerceOrderHttpHelper {
 
 		HttpSession httpSession = originalHttpServletRequest.getSession();
 
-		String cookieName = getCookieName(commerceChannel.getGroupId());
+		String cookieName = getCookieName(
+			commerceChannel.getCommerceChannelId());
 
 		String commerceOrderUuid = (String)httpSession.getAttribute(cookieName);
 
@@ -590,8 +606,12 @@ public class CommerceOrderHttpHelperImpl implements CommerceOrderHttpHelper {
 			return;
 		}
 
+		CommerceChannel commerceChannel =
+			_commerceChannelLocalService.getCommerceChannelByOrderGroupId(
+				commerceOrder.getGroupId());
+
 		String commerceOrderUuidWebKey = getCookieName(
-			commerceOrder.getGroupId());
+			commerceChannel.getCommerceChannelId());
 
 		Cookie cookie = new Cookie(
 			commerceOrderUuidWebKey, commerceOrder.getUuid());

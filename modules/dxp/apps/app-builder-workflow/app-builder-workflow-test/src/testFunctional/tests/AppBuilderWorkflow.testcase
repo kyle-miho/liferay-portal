@@ -306,6 +306,142 @@ definition {
 		AppBuilderWorkflow.assertButtonDisabled(buttonName = "Save");
 	}
 
+	@description = "LRQA-63963 Automate LPS-121226: As an App User, I want to see all the past activities of a Workflow App instance"
+	@priority = "4"
+	test CheckActivityWorkflowApp {
+		AppBuilderAdmin.addCustomObject(
+			customObjectName = "my custom object",
+			isCreatingFormView = "true",
+			isCreatingViaPlusIcon = "true");
+
+		AppBuilderAdmin.createFormViewAndTableView(
+			fieldType = "Text",
+			formViewName = "My Form View",
+			tableViewName = "My Table View");
+
+		ApplicationsMenu.gotoPortlet(
+			category = "App Builder",
+			panel = "Applications",
+			portlet = "Apps");
+
+		AppBuilderAppAdmin.createBasicWorkflowAppWith1ExtraStep(
+			assignee = "Administrator",
+			deployOption = "Product Menu",
+			formViewName = "My Form View",
+			isCreatingViaPlusIcon = "false",
+			objectName = "my custom object",
+			tableViewName = "My Table View",
+			workflowAppName = "My Workflow App");
+
+		AppBuilderAdmin.gotoCustomAppApplicationsMenuApplications(portlet = "My Workflow App");
+		AppBuilderAdmin.addEntry();
+		FormViewBuilder.editText(
+			fieldName = "Text",
+			fieldValue = "Content 1");
+
+		AppBuilderWorkflow.submit();
+
+		AppBuilderAdmin.openItem(itemName = "Content 1");
+
+		AppBuilderWorkflow.collapseOrExpandActivity();
+
+		AppBuilderWorkflow.validateCollapsedActivity(description = "Task initially assigned to the Administrator role.");
+
+		AppBuilderWorkflow.collapseOrExpandActivity();
+
+		AppBuilderWorkflow.validateActivity(description = "Task initially assigned to the Administrator role.");
+
+		AppBuilderWorkflow.validateActivityDate();
+
+		AppBuilderWorkflow.assignEntryAndCommentThroughDetailsView(
+			assignee = "Test Test",
+			comment = "Test Comment");
+
+		AppBuilderWorkflow.validateActivity(description = "Test Comment");
+	}
+
+	@description = "Automate LPS-121226: As an App User, I want to see all the past activities of a Workflow App instance"
+	@priority = "5"
+	test CheckActivityWorkflowAppWithSteps {
+		property portal.acceptance = "true";
+
+		AppBuilderAdmin.addCustomObject(
+			customObjectName = "my custom object",
+			isCreatingFormView = "true",
+			isCreatingViaPlusIcon = "true");
+
+		AppBuilderAdmin.createFormViewAndTableView(
+			fieldType = "Text",
+			formViewName = "My Form View",
+			tableViewName = "My Table View");
+
+		ApplicationsMenu.gotoPortlet(
+			category = "App Builder",
+			panel = "Applications",
+			portlet = "Apps");
+
+		AppBuilderAppAdmin.goToWorkflowPoweredTab();
+
+		AppBuilderAppAdmin.clickOnCreateNewAppButton();
+
+		AppBuilderWorkflow.selectStartStepDataAndViews(
+			formViewName = "My Form View",
+			objectName = "my custom object",
+			tableViewName = "My Table View");
+
+		AppBuilderWorkflow.addNewStep();
+
+		AppBuilderWorkflow.selectStepAssignee(
+			assignee = "Administrator",
+			step = "1");
+
+		AppBuilderWorkflow.addNewStep();
+
+		AppBuilderWorkflow.selectStepAssignee(
+			assignee = "Administrator",
+			step = "2");
+
+		AppBuilderWorkflow.addWorkflowAppName(workflowAppName = "My Workflow App");
+		Button.click(button = "Deploy");
+		App.toggleDeploy(deployOption = "Product Menu");
+		Button.click(button = "Done");
+		AppBuilderWorkflow.waitForButtonNotPresent(buttonName = "Done");
+
+		AppBuilderAdmin.gotoCustomAppApplicationsMenuApplications(portlet = "My Workflow App");
+		AppBuilderAdmin.addEntry();
+		FormViewBuilder.editText(
+			fieldName = "Text",
+			fieldValue = "Content 1");
+
+		AppBuilderWorkflow.submit();
+
+		Refresh();
+
+		AppBuilderAdmin.openItem(itemName = "Content 1");
+
+		AppBuilderWorkflow.validateActivity(description = "Task initially assigned to the Administrator role.");
+
+		DetailsView.backToTableView();
+
+		Refresh();
+
+		AppBuilderWorkflow.assignEntryThroughTableView(
+			assignee = "Test Test",
+			itemName = "Content 1");
+
+		AppBuilderAdmin.openItem(itemName = "Content 1");
+
+		AppBuilderWorkflow.validateActivity(description = "Task initially assigned to the Administrator role.");
+
+		AppBuilderWorkflow.validateActivity(description = "Test Test assigned the task to himself");
+
+		DetailsView.editEntry();
+
+		AppBuilderWorkflow.submit();
+
+		AppBuilderWorkflow.validateActivity(description = "Test Test completed the task Step 1.");
+	}
+
 	@description = "Create a Basic Workflow App"
 	@priority = "5"
 	test CreateBasicWorkflowApp {
@@ -2291,6 +2427,47 @@ definition {
 		FormViewBuilder.validatePredefinedText(
 			fieldName = "Text",
 			fieldValue = "Content");
+	}
+
+	@description = "LRQA-64406 Automate LPS-116593: As an App Adm, I want to be warned when a Form View cannot be used to create new records for Custom Objects in the Start-Step of the Workflow"
+	@priority = "4"
+	test WarningDuringStartStep {
+		AppBuilderAdmin.addCustomObject(
+			customObjectName = "my custom object",
+			isCreatingFormView = "true",
+			isCreatingViaPlusIcon = "true");
+
+		FormViewBuilder.setName(formViewName = "My Form View With Required");
+		FormViewBuilder.addFieldByDoubleClick(fieldType = "Numeric");
+		FormViewBuilder.setFieldRequired();
+		FormViewBuilder.clickRequiredEllipses();
+		FormViewBuilder.selectRequiredRadioOption(optionLabel = "For All Forms Using This Field");
+		FormViewBuilder.closeSidebar();
+		FormViewBuilder.save();
+
+		FormViewBuilder.addFormView(
+			fieldType = "Text",
+			formViewName = "My Form View Without Required");
+
+		ApplicationsMenu.gotoPortlet(
+			category = "App Builder",
+			panel = "Applications",
+			portlet = "Apps");
+
+		AppBuilderAppAdmin.goToWorkflowPoweredTab();
+		AppBuilderAppAdmin.clickOnCreateNewAppButton();
+		AppBuilderWorkflow.addWorkflowAppName(workflowAppName = "My Workflow App");
+		AppBuilderWorkflow.selectStep(step = "Start");
+		AppBuilderWorkflow.selectDataAndViewsCard();
+		AppBuilderWorkflow.clickOnSelectObject();
+		AppBuilderWorkflow.selectObject(objectName = "my custom object");
+		AppBuilderWorkflow.clickOnSelectFormView(positionNumber = "1");
+		AssertElementPresent(locator1 = "AppBuilder#WARNING_SIGN");
+		AppBuilderWorkflow.selectFormView(formViewName = "My Form View Without Required");
+
+		AppBuilderWorkflow.assertFormViewSelected(
+			formViewName = "My Form View Without Required",
+			positionNumber = "1");
 	}
 
 }

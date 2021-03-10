@@ -13,12 +13,22 @@
  */
 
 import {ClayInput} from '@clayui/form';
-import {usePrevious} from 'frontend-js-react-web';
+import {usePrevious} from '@liferay/frontend-js-react-web';
 import React, {useEffect, useRef, useState} from 'react';
 import createNumberMask from 'text-mask-addons/dist/createNumberMask';
 import vanillaTextMask from 'vanilla-text-mask';
 
 import {FieldBase} from '../FieldBase/ReactFieldBase.es';
+
+const ONE_DIGIT_NEGATIVE_NUMBER_LENGTH = 2;
+
+const getGenericValue = (symbols, value = '') => {
+	if (typeof value === 'number' || !symbols) {
+		return value;
+	}
+
+	return value.replace(symbols.decimalSymbol, '$[DECIMAL_SYMBOL]');
+};
 
 const getMaskConfig = (dataType, symbols) => {
 	let config = {
@@ -40,14 +50,24 @@ const getMaskConfig = (dataType, symbols) => {
 	return config;
 };
 
-const getValue = (dataType, symbols, value) => {
-	let newValue = typeof value === 'number' ? `${value}` : value;
-
+const getValue = (dataType, symbols, value = '') => {
 	let decimalSymbol = symbols.decimalSymbol;
 
-	if (newValue && !newValue.includes('.') && symbols.decimalSymbol != ',') {
+	let newValue;
+
+	if (typeof value === 'number') {
+		newValue = `${value}`;
+		newValue = newValue.replace('.', decimalSymbol);
+	}
+	else {
+		newValue = value;
+	}
+
+	if (newValue && !newValue.includes('.') && decimalSymbol != ',') {
 		decimalSymbol = ',';
 	}
+
+	newValue = newValue.replace('$[DECIMAL_SYMBOL]', decimalSymbol);
 
 	if (dataType === 'integer' && newValue) {
 		newValue = String(Math.round(newValue.replace(decimalSymbol, '.')));
@@ -75,13 +95,17 @@ const Numeric = ({
 	const inputRef = useRef(null);
 
 	const prevEditingLanguageId = usePrevious(editingLanguageId);
+	const prevSymbols = usePrevious(symbols);
 
 	useEffect(() => {
 		if (prevEditingLanguageId !== editingLanguageId && localizable) {
 			let newValue =
 				localizedValue[editingLanguageId] !== undefined
 					? localizedValue[editingLanguageId]
-					: localizedValue[defaultLanguageId];
+					: getGenericValue(
+							prevSymbols,
+							localizedValue[defaultLanguageId]
+					  );
 
 			newValue = getValue(dataType, symbols, newValue);
 
@@ -94,6 +118,7 @@ const Numeric = ({
 		localizable,
 		localizedValue,
 		prevEditingLanguageId,
+		prevSymbols,
 		setCurrentValue,
 	]);
 
@@ -141,6 +166,22 @@ const Numeric = ({
 
 				setCurrentValue(newValue);
 				onChange(event);
+			}}
+			onKeyUp={(event) => {
+				const {value: newValue} = event.target;
+
+				if (newValue === '-_') {
+					return;
+				}
+
+				if (
+					!newValue ||
+					(newValue.startsWith('-') &&
+						newValue.length <= ONE_DIGIT_NEGATIVE_NUMBER_LENGTH)
+				) {
+					setCurrentValue(newValue);
+					onChange(event);
+				}
 			}}
 			ref={inputRef}
 			type="text"

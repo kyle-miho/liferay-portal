@@ -136,10 +136,10 @@ public class MailEngineTest {
 		@Override
 		public void close() throws IOException {
 			PropsUtil.set(
-				PropsKeys.DATA_LIMIT_MAX_MAIL_MESSAGE_COUNT,
+				PropsKeys.DATA_LIMIT_MAIL_MESSAGE_MAX_COUNT,
 				_originalMaxMailMessageCount);
 			PropsUtil.set(
-				PropsKeys.DATA_LIMIT_MAX_MAIL_MESSAGE_PERIOD,
+				PropsKeys.DATA_LIMIT_MAIL_MESSAGE_MAX_PERIOD,
 				_originalMaxMailMessagePeriod);
 		}
 
@@ -161,15 +161,15 @@ public class MailEngineTest {
 			throws Exception {
 
 			_originalMaxMailMessageCount = PropsUtil.get(
-				PropsKeys.DATA_LIMIT_MAX_MAIL_MESSAGE_COUNT);
+				PropsKeys.DATA_LIMIT_MAIL_MESSAGE_MAX_COUNT);
 			_originalMaxMailMessagePeriod = PropsUtil.get(
-				PropsKeys.DATA_LIMIT_MAX_MAIL_MESSAGE_PERIOD);
+				PropsKeys.DATA_LIMIT_MAIL_MESSAGE_MAX_PERIOD);
 
 			PropsUtil.set(
-				PropsKeys.DATA_LIMIT_MAX_MAIL_MESSAGE_COUNT,
+				PropsKeys.DATA_LIMIT_MAIL_MESSAGE_MAX_COUNT,
 				String.valueOf(maxMailMessageCount));
 			PropsUtil.set(
-				PropsKeys.DATA_LIMIT_MAX_MAIL_MESSAGE_PERIOD,
+				PropsKeys.DATA_LIMIT_MAIL_MESSAGE_MAX_PERIOD,
 				String.valueOf(maxMailMessagePeriod));
 
 			ProtectionDomain protectionDomain =

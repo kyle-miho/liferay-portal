@@ -139,7 +139,6 @@ function ManagementToolbar({
 					)}
 					{showInfoButton && (
 						<InfoPanelControl
-							disabled={disabled}
 							infoPanelId={infoPanelId}
 							onInfoButtonClick={onInfoButtonClick}
 						/>
@@ -161,7 +160,6 @@ function ManagementToolbar({
 										trigger={
 											<ClayButtonWithIcon
 												className="nav-link nav-link-monospaced"
-												disabled={disabled}
 												displayType="unstyled"
 												symbol={
 													viewTypeItems.find(
@@ -174,20 +172,29 @@ function ManagementToolbar({
 								</ClayManagementToolbar.Item>
 							)}
 
-							{showCreationMenu && creationMenu && (
+							{showCreationMenu && (
 								<ClayManagementToolbar.Item>
-									<CreationMenu
-										{...creationMenu}
-										onCreateButtonClick={
-											onCreateButtonClick
-										}
-										onCreationMenuItemClick={
-											onCreationMenuItemClick
-										}
-										onShowMoreButtonClick={
-											onShowMoreButtonClick
-										}
-									/>
+									{creationMenu ? (
+										<CreationMenu
+											{...creationMenu}
+											onCreateButtonClick={
+												onCreateButtonClick
+											}
+											onCreationMenuItemClick={
+												onCreationMenuItemClick
+											}
+											onShowMoreButtonClick={
+												onShowMoreButtonClick
+											}
+										/>
+									) : (
+										<ClayButtonWithIcon
+											className="nav-btn nav-btn-monospaced"
+											displayType="primary"
+											onClick={onCreateButtonClick}
+											symbol="plus"
+										/>
+									)}
 								</ClayManagementToolbar.Item>
 							)}
 						</>

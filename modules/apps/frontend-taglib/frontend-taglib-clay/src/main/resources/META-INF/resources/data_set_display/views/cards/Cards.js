@@ -13,16 +13,18 @@
  */
 
 import {ClayCardWithInfo} from '@clayui/card';
+import ClayLoadingIndicator from '@clayui/loading-indicator';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React, {useContext} from 'react';
 
+import EmptyResultMessage from '../../EmptyResultMessage';
 import {
 	handleAction,
 	isLink,
 } from '../../data_renderers/ActionsDropdownRenderer';
 
-function Cards({dataSetDisplayContext, items, schema}) {
+function Cards({dataLoading, dataSetDisplayContext, items, schema}) {
 	const {
 		executeAsyncItemAction,
 		highlightItems,
@@ -34,6 +36,14 @@ function Cards({dataSetDisplayContext, items, schema}) {
 		selectedItemsValue,
 		style,
 	} = useContext(dataSetDisplayContext);
+
+	if (dataLoading) {
+		return <ClayLoadingIndicator className="mt-7" />;
+	}
+
+	if (!items?.length) {
+		return <EmptyResultMessage />;
+	}
 
 	return (
 		<div

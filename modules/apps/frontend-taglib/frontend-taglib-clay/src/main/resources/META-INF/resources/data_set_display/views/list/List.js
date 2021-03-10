@@ -15,15 +15,18 @@
 import {ClayCheckbox, ClayRadio} from '@clayui/form';
 import ClayIcon from '@clayui/icon';
 import ClayList from '@clayui/list';
+import ClayLoadingIndicator from '@clayui/loading-indicator';
 import ClaySticker from '@clayui/sticker';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React, {useContext} from 'react';
 
+import EmptyResultMessage from '../../EmptyResultMessage';
 import ActionsDropdownRenderer from '../../data_renderers/ActionsDropdownRenderer';
 import ImageRenderer from '../../data_renderers/ImageRenderer';
 
 function List({
+	dataLoading,
 	dataSetDisplayContext,
 	items,
 	schema: {description, image, sticker, symbol, title},
@@ -35,6 +38,14 @@ function List({
 		selectedItemsValue,
 		selectionType,
 	} = useContext(dataSetDisplayContext);
+
+	if (dataLoading) {
+		return <ClayLoadingIndicator className="mt-7" />;
+	}
+
+	if (!items?.length) {
+		return <EmptyResultMessage />;
+	}
 
 	return (
 		<ClayList>

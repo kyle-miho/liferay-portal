@@ -14,8 +14,9 @@
 
 package com.liferay.analytics.reports.web.internal.portlet;
 
+import com.liferay.analytics.reports.constants.AnalyticsReportsWebKeys;
+import com.liferay.analytics.reports.info.item.ClassNameClassPKInfoItemIdentifier;
 import com.liferay.analytics.reports.web.internal.constants.AnalyticsReportsPortletKeys;
-import com.liferay.analytics.reports.web.internal.constants.AnalyticsReportsWebKeys;
 import com.liferay.analytics.reports.web.internal.display.context.AnalyticsReportsDisplayContext;
 import com.liferay.info.item.InfoItemReference;
 import com.liferay.portal.kernel.language.Language;
@@ -26,6 +27,7 @@ import com.liferay.portal.kernel.util.Constants;
 import com.liferay.portal.kernel.util.Http;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 
 import java.io.IOException;
@@ -94,21 +96,20 @@ public class AnalyticsReportsPortlet extends MVCPortlet {
 		renderRequest.setAttribute(
 			AnalyticsReportsWebKeys.ANALYTICS_REPORTS_DISPLAY_CONTEXT,
 			new AnalyticsReportsDisplayContext(
-				_portal.getClassNameId(infoItemReference.getClassName()),
-				infoItemReference.getClassPK(), renderRequest, renderResponse,
+				infoItemReference, renderRequest, renderResponse,
 				themeDisplay));
 
 		super.doDispatch(renderRequest, renderResponse);
 	}
 
 	private String _getClassName(HttpServletRequest httpServletRequest) {
-		long classNameId = ParamUtil.getLong(httpServletRequest, "classNameId");
+		String className = ParamUtil.getString(httpServletRequest, "className");
 
-		if (classNameId == 0) {
+		if (Validator.isNull(className)) {
 			return Layout.class.getName();
 		}
 
-		return _portal.getClassName(classNameId);
+		return className;
 	}
 
 	private long _getClassPK(HttpServletRequest httpServletRequest) {
@@ -125,6 +126,10 @@ public class AnalyticsReportsPortlet extends MVCPortlet {
 		return classPK;
 	}
 
+	private String _getClassTypeName(HttpServletRequest httpServletRequest) {
+		return ParamUtil.getString(httpServletRequest, "classTypeName");
+	}
+
 	private InfoItemReference _getInfoItemReference(
 		HttpServletRequest httpServletRequest) {
 
@@ -132,9 +137,20 @@ public class AnalyticsReportsPortlet extends MVCPortlet {
 			(InfoItemReference)httpServletRequest.getAttribute(
 				AnalyticsReportsWebKeys.INFO_ITEM_REFERENCE)
 		).orElseGet(
-			() -> new InfoItemReference(
-				_getClassName(httpServletRequest),
-				_getClassPK(httpServletRequest))
+			() -> Optional.ofNullable(
+				_getClassTypeName(httpServletRequest)
+			).filter(
+				Validator::isNotNull
+			).map(
+				classTypeName -> new InfoItemReference(
+					_getClassName(httpServletRequest),
+					new ClassNameClassPKInfoItemIdentifier(
+						classTypeName, _getClassPK(httpServletRequest)))
+			).orElseGet(
+				() -> new InfoItemReference(
+					_getClassName(httpServletRequest),
+					_getClassPK(httpServletRequest))
+			)
 		);
 	}
 

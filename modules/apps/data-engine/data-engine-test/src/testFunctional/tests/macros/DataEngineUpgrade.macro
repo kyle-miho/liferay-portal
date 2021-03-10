@@ -1,0 +1,424 @@
+definition {
+
+	macro createNewStructureUsingAnUpgradedStructureAsFieldset {
+		WebContentNavigator.openWebContentAdmin(siteURLKey = "guest");
+
+		NavItem.gotoStructures();
+
+		WebContentStructures.addCP(structureName = "Structure Title");
+
+		DataEngine.addFieldsets(fieldsetName = "My structure with nested fields");
+
+		Button.clickSave();
+
+		WebContentNavigator.gotoEditStructure(structureName = "Structure Title");
+
+		AssertVisible(
+			key_fieldsetLabel = "My structure with nested fields",
+			locator1 = "DDMEditStructure#FORM_FIELD_SETS_CONTAINER_LABEL");
+
+		AssertVisible(
+			key_fieldFieldLabel = "Fields Group",
+			locator1 = "DDMEditStructure#FORM_FIELD_CONTAINER_LABEL");
+
+		for (var fieldFieldLabel : list "Text,Date,Number") {
+			AssertVisible(
+				key_fieldFieldLabel = "${fieldFieldLabel}",
+				key_fieldsGroupLabel = "Fields Group",
+				locator1 = "DataEngineBuilder#FORM_FIELD_NESTED");
+		}
+
+		for (var locale : list "pt_BR,ca_ES") {
+			PortletEntry.changeLocale(locale = "${locale}");
+
+			for (var fieldFieldLabel : list "Text,Date,Number") {
+				AssertVisible(
+					key_fieldFieldLabel = "${fieldFieldLabel} - ${locale}",
+					key_fieldsGroupLabel = "Fields Group",
+					locator1 = "DataEngineBuilder#FORM_FIELD_NESTED");
+			}
+		}
+	}
+
+	macro createNewWebContentUsingAnUpgradedStructure {
+		WebContentNavigator.openWebContentAdmin(siteURLKey = "guest");
+
+		WebContentNavigator.gotoAddWithStructureCP(structureName = "My Structure with nested fields");
+
+		WebContent.addWithStructureCP(
+			webContentDate = "02/22/2021",
+			webContentDateFieldLabel = "Date",
+			webContentNumeric = "1.1",
+			webContentNumericFieldLabel = "Number",
+			webContentText = "Text - en_US",
+			webContentTextFieldLabel = "Text",
+			webContentTitle = "My Web Content based on My Structure with nested fields");
+
+		PortletEntry.changeLocale(locale = "pt_BR");
+
+		WebContent.addWithStructureCP(
+			webContentDate = "23/02/2021",
+			webContentDateFieldLabel = "Date - pt_BR",
+			webContentNumeric = "1,2",
+			webContentNumericFieldLabel = "Number - pt_BR",
+			webContentText = "Text - pt_BR",
+			webContentTextFieldLabel = "Text - pt_BR",
+			webContentTitle = "My Web Content based on My Structure with nested fields - pt_BR");
+
+		PortletEntry.changeLocale(locale = "ca_ES");
+
+		WebContent.addWithStructureCP(
+			webContentDate = "24/02/2021",
+			webContentDateFieldLabel = "Date - ca_ES",
+			webContentNumeric = "1,3",
+			webContentNumericFieldLabel = "Number - ca_ES",
+			webContentText = "Text - ca_ES",
+			webContentTextFieldLabel = "Text - ca_ES",
+			webContentTitle = "My Web Content based on My Structure with nested fields - ca_ES");
+
+		PortletEntry.publish();
+
+		WebContent.viewWithStructureCP(
+			webContentDate = "02/22/2021",
+			webContentDateFieldLabel = "Date",
+			webContentNumeric = "1.1",
+			webContentNumericFieldLabel = "Number",
+			webContentText = "Text - en_US",
+			webContentTextFieldLabel = "Text",
+			webContentTitle = "My Web Content based on My Structure with nested fields");
+
+		PortletEntry.publish();
+
+		WebContent.viewWithStructureCP(
+			webContentDate = "23/02/2021",
+			webContentDateFieldLabel = "Date - pt_BR",
+			webContentLocaleFieldLabel = "pt_BR",
+			webContentNumeric = "1,2",
+			webContentNumericFieldLabel = "Number - pt_BR",
+			webContentText = "Text - pt_BR",
+			webContentTextFieldLabel = "Text - pt_BR",
+			webContentTitle = "My Web Content based on My Structure with nested fields",
+			webContentTitleTranslated = "My Web Content based on My Structure with nested fields - pt_BR");
+
+		PortletEntry.publish();
+
+		WebContent.viewWithStructureCP(
+			webContentDate = "24/02/2021",
+			webContentDateFieldLabel = "Date - ca_ES",
+			webContentLocaleFieldLabel = "ca_ES",
+			webContentNumeric = "1,3",
+			webContentNumericFieldLabel = "Number - ca_ES",
+			webContentText = "Text - ca_ES",
+			webContentTextFieldLabel = "Text - ca_ES",
+			webContentTitle = "My Web Content based on My Structure with nested fields",
+			webContentTitleTranslated = "My Web Content based on My Structure with nested fields - ca_ES");
+	}
+
+	macro createNewWebContentUsingAnUpgradedStructureWithFieldset {
+
+		// TODO LPS-126249 createNewWebContentUsingAnUpgradedStructureWithFieldset pending implementation
+
+		echo("empty stub");
+	}
+
+	macro editAnUpgradedStructureWithFieldGroup {
+		fieldList = "Text,Date,Number";
+
+		WebContentNavigator.openWebContentAdmin(siteURLKey = "guest");
+
+		NavItem.gotoStructures();
+
+		WebContentNavigator.gotoEditStructure(structureName = "My Structure with nested fields");
+
+		for (var structureFieldName : list "${fieldList}") {
+			DataEngine.editFieldLabel(
+				fieldFieldLabel = "${structureFieldName}",
+				fieldFieldLabelEdit = "${structureFieldName} Edited");
+		}
+
+		PortletEntry.changeLocale(locale = "pt-BR");
+
+		for (var structureFieldName : list "${fieldList}") {
+			DataEngine.editFieldLabel(
+				fieldFieldLabel = "${structureFieldName} - pt_BR",
+				fieldFieldLabelEdit = "${structureFieldName} - pt_BR Edited");
+		}
+
+		PortletEntry.changeLocale(locale = "ca_ES");
+
+		for (var structureFieldName : list "${fieldList}") {
+			DataEngine.editFieldLabel(
+				fieldFieldLabel = "${structureFieldName} - ca_ES",
+				fieldFieldLabelEdit = "${structureFieldName} - ca_ES Edited");
+		}
+
+		WebContentStructures.saveCP();
+
+		WebContentNavigator.gotoEditStructure(structureName = "My Structure with nested fields");
+
+		DataEngine.viewField(
+			fieldFieldLabel = "Text Edited",
+			fieldName = "Text");
+
+		DataEngine.viewField(
+			fieldFieldLabel = "Date Edited",
+			fieldName = "Date");
+
+		DataEngine.viewField(
+			fieldFieldLabel = "Number Edited",
+			fieldName = "Numeric");
+
+		PortletEntry.changeLocale(locale = "pt-BR");
+
+		DataEngine.viewField(
+			fieldFieldLabel = "Text - pt_BR Edited",
+			fieldName = "Text");
+
+		DataEngine.viewField(
+			fieldFieldLabel = "Date - pt_BR Edited",
+			fieldName = "Date");
+
+		DataEngine.viewField(
+			fieldFieldLabel = "Number - pt_BR Edited",
+			fieldName = "Numeric");
+
+		PortletEntry.changeLocale(locale = "ca_ES");
+
+		DataEngine.viewField(
+			fieldFieldLabel = "Text - ca_ES Edited",
+			fieldName = "Text");
+
+		DataEngine.viewField(
+			fieldFieldLabel = "Date - ca_ES Edited",
+			fieldName = "Date");
+
+		DataEngine.viewField(
+			fieldFieldLabel = "Number - ca_ES Edited",
+			fieldName = "Numeric");
+	}
+
+	macro editAnUpgradedStructureWithFieldset {
+
+		// TODO LPS-127393 editAnUpgradedStructureWithFieldset pending implementation
+
+		echo("empty stub");
+	}
+
+	macro editAnUpgradedWebContentWithTranslations {
+		WebContentNavigator.openWebContentAdmin(siteURLKey = "guest");
+
+		WebContentNavigator.gotoEditCP(webContentTitle = "My Web Content based on My Structure with repeated fields");
+
+		WebContent.addWithStructureCP(
+			webContentDate = "02/22/2021",
+			webContentDateFieldLabel = "Date",
+			webContentNumeric = "1.1",
+			webContentNumericFieldLabel = "Number",
+			webContentText = "Text",
+			webContentTextFieldLabel = "Text",
+			webContentTitle = "My Web Content based on My Structure with repeated fields");
+
+		for (var locale : list "pt_BR,ca_ES") {
+			PortletEntry.changeLocale(locale = "${locale}");
+
+			WebContent.addWithStructureCP(
+				webContentDate = "23/02/2021",
+				webContentDateFieldLabel = "Date - ${locale}",
+				webContentNumeric = "1,2",
+				webContentNumericFieldLabel = "Number - ${locale}",
+				webContentText = "Text - ${locale}",
+				webContentTextFieldLabel = "Text - ${locale}",
+				webContentTitle = "My Web Content based on My Structure with repeated fields - ${locale}");
+		}
+
+		PortletEntry.publish();
+
+		WebContent.viewWithStructureCP(
+			webContentDate = "02/22/2021",
+			webContentDateFieldLabel = "Date",
+			webContentNumeric = "1.1",
+			webContentNumericFieldLabel = "Number",
+			webContentText = "Text",
+			webContentTextFieldLabel = "Text",
+			webContentTitle = "My Web Content based on My Structure with repeated fields");
+
+		for (var locale : list "pt_BR,ca_ES") {
+			PortletEntry.publish();
+
+			WebContent.viewWithStructureCP(
+				webContentDate = "03/02/2021",
+				webContentDateFieldLabel = "Date - ${locale}",
+				webContentLocaleFieldLabel = "${locale}",
+				webContentNumeric = "1,2",
+				webContentNumericFieldLabel = "Number - ${locale}",
+				webContentText = "Text - ${locale}",
+				webContentTextFieldLabel = "Text - ${locale}",
+				webContentTitle = "My Web Content based on My Structure with repeated fields",
+				webContentTitleTranslated = "My Web Content based on My Structure with repeated fields - ${locale}");
+		}
+	}
+
+	macro validateFieldLabelsTranslatedInStructure {
+		WebContentNavigator.openWebContentAdmin(siteURLKey = "guest");
+
+		NavItem.gotoStructures();
+
+		WebContentNavigator.gotoEditStructure(structureName = "My Structure with all fields");
+
+		for (var fields : list "${allFields}") {
+			Click(
+				key_fieldFieldLabel = "${fields}",
+				locator1 = "DDMEditStructure#FORM_FIELD_CONTAINER_LABEL");
+
+			AssertTextEquals(
+				key_fieldLabel = "Label",
+				locator1 = "TextInput#GENERIC_TEXT_INPUT",
+				value1 = "${fields}");
+		}
+
+		for (var locale : list "pt_BR,ca_ES") {
+			PortletEntry.changeLocale(locale = "${locale}");
+
+			AssertTextEquals(
+				locator1 = "TextInput#NAME",
+				value1 = "My Structure with all fields - ${locale}");
+
+			for (var fields : list "${allFields}") {
+				Click(
+					key_fieldFieldLabel = "${fields} - ${locale}",
+					locator1 = "DDMEditStructure#FORM_FIELD_CONTAINER_LABEL");
+
+				AssertTextEquals(
+					key_fieldLabel = "Label",
+					locator1 = "TextInput#GENERIC_TEXT_INPUT",
+					value1 = "${fields} - ${locale}");
+			}
+		}
+	}
+
+	macro validateFieldLabelsTranslatedInStructureWithFieldGroup {
+
+		// TODO LPS-127412 validateFieldLabelsTranslatedInStructureWithFieldGroup pending implementation
+
+		echo("empty stub");
+	}
+
+	macro validateFieldLabelsTranslatedInStructureWithFieldSet {
+		WebContentNavigator.openWebContentAdmin(siteURLKey = "guest");
+
+		NavItem.gotoStructures();
+
+		WebContentStructures.viewCP(structureName = "My Structure with Fieldsets level 2");
+
+		LexiconEntry.gotoEntry(rowEntry = "My Structure with Fieldsets level 2");
+
+		AssertVisible(
+			key_fieldFieldLabel = "Text",
+			key_fieldsGroupLabel = "My Structure with Fieldsets level 1",
+			locator1 = "DataEngineBuilder#FORM_FIELD_NESTED");
+
+		AssertVisible(
+			key_fieldFieldLabel = "Date",
+			key_fieldsGroupLabel = "My Structure with Fieldsets level 1",
+			locator1 = "DataEngineBuilder#FORM_FIELD_NESTED");
+
+		AssertTextEquals(
+			fieldLabel = "Number",
+			locator1 = "FormViewBuilder#FIELD_LABEL",
+			value1 = "Number");
+
+		PortletEntry.changeLocale(locale = "ca-ES");
+
+		AssertVisible(
+			key_fieldFieldLabel = "Text - ca-ES",
+			key_fieldsGroupLabel = "My Structure with Fieldsets level 1 - ca-ES",
+			locator1 = "DataEngineBuilder#FORM_FIELD_NESTED");
+
+		AssertVisible(
+			key_fieldFieldLabel = "Date - ca-ES",
+			key_fieldsGroupLabel = "My Structure with Fieldsets level 1 - ca-ES",
+			locator1 = "DataEngineBuilder#FORM_FIELD_NESTED");
+
+		AssertTextEquals(
+			fieldLabel = "Number - ca-ES",
+			locator1 = "FormViewBuilder#FIELD_LABEL",
+			value1 = "Number - ca-ES");
+
+		PortletEntry.changeLocale(locale = "pt-BR");
+
+		AssertVisible(
+			key_fieldFieldLabel = "Text - pt-BR",
+			key_fieldsGroupLabel = "My Structure with Fieldsets level 1 - pt-BR",
+			locator1 = "DataEngineBuilder#FORM_FIELD_NESTED");
+
+		AssertVisible(
+			key_fieldFieldLabel = "Date - pt-BR",
+			key_fieldsGroupLabel = "My Structure with Fieldsets level 1 - pt-BR",
+			locator1 = "DataEngineBuilder#FORM_FIELD_NESTED");
+
+		AssertTextEquals(
+			fieldLabel = "Number - pt-BR",
+			locator1 = "FormViewBuilder#FIELD_LABEL",
+			value1 = "Number - pt-BR");
+	}
+
+	macro validateNStructure {
+
+		// TODO LPS-127401 validateNStructure pending implementation
+
+		echo("empty stub");
+	}
+
+	macro validateNWebContent {
+
+		// TODO LPS-127521 validateNWebContent pending implementation
+
+		echo("empty stub");
+	}
+
+	macro validateWebContentWithAllFieldsTranslated {
+		WebContentNavigator.openWebContentAdmin(siteURLKey = "guest");
+
+		WebContentNavigator.gotoEditCP(webContentTitle = "My Web Content based on My Structure with all fields");
+
+		var localeCodeList = "pt_BR,ca_ES";
+
+		for (var fieldLabel : list "${fieldList}") {
+			AssertElementPresent(
+				key_fieldName = "${fieldLabel}",
+				locator1 = "Form#FIELD_LABEL");
+		}
+
+		for (var localeCode : list "${localeCodeList}") {
+			PortletEntry.changeLocale(locale = "${localeCode}");
+
+			for (var fieldLabel : list "${fieldList}") {
+				AssertElementPresent(
+					key_fieldName = "${fieldLabel} - ${localeCode}",
+					locator1 = "Form#FIELD_LABEL");
+			}
+		}
+	}
+
+	macro validateWebContentWithFieldGroupLevel2AndTranslations {
+
+		// TODO LPS-126250 validateWebContentWithFieldGroupLevel2AndTranslations pending implementation
+
+		echo("empty stub");
+	}
+
+	macro validateWebContentWithFieldsetLevel2AndTranslations {
+
+		// TODO LPS-126236 validateWebContentWithFieldsetLevel2AndTranslations pending implementation
+
+		echo("empty stub");
+	}
+
+	macro validateWebContentWithRepeatableFieldGroupAndTranslations {
+
+		// TODO LPS-126251 validateWebContentWithRepeatableFieldGroupAndTranslations pending implementation
+
+		echo("empty stub");
+	}
+
+}

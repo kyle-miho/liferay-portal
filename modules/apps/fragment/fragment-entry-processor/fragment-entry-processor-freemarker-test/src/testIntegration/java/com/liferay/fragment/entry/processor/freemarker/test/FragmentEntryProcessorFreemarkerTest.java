@@ -132,7 +132,7 @@ public class FragmentEntryProcessorFreemarkerTest {
 				fragmentEntryLink, defaultFragmentEntryProcessorContext));
 
 		String expectedProcessedHTML = _getProcessedHTML(
-			_getFileAsString("expected_processed_fragment_entry.html"));
+			_readFileToString("expected_processed_fragment_entry.html"));
 
 		Assert.assertEquals(expectedProcessedHTML, actualProcessedHTML);
 	}
@@ -150,7 +150,7 @@ public class FragmentEntryProcessorFreemarkerTest {
 		fragmentEntryLink.setHtml(fragmentEntry.getHtml());
 		fragmentEntryLink.setConfiguration(fragmentEntry.getConfiguration());
 		fragmentEntryLink.setEditableValues(
-			_getJsonFileAsString(
+			_readJSONFileToString(
 				"fragment_entry_link_editable_values_with_configuration.json"));
 
 		DefaultFragmentEntryProcessorContext
@@ -164,7 +164,7 @@ public class FragmentEntryProcessorFreemarkerTest {
 				fragmentEntryLink, defaultFragmentEntryProcessorContext));
 
 		String expectedProcessedHTML = _getProcessedHTML(
-			_getFileAsString(
+			_readFileToString(
 				"expected_processed_fragment_entry_with_configuration.html"));
 
 		Assert.assertEquals(expectedProcessedHTML, actualProcessedHTML);
@@ -225,7 +225,7 @@ public class FragmentEntryProcessorFreemarkerTest {
 		fragmentEntryLink.setHtml(fragmentEntry.getHtml());
 		fragmentEntryLink.setConfiguration(fragmentEntry.getConfiguration());
 		fragmentEntryLink.setEditableValues(
-			_getJsonFileAsString(
+			_readJSONFileToString(
 				"fragment_entry_link_editable_values_with_configuration_" +
 					"collectionselector_dynamic_collection.json",
 				editableValuesValues));
@@ -241,7 +241,7 @@ public class FragmentEntryProcessorFreemarkerTest {
 				fragmentEntryLink, defaultFragmentEntryProcessorContext));
 
 		String expectedProcessedHTML = _getProcessedHTML(
-			_getFileAsString(
+			_readFileToString(
 				"expected_processed_fragment_entry_with_configuration_" +
 					"collectionselector_dynamic_collection.html",
 				HashMapBuilder.put(
@@ -286,7 +286,7 @@ public class FragmentEntryProcessorFreemarkerTest {
 		fragmentEntryLink.setHtml(fragmentEntry.getHtml());
 		fragmentEntryLink.setConfiguration(fragmentEntry.getConfiguration());
 		fragmentEntryLink.setEditableValues(
-			_getJsonFileAsString(
+			_readJSONFileToString(
 				"fragment_entry_link_editable_values_with_configuration_" +
 					"itemselector.json"));
 
@@ -301,7 +301,7 @@ public class FragmentEntryProcessorFreemarkerTest {
 				fragmentEntryLink, defaultFragmentEntryProcessorContext));
 
 		String expectedProcessedHTML = _getProcessedHTML(
-			_getFileAsString(
+			_readFileToString(
 				"expected_processed_fragment_entry_with_configuration_" +
 					"itemselector_file_entry.html",
 				HashMapBuilder.put(
@@ -364,7 +364,7 @@ public class FragmentEntryProcessorFreemarkerTest {
 		fragmentEntryLink.setHtml(fragmentEntry.getHtml());
 		fragmentEntryLink.setConfiguration(fragmentEntry.getConfiguration());
 		fragmentEntryLink.setEditableValues(
-			_getJsonFileAsString(
+			_readJSONFileToString(
 				"fragment_entry_link_editable_values_with_configuration_" +
 					"itemselector.json"));
 
@@ -379,7 +379,7 @@ public class FragmentEntryProcessorFreemarkerTest {
 				fragmentEntryLink, defaultFragmentEntryProcessorContext));
 
 		String expectedProcessedHTML = _getProcessedHTML(
-			_getFileAsString(
+			_readFileToString(
 				"expected_processed_fragment_entry_with_configuration_" +
 					"itemselector_journal_article.html",
 				HashMapBuilder.put(
@@ -415,7 +415,7 @@ public class FragmentEntryProcessorFreemarkerTest {
 		fragmentEntryLink.setHtml(fragmentEntry.getHtml());
 		fragmentEntryLink.setConfiguration(fragmentEntry.getConfiguration());
 		fragmentEntryLink.setEditableValues(
-			_getJsonFileAsString(
+			_readJSONFileToString(
 				"fragment_entry_link_editable_values_with_configuration_" +
 					"localizable.json"));
 
@@ -512,7 +512,7 @@ public class FragmentEntryProcessorFreemarkerTest {
 		String configuration = null;
 
 		if (configurationFile != null) {
-			configuration = _getFileAsString(configurationFile);
+			configuration = _readFileToString(configurationFile);
 
 			configuration = StringUtil.replace(
 				configuration, "${", "}", values);
@@ -521,39 +521,8 @@ public class FragmentEntryProcessorFreemarkerTest {
 		return _fragmentEntryService.addFragmentEntry(
 			_group.getGroupId(), fragmentCollection.getFragmentCollectionId(),
 			"fragment-entry", "Fragment Entry", null,
-			_getFileAsString(htmlFile), null, configuration, 0, 0,
+			_readFileToString(htmlFile), null, configuration, 0, 0,
 			WorkflowConstants.STATUS_APPROVED, serviceContext);
-	}
-
-	private String _getFileAsString(String fileName) throws Exception {
-		return _getFileAsString(fileName, null);
-	}
-
-	private String _getFileAsString(String fileName, Map<String, String> values)
-		throws Exception {
-
-		Class<?> clazz = getClass();
-
-		String template = StringUtil.read(
-			clazz.getClassLoader(),
-			"com/liferay/fragment/entry/processor/freemarker/test" +
-				"/dependencies/" + fileName);
-
-		return StringUtil.replace(template, "${", "}", values);
-	}
-
-	private String _getJsonFileAsString(String jsonFileName) throws Exception {
-		return _getJsonFileAsString(jsonFileName, null);
-	}
-
-	private String _getJsonFileAsString(
-			String jsonFileName, Map<String, String> values)
-		throws Exception {
-
-		JSONObject jsonObject = JSONFactoryUtil.createJSONObject(
-			_getFileAsString(jsonFileName, values));
-
-		return jsonObject.toString();
 	}
 
 	private MockHttpServletRequest _getMockHttpServletRequest()
@@ -631,6 +600,38 @@ public class FragmentEntryProcessorFreemarkerTest {
 			"false");
 
 		return unicodeProperties.toString();
+	}
+
+	private String _readFileToString(String fileName) throws Exception {
+		return _readFileToString(fileName, null);
+	}
+
+	private String _readFileToString(
+			String fileName, Map<String, String> values)
+		throws Exception {
+
+		Class<?> clazz = getClass();
+
+		String template = StringUtil.read(
+			clazz.getClassLoader(),
+			"com/liferay/fragment/entry/processor/freemarker/test" +
+				"/dependencies/" + fileName);
+
+		return StringUtil.replace(template, "${", "}", values);
+	}
+
+	private String _readJSONFileToString(String jsonFileName) throws Exception {
+		return _readJSONFileToString(jsonFileName, null);
+	}
+
+	private String _readJSONFileToString(
+			String jsonFileName, Map<String, String> values)
+		throws Exception {
+
+		JSONObject jsonObject = JSONFactoryUtil.createJSONObject(
+			_readFileToString(jsonFileName, values));
+
+		return jsonObject.toString();
 	}
 
 	@Inject

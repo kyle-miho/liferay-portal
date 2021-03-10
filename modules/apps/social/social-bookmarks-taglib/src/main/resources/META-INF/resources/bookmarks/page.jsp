@@ -48,7 +48,7 @@ String randomNamespace = PortalUtil.generateRandomKey(request, "taglib_ui_social
 					String styleClass = "taglib-social-bookmark-" + types[i];
 				%>
 
-					<li class="taglib-social-bookmark <%= styleClass %>" onClick="<%= "return " + SocialBookmarksTagUtil.getClickJSCall(className, classPK, types[i], socialBookmark.getPostURL(title, url), url) %>">
+					<li class="taglib-social-bookmark <%= styleClass %>" onClick="<%= SocialBookmarksTagUtil.getClickJSCall(className, classPK, types[i], socialBookmark.getPostURL(title, url), url) %>">
 						<liferay-social-bookmarks:bookmark
 							displayStyle="<%= displayStyle %>"
 							target="<%= target %>"
@@ -76,11 +76,19 @@ String randomNamespace = PortalUtil.generateRandomKey(request, "taglib_ui_social
 					dropdownItems="<%= SocialBookmarksTagUtil.getDropdownItems(request.getLocale(), remainingTypes, className, classPK, title, url) %>"
 					icon="share"
 					monospaced="<%= true %>"
-					propsTransformer="bookmarks/SocialBookmarksDropdownPropsTransformer"
+					propsTransformer="js/SocialBookmarksDropdownPropsTransformer"
 					small="<%= true %>"
 					title="share"
 				/>
 			</c:if>
 		</c:otherwise>
 	</c:choose>
+
+	<liferay-util:html-bottom
+		outputKey="social_bookmarks"
+	>
+		<liferay-frontend:component
+			module="js/SocialBookmarksHandleItemClick"
+		/>
+	</liferay-util:html-bottom>
 </div>

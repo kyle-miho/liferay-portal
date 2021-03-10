@@ -25,6 +25,7 @@ import com.liferay.adaptive.media.image.processor.AMImageAttribute;
 import com.liferay.adaptive.media.image.processor.AMImageProcessor;
 import com.liferay.adaptive.media.image.service.AMImageEntryLocalService;
 import com.liferay.adaptive.media.image.util.AMImageSerializer;
+import com.liferay.document.library.constants.DLPortletDataHandlerConstants;
 import com.liferay.document.library.exportimport.data.handler.DLPluggableContentDataHandler;
 import com.liferay.exportimport.kernel.lar.PortletDataContext;
 import com.liferay.petra.string.StringBundler;
@@ -63,6 +64,10 @@ public class AMImageDLPluggableContentDataHandler
 			FileEntry fileEntry)
 		throws Exception {
 
+		if (!_isEnabled(portletDataContext)) {
+			return;
+		}
+
 		Collection<AMImageConfigurationEntry> amImageConfigurationEntries =
 			_amImageConfigurationHelper.getAMImageConfigurationEntries(
 				portletDataContext.getCompanyId());
@@ -79,6 +84,10 @@ public class AMImageDLPluggableContentDataHandler
 			PortletDataContext portletDataContext, Element fileEntryElement,
 			FileEntry fileEntry, FileEntry importedFileEntry)
 		throws Exception {
+
+		if (!_isEnabled(portletDataContext)) {
+			return;
+		}
 
 		Collection<AMImageConfigurationEntry> amImageConfigurationEntries =
 			_amImageConfigurationHelper.getAMImageConfigurationEntries(
@@ -299,6 +308,11 @@ public class AMImageDLPluggableContentDataHandler
 				heightOptional.get(), widthOptional.get(), inputStream,
 				contentLengthOptional.get());
 		}
+	}
+
+	private boolean _isEnabled(PortletDataContext portletDataContext) {
+		return portletDataContext.getBooleanParameter(
+			DLPortletDataHandlerConstants.NAMESPACE, "previews-and-thumbnails");
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(

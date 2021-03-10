@@ -5,37 +5,56 @@
 		overflow: hidden;
 	}
 
-	.data-set-sub-item {
-		font-size: 13px;
-		height: auto;
-		transform: scale(0.98);
+	.data-set-display-management-bar-wrapper .form-control {
+		border-width: 1px;
 	}
 
-	.table {
-		border-spacing: 0 5px !important;
+	.dnd-table {
+		background-color: transparent;
 
-		td:first-child,
-		th:first-child,
-		.table-cell-start {
-			border-bottom-left-radius: 8px;
-			border-top-left-radius: 8px;
+		.with-bg {
+			background-color: transparent;
 		}
 
-		td:last-child,
-		th:last-child,
-		.table-cell-end {
-			border-bottom-right-radius: 8px;
-			border-top-right-radius: 8px;
+		.dnd-td,
+		.dnd-th {
+			border-right: none;
 		}
-	}
 
-	.table-list-title {
-		color: $color-fg-alt;
-		font-size: 12px;
-		font-weight: 500;
-		letter-spacing: 1.2px;
-		line-height: 1;
-		text-transform: uppercase;
+		.dnd-th-resizer {
+			background-color: $color-theme-dark;
+			transition: opacity 0.1s ease-in;
+
+			&.is-active {
+				background-color: $color-mood-bad;
+
+				&.is-allowed {
+					background-color: $color-theme;
+				}
+			}
+		}
+
+		.dnd-tr {
+			background-color: $color-bg;
+			border-bottom: none;
+			border-radius: $border-radius;
+			margin-bottom: 4px;
+			overflow: hidden;
+
+			&:last-child {
+				margin-bottom: 0;
+			}
+		}
+
+		.dnd-thead {
+			color: $color-fg-alt;
+			font-size: 12px;
+			font-weight: 500;
+			letter-spacing: 1.2px;
+			line-height: 1;
+			margin-bottom: 4px;
+			text-transform: uppercase;
+		}
 	}
 
 	.filter-resume {

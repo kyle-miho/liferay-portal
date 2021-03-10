@@ -29,6 +29,7 @@ import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.test.log.CaptureAppender;
 import com.liferay.portal.test.log.Log4JLoggerTestUtil;
+import com.liferay.portal.test.log.LogEvent;
 import com.liferay.portal.test.rule.Inject;
 
 import java.io.ByteArrayOutputStream;
@@ -43,8 +44,6 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.spi.LoggingEvent;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -118,7 +117,7 @@ public class BatchEngineImportTaskExecutorTest
 		try (CaptureAppender captureAppender =
 				Log4JLoggerTestUtil.configureLog4JLogger(
 					_CLASS_NAME_BATCH_ENGINE_IMPORT_TASK_EXECUTOR_IMPL,
-					Level.ERROR)) {
+					Log4JLoggerTestUtil.ERROR)) {
 
 			_importBlogPostings(
 				BatchEngineTaskOperation.CREATE,
@@ -151,7 +150,7 @@ public class BatchEngineImportTaskExecutorTest
 		try (CaptureAppender captureAppender =
 				Log4JLoggerTestUtil.configureLog4JLogger(
 					_CLASS_NAME_BATCH_ENGINE_IMPORT_TASK_EXECUTOR_IMPL,
-					Level.ERROR)) {
+					Log4JLoggerTestUtil.ERROR)) {
 
 			_importBlogPostings(
 				BatchEngineTaskOperation.CREATE,
@@ -180,7 +179,7 @@ public class BatchEngineImportTaskExecutorTest
 		try (CaptureAppender captureAppender =
 				Log4JLoggerTestUtil.configureLog4JLogger(
 					_CLASS_NAME_BATCH_ENGINE_IMPORT_TASK_EXECUTOR_IMPL,
-					Level.ERROR)) {
+					Log4JLoggerTestUtil.ERROR)) {
 
 			_importBlogPostings(
 				BatchEngineTaskOperation.CREATE,
@@ -210,7 +209,7 @@ public class BatchEngineImportTaskExecutorTest
 		try (CaptureAppender captureAppender =
 				Log4JLoggerTestUtil.configureLog4JLogger(
 					_CLASS_NAME_BATCH_ENGINE_IMPORT_TASK_EXECUTOR_IMPL,
-					Level.ERROR)) {
+					Log4JLoggerTestUtil.ERROR)) {
 
 			_importBlogPostings(
 				BatchEngineTaskOperation.CREATE, _toContent(xssfWorkbook),
@@ -426,15 +425,15 @@ public class BatchEngineImportTaskExecutorTest
 	private void _assertInvalidFile(CaptureAppender captureAppender) {
 		Assert.assertEquals(0, blogsEntryLocalService.getBlogsEntriesCount());
 
-		List<LoggingEvent> loggingEvents = captureAppender.getLoggingEvents();
+		List<LogEvent> logEvents = captureAppender.getLogEvents();
 
-		Assert.assertEquals(loggingEvents.toString(), 1, loggingEvents.size());
+		Assert.assertEquals(logEvents.toString(), 1, logEvents.size());
 
-		LoggingEvent loggingEvent = loggingEvents.get(0);
+		LogEvent logEvent = logEvents.get(0);
 
-		Assert.assertEquals(Level.ERROR, loggingEvent.getLevel());
+		Assert.assertEquals(Log4JLoggerTestUtil.ERROR, logEvent.getPriority());
 
-		String message = (String)loggingEvent.getMessage();
+		String message = logEvent.getMessage();
 
 		Assert.assertTrue(
 			message.startsWith("Unable to update batch engine import task"));

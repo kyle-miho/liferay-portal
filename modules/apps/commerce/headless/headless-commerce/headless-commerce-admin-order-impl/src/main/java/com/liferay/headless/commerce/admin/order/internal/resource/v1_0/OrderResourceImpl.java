@@ -108,7 +108,7 @@ public class OrderResourceImpl
 
 		CommerceOrder commerceOrder =
 			_commerceOrderService.fetchByExternalReferenceCode(
-				contextCompany.getCompanyId(), externalReferenceCode);
+				externalReferenceCode, contextCompany.getCompanyId());
 
 		if (commerceOrder == null) {
 			throw new NoSuchOrderException(
@@ -146,7 +146,7 @@ public class OrderResourceImpl
 
 		CommerceOrder commerceOrder =
 			_commerceOrderService.fetchByExternalReferenceCode(
-				contextCompany.getCompanyId(), externalReferenceCode);
+				externalReferenceCode, contextCompany.getCompanyId());
 
 		if (commerceOrder == null) {
 			throw new NoSuchOrderException(
@@ -197,7 +197,7 @@ public class OrderResourceImpl
 
 		CommerceOrder commerceOrder =
 			_commerceOrderService.fetchByExternalReferenceCode(
-				contextCompany.getCompanyId(), externalReferenceCode);
+				externalReferenceCode, contextCompany.getCompanyId());
 
 		if (commerceOrder == null) {
 			throw new NoSuchOrderException(
@@ -214,7 +214,7 @@ public class OrderResourceImpl
 
 	@Override
 	public Order postOrder(Order order) throws Exception {
-		CommerceOrder commerceOrder = _upsertOrder(order);
+		CommerceOrder commerceOrder = _addOrUpdateOrder(order);
 
 		return _orderHelper.toOrder(
 			commerceOrder.getCommerceOrderId(),
@@ -249,6 +249,110 @@ public class OrderResourceImpl
 		).put(
 			"method", _getHttpMethodName(clazz, _getMethod(clazz, methodName))
 		).build();
+	}
+
+	private CommerceOrder _addOrUpdateOrder(Order order) throws Exception {
+		CommerceChannel commerceChannel =
+			_commerceChannelLocalService.getCommerceChannel(
+				order.getChannelId());
+
+		long commerceShippingMethodId = 0;
+
+		CommerceShippingMethod commerceShippingMethod =
+			_commerceShippingMethodService.fetchCommerceShippingMethod(
+				commerceChannel.getGroupId(), order.getShippingMethod());
+
+		if (commerceShippingMethod != null) {
+			commerceShippingMethodId =
+				commerceShippingMethod.getCommerceShippingMethodId();
+		}
+
+		CommerceCurrency commerceCurrency =
+			_commerceCurrencyService.getCommerceCurrency(
+				commerceChannel.getCompanyId(), order.getCurrencyCode());
+
+		ServiceContext serviceContext = _serviceContextHelper.getServiceContext(
+			commerceChannel.getGroupId());
+
+		CommerceAccount commerceAccount = null;
+
+		if (order.getAccountId() != null) {
+			commerceAccount = _commerceAccountService.getCommerceAccount(
+				order.getAccountId());
+		}
+
+		if ((commerceAccount == null) &&
+			Validator.isNotNull(order.getAccountExternalReferenceCode())) {
+
+			commerceAccount =
+				_commerceAccountService.fetchByExternalReferenceCode(
+					commerceChannel.getCompanyId(),
+					order.getAccountExternalReferenceCode());
+		}
+
+		if (commerceAccount == null) {
+			throw new NoSuchAccountException();
+		}
+
+		CommerceOrder commerceOrder = _commerceOrderService.upsertCommerceOrder(
+			order.getExternalReferenceCode(), contextUser.getUserId(),
+			commerceChannel.getGroupId(),
+			commerceAccount.getCommerceAccountId(),
+			commerceCurrency.getCommerceCurrencyId(),
+			GetterUtil.getLong(order.getBillingAddressId()),
+			GetterUtil.getLong(order.getShippingAddressId()),
+			order.getPaymentMethod(), commerceShippingMethodId,
+			order.getShippingOption(), order.getPurchaseOrderNumber(),
+			order.getSubtotal(), order.getShippingAmount(), order.getTotal(),
+			order.getSubtotalWithTaxAmount(), order.getShippingWithTaxAmount(),
+			order.getTotalWithTaxAmount(),
+			GetterUtil.getInteger(
+				order.getPaymentStatus(),
+				CommerceOrderConstants.PAYMENT_STATUS_PENDING),
+			GetterUtil.getInteger(
+				order.getOrderStatus(),
+				CommerceOrderConstants.ORDER_STATUS_PENDING),
+			order.getAdvanceStatus(),
+			_commerceContextFactory.create(
+				contextCompany.getCompanyId(), commerceChannel.getGroupId(),
+				contextUser.getUserId(), 0,
+				commerceAccount.getCommerceAccountId()),
+			serviceContext);
+
+		// Order date
+
+		if (order.getOrderDate() != null) {
+			Calendar orderDateCalendar = CalendarFactoryUtil.getCalendar(
+				serviceContext.getTimeZone());
+
+			orderDateCalendar.setTime(order.getOrderDate());
+
+			DateConfig orderDate = new DateConfig(orderDateCalendar);
+
+			_commerceOrderService.updateOrderDate(
+				commerceOrder.getCommerceOrderId(), orderDate.getMonth(),
+				orderDate.getDay(), orderDate.getYear(), orderDate.getHour(),
+				orderDate.getMinute(), serviceContext);
+		}
+
+		// Printed note
+
+		_commerceOrderService.updatePrintedNote(
+			commerceOrder.getCommerceOrderId(), order.getPrintedNote());
+
+		// Expando
+
+		Map<String, ?> customFields = order.getCustomFields();
+
+		if ((customFields != null) && !customFields.isEmpty()) {
+			ExpandoUtil.updateExpando(
+				contextCompany.getCompanyId(), CommerceOrder.class,
+				commerceOrder.getPrimaryKey(), customFields);
+		}
+
+		// Update nested resources
+
+		return _updateNestedResources(order, commerceOrder, serviceContext);
 	}
 
 	private Map<String, Map<String, String>> _getActions(
@@ -392,6 +496,9 @@ public class OrderResourceImpl
 		}
 
 		commerceOrder = _commerceOrderService.updateCommerceOrder(
+			GetterUtil.getString(
+				order.getExternalReferenceCode(),
+				commerceOrder.getExternalReferenceCode()),
 			commerceOrder.getCommerceOrderId(),
 			GetterUtil.getLong(
 				order.getBillingAddressId(),
@@ -426,9 +533,6 @@ public class OrderResourceImpl
 				commerceOrder.getTotalWithTaxAmount()),
 			GetterUtil.getString(
 				order.getAdvanceStatus(), commerceOrder.getAdvanceStatus()),
-			GetterUtil.getString(
-				order.getExternalReferenceCode(),
-				commerceOrder.getExternalReferenceCode()),
 			_commerceContextFactory.create(
 				contextCompany.getCompanyId(), commerceOrder.getGroupId(),
 				contextUser.getUserId(), 0,
@@ -459,110 +563,6 @@ public class OrderResourceImpl
 		}
 
 		return commerceOrder;
-	}
-
-	private CommerceOrder _upsertOrder(Order order) throws Exception {
-		CommerceChannel commerceChannel =
-			_commerceChannelLocalService.getCommerceChannel(
-				order.getChannelId());
-
-		long commerceShippingMethodId = 0;
-
-		CommerceShippingMethod commerceShippingMethod =
-			_commerceShippingMethodService.fetchCommerceShippingMethod(
-				commerceChannel.getGroupId(), order.getShippingMethod());
-
-		if (commerceShippingMethod != null) {
-			commerceShippingMethodId =
-				commerceShippingMethod.getCommerceShippingMethodId();
-		}
-
-		CommerceCurrency commerceCurrency =
-			_commerceCurrencyService.getCommerceCurrency(
-				commerceChannel.getCompanyId(), order.getCurrencyCode());
-
-		ServiceContext serviceContext = _serviceContextHelper.getServiceContext(
-			commerceChannel.getGroupId());
-
-		CommerceAccount commerceAccount = null;
-
-		if (order.getAccountId() != null) {
-			commerceAccount = _commerceAccountService.getCommerceAccount(
-				order.getAccountId());
-		}
-
-		if ((commerceAccount == null) &&
-			Validator.isNotNull(order.getAccountExternalReferenceCode())) {
-
-			commerceAccount =
-				_commerceAccountService.fetchByExternalReferenceCode(
-					commerceChannel.getCompanyId(),
-					order.getAccountExternalReferenceCode());
-		}
-
-		if (commerceAccount == null) {
-			throw new NoSuchAccountException();
-		}
-
-		CommerceOrder commerceOrder = _commerceOrderService.upsertCommerceOrder(
-			order.getExternalReferenceCode(), contextUser.getUserId(),
-			commerceChannel.getGroupId(),
-			commerceAccount.getCommerceAccountId(),
-			commerceCurrency.getCommerceCurrencyId(),
-			GetterUtil.getLong(order.getBillingAddressId()),
-			GetterUtil.getLong(order.getShippingAddressId()),
-			order.getPaymentMethod(), commerceShippingMethodId,
-			order.getShippingOption(), order.getPurchaseOrderNumber(),
-			order.getSubtotal(), order.getShippingAmount(), order.getTotal(),
-			order.getSubtotalWithTaxAmount(), order.getShippingWithTaxAmount(),
-			order.getTotalWithTaxAmount(),
-			GetterUtil.getInteger(
-				order.getPaymentStatus(),
-				CommerceOrderConstants.PAYMENT_STATUS_PENDING),
-			GetterUtil.getInteger(
-				order.getOrderStatus(),
-				CommerceOrderConstants.ORDER_STATUS_PENDING),
-			order.getAdvanceStatus(),
-			_commerceContextFactory.create(
-				contextCompany.getCompanyId(), commerceChannel.getGroupId(),
-				contextUser.getUserId(), 0,
-				commerceAccount.getCommerceAccountId()),
-			serviceContext);
-
-		// Order date
-
-		if (order.getOrderDate() != null) {
-			Calendar orderDateCalendar = CalendarFactoryUtil.getCalendar(
-				serviceContext.getTimeZone());
-
-			orderDateCalendar.setTime(order.getOrderDate());
-
-			DateConfig orderDate = new DateConfig(orderDateCalendar);
-
-			_commerceOrderService.updateOrderDate(
-				commerceOrder.getCommerceOrderId(), orderDate.getMonth(),
-				orderDate.getDay(), orderDate.getYear(), orderDate.getHour(),
-				orderDate.getMinute(), serviceContext);
-		}
-
-		// Printed note
-
-		_commerceOrderService.updatePrintedNote(
-			commerceOrder.getCommerceOrderId(), order.getPrintedNote());
-
-		// Expando
-
-		Map<String, ?> customFields = order.getCustomFields();
-
-		if ((customFields != null) && !customFields.isEmpty()) {
-			ExpandoUtil.updateExpando(
-				contextCompany.getCompanyId(), CommerceOrder.class,
-				commerceOrder.getPrimaryKey(), customFields);
-		}
-
-		// Update nested resources
-
-		return _updateNestedResources(order, commerceOrder, serviceContext);
 	}
 
 	private static final EntityModel _entityModel = new OrderEntityModel();

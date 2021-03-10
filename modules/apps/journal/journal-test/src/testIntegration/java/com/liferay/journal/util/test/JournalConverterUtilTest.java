@@ -23,7 +23,10 @@ import com.liferay.dynamic.data.mapping.model.DDMForm;
 import com.liferay.dynamic.data.mapping.model.DDMFormField;
 import com.liferay.dynamic.data.mapping.model.DDMFormFieldOptions;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
+import com.liferay.dynamic.data.mapping.model.DDMStructureLayout;
+import com.liferay.dynamic.data.mapping.model.DDMStructureVersion;
 import com.liferay.dynamic.data.mapping.model.LocalizedValue;
+import com.liferay.dynamic.data.mapping.service.DDMStructureLayoutLocalServiceUtil;
 import com.liferay.dynamic.data.mapping.storage.Field;
 import com.liferay.dynamic.data.mapping.storage.Fields;
 import com.liferay.dynamic.data.mapping.storage.StorageType;
@@ -36,6 +39,7 @@ import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.kernel.test.util.GroupTestUtil;
+import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -49,6 +53,8 @@ import java.io.InputStream;
 import java.io.Serializable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -81,15 +87,14 @@ public class JournalConverterUtilTest {
 
 		_group = GroupTestUtil.addGroup();
 
-		DDMStructureTestHelper ddmStructureTestHelper =
-			new DDMStructureTestHelper(
-				PortalUtil.getClassNameId(JournalArticle.class), _group);
+		_ddmStructureTestHelper = new DDMStructureTestHelper(
+			PortalUtil.getClassNameId(JournalArticle.class), _group);
 
 		String definition = read("test-ddm-structure-all-fields.xml");
 
 		DDMForm ddmForm = deserialize(definition);
 
-		_ddmStructure = ddmStructureTestHelper.addStructure(
+		_ddmStructure = _ddmStructureTestHelper.addStructure(
 			PortalUtil.getClassNameId(JournalArticle.class), null,
 			"Test Structure", ddmForm, StorageType.DEFAULT.getValue(),
 			DDMStructureConstants.TYPE_DEFAULT);
@@ -217,7 +222,24 @@ public class JournalConverterUtilTest {
 		expectedFields.put(getListField(_ddmStructure.getStructureId()));
 
 		Field fieldsDisplayField = getFieldsDisplayField(
-			_ddmStructure.getStructureId(), "list_INSTANCE_pcm9WPVX");
+			_ddmStructure.getStructureId(),
+			StringBundler.concat(
+				"boolean_INSTANCE_", _ddmStructure.getStructureId(),
+				",document_library_INSTANCE_", _ddmStructure.getStructureId(),
+				",link_to_layout_INSTANCE_", _ddmStructure.getStructureId(),
+				",text_area_INSTANCE_", _ddmStructure.getStructureId(),
+				",multi_list_INSTANCE_", _ddmStructure.getStructureId(),
+				",list_INSTANCE_pcm9WPVX,contactFieldSet_INSTANCE_",
+				_ddmStructure.getStructureId(), ",contact_INSTANCE_",
+				_ddmStructure.getStructureId(), ",phoneFieldSet_INSTANCE_",
+				_ddmStructure.getStructureId(), ",phone_INSTANCE_",
+				_ddmStructure.getStructureId(), ",ext_INSTANCE_",
+				_ddmStructure.getStructureId(), ",text_INSTANCE_",
+				_ddmStructure.getStructureId(), ",text_box_INSTANCE_",
+				_ddmStructure.getStructureId(), ",image_1_INSTANCE_",
+				_ddmStructure.getStructureId(), ",image_2_INSTANCE_",
+				_ddmStructure.getStructureId(), ",image_3_INSTANCE_",
+				_ddmStructure.getStructureId()));
 
 		expectedFields.put(fieldsDisplayField);
 
@@ -241,7 +263,24 @@ public class JournalConverterUtilTest {
 		expectedFields.put(multiListField);
 
 		Field fieldsDisplayField = getFieldsDisplayField(
-			_ddmStructure.getStructureId(), "multi_list_INSTANCE_9X5wVsSv");
+			_ddmStructure.getStructureId(),
+			StringBundler.concat(
+				"boolean_INSTANCE_", _ddmStructure.getStructureId(),
+				",document_library_INSTANCE_", _ddmStructure.getStructureId(),
+				",link_to_layout_INSTANCE_", _ddmStructure.getStructureId(),
+				",text_area_INSTANCE_", _ddmStructure.getStructureId(),
+				",multi_list_INSTANCE_9X5wVsSv,list_INSTANCE_",
+				_ddmStructure.getStructureId(), ",contactFieldSet_INSTANCE_",
+				_ddmStructure.getStructureId(), ",contact_INSTANCE_",
+				_ddmStructure.getStructureId(), ",phoneFieldSet_INSTANCE_",
+				_ddmStructure.getStructureId(), ",phone_INSTANCE_",
+				_ddmStructure.getStructureId(), ",ext_INSTANCE_",
+				_ddmStructure.getStructureId(), ",text_INSTANCE_",
+				_ddmStructure.getStructureId(), ",text_box_INSTANCE_",
+				_ddmStructure.getStructureId(), ",image_1_INSTANCE_",
+				_ddmStructure.getStructureId(), ",image_2_INSTANCE_",
+				_ddmStructure.getStructureId(), ",image_3_INSTANCE_",
+				_ddmStructure.getStructureId()));
 
 		expectedFields.put(fieldsDisplayField);
 
@@ -266,6 +305,78 @@ public class JournalConverterUtilTest {
 	}
 
 	@Test
+	public void testGetFieldsFromContentWithParentStructuresElementsBackwardsCompatibility()
+		throws Exception {
+
+		String parentStructureDefinition = read(
+			"test-ddm-structure-parent-structure.json");
+
+		DDMStructure parentDDMStructure = _ddmStructureTestHelper.addStructure(
+			PortalUtil.getClassNameId(JournalArticle.class), null,
+			"Test Structure", jsonDeserialize(parentStructureDefinition),
+			StorageType.DEFAULT.getValue(), DDMStructureConstants.TYPE_DEFAULT);
+
+		DDMStructureVersion parentDDMStructureVersion =
+			parentDDMStructure.getStructureVersion();
+
+		DDMStructureLayout parentDDMStructureLayout =
+			DDMStructureLayoutLocalServiceUtil.
+				getStructureLayoutByStructureVersionId(
+					parentDDMStructureVersion.getStructureVersionId());
+
+		String childStructureDefinition = StringUtil.replace(
+			read("test-ddm-structure-child-structure.json"),
+			new String[] {"$DDM_STRUCTURE_ID", "$DDM_STRUCTURE_LAYOUT_ID"},
+			new String[] {
+				String.valueOf(parentDDMStructure.getStructureId()),
+				String.valueOf(parentDDMStructureLayout.getStructureLayoutId())
+			});
+
+		DDMStructure childDDMStructure = _ddmStructureTestHelper.addStructure(
+			PortalUtil.getClassNameId(JournalArticle.class), null,
+			"Test Structure", jsonDeserialize(childStructureDefinition),
+			StorageType.DEFAULT.getValue(), DDMStructureConstants.TYPE_DEFAULT);
+
+		Fields expectedFields = new Fields();
+
+		Field textField1 = new Field();
+
+		textField1.setDDMStructureId(childDDMStructure.getStructureId());
+		textField1.setDefaultLocale(_enLocale);
+		textField1.setName("Text23i4");
+
+		textField1.addValue(_enLocale, "Text 1");
+
+		expectedFields.put(textField1);
+
+		Field textField2 = new Field();
+
+		textField2.setDDMStructureId(childDDMStructure.getStructureId());
+		textField2.setDefaultLocale(_enLocale);
+		textField2.setName("Textlmzq");
+
+		textField2.addValue(_enLocale, "Text 2");
+
+		expectedFields.put(textField2);
+
+		Field fieldsDisplayField = getFieldsDisplayField(
+			childDDMStructure.getStructureId(),
+			"parentStructureFieldSet37599_INSTANCE_" +
+				childDDMStructure.getStructureId() +
+					",Text23i4_INSTANCE_ngkuwrmn,Textlmzq_INSTANCE_yxxxshhf");
+
+		expectedFields.put(fieldsDisplayField);
+
+		String content = read(
+			"test-journal-content-parent-structure-fields.xml");
+
+		Fields actualFields = _journalConverter.getDDMFields(
+			childDDMStructure, content);
+
+		Assert.assertEquals(expectedFields, actualFields);
+	}
+
+	@Test
 	public void testGetFieldsFromContentWithUnlocalizedElement()
 		throws Exception {
 
@@ -278,7 +389,24 @@ public class JournalConverterUtilTest {
 		expectedFields.put(textField);
 
 		Field fieldsDisplayField = getFieldsDisplayField(
-			_ddmStructure.getStructureId(), "text_INSTANCE_Okhyj7Ni");
+			_ddmStructure.getStructureId(),
+			StringBundler.concat(
+				"boolean_INSTANCE_", _ddmStructure.getStructureId(),
+				",document_library_INSTANCE_", _ddmStructure.getStructureId(),
+				",link_to_layout_INSTANCE_", _ddmStructure.getStructureId(),
+				",text_area_INSTANCE_", _ddmStructure.getStructureId(),
+				",multi_list_INSTANCE_", _ddmStructure.getStructureId(),
+				",list_INSTANCE_", _ddmStructure.getStructureId(),
+				",contactFieldSet_INSTANCE_", _ddmStructure.getStructureId(),
+				",contact_INSTANCE_", _ddmStructure.getStructureId(),
+				",phoneFieldSet_INSTANCE_", _ddmStructure.getStructureId(),
+				",phone_INSTANCE_", _ddmStructure.getStructureId(),
+				",ext_INSTANCE_", _ddmStructure.getStructureId(),
+				",text_INSTANCE_Okhyj7Ni,text_box_INSTANCE_",
+				_ddmStructure.getStructureId(), ",image_1_INSTANCE_",
+				_ddmStructure.getStructureId(), ",image_2_INSTANCE_",
+				_ddmStructure.getStructureId(), ",image_3_INSTANCE_",
+				_ddmStructure.getStructureId()));
 
 		expectedFields.put(fieldsDisplayField);
 
@@ -455,76 +583,134 @@ public class JournalConverterUtilTest {
 	protected Fields getNestedFields(long ddmStructureId) {
 		Fields fields = new Fields();
 
-		// Contact
+		_addField(
+			ddmStructureId, fields, "boolean",
+			HashMapBuilder.put(
+				_enLocale, Collections.singletonList("")
+			).put(
+				_ptLocale, Collections.singletonList("")
+			).build());
 
-		Field contact = new Field();
+		_addField(
+			ddmStructureId, fields, "document_library",
+			HashMapBuilder.put(
+				_enLocale, Collections.singletonList("")
+			).put(
+				_ptLocale, Collections.singletonList("")
+			).build());
 
-		contact.setDDMStructureId(ddmStructureId);
-		contact.setName("contact");
+		_addField(
+			ddmStructureId, fields, "link_to_layout",
+			HashMapBuilder.put(
+				_enLocale, Collections.singletonList("")
+			).put(
+				_ptLocale, Collections.singletonList("")
+			).build());
 
-		List<Serializable> enValues = new ArrayList<>();
+		_addField(
+			ddmStructureId, fields, "text_area",
+			HashMapBuilder.put(
+				_enLocale, Collections.singletonList("")
+			).put(
+				_ptLocale, Collections.singletonList("")
+			).build());
 
-		enValues.add("joe");
-		enValues.add("richard");
+		_addField(
+			ddmStructureId, fields, "multi_list",
+			HashMapBuilder.put(
+				_enLocale, Collections.singletonList("[\"\"]")
+			).put(
+				_ptLocale, Collections.singletonList("[\"\"]")
+			).build());
 
-		contact.setValues(_enLocale, enValues);
+		_addField(
+			ddmStructureId, fields, "list",
+			HashMapBuilder.put(
+				_enLocale, Collections.singletonList("[\"\"]")
+			).put(
+				_ptLocale, Collections.singletonList("[\"\"]")
+			).build());
 
-		List<Serializable> ptValues = new ArrayList<>();
+		_addField(
+			ddmStructureId, fields, "contact",
+			HashMapBuilder.put(
+				_enLocale, Arrays.asList("joe", "richard")
+			).put(
+				_ptLocale, Arrays.asList("joao", "ricardo")
+			).build());
 
-		ptValues.add("joao");
-		ptValues.add("ricardo");
+		_addField(
+			ddmStructureId, fields, "phone",
+			HashMapBuilder.put(
+				_enLocale, Arrays.asList("123", "456")
+			).put(
+				_ptLocale, Arrays.asList("123", "456")
+			).build());
 
-		contact.addValues(_ptLocale, ptValues);
+		_addField(
+			ddmStructureId, fields, "ext",
+			HashMapBuilder.put(
+				_enLocale, Arrays.asList("1", "2", "3", "4", "5")
+			).put(
+				_ptLocale, Arrays.asList("1", "2", "3", "4", "5")
+			).build());
 
-		fields.put(contact);
+		_addField(
+			ddmStructureId, fields, "text",
+			HashMapBuilder.put(
+				_enLocale, Collections.singletonList("")
+			).put(
+				_ptLocale, Collections.singletonList("")
+			).build());
 
-		// Phone
+		_addField(
+			ddmStructureId, fields, "text_box",
+			HashMapBuilder.put(
+				_enLocale, Collections.singletonList("")
+			).put(
+				_ptLocale, Collections.singletonList("")
+			).build());
 
-		Field phone = new Field();
+		_addField(
+			ddmStructureId, fields, "image_1",
+			HashMapBuilder.put(
+				_enLocale, Collections.singletonList("")
+			).put(
+				_ptLocale, Collections.singletonList("")
+			).build());
 
-		phone.setDDMStructureId(ddmStructureId);
-		phone.setName("phone");
+		_addField(
+			ddmStructureId, fields, "image_2",
+			HashMapBuilder.put(
+				_enLocale, Collections.singletonList("")
+			).put(
+				_ptLocale, Collections.singletonList("")
+			).build());
 
-		List<Serializable> values = new ArrayList<>();
-
-		values.add("123");
-		values.add("456");
-
-		phone.setValues(_enLocale, values);
-		phone.addValues(_ptLocale, values);
-
-		fields.put(phone);
-
-		// Ext
-
-		Field ext = new Field();
-
-		ext.setDDMStructureId(ddmStructureId);
-		ext.setName("ext");
-
-		values = new ArrayList<>();
-
-		values.add("1");
-		values.add("2");
-		values.add("3");
-		values.add("4");
-		values.add("5");
-
-		ext.setValues(_enLocale, values);
-		ext.addValues(_ptLocale, values);
-
-		fields.put(ext);
-
-		StringBundler sb = new StringBundler(5);
-
-		sb.append("contact_INSTANCE_RF3do1m5,phone_INSTANCE_QK6B0wK9,");
-		sb.append("ext_INSTANCE_L67MPqQf,ext_INSTANCE_8uxzZl41,");
-		sb.append("ext_INSTANCE_S58K861T,contact_INSTANCE_CUeFxcrA,");
-		sb.append("phone_INSTANCE_lVTcTviF,ext_INSTANCE_cZalDSll,");
-		sb.append("ext_INSTANCE_HDrK2Um5");
+		_addField(
+			ddmStructureId, fields, "image_3",
+			HashMapBuilder.put(
+				_enLocale, Collections.singletonList("")
+			).put(
+				_ptLocale, Collections.singletonList("")
+			).build());
 
 		Field fieldsDisplayField = new Field(
-			ddmStructureId, DDM.FIELDS_DISPLAY_NAME, sb.toString());
+			ddmStructureId, DDM.FIELDS_DISPLAY_NAME,
+			StringBundler.concat(
+				"boolean_INSTANCE_YELSrniM,document_library_INSTANCE_HzKJrSts,",
+				"link_to_layout_INSTANCE_eHQALxHa,text_area_INSTANCE_ucizquBv,",
+				"multi_list_INSTANCE_oOUZHUcy,list_INSTANCE_RMYIbORN,",
+				"contactFieldSet_INSTANCE_RJSkjdfi,",
+				"contact_INSTANCE_RF3do1m5,phoneFieldSet_INSTANCE_zhglwgmk,",
+				"phone_INSTANCE_QK6B0wK9,ext_INSTANCE_L67MPqQf,",
+				"ext_INSTANCE_8uxzZl41,ext_INSTANCE_S58K861T,",
+				"contactFieldSet_INSTANCE_3hACzXcE,contact_INSTANCE_CUeFxcrA,",
+				"phoneFieldSet_INSTANCE_UgCyiQd3,phone_INSTANCE_lVTcTviF,",
+				"ext_INSTANCE_cZalDSll,ext_INSTANCE_HDrK2Um5,",
+				"text_INSTANCE_zWlZDoLc,text_box_INSTANCE_fmyemVKH,",
+				"image_1_INSTANCE_xhdykzYh,image_2_INSTANCE_FViKyTea,",
+				"image_3_INSTANCE_JVBHdcGZ"));
 
 		fields.put(fieldsDisplayField);
 
@@ -585,6 +771,17 @@ public class JournalConverterUtilTest {
 		return valuesMap.computeIfAbsent(locale, key -> new ArrayList<>());
 	}
 
+	protected DDMForm jsonDeserialize(String content) {
+		DDMFormDeserializerDeserializeRequest.Builder builder =
+			DDMFormDeserializerDeserializeRequest.Builder.newBuilder(content);
+
+		DDMFormDeserializerDeserializeResponse
+			ddmFormDeserializerDeserializeResponse =
+				_jsonDDMFormDeserializer.deserialize(builder.build());
+
+		return ddmFormDeserializerDeserializeResponse.getDDMForm();
+	}
+
 	protected String read(String fileName) throws Exception {
 		Class<?> clazz = getClass();
 
@@ -637,10 +834,32 @@ public class JournalConverterUtilTest {
 		}
 	}
 
+	private void _addField(
+		long ddmStructureId, Fields fields, String name,
+		HashMap<Locale, List<String>> values) {
+
+		Field field = new Field();
+
+		field.setDDMStructureId(ddmStructureId);
+		field.setName(name);
+
+		for (Map.Entry<Locale, List<String>> entry : values.entrySet()) {
+			for (String value : entry.getValue()) {
+				field.addValue(entry.getKey(), value);
+			}
+		}
+
+		fields.put(field);
+	}
+
+	@Inject(filter = "ddm.form.deserializer.type=json")
+	private static DDMFormDeserializer _jsonDDMFormDeserializer;
+
 	@Inject(filter = "ddm.form.deserializer.type=xsd")
 	private static DDMFormDeserializer _xsdDDMFormDeserializer;
 
 	private DDMStructure _ddmStructure;
+	private DDMStructureTestHelper _ddmStructureTestHelper;
 	private Locale _enLocale;
 
 	@DeleteAfterTestRun

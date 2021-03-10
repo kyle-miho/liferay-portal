@@ -246,7 +246,9 @@ JournalEditArticleDisplayContext journalEditArticleDisplayContext = new JournalE
 					dataDefinitionId="<%= ddmStructure.getStructureId() %>"
 					dataRecordValues="<%= journalEditArticleDisplayContext.getValues(ddmStructure) %>"
 					defaultLanguageId="<%= journalEditArticleDisplayContext.getDefaultArticleLanguageId() %>"
+					languageId="<%= journalEditArticleDisplayContext.getSelectedLanguageId() %>"
 					namespace="<%= liferayPortletResponse.getNamespace() %>"
+					persisted="<%= article != null %>"
 				/>
 
 				<liferay-frontend:component
@@ -266,3 +268,5 @@ JournalEditArticleDisplayContext journalEditArticleDisplayContext = new JournalE
 	module="js/JournalPortlet.es"
 	servletContext="<%= application %>"
 />
+
+<%@ include file="/friendly_url_changed_message.jspf" %>

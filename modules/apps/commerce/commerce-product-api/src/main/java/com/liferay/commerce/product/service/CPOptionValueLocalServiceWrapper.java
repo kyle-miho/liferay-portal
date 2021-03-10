@@ -63,13 +63,14 @@ public class CPOptionValueLocalServiceWrapper
 
 	@Override
 	public com.liferay.commerce.product.model.CPOptionValue addCPOptionValue(
-			long cpOptionId, java.util.Map<java.util.Locale, String> nameMap,
-			double priority, String key, String externalReferenceCode,
+			String externalReferenceCode, long cpOptionId,
+			java.util.Map<java.util.Locale, String> nameMap, double priority,
+			String key,
 			com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
 
 		return _cpOptionValueLocalService.addCPOptionValue(
-			cpOptionId, nameMap, priority, key, externalReferenceCode,
+			externalReferenceCode, cpOptionId, nameMap, priority, key,
 			serviceContext);
 	}
 
@@ -252,10 +253,10 @@ public class CPOptionValueLocalServiceWrapper
 	@Override
 	public com.liferay.commerce.product.model.CPOptionValue
 		fetchByExternalReferenceCode(
-			long companyId, String externalReferenceCode) {
+			String externalReferenceCode, long companyId) {
 
 		return _cpOptionValueLocalService.fetchByExternalReferenceCode(
-			companyId, externalReferenceCode);
+			externalReferenceCode, companyId);
 	}
 
 	@Override
@@ -441,6 +442,20 @@ public class CPOptionValueLocalServiceWrapper
 		return _cpOptionValueLocalService.search(searchContext);
 	}
 
+	/**
+	 * @param companyId
+	 * @param groupId
+	 * @param cpOptionId
+	 * @param keywords
+	 * @param start
+	 * @param end
+	 * @param sort
+	 * @return
+	 * @throws PortalException
+	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link
+	 #searchCPOptionValues(long, long, String, int, int, Sort[])}
+	 */
+	@Deprecated
 	@Override
 	public com.liferay.portal.kernel.search.BaseModelSearchResult
 		<com.liferay.commerce.product.model.CPOptionValue> searchCPOptionValues(
@@ -450,6 +465,26 @@ public class CPOptionValueLocalServiceWrapper
 
 		return _cpOptionValueLocalService.searchCPOptionValues(
 			companyId, groupId, cpOptionId, keywords, start, end, sort);
+	}
+
+	@Override
+	public com.liferay.portal.kernel.search.BaseModelSearchResult
+		<com.liferay.commerce.product.model.CPOptionValue> searchCPOptionValues(
+				long companyId, long cpOptionId, String keywords, int start,
+				int end, com.liferay.portal.kernel.search.Sort[] sorts)
+			throws com.liferay.portal.kernel.exception.PortalException {
+
+		return _cpOptionValueLocalService.searchCPOptionValues(
+			companyId, cpOptionId, keywords, start, end, sorts);
+	}
+
+	@Override
+	public int searchCPOptionValuesCount(
+			long companyId, long cpOptionId, String keywords)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return _cpOptionValueLocalService.searchCPOptionValuesCount(
+			companyId, cpOptionId, keywords);
 	}
 
 	/**
@@ -483,13 +518,14 @@ public class CPOptionValueLocalServiceWrapper
 
 	@Override
 	public com.liferay.commerce.product.model.CPOptionValue upsertCPOptionValue(
-			long cpOptionId, java.util.Map<java.util.Locale, String> nameMap,
-			double priority, String key, String externalReferenceCode,
+			String externalReferenceCode, long cpOptionId,
+			java.util.Map<java.util.Locale, String> nameMap, double priority,
+			String key,
 			com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
 
 		return _cpOptionValueLocalService.upsertCPOptionValue(
-			cpOptionId, nameMap, priority, key, externalReferenceCode,
+			externalReferenceCode, cpOptionId, nameMap, priority, key,
 			serviceContext);
 	}
 

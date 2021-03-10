@@ -41,11 +41,15 @@ public abstract class BasePortalReleaseJob
 		super(jobName, buildProfile);
 
 		_portalBranchName = portalBranchName;
-
 		_testSuiteName = testSuiteName;
 
 		_jenkinsGitWorkingDirectory =
 			GitWorkingDirectoryFactory.newJenkinsGitWorkingDirectory();
+
+		jobPropertiesFiles.add(
+			new File(
+				_jenkinsGitWorkingDirectory.getWorkingDirectory(),
+				"commands/build.properties"));
 
 		_portalGitWorkingDirectory =
 			GitWorkingDirectoryFactory.newPortalGitWorkingDirectory(

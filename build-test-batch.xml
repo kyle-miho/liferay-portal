@@ -4187,6 +4187,10 @@ log.sanitizer.enabled=false</echo>
 		<run-functional-test app.server.type="tomcat" database.type="mysql" database.version="5.7" test.portal.log.assert="true" />
 	</target>
 
+	<target name="functional-jboss72-mysql57-jdk8">
+		<run-functional-test app.server.type="jboss" database.type="mysql" database.version="5.7" />
+	</target>
+
 	<target name="functional-orcllinux6-tomcat90-mysql57-jdk8">
 		<run-functional-test app.server.type="tomcat" database.type="mysql" database.version="5.7" test.portal.log.assert="true" />
 	</target>
@@ -4777,6 +4781,12 @@ log.sanitizer.enabled=false</echo>
 
 	<target name="functional-wildfly140-mysql57-jdk8">
 		<run-functional-test app.server.type="wildfly" database.type="mysql" />
+	</target>
+
+	<target name="functional-wildfly170-mariadb104-jdk8">
+		<set-app-server-version-number app.server.type="wildfly" app.server.version="17.0.0" />
+
+		<run-functional-test app.server.type="wildfly" app.server.version="17.0.0" database.type="mariadb" />
 	</target>
 
 	<target name="gogo-shell-client-jdk8">
@@ -5556,37 +5566,17 @@ log.sanitizer.enabled=false</echo>
 						<gradle-execute dir="modules" forcedcacheenabled="false" task="@{modules.baseline.task.group}">
 							<arg value="--continue" />
 							<arg value="--parallel" />
+							<arg value="-Dbaseline.ignoreFailures=true" />
 						</gradle-execute>
 					</sequential>
 				</for>
 
 				<echo>Checking for baseline log files.</echo>
 
-				<var name="log.files" unset="true" />
-
-				<fileset
-					dir="${project.dir}"
-					id="log.files"
-				>
-					<include name="modules/**/baseline.log" />
-				</fileset>
-
-				<pathconvert pathsep="," property="log.files" refid="log.files" />
-
-				<for list="${log.files}" param="log.file">
-					<sequential>
-						<print-file file.name="@{log.file}" />
-					</sequential>
-				</for>
-
-				<if>
-					<not>
-						<equals arg1="${log.files}" arg2="" />
-					</not>
-					<then>
-						<fail message="Semantic versioning is incorrect." />
-					</then>
-				</if>
+				<gradle-execute dir="modules/test/semantic-versioning-test" task="test">
+					<arg value="-Dmodules.test.class.group=${modules.test.class.group}" />
+					<arg value="-Dproject.dir=${project.dir}" />
+				</gradle-execute>
 
 				<echo>Check for baseline log files completed.</echo>
 			</test-action>

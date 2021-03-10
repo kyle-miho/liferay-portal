@@ -23,7 +23,6 @@
 	<c:if test="<%= Validator.isNotNull(screenNavigatorKey) %>">
 		<liferay-frontend:screen-navigation
 			containerWrapperCssClass="side-panel-iframe-wrapper"
-			fullContainerCssClass="col-12"
 			headerContainerCssClass="side-panel-iframe-menu-wrapper"
 			key="<%= screenNavigatorKey %>"
 			modelBean="<%= screenNavigatorModelBean %>"

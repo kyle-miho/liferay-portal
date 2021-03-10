@@ -67,8 +67,7 @@ public class ExportImportToolbarDisplayContext {
 	public List<DropdownItem> getActionDropdownItems() {
 		return DropdownItemListBuilder.add(
 			dropdownItem -> {
-				dropdownItem.setHref(
-					"javascript:" + _portletNamespace + "deleteEntries();");
+				dropdownItem.putData("action", "deleteEntries");
 				dropdownItem.setLabel(
 					LanguageUtil.get(_httpServletRequest, "delete"));
 			}
@@ -112,7 +111,10 @@ public class ExportImportToolbarDisplayContext {
 							"liveGroupId",
 							String.valueOf(
 								groupDisplayContextHelper.getLiveGroupId()),
-							"privateLayout", Boolean.FALSE.toString(),
+							"privateLayout",
+							ParamUtil.getString(
+								_httpServletRequest, "privateLayout",
+								Boolean.FALSE.toString()),
 							"displayStyle",
 							ParamUtil.getString(
 								_httpServletRequest, "displayStyle",

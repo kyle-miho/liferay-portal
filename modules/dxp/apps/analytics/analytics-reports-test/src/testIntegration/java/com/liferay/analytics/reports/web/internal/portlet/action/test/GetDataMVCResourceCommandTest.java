@@ -14,16 +14,15 @@
 
 package com.liferay.analytics.reports.web.internal.portlet.action.test;
 
+import com.liferay.analytics.reports.info.item.ClassNameClassPKInfoItemIdentifier;
 import com.liferay.analytics.reports.test.MockObject;
-import com.liferay.analytics.reports.test.analytics.reports.info.item.MockAnalyticsReportsInfoItem;
-import com.liferay.analytics.reports.test.layout.display.page.MockLayoutDisplayPageProvider;
+import com.liferay.analytics.reports.test.MockSuperClassObject;
+import com.liferay.analytics.reports.test.analytics.reports.info.item.MockObjectAnalyticsReportsInfoItem;
+import com.liferay.analytics.reports.test.analytics.reports.info.item.MockSuperClassObjectAnalyticsReportsInfoItem;
 import com.liferay.analytics.reports.test.util.MockContextUtil;
 import com.liferay.analytics.reports.web.internal.portlet.action.test.util.MockThemeDisplayUtil;
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.info.item.InfoItemReference;
-import com.liferay.layout.display.page.LayoutDisplayPageProvider;
-import com.liferay.layout.display.page.LayoutDisplayPageProviderTracker;
-import com.liferay.layout.display.page.constants.LayoutDisplayPageWebKeys;
 import com.liferay.layout.test.util.LayoutTestUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONArray;
@@ -33,7 +32,6 @@ import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCResourceCommand;
-import com.liferay.portal.kernel.service.ClassNameLocalService;
 import com.liferay.portal.kernel.service.CompanyLocalService;
 import com.liferay.portal.kernel.service.LayoutSetLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
@@ -93,19 +91,15 @@ public class GetDataMVCResourceCommandTest {
 	@Test
 	public void testGetAuthorWithoutPortraitURL() throws Exception {
 		MockContextUtil.testWithMockContext(
-			new MockContextUtil.MockContext.Builder(
-				_classNameLocalService
-			).analyticsReportsInfoItem(
-				MockAnalyticsReportsInfoItem.builder(
-				).build()
-			).layoutDisplayPageProvider(
-				MockLayoutDisplayPageProvider.builder(
-					_classNameLocalService
-				).build()
-			).build(),
+			new MockContextUtil.MockContext.Builder().
+				mockObjectAnalyticsReportsInfoItem(
+					MockObjectAnalyticsReportsInfoItem.builder(
+					).build()
+				).build(),
 			() -> {
 				MockLiferayResourceRequest mockLiferayResourceRequest =
-					_getMockLiferayResourceRequest();
+					_getMockLiferayResourceRequest(
+						new InfoItemReference(MockObject.class.getName(), 0L));
 
 				ServiceContext serviceContext = new ServiceContext();
 
@@ -125,15 +119,12 @@ public class GetDataMVCResourceCommandTest {
 						mockLiferayResourceResponse.getPortletOutputStream();
 
 				JSONObject jsonObject = JSONFactoryUtil.createJSONObject(
-					new String(byteArrayOutputStream.toByteArray()));
+					byteArrayOutputStream.toString());
 
 				JSONObject contextJSONObject = jsonObject.getJSONObject(
 					"context");
 
-				JSONObject authorJSONObject = contextJSONObject.getJSONObject(
-					"author");
-
-				Assert.assertNull(authorJSONObject.get("url"));
+				Assert.assertNull(contextJSONObject.getJSONObject("author"));
 			});
 	}
 
@@ -146,27 +137,23 @@ public class GetDataMVCResourceCommandTest {
 		String title = RandomTestUtil.randomString();
 
 		MockContextUtil.testWithMockContext(
-			new MockContextUtil.MockContext.Builder(
-				_classNameLocalService
-			).analyticsReportsInfoItem(
-				MockAnalyticsReportsInfoItem.builder(
-				).authorName(
-					authorName
-				).authorProfileImage(
-					authorProfileImage
-				).publishDate(
-					publishDate
-				).title(
-					title
-				).build()
-			).layoutDisplayPageProvider(
-				MockLayoutDisplayPageProvider.builder(
-					_classNameLocalService
-				).build()
-			).build(),
+			new MockContextUtil.MockContext.Builder().
+				mockObjectAnalyticsReportsInfoItem(
+					MockObjectAnalyticsReportsInfoItem.builder(
+					).authorName(
+						authorName
+					).authorProfileImage(
+						authorProfileImage
+					).publishDate(
+						publishDate
+					).title(
+						title
+					).build()
+				).build(),
 			() -> {
 				MockLiferayResourceRequest mockLiferayResourceRequest =
-					_getMockLiferayResourceRequest();
+					_getMockLiferayResourceRequest(
+						new InfoItemReference(MockObject.class.getName(), 0L));
 
 				ServiceContext serviceContext = new ServiceContext();
 
@@ -216,7 +203,117 @@ public class GetDataMVCResourceCommandTest {
 					"viewURLs");
 
 				Assert.assertEquals(
-					String.valueOf(jsonArray), jsonArray.length(), 1);
+					String.valueOf(jsonArray), 1, jsonArray.length());
+
+				JSONObject viewURLJSONObject = jsonArray.getJSONObject(0);
+
+				Assert.assertEquals(
+					Boolean.TRUE, viewURLJSONObject.getBoolean("default"));
+				Assert.assertEquals(
+					LocaleUtil.toBCP47LanguageId(LocaleUtil.getDefault()),
+					viewURLJSONObject.getString("languageId"));
+
+				String viewURL = viewURLJSONObject.getString("viewURL");
+
+				Assert.assertTrue(
+					viewURL.contains(
+						"param_languageId=" +
+							LocaleUtil.toLanguageId(LocaleUtil.getDefault())));
+			});
+	}
+
+	@Test
+	public void testGetContextWithClassNameClassPKInfoItemIdentifier()
+		throws Exception {
+
+		String authorName = RandomTestUtil.randomString();
+		String authorProfileImage =
+			RandomTestUtil.randomString() + "?img_id=10";
+		Date publishDate = new Date();
+		String title = RandomTestUtil.randomString();
+
+		MockContextUtil.testWithMockContext(
+			new MockContextUtil.MockContext.Builder().
+				mockObjectAnalyticsReportsInfoItem(
+					MockObjectAnalyticsReportsInfoItem.builder(
+					).authorName(
+						RandomTestUtil.randomString()
+					).authorProfileImage(
+						RandomTestUtil.randomString()
+					).publishDate(
+						new Date()
+					).title(
+						RandomTestUtil.randomString()
+					).build()
+				).mockSuperClassObjectAnalyticsReportsInfoItem(
+					MockSuperClassObjectAnalyticsReportsInfoItem.builder(
+					).authorName(
+						authorName
+					).authorProfileImage(
+						authorProfileImage
+					).publishDate(
+						publishDate
+					).title(
+						title
+					).build()
+				).build(),
+			() -> {
+				MockLiferayResourceRequest mockLiferayResourceRequest =
+					_getMockLiferayResourceRequest(
+						new InfoItemReference(
+							MockSuperClassObject.class.getName(),
+							new ClassNameClassPKInfoItemIdentifier(
+								MockObject.class.getName(), 0L)));
+
+				ServiceContext serviceContext = new ServiceContext();
+
+				serviceContext.setRequest(
+					mockLiferayResourceRequest.getHttpServletRequest());
+
+				ServiceContextThreadLocal.pushServiceContext(serviceContext);
+
+				MockLiferayResourceResponse mockLiferayResourceResponse =
+					new MockLiferayResourceResponse();
+
+				_mvcResourceCommand.serveResource(
+					mockLiferayResourceRequest, mockLiferayResourceResponse);
+
+				ByteArrayOutputStream byteArrayOutputStream =
+					(ByteArrayOutputStream)
+						mockLiferayResourceResponse.getPortletOutputStream();
+
+				JSONObject jsonObject = JSONFactoryUtil.createJSONObject(
+					byteArrayOutputStream.toString());
+
+				JSONObject contextJSONObject = jsonObject.getJSONObject(
+					"context");
+
+				JSONObject authorJSONObject = contextJSONObject.getJSONObject(
+					"author");
+
+				Assert.assertEquals(authorName, authorJSONObject.get("name"));
+				Assert.assertEquals(
+					authorProfileImage, authorJSONObject.get("url"));
+
+				Instant instant = publishDate.toInstant();
+
+				ZonedDateTime zonedDateTime = instant.atZone(
+					ZoneId.systemDefault());
+
+				LocalDate localDate = LocalDate.from(
+					DateTimeFormatter.ISO_DATE.parse(
+						contextJSONObject.getString("publishDate")));
+
+				Assert.assertEquals(zonedDateTime.toLocalDate(), localDate);
+
+				Assert.assertEquals(
+					title, contextJSONObject.getString("title"));
+
+				JSONArray jsonArray = contextJSONObject.getJSONArray(
+					"viewURLs");
+
+				Assert.assertEquals(
+					String.valueOf(jsonArray), 1, jsonArray.length());
 
 				JSONObject viewURLJSONObject = jsonArray.getJSONObject(0);
 
@@ -239,14 +336,14 @@ public class GetDataMVCResourceCommandTest {
 	public void testGetViewURLs() throws Exception {
 		MockContextUtil.testWithMockContext(
 			MockContextUtil.MockContext.builder(
-				_classNameLocalService
 			).build(),
 			() -> {
 				MockLiferayResourceResponse mockLiferayResourceResponse =
 					new MockLiferayResourceResponse();
 
 				_mvcResourceCommand.serveResource(
-					_getMockLiferayResourceRequest(),
+					_getMockLiferayResourceRequest(
+						new InfoItemReference(MockObject.class.getName(), 0L)),
 					mockLiferayResourceResponse);
 
 				ByteArrayOutputStream byteArrayOutputStream =
@@ -286,9 +383,8 @@ public class GetDataMVCResourceCommandTest {
 	public void testGetViewURLsWithMultipleLocales() throws Exception {
 		MockContextUtil.testWithMockContext(
 			MockContextUtil.MockContext.builder(
-				_classNameLocalService
-			).analyticsReportsInfoItem(
-				MockAnalyticsReportsInfoItem.builder(
+			).mockObjectAnalyticsReportsInfoItem(
+				MockObjectAnalyticsReportsInfoItem.builder(
 				).locales(
 					Arrays.asList(LocaleUtil.SPAIN, LocaleUtil.US)
 				).build()
@@ -298,7 +394,8 @@ public class GetDataMVCResourceCommandTest {
 					new MockLiferayResourceResponse();
 
 				_mvcResourceCommand.serveResource(
-					_getMockLiferayResourceRequest(),
+					_getMockLiferayResourceRequest(
+						new InfoItemReference(MockObject.class.getName(), 0L)),
 					mockLiferayResourceResponse);
 
 				ByteArrayOutputStream byteArrayOutputStream =
@@ -349,21 +446,13 @@ public class GetDataMVCResourceCommandTest {
 			});
 	}
 
-	private MockLiferayResourceRequest _getMockLiferayResourceRequest() {
+	private MockLiferayResourceRequest _getMockLiferayResourceRequest(
+		InfoItemReference infoItemReference) {
+
 		MockLiferayResourceRequest mockLiferayResourceRequest =
 			new MockLiferayResourceRequest();
 
 		try {
-			LayoutDisplayPageProvider<?> layoutDisplayPageProvider =
-				_layoutDisplayPageProviderTracker.
-					getLayoutDisplayPageProviderByClassName(
-						MockObject.class.getName());
-
-			mockLiferayResourceRequest.setAttribute(
-				LayoutDisplayPageWebKeys.LAYOUT_DISPLAY_PAGE_OBJECT_PROVIDER,
-				layoutDisplayPageProvider.getLayoutDisplayPageObjectProvider(
-					new InfoItemReference(MockObject.class.getName(), 0)));
-
 			mockLiferayResourceRequest.setAttribute(
 				WebKeys.THEME_DISPLAY,
 				MockThemeDisplayUtil.getThemeDisplay(
@@ -373,10 +462,7 @@ public class GetDataMVCResourceCommandTest {
 					_layoutSetLocalService.getLayoutSet(
 						_group.getGroupId(), false)));
 			mockLiferayResourceRequest.setParameter(
-				"classNameId",
-				String.valueOf(
-					_classNameLocalService.getClassNameId(
-						MockObject.class.getName())));
+				"className", infoItemReference.getClassName());
 
 			return mockLiferayResourceRequest;
 		}
@@ -384,9 +470,6 @@ public class GetDataMVCResourceCommandTest {
 			throw new AssertionError(portalException);
 		}
 	}
-
-	@Inject
-	private ClassNameLocalService _classNameLocalService;
 
 	@Inject
 	private CompanyLocalService _companyLocalService;
@@ -401,9 +484,6 @@ public class GetDataMVCResourceCommandTest {
 	private Language _language;
 
 	private Layout _layout;
-
-	@Inject
-	private LayoutDisplayPageProviderTracker _layoutDisplayPageProviderTracker;
 
 	@Inject
 	private LayoutSetLocalService _layoutSetLocalService;

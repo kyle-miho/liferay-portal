@@ -39,6 +39,10 @@ definition {
 			while (IsElementNotPresent(locator1 = "Staging#PROCESS_SUCCESSFUL")) {
 				Pause(locator1 = "1000");
 			}
+
+			AssertTextEquals(
+				locator1 = "Staging#STAGING_INDICATOR_TITLE_DEPOT",
+				value1 = "Staging");
 		}
 
 		else {
@@ -51,6 +55,10 @@ definition {
 			AssertTextEquals(
 				locator1 = "Staging#PROCESS_RESULT",
 				value1 = "SUCCESSFUL");
+
+			AssertTextEquals(
+				locator1 = "Staging#STAGING_INDICATOR_TITLE_DEPOT",
+				value1 = "Staging");
 		}
 	}
 
@@ -408,6 +416,26 @@ definition {
 				key_tableEntry = "${siteName}",
 				locator1 = "LexiconTable#TABLE_ENTRY");
 		}
+	}
+
+	macro deactivateStaging {
+		LexiconEntry.gotoHeaderMenuItem(menuItem = "Staging Configuration");
+
+		if (IsElementPresent(locator1 = "SiteSettingsStaging#ENABLED_ON_LOCAL_LIVE_CHECKBOX")) {
+			Check.checkHiddenToggleSwitch(locator1 = "SiteSettingsStaging#NONE_RADIO");
+
+			AssertClickNoError(
+				locator1 = "Button#SAVE",
+				value1 = "Save");
+
+			AssertConfirm(value1 = "Are you sure you want to deactivate staging for ${siteName}?");
+
+			AssertTextEquals.assertPartialText(
+				locator1 = "Message#SUCCESS",
+				value1 = "Staging is successfully disabled.");
+		}
+
+		AssertElementNotPresent(locator1 = "SiteSettingsStaging#ENABLED_ON_LOCAL_LIVE_CHECKBOX");
 	}
 
 	macro deleteContentViaBulkEditing {

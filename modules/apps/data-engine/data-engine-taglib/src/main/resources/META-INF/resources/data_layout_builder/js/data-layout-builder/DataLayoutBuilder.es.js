@@ -19,11 +19,6 @@ import {PagesVisitor} from 'dynamic-data-mapping-form-renderer';
 import React from 'react';
 
 import {
-	DRAG_DATA_DEFINITION_FIELD,
-	DRAG_FIELDSET,
-	DRAG_FIELD_TYPE,
-} from '../drag-and-drop/dragTypes.es';
-import {
 	getDDMFormField,
 	getDDMFormFieldSettingsContext,
 	getDataDefinitionField,
@@ -69,13 +64,6 @@ class DataLayoutBuilder extends React.Component {
 				formBuilderProps: {
 					allowInvalidAvailableLocalesForProperty,
 					allowNestedFields,
-					dnd: {
-						accept: [
-							DRAG_DATA_DEFINITION_FIELD,
-							DRAG_FIELDSET,
-							DRAG_FIELD_TYPE,
-						],
-					},
 					fieldTypes,
 					portletNamespace,
 					ref: 'builder',
@@ -402,7 +390,6 @@ class DataLayoutBuilder extends React.Component {
 				editingLanguageId,
 			]),
 		];
-		const focusedField = layoutProvider.getFocusedField();
 
 		this.setState({
 			availableLanguageIds,
@@ -425,6 +412,8 @@ class DataLayoutBuilder extends React.Component {
 		};
 
 		this.formBuilderWithLayoutProvider.props.layoutProviderProps = this.formBuilderWithLayoutProvider.props.layoutProviderProps; // eslint-disable-line
+
+		const focusedField = layoutProvider.getFocusedField();
 
 		if (Object.keys(focusedField).length) {
 			layoutProvider

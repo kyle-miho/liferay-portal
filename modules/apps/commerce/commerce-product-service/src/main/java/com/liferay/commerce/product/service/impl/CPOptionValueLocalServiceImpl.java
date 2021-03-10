@@ -65,16 +65,16 @@ public class CPOptionValueLocalServiceImpl
 			String key, ServiceContext serviceContext)
 		throws PortalException {
 
-		return addCPOptionValue(
-			cpOptionId, nameMap, priority, key, StringPool.BLANK,
+		return cpOptionValueLocalService.addCPOptionValue(
+			StringPool.BLANK, cpOptionId, nameMap, priority, key,
 			serviceContext);
 	}
 
 	@Indexable(type = IndexableType.REINDEX)
 	@Override
 	public CPOptionValue addCPOptionValue(
-			long cpOptionId, Map<Locale, String> nameMap, double priority,
-			String key, String externalReferenceCode,
+			String externalReferenceCode, long cpOptionId,
+			Map<Locale, String> nameMap, double priority, String key,
 			ServiceContext serviceContext)
 		throws PortalException {
 
@@ -95,6 +95,7 @@ public class CPOptionValueLocalServiceImpl
 		CPOptionValue cpOptionValue = cpOptionValuePersistence.create(
 			cpOptionValueId);
 
+		cpOptionValue.setExternalReferenceCode(externalReferenceCode);
 		cpOptionValue.setCompanyId(user.getCompanyId());
 		cpOptionValue.setUserId(user.getUserId());
 		cpOptionValue.setUserName(user.getFullName());
@@ -103,7 +104,6 @@ public class CPOptionValueLocalServiceImpl
 		cpOptionValue.setPriority(priority);
 		cpOptionValue.setKey(key);
 		cpOptionValue.setExpandoBridgeAttributes(serviceContext);
-		cpOptionValue.setExternalReferenceCode(externalReferenceCode);
 
 		cpOptionValue = cpOptionValuePersistence.update(cpOptionValue);
 
@@ -154,7 +154,7 @@ public class CPOptionValueLocalServiceImpl
 
 	@Override
 	public CPOptionValue fetchByExternalReferenceCode(
-		long companyId, String externalReferenceCode) {
+		String externalReferenceCode, long companyId) {
 
 		if (Validator.isBlank(externalReferenceCode)) {
 			return null;
@@ -206,16 +206,53 @@ public class CPOptionValueLocalServiceImpl
 		}
 	}
 
+	/**
+	 * @param      companyId
+	 * @param      groupId
+	 * @param      cpOptionId
+	 * @param      keywords
+	 * @param      start
+	 * @param      end
+	 * @param      sort
+	 * @return
+	 *
+	 * @throws     PortalException
+	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link
+	 *             #searchCPOptionValues(long, long, String, int, int, Sort[])}
+	 */
+	@Deprecated
 	@Override
 	public BaseModelSearchResult<CPOptionValue> searchCPOptionValues(
 			long companyId, long groupId, long cpOptionId, String keywords,
 			int start, int end, Sort sort)
 		throws PortalException {
 
-		SearchContext searchContext = buildSearchContext(
-			companyId, groupId, cpOptionId, keywords, start, end, sort);
+		return cpOptionValueLocalService.searchCPOptionValues(
+			companyId, cpOptionId, keywords, start, end, new Sort[] {sort});
+	}
 
-		return searchCPOptions(searchContext);
+	@Override
+	public BaseModelSearchResult<CPOptionValue> searchCPOptionValues(
+			long companyId, long cpOptionId, String keywords, int start,
+			int end, Sort[] sorts)
+		throws PortalException {
+
+		SearchContext searchContext = buildSearchContext(
+			companyId, cpOptionId, keywords, start, end, sorts);
+
+		return searchCPOptionValues(searchContext);
+	}
+
+	@Override
+	public int searchCPOptionValuesCount(
+			long companyId, long cpOptionId, String keywords)
+		throws PortalException {
+
+		SearchContext searchContext = buildSearchContext(
+			companyId, cpOptionId, keywords, QueryUtil.ALL_POS,
+			QueryUtil.ALL_POS, null);
+
+		return searchCPOptionValuesCount(searchContext);
 	}
 
 	@Indexable(type = IndexableType.REINDEX)
@@ -250,8 +287,8 @@ public class CPOptionValueLocalServiceImpl
 
 	@Override
 	public CPOptionValue upsertCPOptionValue(
-			long cpOptionId, Map<Locale, String> nameMap, double priority,
-			String key, String externalReferenceCode,
+			String externalReferenceCode, long cpOptionId,
+			Map<Locale, String> nameMap, double priority, String key,
 			ServiceContext serviceContext)
 		throws PortalException {
 
@@ -263,20 +300,20 @@ public class CPOptionValueLocalServiceImpl
 				serviceContext.getCompanyId(), externalReferenceCode);
 
 			if (cpOptionValue != null) {
-				return updateCPOptionValue(
+				return cpOptionValueLocalService.updateCPOptionValue(
 					cpOptionValue.getCPOptionValueId(), nameMap, priority, key,
 					serviceContext);
 			}
 		}
 
-		return addCPOptionValue(
-			cpOptionId, nameMap, priority, key, externalReferenceCode,
+		return cpOptionValueLocalService.addCPOptionValue(
+			externalReferenceCode, cpOptionId, nameMap, priority, key,
 			serviceContext);
 	}
 
 	protected SearchContext buildSearchContext(
-		long companyId, long groupId, long cpOptionId, String keywords,
-		int start, int end, Sort sort) {
+		long companyId, long cpOptionId, String keywords, int start, int end,
+		Sort[] sorts) {
 
 		SearchContext searchContext = new SearchContext();
 
@@ -302,14 +339,13 @@ public class CPOptionValueLocalServiceImpl
 
 		searchContext.setCompanyId(companyId);
 		searchContext.setEnd(end);
-		searchContext.setGroupIds(new long[] {groupId});
 
 		if (Validator.isNotNull(keywords)) {
 			searchContext.setKeywords(keywords);
 		}
 
-		if (sort != null) {
-			searchContext.setSorts(sort);
+		if (sorts != null) {
+			searchContext.setSorts(sorts);
 		}
 
 		searchContext.setStart(start);
@@ -361,7 +397,7 @@ public class CPOptionValueLocalServiceImpl
 		indexer.reindex(CPOption.class.getName(), cpOptionId);
 	}
 
-	protected BaseModelSearchResult<CPOptionValue> searchCPOptions(
+	protected BaseModelSearchResult<CPOptionValue> searchCPOptionValues(
 			SearchContext searchContext)
 		throws PortalException {
 
@@ -381,6 +417,15 @@ public class CPOptionValueLocalServiceImpl
 
 		throw new SearchException(
 			"Unable to fix the search index after 10 attempts");
+	}
+
+	protected int searchCPOptionValuesCount(SearchContext searchContext)
+		throws PortalException {
+
+		Indexer<CPOptionValue> indexer = IndexerRegistryUtil.nullSafeGetIndexer(
+			CPOptionValue.class);
+
+		return GetterUtil.getInteger(indexer.searchCount(searchContext));
 	}
 
 	protected void validate(long cpOptionValueId, long cpOptionId, String key)

@@ -93,12 +93,14 @@ public interface OptionValueResource {
 		throws Exception;
 
 	public Page<OptionValue> getOptionByExternalReferenceCodeOptionValuesPage(
-			String externalReferenceCode, Pagination pagination)
+			String externalReferenceCode, String search, Pagination pagination,
+			String sortString)
 		throws Exception;
 
 	public HttpInvoker.HttpResponse
 			getOptionByExternalReferenceCodeOptionValuesPageHttpResponse(
-				String externalReferenceCode, Pagination pagination)
+				String externalReferenceCode, String search,
+				Pagination pagination, String sortString)
 		throws Exception;
 
 	public OptionValue postOptionByExternalReferenceCodeOptionValue(
@@ -111,11 +113,11 @@ public interface OptionValueResource {
 		throws Exception;
 
 	public Page<OptionValue> getOptionIdOptionValuesPage(
-			Long id, Pagination pagination)
+			Long id, String search, Pagination pagination, String sortString)
 		throws Exception;
 
 	public HttpInvoker.HttpResponse getOptionIdOptionValuesPageHttpResponse(
-			Long id, Pagination pagination)
+			Long id, String search, Pagination pagination, String sortString)
 		throws Exception;
 
 	public OptionValue postOptionIdOptionValue(Long id, OptionValue optionValue)
@@ -168,6 +170,22 @@ public interface OptionValueResource {
 
 		public Builder parameter(String key, String value) {
 			_parameters.put(key, value);
+
+			return this;
+		}
+
+		public Builder parameters(String... parameters) {
+			if ((parameters.length % 2) != 0) {
+				throw new IllegalArgumentException(
+					"Parameters length is not an even number");
+			}
+
+			for (int i = 0; i < parameters.length; i += 2) {
+				String parameterName = String.valueOf(parameters[i]);
+				String parameterValue = String.valueOf(parameters[i + 1]);
+
+				_parameters.put(parameterName, parameterValue);
+			}
 
 			return this;
 		}
@@ -596,12 +614,13 @@ public interface OptionValueResource {
 
 		public Page<OptionValue>
 				getOptionByExternalReferenceCodeOptionValuesPage(
-					String externalReferenceCode, Pagination pagination)
+					String externalReferenceCode, String search,
+					Pagination pagination, String sortString)
 			throws Exception {
 
 			HttpInvoker.HttpResponse httpResponse =
 				getOptionByExternalReferenceCodeOptionValuesPageHttpResponse(
-					externalReferenceCode, pagination);
+					externalReferenceCode, search, pagination, sortString);
 
 			String content = httpResponse.getContent();
 
@@ -625,7 +644,8 @@ public interface OptionValueResource {
 
 		public HttpInvoker.HttpResponse
 				getOptionByExternalReferenceCodeOptionValuesPageHttpResponse(
-					String externalReferenceCode, Pagination pagination)
+					String externalReferenceCode, String search,
+					Pagination pagination, String sortString)
 			throws Exception {
 
 			HttpInvoker httpInvoker = HttpInvoker.newHttpInvoker();
@@ -649,11 +669,19 @@ public interface OptionValueResource {
 
 			httpInvoker.httpMethod(HttpInvoker.HttpMethod.GET);
 
+			if (search != null) {
+				httpInvoker.parameter("search", String.valueOf(search));
+			}
+
 			if (pagination != null) {
 				httpInvoker.parameter(
 					"page", String.valueOf(pagination.getPage()));
 				httpInvoker.parameter(
 					"pageSize", String.valueOf(pagination.getPageSize()));
+			}
+
+			if (sortString != null) {
+				httpInvoker.parameter("sort", sortString);
 			}
 
 			httpInvoker.path(
@@ -739,11 +767,13 @@ public interface OptionValueResource {
 		}
 
 		public Page<OptionValue> getOptionIdOptionValuesPage(
-				Long id, Pagination pagination)
+				Long id, String search, Pagination pagination,
+				String sortString)
 			throws Exception {
 
 			HttpInvoker.HttpResponse httpResponse =
-				getOptionIdOptionValuesPageHttpResponse(id, pagination);
+				getOptionIdOptionValuesPageHttpResponse(
+					id, search, pagination, sortString);
 
 			String content = httpResponse.getContent();
 
@@ -766,7 +796,8 @@ public interface OptionValueResource {
 		}
 
 		public HttpInvoker.HttpResponse getOptionIdOptionValuesPageHttpResponse(
-				Long id, Pagination pagination)
+				Long id, String search, Pagination pagination,
+				String sortString)
 			throws Exception {
 
 			HttpInvoker httpInvoker = HttpInvoker.newHttpInvoker();
@@ -790,11 +821,19 @@ public interface OptionValueResource {
 
 			httpInvoker.httpMethod(HttpInvoker.HttpMethod.GET);
 
+			if (search != null) {
+				httpInvoker.parameter("search", String.valueOf(search));
+			}
+
 			if (pagination != null) {
 				httpInvoker.parameter(
 					"page", String.valueOf(pagination.getPage()));
 				httpInvoker.parameter(
 					"pageSize", String.valueOf(pagination.getPageSize()));
+			}
+
+			if (sortString != null) {
+				httpInvoker.parameter("sort", sortString);
 			}
 
 			httpInvoker.path(

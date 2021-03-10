@@ -13,18 +13,20 @@
  */
 
 import {ClayCheckbox, ClayRadio} from '@clayui/form';
-import ClayTable from '@clayui/table';
+import ClayLoadingIndicator from '@clayui/loading-indicator';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
-import React, {useContext} from 'react';
+import React, {useContext, useMemo} from 'react';
 
 import DataSetDisplayContext from '../../DataSetDisplayContext';
+import EmptyResultMessage from '../../EmptyResultMessage';
 import ActionsDropdownRenderer from '../../data_renderers/ActionsDropdownRenderer';
 import {getValueDetailsFromItem} from '../../utils/index';
 import ViewsContext from '../ViewsContext';
 import TableCell from './TableCell';
-import TableHeadRow from './TableHeadRow';
+import TableHead from './TableHead';
 import TableInlineAddingRow from './TableInlineAddingRow';
+import DndTable from './dnd_table/index';
 
 function getItemFields(
 	item,
@@ -68,7 +70,7 @@ export const getVisibleFields = (fields, visibleFieldNames) => {
 	return visibleFields.length ? visibleFields : fields;
 };
 
-function Table({items, itemsActions, schema, style}) {
+function Table({dataLoading, items, itemsActions, schema, style}) {
 	const {
 		highlightedItemsValue,
 		inlineAddingSettings,
@@ -87,128 +89,191 @@ function Table({items, itemsActions, schema, style}) {
 
 	const visibleFields = getVisibleFields(schema.fields, visibleFieldNames);
 
-	const showActionItems = Boolean(
-		itemsActions?.length ||
-			items.find((item) => item.actions || item.actionDropdownItems)
-	);
+	const showActionItems = useMemo(() => {
+		return Boolean(
+			itemsActions?.length ||
+				items?.find((item) => item.actions || item.actionDropdownItems)
+		);
+	}, [items, itemsActions]);
 
 	const SelectionComponent =
 		selectionType === 'multiple' ? ClayCheckbox : ClayRadio;
 
-	return (
-		<div className={`table-style-${style}`}>
-			<ClayTable borderless hover={false} responsive>
-				<TableHeadRow
-					items={items}
-					schema={schema}
-					selectItems={selectItems}
-					selectable={selectable}
-					selectedItemsKey={selectedItemsKey}
-					selectedItemsValue={selectedItemsValue}
-					selectionType={selectionType}
-					sorting={sorting}
-					updateSorting={updateSorting}
-					visibleFields={visibleFields}
-				/>
-				<ClayTable.Body>
-					{inlineAddingSettings && (
-						<TableInlineAddingRow
-							fields={visibleFields}
-							selectable={selectable}
-						/>
-					)}
-					{items.map((item) => {
-						const itemId = item[selectedItemsKey];
-						const nestedItems =
-							nestedItemsReferenceKey &&
-							item[nestedItemsReferenceKey];
+	let viewContent;
 
-						return (
-							<React.Fragment key={itemId}>
-								<ClayTable.Row
-									className={classNames(
-										highlightedItemsValue.includes(
-											itemId
-										) && 'active'
-									)}
-								>
-									{selectable && (
-										<ClayTable.Cell
-											className="data-set-item-selector-wrapper"
-											rowSpan={
-												1 + (nestedItems?.length || 0)
-											}
-										>
-											<SelectionComponent
-												checked={
-													!!selectedItemsValue.find(
-														(element) =>
-															String(element) ===
-															String(itemId)
-													)
-												}
-												onChange={() =>
-													selectItems(itemId)
-												}
-												value={itemId}
-											/>
-										</ClayTable.Cell>
-									)}
-									{getItemFields(
-										item,
-										visibleFields,
-										itemId,
-										itemsActions,
-										itemsChanges[itemId]
-									)}
-									<ClayTable.Cell className="data-set-item-actions-wrapper">
-										{(showActionItems || item.actions) && (
-											<ActionsDropdownRenderer
-												actions={
-													itemsActions ||
-													item.actions ||
-													item.actionDropdownItems
-												}
-												itemData={item}
-												itemId={itemId}
-											/>
-										)}
-									</ClayTable.Cell>
-								</ClayTable.Row>
-								{nestedItems?.length
-									? nestedItems.map((nestedItem, i) => (
-											<ClayTable.Row
+	if (dataLoading) {
+		viewContent = <ClayLoadingIndicator className="mt-7" />;
+	}
+	else {
+		let mainRowsCounter = 0;
+
+		viewContent = (
+			<>
+				{(inlineAddingSettings ||
+					(!inlineAddingSettings && !!items.length)) && (
+					<DndTable.Table
+						borderless
+						className={`table-style-${style}`}
+						hover={false}
+						responsive
+						striped
+					>
+						<TableHead
+							fields={visibleFields}
+							items={items}
+							schema={schema}
+							selectItems={selectItems}
+							selectable={selectable}
+							selectedItemsKey={selectedItemsKey}
+							selectedItemsValue={selectedItemsValue}
+							selectionType={selectionType}
+							sorting={sorting}
+							updateSorting={updateSorting}
+						/>
+						<DndTable.Body>
+							{inlineAddingSettings && (
+								<TableInlineAddingRow
+									fields={visibleFields}
+									selectable={selectable}
+								/>
+							)}
+							{!!items.length &&
+								items.map((item) => {
+									const itemId = item[selectedItemsKey];
+									const nestedItems =
+										nestedItemsReferenceKey &&
+										item[nestedItemsReferenceKey];
+
+									const hasBackground =
+										mainRowsCounter++ % 2 === 0;
+
+									return (
+										<React.Fragment key={itemId}>
+											<DndTable.Row
 												className={classNames(
-													'data-set-sub-item',
 													highlightedItemsValue.includes(
-														nestedItem[
-															nestedItemsKey
-														]
+														itemId
 													) && 'active',
-													i ===
-														nestedItems.length -
-															1 && 'last-of-group'
+													hasBackground && 'with-bg'
 												)}
-												key={nestedItem[nestedItemsKey]}
 											>
-												{getItemFields(
-													nestedItem,
-													schema.fields,
-													nestedItem[nestedItemsKey],
-													itemsActions
+												{selectable && (
+													<DndTable.Cell
+														className="item-selector"
+														columnName="item-selector"
+													>
+														<SelectionComponent
+															checked={
+																!!selectedItemsValue.find(
+																	(element) =>
+																		String(
+																			element
+																		) ===
+																		String(
+																			itemId
+																		)
+																)
+															}
+															onChange={() =>
+																selectItems(
+																	itemId
+																)
+															}
+															value={itemId}
+														/>
+													</DndTable.Cell>
 												)}
-												{showActionItems ? (
-													<ClayTable.Cell />
-												) : null}
-											</ClayTable.Row>
-									  ))
-									: null}
-							</React.Fragment>
-						);
-					})}
-				</ClayTable.Body>
-			</ClayTable>
-		</div>
+												{getItemFields(
+													item,
+													visibleFields,
+													itemId,
+													itemsActions,
+													itemsChanges[itemId]
+												)}
+												<DndTable.Cell
+													className="item-actions"
+													columnName="item-actions"
+												>
+													{(showActionItems ||
+														item.actions) && (
+														<ActionsDropdownRenderer
+															actions={
+																itemsActions ||
+																item.actions ||
+																item.actionDropdownItems
+															}
+															itemData={item}
+															itemId={itemId}
+														/>
+													)}
+												</DndTable.Cell>
+											</DndTable.Row>
+											{nestedItems &&
+												nestedItems.map(
+													(nestedItem, i) => (
+														<DndTable.Row
+															className={classNames(
+																'nested',
+																highlightedItemsValue.includes(
+																	nestedItem[
+																		nestedItemsKey
+																	]
+																) && 'active',
+																i ===
+																	nestedItems.length -
+																		1 &&
+																	'last'
+															)}
+															key={
+																nestedItem[
+																	nestedItemsKey
+																]
+															}
+															paddingLeftCells={
+																selectable && 1
+															}
+															paddingRightCells={
+																showActionItems &&
+																1
+															}
+														>
+															{getItemFields(
+																nestedItem,
+																visibleFields,
+																nestedItem[
+																	nestedItemsKey
+																],
+																itemsActions
+															)}
+														</DndTable.Row>
+													)
+												)}
+										</React.Fragment>
+									);
+								})}
+						</DndTable.Body>
+					</DndTable.Table>
+				)}
+				{!items.length && <EmptyResultMessage />}
+			</>
+		);
+	}
+
+	const columnNames = [];
+
+	if (selectable) {
+		columnNames.push('item-selector');
+	}
+
+	columnNames.push(
+		...visibleFields.map((field) => String(field.fieldName)),
+		'item-actions'
+	);
+
+	return (
+		<DndTable.ContextProvider columnNames={columnNames}>
+			{viewContent}
+		</DndTable.ContextProvider>
 	);
 }
 

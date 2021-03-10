@@ -121,6 +121,13 @@ public class SourceFormatter {
 
 			sourceFormatterArgs.setBaseDirName(baseDirName);
 
+			List<String> checkCategoryNames = ListUtil.fromString(
+				ArgumentsUtil.getString(
+					arguments, "source.check.category.names", null),
+				StringPool.COMMA);
+
+			sourceFormatterArgs.setCheckCategoryNames(checkCategoryNames);
+
 			List<String> checkNames = ListUtil.fromString(
 				ArgumentsUtil.getString(arguments, "source.check.names", null),
 				StringPool.COMMA);
@@ -577,6 +584,23 @@ public class SourceFormatter {
 						_allFileNames, new String[0],
 						new String[] {"**/build.gradle"},
 						_sourceFormatterExcludes, false));
+			}
+			else if (recentChangesFileName.endsWith(
+						_sourceFormatterArgs.getBaseDirName() +
+							"release.properties")) {
+
+				dependentFileNames.add(
+					_sourceFormatterArgs.getBaseDirName() +
+						"/modules/sdk/ant-bnd/src/main/java/com/liferay/ant" +
+							"/bnd/social/SocialAnalyzerPlugin.java");
+				dependentFileNames.add(
+					_sourceFormatterArgs.getBaseDirName() +
+						"/portal-impl/src/com/liferay/portal/util" +
+							"/EntityResolver.java");
+				dependentFileNames.add(
+					_sourceFormatterArgs.getBaseDirName() +
+						"/portal-impl/src/com/liferay/portlet/social/util" +
+							"/SocialConfigurationImpl.java");
 			}
 		}
 

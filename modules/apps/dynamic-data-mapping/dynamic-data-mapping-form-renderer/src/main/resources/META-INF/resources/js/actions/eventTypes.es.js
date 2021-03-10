@@ -14,6 +14,7 @@
 
 const PUBLIC_EVENTS = {
 	CHANGE_ACTIVE_PAGE: 'activePageUpdated',
+	COLUMN_RESIZED: 'columnResized',
 	FIELD_ADD: 'fieldAdded',
 	FIELD_BLUR: 'fieldBlurred',
 	FIELD_CHANGE: 'fieldEdited',
@@ -25,6 +26,7 @@ const PUBLIC_EVENTS = {
 	FIELD_EVALUATION_ERROR: 'evaluationError',
 	FIELD_FOCUS: 'fieldFocused',
 	FIELD_HOVERED: 'fieldHovered',
+	FIELD_MOVED: 'fieldMoved',
 	FIELD_REMOVED: 'fieldRemoved',
 	FIELD_REPEATED: 'fieldRepeated',
 	FIELD_SET_ADD: 'fieldSetAdded',

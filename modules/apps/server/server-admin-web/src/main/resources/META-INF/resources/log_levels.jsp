@@ -67,7 +67,7 @@ CreationMenu creationMenu =
 	};
 %>
 
-<clay:management-toolbar-v2
+<clay:management-toolbar
 	clearResultsURL="<%= String.valueOf(clearResultsURL) %>"
 	creationMenu="<%= creationMenu %>"
 	itemsTotal="<%= loggerSearchContainer.getTotal() %>"
@@ -101,16 +101,16 @@ CreationMenu creationMenu =
 			>
 
 				<%
-				String levelString = (String)entry.getValue();
+				String priority = (String)entry.getValue();
 				%>
 
 				<select name="<%= liferayPortletResponse.getNamespace() + "logLevel" + HtmlUtil.escapeAttribute(name) %>">
 
 					<%
-					for (int j = 0; j < Levels.ALL_LEVELS.length; j++) {
+					for (int j = 0; j < _ALL_PRIORITIES.length; j++) {
 					%>
 
-						<option <%= levelString.equals(String.valueOf(Levels.ALL_LEVELS[j])) ? "selected" : StringPool.BLANK %> value="<%= String.valueOf(Levels.ALL_LEVELS[j]) %>"><%= String.valueOf(Levels.ALL_LEVELS[j]) %></option>
+						<option <%= priority.equals(_ALL_PRIORITIES[j]) ? "selected" : StringPool.BLANK %> value="<%= _ALL_PRIORITIES[j] %>"><%= _ALL_PRIORITIES[j] %></option>
 
 					<%
 					}

@@ -542,7 +542,7 @@ definition {
 				field = "Display Page URL",
 				link = "From Content Field",
 				navItem = "Web Content",
-				panel = "Link");
+				panel = "General");
 
 			var baseURL = PropsUtil.get("portal.url");
 
@@ -660,7 +660,7 @@ definition {
 
 		task ("Map Manual URL to Container") {
 			PageEditor.editLayoutContainer(
-				panel = "Link",
+				panel = "General",
 				url = "https://liferay.com");
 
 			AssertVisible(
@@ -855,6 +855,8 @@ definition {
 	@description = "This is a use case for LPS-118276. Map single vocabulary with single category from asset entry to editable field."
 	@priority = "5"
 	test MapSingleCategoryFromAssetEntryToEditableField {
+		property portal.acceptance = "true";
+
 		task ("Add a new vocabulary") {
 			JSONCategory.addVocabulary(
 				groupName = "Test Site Name",

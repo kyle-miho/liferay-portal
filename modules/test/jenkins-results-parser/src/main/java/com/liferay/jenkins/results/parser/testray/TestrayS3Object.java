@@ -14,8 +14,9 @@
 
 package com.liferay.jenkins.results.parser.testray;
 
-import com.liferay.jenkins.results.parser.JenkinsResultsParserUtil;
+import java.io.IOException;
 
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -24,17 +25,32 @@ import java.net.URL;
  */
 public class TestrayS3Object {
 
-	public TestrayS3Object(TestrayS3Bucket testrayS3Bucket, String key) {
-		_testrayS3Bucket = testrayS3Bucket;
-		_key = key;
+	public boolean exists() {
+		if (_exists != null) {
+			return _exists;
+		}
 
 		try {
-			_url = new URL(
-				_testrayS3Bucket.getTestrayS3BaseURL() + "/" + getKey());
+			HttpURLConnection httpURLConnection =
+				(HttpURLConnection)_url.openConnection();
+
+			httpURLConnection.setRequestMethod("HEAD");
+			httpURLConnection.connect();
+
+			int responseCode = httpURLConnection.getResponseCode();
+
+			if (responseCode == HttpURLConnection.HTTP_OK) {
+				_exists = true;
+
+				return _exists;
+			}
 		}
-		catch (MalformedURLException malformedURLException) {
-			throw new RuntimeException(malformedURLException);
+		catch (IOException ioException) {
 		}
+
+		_exists = false;
+
+		return _exists;
 	}
 
 	public String getKey() {
@@ -49,12 +65,34 @@ public class TestrayS3Object {
 		return _url;
 	}
 
-	@Override
-	public String toString() {
-		return JenkinsResultsParserUtil.combine(
-			String.valueOf(getURL()), "/", getKey());
+	public String getURLString() {
+		String urlString = String.valueOf(_url);
+
+		urlString = urlString.replace("(", "%28");
+		urlString = urlString.replace(")", "%29");
+
+		return urlString;
 	}
 
+	@Override
+	public String toString() {
+		return getURLString();
+	}
+
+	protected TestrayS3Object(TestrayS3Bucket testrayS3Bucket, String key) {
+		_testrayS3Bucket = testrayS3Bucket;
+		_key = key;
+
+		try {
+			_url = new URL(
+				_testrayS3Bucket.getTestrayS3BaseURL() + "/" + getKey());
+		}
+		catch (MalformedURLException malformedURLException) {
+			throw new RuntimeException(malformedURLException);
+		}
+	}
+
+	private Boolean _exists;
 	private final String _key;
 	private final TestrayS3Bucket _testrayS3Bucket;
 	private final URL _url;

@@ -15,6 +15,7 @@
 package com.liferay.jenkins.results.parser;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,10 +35,22 @@ public class JenkinsMaster implements JenkinsNode<JenkinsMaster> {
 
 	public static final Integer SLAVES_PER_HOST_DEFAULT = 2;
 
+	public static synchronized JenkinsMaster getInstance(String masterName) {
+		if (!_jenkinsMasters.containsKey(masterName)) {
+			_jenkinsMasters.put(masterName, new JenkinsMaster(masterName));
+		}
+
+		return _jenkinsMasters.get(masterName);
+	}
+
 	public static Integer getSlaveRAMMinimumDefault() {
 		try {
 			String propertyValue = JenkinsResultsParserUtil.getBuildProperty(
 				"slave.ram.minimum.default");
+
+			if (propertyValue == null) {
+				return SLAVE_RAM_DEFAULT;
+			}
 
 			return Integer.valueOf(propertyValue);
 		}
@@ -63,6 +76,10 @@ public class JenkinsMaster implements JenkinsNode<JenkinsMaster> {
 			String propertyValue = JenkinsResultsParserUtil.getBuildProperty(
 				"slaves.per.host.default");
 
+			if (propertyValue == null) {
+				return SLAVES_PER_HOST_DEFAULT;
+			}
+
 			return Integer.valueOf(propertyValue);
 		}
 		catch (Exception exception) {
@@ -82,59 +99,10 @@ public class JenkinsMaster implements JenkinsNode<JenkinsMaster> {
 		}
 	}
 
-	public JenkinsMaster(String masterName) {
-		if (masterName.contains(".")) {
-			_masterName = masterName.substring(0, masterName.indexOf("."));
-		}
-		else {
-			_masterName = masterName;
-		}
-
-		try {
-			Properties properties =
-				JenkinsResultsParserUtil.getBuildProperties();
-
-			_masterURL = properties.getProperty(
-				JenkinsResultsParserUtil.combine(
-					"jenkins.local.url[", _masterName, "]"));
-
-			Integer slaveRAM = getSlaveRAMMinimumDefault();
-
-			String slaveRAMString = JenkinsResultsParserUtil.getProperty(
-				properties,
-				JenkinsResultsParserUtil.combine(
-					"master.property(", _masterName, "/slave.ram)"));
-
-			if ((slaveRAMString != null) && slaveRAMString.matches("\\d+")) {
-				slaveRAM = Integer.valueOf(slaveRAMString);
-			}
-
-			_slaveRAM = slaveRAM;
-
-			Integer slavesPerHost = getSlavesPerHostDefault();
-
-			String slavesPerHostString = JenkinsResultsParserUtil.getProperty(
-				properties,
-				JenkinsResultsParserUtil.combine(
-					"master.property(", _masterName, "/slaves.per.host)"));
-
-			if ((slavesPerHostString != null) &&
-				slavesPerHostString.matches("\\d+")) {
-
-				slavesPerHost = Integer.valueOf(slavesPerHostString);
-			}
-
-			_slavesPerHost = slavesPerHost;
-		}
-		catch (Exception exception) {
-			throw new RuntimeException(
-				"Unable to determine URL for master " + _masterName, exception);
-		}
-	}
-
 	public synchronized void addRecentBatch(int batchSize) {
 		_batchSizes.put(
-			System.currentTimeMillis() + maxRecentBatchAge, batchSize);
+			JenkinsResultsParserUtil.getCurrentTimeMillis() + maxRecentBatchAge,
+			batchSize);
 
 		getAvailableSlavesCount();
 	}
@@ -278,7 +246,7 @@ public class JenkinsMaster implements JenkinsNode<JenkinsMaster> {
 		return onlineJenkinsSlavesCount;
 	}
 
-	public List<String> getQueuedBuildURLs() {
+	public Map<String, JSONObject> getQueuedBuildURLs() {
 		return _queuedBuildURLs;
 	}
 
@@ -308,7 +276,11 @@ public class JenkinsMaster implements JenkinsNode<JenkinsMaster> {
 			String.valueOf(_reportedAvailableSlavesCount), "}");
 	}
 
-	public void update() {
+	public synchronized void update() {
+		update(true);
+	}
+
+	public synchronized void update(boolean minimal) {
 		JSONObject computerAPIJSONObject = null;
 		JSONObject queueAPIJSONObject = null;
 
@@ -320,11 +292,19 @@ public class JenkinsMaster implements JenkinsNode<JenkinsMaster> {
 						"/computer/api/json?tree=computer[displayName,",
 						"executors[currentExecutable[url]],idle,offline]")),
 				false, 5000);
+
+			String queueAPIQuery = "tree=items[task[name,url],url,why]";
+
+			if (!minimal) {
+				queueAPIQuery =
+					"tree=items[actions[parameters[name,value]]," +
+						"inQueueSince,task[name,url],url,why]";
+			}
+
 			queueAPIJSONObject = JenkinsResultsParserUtil.toJSONObject(
 				JenkinsResultsParserUtil.getLocalURL(
 					JenkinsResultsParserUtil.combine(
-						_masterURL,
-						"/queue/api/json?tree=items[task[name,url],why]")),
+						_masterURL, "/queue/api/json?" + queueAPIQuery)),
 				false, 5000);
 		}
 		catch (Exception exception) {
@@ -423,8 +403,10 @@ public class JenkinsMaster implements JenkinsNode<JenkinsMaster> {
 					continue;
 				}
 
-				if ((taskJSONObject != null) && taskJSONObject.has("url")) {
-					_queuedBuildURLs.add(taskJSONObject.getString("url"));
+				if (itemJSONObject.has("url")) {
+					_queuedBuildURLs.put(
+						getURL() + "/" + itemJSONObject.getString("url"),
+						itemJSONObject);
 				}
 			}
 
@@ -434,8 +416,58 @@ public class JenkinsMaster implements JenkinsNode<JenkinsMaster> {
 
 	protected static long maxRecentBatchAge = 120 * 1000;
 
+	private JenkinsMaster(String masterName) {
+		if (masterName.contains(".")) {
+			_masterName = masterName.substring(0, masterName.indexOf("."));
+		}
+		else {
+			_masterName = masterName;
+		}
+
+		try {
+			Properties properties =
+				JenkinsResultsParserUtil.getBuildProperties();
+
+			_masterURL = properties.getProperty(
+				JenkinsResultsParserUtil.combine(
+					"jenkins.local.url[", _masterName, "]"));
+
+			Integer slaveRAM = getSlaveRAMMinimumDefault();
+
+			String slaveRAMString = JenkinsResultsParserUtil.getProperty(
+				properties,
+				JenkinsResultsParserUtil.combine(
+					"master.property(", _masterName, "/slave.ram)"));
+
+			if ((slaveRAMString != null) && slaveRAMString.matches("\\d+")) {
+				slaveRAM = Integer.valueOf(slaveRAMString);
+			}
+
+			_slaveRAM = slaveRAM;
+
+			Integer slavesPerHost = getSlavesPerHostDefault();
+
+			String slavesPerHostString = JenkinsResultsParserUtil.getProperty(
+				properties,
+				JenkinsResultsParserUtil.combine(
+					"master.property(", _masterName, "/slaves.per.host)"));
+
+			if ((slavesPerHostString != null) &&
+				slavesPerHostString.matches("\\d+")) {
+
+				slavesPerHost = Integer.valueOf(slavesPerHostString);
+			}
+
+			_slavesPerHost = slavesPerHost;
+		}
+		catch (Exception exception) {
+			throw new RuntimeException(
+				"Unable to determine URL for master " + _masterName, exception);
+		}
+	}
+
 	private synchronized int _getRecentBatchSizesTotal() {
-		long currentTimestamp = System.currentTimeMillis();
+		long currentTimestamp = JenkinsResultsParserUtil.getCurrentTimeMillis();
 		int recentBatchSizesTotal = 0;
 
 		List<Long> expiredTimestamps = new ArrayList<>(_batchSizes.size());
@@ -459,14 +491,18 @@ public class JenkinsMaster implements JenkinsNode<JenkinsMaster> {
 		return recentBatchSizesTotal;
 	}
 
+	private static final Map<String, JenkinsMaster> _jenkinsMasters =
+		Collections.synchronizedMap(new HashMap<String, JenkinsMaster>());
+
 	private boolean _available;
 	private final Map<Long, Integer> _batchSizes = new TreeMap<>();
 	private final List<String> _buildURLs = new ArrayList<>();
-	private final Map<String, JenkinsSlave> _jenkinsSlavesMap = new HashMap<>();
+	private final Map<String, JenkinsSlave> _jenkinsSlavesMap =
+		Collections.synchronizedMap(new HashMap<String, JenkinsSlave>());
 	private final String _masterName;
 	private final String _masterURL;
 	private int _queueCount;
-	private final List<String> _queuedBuildURLs = new ArrayList<>();
+	private final Map<String, JSONObject> _queuedBuildURLs = new HashMap<>();
 	private int _reportedAvailableSlavesCount;
 	private final Integer _slaveRAM;
 	private final Integer _slavesPerHost;

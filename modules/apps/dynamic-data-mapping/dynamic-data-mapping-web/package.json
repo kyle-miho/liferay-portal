@@ -1,4 +1,7 @@
 {
+	"dependencies": {
+		"frontend-js-web": "*"
+	},
 	"name": "dynamic-data-mapping-web",
 	"scripts": {
 		"build": "liferay-npm-scripts build",

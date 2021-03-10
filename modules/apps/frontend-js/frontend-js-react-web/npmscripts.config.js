@@ -23,7 +23,6 @@ module.exports = {
 			'react-dnd-html5-backend',
 			'react-dom',
 		],
-		runLegacyBuild: false,
+		mode: 'default',
 	},
-	preset: '@liferay/npm-scripts/src/presets/standard',
 };

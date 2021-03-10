@@ -14,12 +14,12 @@
 
 import ClayButton, {ClayButtonWithIcon} from '@clayui/button';
 import ClayLoadingIndicator from '@clayui/loading-indicator';
-import ClayTable from '@clayui/table';
-import {useIsMounted} from 'frontend-js-react-web';
+import {useIsMounted} from '@liferay/frontend-js-react-web';
 import React, {useContext, useState} from 'react';
 
 import DataSetDisplayContext from '../../DataSetDisplayContext';
 import {getInputRendererById} from '../../utils/dataRenderers';
+import DndTable from './dnd_table/index';
 
 function TableInlineAddingRow({fields, selectable}) {
 	const {
@@ -34,9 +34,12 @@ function TableInlineAddingRow({fields, selectable}) {
 		itemsChanges[0] && !!Object.keys(itemsChanges[0]).length;
 
 	return (
-		<ClayTable.Row>
+		<DndTable.Row>
 			{selectable && (
-				<ClayTable.Cell className="data-set-item-selector-wrapper" />
+				<DndTable.Cell
+					className="item-selector"
+					columnName="item-selector"
+				/>
 			)}
 			{fields.map((field) => {
 				let InputRenderer = null;
@@ -60,7 +63,10 @@ function TableInlineAddingRow({fields, selectable}) {
 				const newItem = itemsChanges[0] || {};
 
 				return (
-					<ClayTable.Cell key={field.fieldName}>
+					<DndTable.Cell
+						columnName={String(field.fieldName)}
+						key={field.fieldName}
+					>
 						{InputRenderer ? (
 							<InputRenderer
 								updateItem={(value) => {
@@ -78,11 +84,11 @@ function TableInlineAddingRow({fields, selectable}) {
 								valuePath={rootPropertyName}
 							/>
 						) : null}
-					</ClayTable.Cell>
+					</DndTable.Cell>
 				);
 			})}
-			<ClayTable.Cell className="data-set-item-actions-wrapper">
-				<div className="d-flex justify-content-end">
+			<DndTable.Cell className="item-actions" columnName="item-actions">
+				<div className="d-flex ml-auto">
 					<ClayButtonWithIcon
 						className="mr-1"
 						disabled={!itemHasChanged}
@@ -113,8 +119,8 @@ function TableInlineAddingRow({fields, selectable}) {
 						/>
 					)}
 				</div>
-			</ClayTable.Cell>
-		</ClayTable.Row>
+			</DndTable.Cell>
+		</DndTable.Row>
 	);
 }
 

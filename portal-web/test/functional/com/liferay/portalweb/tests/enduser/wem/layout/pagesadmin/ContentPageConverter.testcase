@@ -640,7 +640,7 @@ definition {
 			defaultColumnName = "2 Columns (50/50)",
 			portletName = "Nested Applications");
 
-		Click(locator1 = "Icon#CLOSE");
+		Click(locator1 = "Modal#CLOSE_BUTTON");
 
 		WaitForElementNotPresent(locator1 = "IFrame#MODAL_BODY");
 
@@ -692,7 +692,7 @@ definition {
 	@description = "This is a test for LPS-105943. When convert a widget page with a non-standard layout, there will be a warning message shown in conversion preview"
 	@priority = "5"
 	test ConvertWidgetPageWithNonStandardLayout {
-		property portal.acceptance = "quarantine";
+		property portal.acceptance = "true";
 		property test.name.skip.portal.instance = "ContentPageConverter#ConvertWidgetPageWithNonStandardLayout";
 
 		ApplicationsMenu.gotoPortlet(
@@ -952,7 +952,7 @@ definition {
 
 		SelectFrame(value1 = "relative=top");
 
-		Click(locator1 = "Icon#CLOSE");
+		Click(locator1 = "Modal#CLOSE_BUTTON");
 
 		WaitForElementNotPresent(locator1 = "IFrame#MODAL_BODY");
 

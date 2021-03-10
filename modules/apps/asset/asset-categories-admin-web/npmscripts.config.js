@@ -16,11 +16,10 @@ module.exports = {
 	federation: {
 		exposes: [
 			'<inputDir>/js/ActionsComponentPropsTransformer.js',
-			'<inputDir>/js/AssetCategoriesManagementToolbarDefaultEventHandler.es.js',
+			'<inputDir>/js/AssetCategoriesManagementToolbarPropsTransformer.js',
 			'<inputDir>/js/AssetCategoriesSelectorTag.es.js',
 		],
+		mode: 'default',
 		remotes: ['asset-taglib'],
-		runLegacyBuild: false,
 	},
-	preset: '@liferay/npm-scripts/src/presets/standard',
 };

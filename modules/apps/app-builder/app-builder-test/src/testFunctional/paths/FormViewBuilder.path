@@ -107,8 +107,20 @@
 </tr>
 
 <tr>
+	<td>SIDEBAR_BASIC_SHOW_AS_SWITCHER</td>
+	<td>//div[contains(@data-field-name,'showAsSwitcher')]</td>
+	<td></td>
+</tr>
+
+<tr>
 	<td>SIDEBAR_ADVANCED_FIELD_NAME</td>
 	<td>//input[contains(@name,'name')]</td>
+	<td></td>
+</tr>
+
+<tr>
+	<td>SIDEBAR_ADVANCED_INLINE</td>
+	<td>//span[contains(text(),'Inline')]</td>
 	<td></td>
 </tr>
 
@@ -181,6 +193,12 @@
 <tr>
 	<td>SIDEBAR_ADVANCED_PREDEFINED_SELECT_FROM_LIST</td>
 	<td>//div[contains(@data-field-name,'predefinedValue')]//div[contains(@class,'form-builder-select-field')]</td>
+	<td></td>
+</tr>
+
+<tr>
+	<td>SINGLE_SELECTION_FIELD_WITHOUT_LABEL</td>
+	<td>//div[@class='container ddm-form-builder ']//div[@class='ddm-radio']</td>
 	<td></td>
 </tr>
 
@@ -549,7 +567,7 @@
 </tr>
 
 <tr>
-	<td>RULE_BUILDER_GO_BACK</td>
+	<td>SIDEBAR_GO_BACK</td>
 	<td>//div[contains(@class, 'sidebar-header')]//button[contains(@class,'btn btn-secondary')]</td>
 	<td></td>
 </tr>
@@ -621,6 +639,12 @@
 </tr>
 
 <tr>
+	<td>FORM_FIELD_REQUIRED_ELLIPSES</td>
+	<td>//div[contains(@class, 'ddm-field')]//div[contains(@class, 'd-flex form-renderer-required-field justify-content-between')]//button[contains(@class, 'btn btn-monospaced btn-outline-borderless btn-sm btn-outline-secondary')]</td>
+	<td></td>
+</tr>
+
+<tr>
 	<td>FIELD_IN_FORM_BUILDER</td>
 	<td>//legend[text()='${fieldLabel}']</td>
 	<td></td>
@@ -629,6 +653,12 @@
 <tr>
 	<td>OPTIONS_PLACED_IN_FORM_BUILDER</td>
 	<td>//div[@class='ddm-radio']//span[text()='${optionLabel}']</td>
+	<td></td>
+</tr>
+
+<tr>
+	<td>OPTIONS_PLACED_IN_FORM_BUILDER_REQUIRED</td>
+	<td>//div[@class='popover-body']//span[text()='${optionLabel}']</td>
 	<td></td>
 </tr>
 

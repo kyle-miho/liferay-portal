@@ -15,7 +15,7 @@
 package com.liferay.analytics.reports.web.internal.product.navigation.control.menu.test;
 
 import com.liferay.analytics.reports.test.MockObject;
-import com.liferay.analytics.reports.test.analytics.reports.info.item.MockAnalyticsReportsInfoItem;
+import com.liferay.analytics.reports.test.analytics.reports.info.item.MockObjectAnalyticsReportsInfoItem;
 import com.liferay.analytics.reports.test.util.MockContextUtil;
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.info.item.InfoItemReference;
@@ -23,7 +23,6 @@ import com.liferay.layout.test.util.LayoutTestUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Layout;
-import com.liferay.portal.kernel.service.ClassNameLocalService;
 import com.liferay.portal.kernel.service.CompanyLocalService;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.test.ReflectionTestUtil;
@@ -79,14 +78,13 @@ public class AnalyticsReportsProductNavigationControlMenuEntryTest {
 	@Test
 	public void testIsShow() throws Exception {
 		MockContextUtil.testWithMockContext(
-			new MockContextUtil.MockContext.Builder(
-				_classNameLocalService
-			).analyticsReportsInfoItem(
-				MockAnalyticsReportsInfoItem.builder(
-				).show(
-					true
-				).build()
-			).build(),
+			new MockContextUtil.MockContext.Builder().
+				mockObjectAnalyticsReportsInfoItem(
+					MockObjectAnalyticsReportsInfoItem.builder(
+					).show(
+						true
+					).build()
+				).build(),
 			() -> Assert.assertTrue(
 				_productNavigationControlMenuEntry.isShow(
 					_getHttpServletRequest())));
@@ -97,14 +95,13 @@ public class AnalyticsReportsProductNavigationControlMenuEntryTest {
 		throws Exception {
 
 		MockContextUtil.testWithMockContext(
-			new MockContextUtil.MockContext.Builder(
-				_classNameLocalService
-			).analyticsReportsInfoItem(
-				MockAnalyticsReportsInfoItem.builder(
-				).show(
-					false
-				).build()
-			).build(),
+			new MockContextUtil.MockContext.Builder().
+				mockObjectAnalyticsReportsInfoItem(
+					MockObjectAnalyticsReportsInfoItem.builder(
+					).show(
+						false
+					).build()
+				).build(),
 			() -> Assert.assertFalse(
 				_productNavigationControlMenuEntry.isShow(
 					_getHttpServletRequest())));
@@ -124,14 +121,13 @@ public class AnalyticsReportsProductNavigationControlMenuEntryTest {
 
 		try {
 			MockContextUtil.testWithMockContext(
-				new MockContextUtil.MockContext.Builder(
-					_classNameLocalService
-				).analyticsReportsInfoItem(
-					MockAnalyticsReportsInfoItem.builder(
-					).show(
-						true
-					).build()
-				).build(),
+				new MockContextUtil.MockContext.Builder().
+					mockObjectAnalyticsReportsInfoItem(
+						MockObjectAnalyticsReportsInfoItem.builder(
+						).show(
+							true
+						).build()
+					).build(),
 				() -> Assert.assertTrue(
 					_productNavigationControlMenuEntry.isShow(
 						_getHttpServletRequest())));
@@ -156,14 +152,13 @@ public class AnalyticsReportsProductNavigationControlMenuEntryTest {
 
 		try {
 			MockContextUtil.testWithMockContext(
-				new MockContextUtil.MockContext.Builder(
-					_classNameLocalService
-				).analyticsReportsInfoItem(
-					MockAnalyticsReportsInfoItem.builder(
-					).show(
-						true
-					).build()
-				).build(),
+				new MockContextUtil.MockContext.Builder().
+					mockObjectAnalyticsReportsInfoItem(
+						MockObjectAnalyticsReportsInfoItem.builder(
+						).show(
+							true
+						).build()
+					).build(),
 				() -> Assert.assertTrue(
 					_productNavigationControlMenuEntry.isShow(
 						_getHttpServletRequest())));
@@ -196,14 +191,13 @@ public class AnalyticsReportsProductNavigationControlMenuEntryTest {
 
 		try {
 			MockContextUtil.testWithMockContext(
-				new MockContextUtil.MockContext.Builder(
-					_classNameLocalService
-				).analyticsReportsInfoItem(
-					MockAnalyticsReportsInfoItem.builder(
-					).show(
-						true
-					).build()
-				).build(),
+				new MockContextUtil.MockContext.Builder().
+					mockObjectAnalyticsReportsInfoItem(
+						MockObjectAnalyticsReportsInfoItem.builder(
+						).show(
+							true
+						).build()
+					).build(),
 				() -> Assert.assertFalse(
 					_productNavigationControlMenuEntry.isShow(
 						httpServletRequest)));
@@ -238,9 +232,6 @@ public class AnalyticsReportsProductNavigationControlMenuEntryTest {
 
 		return themeDisplay;
 	}
-
-	@Inject
-	private ClassNameLocalService _classNameLocalService;
 
 	@Inject
 	private CompanyLocalService _companyLocalService;

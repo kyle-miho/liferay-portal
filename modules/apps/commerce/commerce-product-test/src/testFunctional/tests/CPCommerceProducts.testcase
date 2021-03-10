@@ -2,7 +2,7 @@
 definition {
 
 	property portal.release = "true";
-	property portal.upstream = "quarantine";
+	property portal.upstream = "true";
 	property testray.main.component.name = "Commerce";
 
 	setUp {
@@ -109,42 +109,33 @@ definition {
 	test ProductPublishing {
 		property environment.acceptance = "quarantine";
 		property portal.acceptance = "quarantine";
+		property portal.upstream = "quarantine";
 		property test.name.skip.portal.instance = "CPCommerceProducts#ProductPublishing";
 
-		CommerceNavigator.gotoPortlet(
-			category = "Product Management",
-			portlet = "Options");
-
-		Pause(locator1 = "2000");
-
-		CPCommerceCatalog.newOptionsEntry(
-			optionDescription = "Option Description",
-			optionFieldType = "Select from List",
-			optionName = "Color",
-			optionValuesList = "Black,Blue,White",
-			valuePriority = "1");
+		CommerceAccelerators.initializeNewSiteViaAccelerator(siteName = "Minium");
 
 		CommerceNavigator.gotoPortlet(
 			category = "Product Management",
 			portlet = "Products");
 
 		CPCommerceCatalog.newProductsEntry(
+			productCatalog = "Minium",
 			productName = "Simple T-Shirt",
 			productType = "Simple");
 
 		CommerceEntry.gotoMenuTab(menuTab = "Options");
 
 		CommerceRelations.assignSingleRelationToProductsEntry(
-			entryName = "Color",
+			entryName = "Package Quantity",
 			title = "Add Option");
 
 		CommerceEntry.gotoMenuTab(menuTab = "SKUs");
 
-		CommerceSKUs.addSKU(optionValuesList = "Black:10.0,Blue:20.0,White:30.0");
+		CommerceSKUs.addSKU(optionValuesList = "6:10.0,12:20.0,24:30.0,48:40.0,112:50.0");
 
 		CommerceEntry.gotoMenuTab(menuTab = "Media");
 
-		CommerceProductImages.addProductImages(optionValuesList = "Black,Blue,White");
+		CommerceProductImages.addProductImages(optionValuesList = "Black,Black:1,Blue,Blue:1,White");
 
 		CommerceNavigator.gotoPortlet(
 			category = "Product Management",
@@ -169,6 +160,10 @@ definition {
 			category = "Product Management",
 			portlet = "Products");
 
+		Pause(locator1 = "2000");
+
+		CommerceNavigator.searchEntry(entryName = "Simple T-Shirt");
+
 		CommerceNavigator.gotoEntry(entryName = "Simple T-Shirt");
 
 		CommerceRelations.assignSingleRelationToProductsEntry(
@@ -178,16 +173,16 @@ definition {
 		CommerceEntry.gotoMenuTab(menuTab = "Options");
 
 		CommerceEntry.viewProductOptions(
-			optionList = "Black,Blue,White",
-			optionName = "Color");
+			optionList = "6,12,24,48,112",
+			optionName = "Package Quantity");
 
 		CommerceEntry.gotoMenuTab(menuTab = "SKUs");
 
-		CommerceEntry.viewProductSkus(skusList = "WHITESKU:30.00,BLUESKU:20.00,BLACKSKU:10.00");
+		CommerceEntry.viewProductSkus(skusList = "6:10.00,12:20.00,24:30.00,48:40.00,112:50.00");
 	}
 
 	test TranslateProductName {
-		property portal.acceptance = "quarantine";
+		property portal.acceptance = "true";
 		property test.name.skip.portal.instance = "CPCommerceProducts#TranslateProductName";
 
 		CommerceAccelerators.initializeNewSiteViaAccelerator(siteName = "Minium");
@@ -210,23 +205,13 @@ definition {
 
 		Button.clickPublish();
 
-		Navigator.openWithAppendToBaseURL(urlAppend = "web/minium");
+		PortletEntry.changeLocale(
+			fieldName = "Name",
+			locale = "es-ES");
 
-		CommerceAcceleratorsInitializer.addPortlet(portletName = "Language Selector");
-
-		LanguagePortlet.selectLanguagePG(
-			locale = "es_ES",
-			textIcon = "español-España");
-
-		CommerceAcceleratorsInitializer.viewMiniumCardName(productName = "Amortiguador");
-
-		CommerceAcceleratorsInitializer.viewMiniumCardName(productName = "U-Joint");
-
-		CommerceAcceleratorsInitializer.viewMiniumCardName(productName = "Transmission Cooler Line Assembly");
-
-		LanguagePortlet.selectLanguagePG(
-			locale = "en_US",
-			textIcon = "english-United States");
+		AssertTextEquals(
+			locator1 = "TextInput#NAME",
+			value1 = "Amortiguador");
 	}
 
 }

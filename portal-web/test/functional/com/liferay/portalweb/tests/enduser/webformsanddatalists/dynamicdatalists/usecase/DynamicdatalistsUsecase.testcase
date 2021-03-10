@@ -1573,6 +1573,8 @@ definition {
 
 	@priority = "4"
 	test AssertUserUpdateRejectedRecord {
+		property portal.upstream = "quarantine";
+
 		ProductMenu.gotoPortlet(
 			category = "Site Builder",
 			portlet = "Pages");
@@ -2073,6 +2075,7 @@ definition {
 
 	@priority = "4"
 	test FormTemplateUniqueField {
+		property portal.upstream = "quarantine";
 		property test.name.skip.portal.instance = "DynamicdatalistsUsecase#FormTemplateUniqueField";
 
 		Navigator.openURL();
@@ -2310,6 +2313,8 @@ definition {
 	@description = "This is a use case for LPS-69667."
 	@priority = "2"
 	test SelectLinkToPagePage {
+		property portal.upstream = "quarantine";
+
 		Navigator.openURL();
 
 		ProductMenu.gotoPortlet(
@@ -2370,6 +2375,8 @@ definition {
 	@description = "This is a use case for LPS-48743."
 	@priority = "3"
 	test TemplateAddDeletedField {
+		property portal.upstream = "quarantine";
+
 		Navigator.openURL();
 
 		ProductMenu.gotoPortlet(
@@ -2497,6 +2504,8 @@ definition {
 	@description = "This is a use case for LPS-48913."
 	@priority = "3"
 	test ViewFieldsNestedInDDLRecord {
+		property portal.upstream = "quarantine";
+
 		Navigator.openURL();
 
 		ProductMenu.gotoPortlet(
@@ -2569,6 +2578,8 @@ definition {
 	@description = "This is a use case for LPS-48591."
 	@priority = "3"
 	test ViewFormTemplateFieldsAfterBackNavigation {
+		property portal.upstream = "quarantine";
+
 		Navigator.openURL();
 
 		ProductMenu.gotoPortlet(
@@ -2637,6 +2648,8 @@ definition {
 	@description = "This is a use case for LPS-67478 ."
 	@priority = "3"
 	test ViewLinkToPageBreadcrumb {
+		property portal.upstream = "quarantine";
+
 		ProductMenu.gotoPortlet(
 			category = "Site Builder",
 			portlet = "Pages");
@@ -2803,6 +2816,8 @@ definition {
 	@description = "This is a use case for LPS-51538."
 	@priority = "3"
 	test ViewNestedFieldDoesNotDisplayInRecordTable {
+		property portal.upstream = "quarantine";
+
 		Navigator.openURL();
 
 		ProductMenu.gotoPortlet(
@@ -2875,6 +2890,8 @@ definition {
 	@description = "This is a use case for LPS-48969."
 	@priority = "3"
 	test ViewNestedFieldEntryWithBlankParentField {
+		property portal.upstream = "quarantine";
+
 		Navigator.openURL();
 
 		ProductMenu.gotoPortlet(

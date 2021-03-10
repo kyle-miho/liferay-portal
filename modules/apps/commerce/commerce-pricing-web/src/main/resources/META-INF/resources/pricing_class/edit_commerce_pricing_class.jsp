@@ -47,9 +47,8 @@ portletDisplay.setShowBackIcon(true);
 />
 
 <liferay-frontend:screen-navigation
-	containerCssClass="col-md-10"
+	containerWrapperCssClass="container"
 	key="<%= CommercePricingClassScreenNavigationConstants.SCREEN_NAVIGATION_KEY_PRICING_CLASS_GENERAL %>"
 	modelBean="<%= commercePricingClass %>"
-	navCssClass="col-md-2"
 	portletURL="<%= currentURLObj %>"
 />

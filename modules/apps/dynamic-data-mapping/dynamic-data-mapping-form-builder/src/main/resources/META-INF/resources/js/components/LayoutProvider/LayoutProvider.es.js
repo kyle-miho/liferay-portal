@@ -20,7 +20,7 @@ import {
 	generateName,
 	getRepeatedIndex,
 } from 'dynamic-data-mapping-form-renderer';
-import {openModal, openToast} from 'frontend-js-web';
+import {openModal} from 'frontend-js-web';
 import Component from 'metal-jsx';
 import {Config} from 'metal-state';
 
@@ -72,10 +72,7 @@ class LayoutProvider extends Component {
 			this.emit(event, payload);
 		}
 		catch (e) {
-			openToast({
-				message: e.message,
-				type: 'danger',
-			});
+			console.error(e.message);
 		}
 	}
 
@@ -362,18 +359,11 @@ class LayoutProvider extends Component {
 		});
 	}
 
-	_handleColumnResized({column, container, direction, source}) {
+	_handleColumnResized({column, direction, loc}) {
 		const {props, state} = this;
 
 		this.setState(
-			handleColumnResized(
-				props,
-				state,
-				source,
-				container,
-				column,
-				direction
-			)
+			handleColumnResized({column, direction, loc, props, state})
 		);
 	}
 

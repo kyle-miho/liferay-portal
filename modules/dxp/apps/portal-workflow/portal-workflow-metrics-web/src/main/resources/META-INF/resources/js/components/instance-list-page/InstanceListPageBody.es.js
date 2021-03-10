@@ -10,7 +10,7 @@
  */
 
 import ClayLayout from '@clayui/layout';
-import {usePrevious} from 'frontend-js-react-web';
+import {usePrevious} from '@liferay/frontend-js-react-web';
 import React, {useContext, useMemo} from 'react';
 
 import ContentView from '../../shared/components/content-view/ContentView.es';
@@ -47,26 +47,23 @@ const Body = ({
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [fetchData, visibleModal]);
 
-	const statesProps = useMemo(
-		() => ({
-			emptyProps: {
-				filtered,
-				message: Liferay.Language.get(
-					'once-there-are-active-processes-metrics-will-appear-here'
-				),
-			},
-			errorProps: {
-				actionButton: <ReloadButton />,
-				hideAnimation: true,
-				message: Liferay.Language.get(
-					'there-was-a-problem-retrieving-data-please-try-reloading-the-page'
-				),
-				messageClassName: 'small',
-			},
-			loadingProps: {},
-		}),
-		[filtered]
-	);
+	const statesProps = {
+		emptyProps: {
+			filtered,
+			message: Liferay.Language.get(
+				'once-there-are-active-processes-metrics-will-appear-here'
+			),
+		},
+		errorProps: {
+			actionButton: <ReloadButton />,
+			hideAnimation: true,
+			message: Liferay.Language.get(
+				'there-was-a-problem-retrieving-data-please-try-reloading-the-page'
+			),
+			messageClassName: 'small',
+		},
+		loadingProps: {},
+	};
 
 	return (
 		<PromisesResolver promises={promises}>

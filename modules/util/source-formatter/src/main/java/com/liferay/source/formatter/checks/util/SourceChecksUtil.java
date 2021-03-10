@@ -58,21 +58,22 @@ public class SourceChecksUtil {
 	public static List<SourceCheck> getSourceChecks(
 			SourceFormatterConfiguration sourceFormatterConfiguration,
 			String sourceProcessorName, Map<String, Properties> propertiesMap,
-			List<String> skipCheckNames, boolean portalSource,
-			boolean subrepository, boolean includeModuleChecks,
-			List<String> checkNames)
+			List<String> filterCheckNames,
+			List<String> filterCheckCategoryNames, List<String> skipCheckNames,
+			boolean portalSource, boolean subrepository,
+			boolean includeModuleChecks)
 		throws Exception {
 
 		List<SourceCheck> sourceChecks = _getSourceChecks(
 			sourceFormatterConfiguration, sourceProcessorName, propertiesMap,
-			skipCheckNames, portalSource, subrepository, includeModuleChecks,
-			checkNames);
+			filterCheckNames, filterCheckCategoryNames, skipCheckNames,
+			portalSource, subrepository, includeModuleChecks);
 
 		sourceChecks.addAll(
 			_getSourceChecks(
 				sourceFormatterConfiguration, "all", propertiesMap,
-				skipCheckNames, includeModuleChecks, subrepository,
-				includeModuleChecks, checkNames));
+				filterCheckNames, filterCheckCategoryNames, skipCheckNames,
+				includeModuleChecks, subrepository, includeModuleChecks));
 
 		return sourceChecks;
 	}
@@ -221,9 +222,10 @@ public class SourceChecksUtil {
 	private static List<SourceCheck> _getSourceChecks(
 			SourceFormatterConfiguration sourceFormatterConfiguration,
 			String sourceProcessorName, Map<String, Properties> propertiesMap,
-			List<String> skipCheckNames, boolean portalSource,
-			boolean subrepository, boolean includeModuleChecks,
-			List<String> checkNames)
+			List<String> filterCheckNames,
+			List<String> filterCheckCategoryNames, List<String> skipCheckNames,
+			boolean portalSource, boolean subrepository,
+			boolean includeModuleChecks)
 		throws Exception {
 
 		List<SourceCheck> sourceChecks = new ArrayList<>();
@@ -245,8 +247,11 @@ public class SourceChecksUtil {
 			String sourceCheckName = SourceFormatterUtil.getSimpleName(
 				sourceCheckConfiguration.getName());
 
-			if (!checkNames.isEmpty() &&
-				!checkNames.contains(sourceCheckName)) {
+			if ((!filterCheckCategoryNames.isEmpty() ||
+				 !filterCheckNames.isEmpty()) &&
+				!filterCheckCategoryNames.contains(
+					sourceCheckConfiguration.getCategory()) &&
+				!filterCheckNames.contains(sourceCheckName)) {
 
 				continue;
 			}

@@ -23,6 +23,7 @@ const Liferay = {
 		},
 	},
 	ThemeDisplay: {
+		getBCP47LanguageId: () => 'en-US',
 		getCanonicalURL: () => '/',
 		getDefaultLanguageId: () => 'en_US',
 		getLanguageId: () => 'it_IT',

@@ -5,7 +5,6 @@
 @import './mixins';
 @import './utilities';
 
-@import 'overrides/account_selector';
 @import 'overrides/base';
 @import 'overrides/button';
 @import 'overrides/checkout_page';
@@ -67,8 +66,8 @@
 @import 'components/minium_user_nav';
 
 @import './components/bom';
-@import './components/price';
 @import 'components/account_management';
+@import 'components/account_selector';
 @import 'components/add_to_cart';
 @import 'components/add_to_wish_list';
 @import 'components/added_input_item';

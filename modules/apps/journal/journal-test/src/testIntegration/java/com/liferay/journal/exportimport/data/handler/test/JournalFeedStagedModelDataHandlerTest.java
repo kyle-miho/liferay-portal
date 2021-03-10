@@ -45,14 +45,12 @@ import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.PortletKeys;
 import com.liferay.portal.test.log.CaptureAppender;
 import com.liferay.portal.test.log.Log4JLoggerTestUtil;
+import com.liferay.portal.test.log.LogEvent;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.log4j.Level;
-import org.apache.log4j.spi.LoggingEvent;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -142,19 +140,17 @@ public class JournalFeedStagedModelDataHandlerTest
 				Log4JLoggerTestUtil.configureLog4JLogger(
 					"com.liferay.journal.internal.exportimport.data.handler." +
 						"JournalFeedStagedModelDataHandler",
-					Level.WARN)) {
+					Log4JLoggerTestUtil.WARN)) {
 
 			super.testCleanStagedModelDataHandler();
 
-			List<LoggingEvent> loggingEvents =
-				captureAppender.getLoggingEvents();
+			List<LogEvent> logEvents = captureAppender.getLogEvents();
 
-			Assert.assertEquals(
-				loggingEvents.toString(), 1, loggingEvents.size());
+			Assert.assertEquals(logEvents.toString(), 1, logEvents.size());
 
-			LoggingEvent loggingEvent = loggingEvents.get(0);
+			LogEvent logEvent = logEvents.get(0);
 
-			String message = (String)loggingEvent.getMessage();
+			String message = logEvent.getMessage();
 
 			Assert.assertTrue(
 				message, message.startsWith("A feed with the ID "));
@@ -207,19 +203,17 @@ public class JournalFeedStagedModelDataHandlerTest
 				Log4JLoggerTestUtil.configureLog4JLogger(
 					"com.liferay.journal.internal.exportimport.data.handler." +
 						"JournalFeedStagedModelDataHandler",
-					Level.WARN)) {
+					Log4JLoggerTestUtil.WARN)) {
 
 			super.testStagedModelDataHandler();
 
-			List<LoggingEvent> loggingEvents =
-				captureAppender.getLoggingEvents();
+			List<LogEvent> logEvents = captureAppender.getLogEvents();
 
-			Assert.assertEquals(
-				loggingEvents.toString(), 1, loggingEvents.size());
+			Assert.assertEquals(logEvents.toString(), 1, logEvents.size());
 
-			LoggingEvent loggingEvent = loggingEvents.get(0);
+			LogEvent logEvent = logEvents.get(0);
 
-			String message = (String)loggingEvent.getMessage();
+			String message = logEvent.getMessage();
 
 			Assert.assertTrue(
 				message, message.startsWith("A feed with the ID "));

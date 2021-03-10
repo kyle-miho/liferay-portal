@@ -199,6 +199,14 @@ public class FileEntryInfoItemFieldValuesProvider
 			fileEntryFieldValues.add(
 				new InfoFieldValue<>(
 					FileEntryInfoItemFields.size, fileEntry.getSize()));
+			fileEntryFieldValues.add(
+				new InfoFieldValue<>(
+					FileEntryInfoItemFields.createDateInfoField,
+					fileEntry.getCreateDate()));
+			fileEntryFieldValues.add(
+				new InfoFieldValue<>(
+					FileEntryInfoItemFields.modifiedDateInfoField,
+					fileEntry.getModifiedDate()));
 
 			User user = _userLocalService.fetchUser(fileEntry.getUserId());
 
@@ -224,7 +232,7 @@ public class FileEntryInfoItemFieldValuesProvider
 			fileEntryFieldValues.add(
 				new InfoFieldValue<>(
 					FileEntryInfoItemFields.publishDateInfoField,
-					fileEntry.getLastPublishDate()));
+					fileEntry.getModifiedDate()));
 
 			String downloadURL = _dlURLHelper.getDownloadURL(
 				fileEntry, fileEntry.getFileVersion(), null, StringPool.BLANK);

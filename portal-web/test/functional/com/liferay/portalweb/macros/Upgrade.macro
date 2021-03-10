@@ -29,6 +29,8 @@ definition {
 			dmDocumentFile = "${dmDocumentFile}",
 			dmDocumentTitle = "${dmDocumentTitle}");
 
+		Pause(locator1 = "3000");
+
 		DMNavigator.openDocumentsAndMediaAdmin(siteURLKey = "site-name");
 
 		DMNavigator.gotoDocumentCP(dmDocumentTitle = "${dmDocumentTitle}");
@@ -783,8 +785,6 @@ definition {
 			PageEditor.changeExperience(newExperience = "New Experience Name");
 
 			PageEditor.addComment(
-				content = "Lorem ipsum dolor sit amet",
-				fragmentClass = "header",
 				fragmentComment = "This is a fragment comment.",
 				fragmentName = "Title");
 
@@ -830,9 +830,9 @@ definition {
 				key_fragmentClass = "rich-text",
 				locator1 = "Fragment#FRAGMENT");
 
-			Click(locator1 = "PageEditor#DROPDOWN");
-
-			MenuItem.click(menuItem = "zh-CN");
+			PageEditor.changeLocale(
+				currentLocale = "en-US",
+				locale = "zh-CN");
 
 			AssertVisible(
 				key_content = "New editable fragment zh-CN text",
@@ -1355,8 +1355,6 @@ definition {
 		ContentPages.clickPencil();
 
 		PageEditor.addComment(
-			content = "This is static text.",
-			fragmentClass = "static-text",
 			fragmentComment = "This is a new fragment comment",
 			fragmentName = "Static Text");
 
@@ -2124,9 +2122,12 @@ definition {
 		}
 
 		task ("Assert styles of Separator in view mode") {
-			PageEditor.viewFragmentStyle(
-				bottomSpacing = "1",
-				separatorColor = "dark");
+			PageEditor.viewFragmentStyle(separatorColor = "dark");
+
+			AssertElementPresent(
+				key_fragmentName = "separator",
+				key_paddingBottom = "1",
+				locator1 = "Fragment#FRAGMENT_CONFIGURATION_PADDING_BOTTOM_IN_VIEW_MODE");
 		}
 
 		task ("Assert styles of Spacer in view mode") {
@@ -2236,7 +2237,7 @@ definition {
 
 		task ("Assert styles of Separator in edit mode") {
 			PageEditor.viewFragmentStyle(
-				bottomSpacing = "1",
+				paddingBottom = "1",
 				separatorColor = "dark");
 		}
 

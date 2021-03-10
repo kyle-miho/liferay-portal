@@ -15,6 +15,7 @@
 package com.liferay.portal.crypto.hash.provider.message.digest.internal;
 
 import com.liferay.portal.crypto.hash.spi.CryptoHashProvider;
+import com.liferay.portal.crypto.hash.spi.CryptoHashProviderResponse;
 import com.liferay.portal.kernel.util.ArrayUtil;
 
 import java.security.MessageDigest;
@@ -30,9 +31,18 @@ public class MessageDigestCryptoHashProvider implements CryptoHashProvider {
 	}
 
 	@Override
-	public byte[] generate(byte[] salt, byte[] input) {
-		return _messageDigest.digest(ArrayUtil.append(salt, input));
+	public CryptoHashProviderResponse generate(byte[] salt, byte[] input) {
+		return new CryptoHashProviderResponse(
+			_CRYPTO_HASH_PROVIDER_NAME,
+			_messageDigest.digest(ArrayUtil.append(salt, input)));
 	}
+
+	@Override
+	public String getCryptoHashProviderName() {
+		return _CRYPTO_HASH_PROVIDER_NAME;
+	}
+
+	private static final String _CRYPTO_HASH_PROVIDER_NAME = "MessageDigest";
 
 	private final MessageDigest _messageDigest;
 

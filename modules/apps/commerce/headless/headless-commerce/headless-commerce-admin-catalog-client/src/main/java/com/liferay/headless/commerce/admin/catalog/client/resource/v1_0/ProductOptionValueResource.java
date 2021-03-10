@@ -41,12 +41,13 @@ public interface ProductOptionValueResource {
 	}
 
 	public Page<ProductOptionValue> getProductOptionIdProductOptionValuesPage(
-			Long id, Pagination pagination)
+			Long id, String search, Pagination pagination, String sortString)
 		throws Exception;
 
 	public HttpInvoker.HttpResponse
 			getProductOptionIdProductOptionValuesPageHttpResponse(
-				Long id, Pagination pagination)
+				Long id, String search, Pagination pagination,
+				String sortString)
 		throws Exception;
 
 	public ProductOptionValue postProductOptionIdProductOptionValue(
@@ -106,6 +107,22 @@ public interface ProductOptionValueResource {
 			return this;
 		}
 
+		public Builder parameters(String... parameters) {
+			if ((parameters.length % 2) != 0) {
+				throw new IllegalArgumentException(
+					"Parameters length is not an even number");
+			}
+
+			for (int i = 0; i < parameters.length; i += 2) {
+				String parameterName = String.valueOf(parameters[i]);
+				String parameterValue = String.valueOf(parameters[i + 1]);
+
+				_parameters.put(parameterName, parameterValue);
+			}
+
+			return this;
+		}
+
 		private Builder() {
 		}
 
@@ -125,12 +142,13 @@ public interface ProductOptionValueResource {
 
 		public Page<ProductOptionValue>
 				getProductOptionIdProductOptionValuesPage(
-					Long id, Pagination pagination)
+					Long id, String search, Pagination pagination,
+					String sortString)
 			throws Exception {
 
 			HttpInvoker.HttpResponse httpResponse =
 				getProductOptionIdProductOptionValuesPageHttpResponse(
-					id, pagination);
+					id, search, pagination, sortString);
 
 			String content = httpResponse.getContent();
 
@@ -154,7 +172,8 @@ public interface ProductOptionValueResource {
 
 		public HttpInvoker.HttpResponse
 				getProductOptionIdProductOptionValuesPageHttpResponse(
-					Long id, Pagination pagination)
+					Long id, String search, Pagination pagination,
+					String sortString)
 			throws Exception {
 
 			HttpInvoker httpInvoker = HttpInvoker.newHttpInvoker();
@@ -178,11 +197,19 @@ public interface ProductOptionValueResource {
 
 			httpInvoker.httpMethod(HttpInvoker.HttpMethod.GET);
 
+			if (search != null) {
+				httpInvoker.parameter("search", String.valueOf(search));
+			}
+
 			if (pagination != null) {
 				httpInvoker.parameter(
 					"page", String.valueOf(pagination.getPage()));
 				httpInvoker.parameter(
 					"pageSize", String.valueOf(pagination.getPageSize()));
+			}
+
+			if (sortString != null) {
+				httpInvoker.parameter("sort", sortString);
 			}
 
 			httpInvoker.path(

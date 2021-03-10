@@ -180,6 +180,29 @@ public class DDMFormValidatorImpl implements DDMFormValidator {
 	}
 
 	protected void validateDDMFormFieldOptions(
+			boolean allowInvalidAvailableLocalesForProperty,
+			DDMFormField ddmFormField, Set<Locale> ddmFormAvailableLocales,
+			Locale ddmFormDefaultLocale)
+		throws DDMFormValidationException {
+
+		try {
+			validateDDMFormFieldOptions(
+				ddmFormField, ddmFormAvailableLocales, ddmFormDefaultLocale);
+		}
+		catch (DDMFormValidationException ddmFormValidationException) {
+			if ((ddmFormValidationException instanceof
+					DDMFormValidationException.
+						MustSetValidAvailableLocalesForProperty) &&
+				allowInvalidAvailableLocalesForProperty) {
+
+				return;
+			}
+
+			throw ddmFormValidationException;
+		}
+	}
+
+	protected void validateDDMFormFieldOptions(
 			DDMFormField ddmFormField, Set<Locale> ddmFormAvailableLocales,
 			Locale ddmFormDefaultLocale)
 		throws DDMFormValidationException {
@@ -272,8 +295,7 @@ public class DDMFormValidatorImpl implements DDMFormValidator {
 			List<DDMFormField> ddmFormFields, Set<String> ddmFormFieldNames,
 			boolean allowInvalidAvailableLocalesForProperty,
 			Set<Locale> ddmFormAvailableLocales, Locale ddmFormDefaultLocale)
-		throws DDMFormFieldValueValidationException,
-			   DDMFormValidationException {
+		throws DDMFormValidationException {
 
 		for (DDMFormField ddmFormField : ddmFormFields) {
 			validateDDMFormFieldName(ddmFormField, ddmFormFieldNames);
@@ -283,7 +305,8 @@ public class DDMFormValidatorImpl implements DDMFormValidator {
 			validateDDMFormFieldIndexType(ddmFormField);
 
 			validateDDMFormFieldOptions(
-				ddmFormField, ddmFormAvailableLocales, ddmFormDefaultLocale);
+				allowInvalidAvailableLocalesForProperty, ddmFormField,
+				ddmFormAvailableLocales, ddmFormDefaultLocale);
 
 			validateOptionalDDMFormFieldLocalizedProperty(
 				ddmFormField, "label", allowInvalidAvailableLocalesForProperty,

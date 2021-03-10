@@ -123,8 +123,8 @@ const getFieldTypes = ({
 			disabled: DataLayoutVisitor.containsField(dataLayoutPages, name),
 			dragAlignment: 'right',
 			dragType: isFieldGroup
-				? DragTypes.DRAG_FIELDSET
-				: DragTypes.DRAG_DATA_DEFINITION_FIELD,
+				? DragTypes.DRAG_FIELDSET_ADD
+				: DragTypes.DRAG_DATA_DEFINITION_FIELD_ADD,
 			icon: fieldTypeSettings.icon,
 			isCustomField: !customProperties.nativeField,
 			isFieldSet,
@@ -267,8 +267,6 @@ const CustomObjectFieldsList = ({keywords}) => {
 		deleteLabel: Liferay.Language.get('delete-from-object'),
 		keywords,
 		onClick: handleOnClick,
-		onDelete: (fieldName) =>
-			onDeleteDefinitionField({activePage: 0, fieldName}),
 		onDoubleClick: handleOnDoubleClick,
 	};
 
@@ -284,6 +282,9 @@ const CustomObjectFieldsList = ({keywords}) => {
 				{...fieldTypeListProps}
 				dataDefinition={dataDefinition}
 				fieldTypes={customFieldTypes}
+				onDelete={(fieldName) =>
+					onDeleteDefinitionField({activePage: 0, fieldName})
+				}
 				showEmptyState={false}
 			/>
 

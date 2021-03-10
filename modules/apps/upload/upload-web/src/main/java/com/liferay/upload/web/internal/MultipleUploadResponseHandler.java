@@ -95,7 +95,7 @@ public class MultipleUploadResponseHandler implements UploadResponseHandler {
 				errorMessage = themeDisplay.translate(
 					"you-have-exceeded-the-x-storage-quota-for-this-instance",
 					_language.formatStorageSize(
-						PropsValues.DATA_LIMIT_MAX_DL_STORAGE_SIZE,
+						PropsValues.DATA_LIMIT_DL_STORAGE_MAX_SIZE,
 						themeDisplay.getLocale()));
 				errorType = ServletResponseConstants.SC_FILE_SIZE_EXCEPTION;
 			}

@@ -27,6 +27,8 @@ import com.liferay.headless.commerce.admin.catalog.internal.util.v1_0.ProductOpt
 import com.liferay.headless.commerce.admin.catalog.resource.v1_0.ProductOptionResource;
 import com.liferay.headless.commerce.core.util.LanguageUtils;
 import com.liferay.headless.commerce.core.util.ServiceContextHelper;
+import com.liferay.portal.kernel.search.BaseModelSearchResult;
+import com.liferay.portal.kernel.search.Sort;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.vulcan.dto.converter.DefaultDTOConverterContext;
 import com.liferay.portal.vulcan.fields.NestedField;
@@ -73,13 +75,14 @@ public class ProductOptionResourceImpl
 	@Override
 	public Page<ProductOption>
 			getProductByExternalReferenceCodeProductOptionsPage(
-				String externalReferenceCode, Pagination pagination)
+				String externalReferenceCode, String search,
+				Pagination pagination, Sort[] sorts)
 		throws Exception {
 
 		CPDefinition cpDefinition =
 			_cpDefinitionService.
 				fetchCPDefinitionByCProductExternalReferenceCode(
-					contextCompany.getCompanyId(), externalReferenceCode);
+					externalReferenceCode, contextCompany.getCompanyId());
 
 		if (cpDefinition == null) {
 			throw new NoSuchCPDefinitionException(
@@ -87,23 +90,30 @@ public class ProductOptionResourceImpl
 					externalReferenceCode);
 		}
 
-		List<CPDefinitionOptionRel> cpDefinitionOptionRels =
-			_cpDefinitionOptionRelService.getCPDefinitionOptionRels(
-				cpDefinition.getCPDefinitionId(), pagination.getStartPosition(),
-				pagination.getEndPosition());
+		BaseModelSearchResult<CPDefinitionOptionRel>
+			cpDefinitionOptionRelBaseModelSearchResult =
+				_cpDefinitionOptionRelService.searchCPDefinitionOptionRels(
+					cpDefinition.getCompanyId(), cpDefinition.getGroupId(),
+					cpDefinition.getCPDefinitionId(), search,
+					pagination.getStartPosition(), pagination.getEndPosition(),
+					sorts);
 
 		int totalItems =
-			_cpDefinitionOptionRelService.getCPDefinitionOptionRelsCount(
-				cpDefinition.getCPDefinitionId());
+			_cpDefinitionOptionRelService.searchCPDefinitionOptionRelsCount(
+				cpDefinition.getCompanyId(), cpDefinition.getGroupId(),
+				cpDefinition.getCPDefinitionId(), search);
 
 		return Page.of(
-			_toProductOptions(cpDefinitionOptionRels), pagination, totalItems);
+			_toProductOptions(
+				cpDefinitionOptionRelBaseModelSearchResult.getBaseModels()),
+			pagination, totalItems);
 	}
 
 	@NestedField(parentClass = Product.class, value = "productOptions")
 	@Override
 	public Page<ProductOption> getProductIdProductOptionsPage(
-			@NestedFieldId(value = "productId") Long id, Pagination pagination)
+			@NestedFieldId(value = "productId") Long id, String search,
+			Pagination pagination, Sort[] sorts)
 		throws Exception {
 
 		CPDefinition cpDefinition =
@@ -114,17 +124,23 @@ public class ProductOptionResourceImpl
 				"Unable to find Product with ID: " + id);
 		}
 
-		List<CPDefinitionOptionRel> cpDefinitionOptionRels =
-			_cpDefinitionOptionRelService.getCPDefinitionOptionRels(
-				cpDefinition.getCPDefinitionId(), pagination.getStartPosition(),
-				pagination.getEndPosition());
+		BaseModelSearchResult<CPDefinitionOptionRel>
+			cpDefinitionOptionRelBaseModelSearchResult =
+				_cpDefinitionOptionRelService.searchCPDefinitionOptionRels(
+					cpDefinition.getCompanyId(), cpDefinition.getGroupId(),
+					cpDefinition.getCPDefinitionId(), search,
+					pagination.getStartPosition(), pagination.getEndPosition(),
+					sorts);
 
 		int totalItems =
-			_cpDefinitionOptionRelService.getCPDefinitionOptionRelsCount(
-				cpDefinition.getCPDefinitionId());
+			_cpDefinitionOptionRelService.searchCPDefinitionOptionRelsCount(
+				cpDefinition.getCompanyId(), cpDefinition.getGroupId(),
+				cpDefinition.getCPDefinitionId(), search);
 
 		return Page.of(
-			_toProductOptions(cpDefinitionOptionRels), pagination, totalItems);
+			_toProductOptions(
+				cpDefinitionOptionRelBaseModelSearchResult.getBaseModels()),
+			pagination, totalItems);
 	}
 
 	@Override
@@ -152,7 +168,7 @@ public class ProductOptionResourceImpl
 		CPDefinition cpDefinition =
 			_cpDefinitionService.
 				fetchCPDefinitionByCProductExternalReferenceCode(
-					contextCompany.getCompanyId(), externalReferenceCode);
+					externalReferenceCode, contextCompany.getCompanyId());
 
 		if (cpDefinition == null) {
 			throw new NoSuchCPDefinitionException(
@@ -160,7 +176,8 @@ public class ProductOptionResourceImpl
 					externalReferenceCode);
 		}
 
-		return Page.of(_upsertProductOptions(cpDefinition, productOptions));
+		return Page.of(
+			_addOrUpdateProductOptions(cpDefinition, productOptions));
 	}
 
 	@Override
@@ -176,7 +193,36 @@ public class ProductOptionResourceImpl
 				"Unable to find Product with ID: " + id);
 		}
 
-		return Page.of(_upsertProductOptions(cpDefinition, productOptions));
+		return Page.of(
+			_addOrUpdateProductOptions(cpDefinition, productOptions));
+	}
+
+	private List<ProductOption> _addOrUpdateProductOptions(
+			CPDefinition cpDefinition, ProductOption[] productOptions)
+		throws Exception {
+
+		for (ProductOption productOption : productOptions) {
+			ProductOptionUtil.upsertCPDefinitionOptionRel(
+				_cpDefinitionOptionRelService, _cpOptionService, productOption,
+				cpDefinition.getCPDefinitionId(),
+				_serviceContextHelper.getServiceContext(
+					cpDefinition.getGroupId()));
+		}
+
+		List<ProductOption> productOptionList = new ArrayList<>();
+
+		cpDefinition = _cpDefinitionService.getCPDefinition(
+			cpDefinition.getCPDefinitionId());
+
+		for (CPDefinitionOptionRel cpDefinitionOptionRel :
+				cpDefinition.getCPDefinitionOptionRels()) {
+
+			productOptionList.add(
+				_toProductOption(
+					cpDefinitionOptionRel.getCPDefinitionOptionRelId()));
+		}
+
+		return productOptionList;
 	}
 
 	private ProductOption _toProductOption(Long cpDefinitionOptionRelId)
@@ -238,34 +284,6 @@ public class ProductOptionResourceImpl
 
 		return _toProductOption(
 			cpDefinitionOptionRel.getCPDefinitionOptionRelId());
-	}
-
-	private List<ProductOption> _upsertProductOptions(
-			CPDefinition cpDefinition, ProductOption[] productOptions)
-		throws Exception {
-
-		for (ProductOption productOption : productOptions) {
-			ProductOptionUtil.upsertCPDefinitionOptionRel(
-				_cpDefinitionOptionRelService, _cpOptionService, productOption,
-				cpDefinition.getCPDefinitionId(),
-				_serviceContextHelper.getServiceContext(
-					cpDefinition.getGroupId()));
-		}
-
-		List<ProductOption> productOptionList = new ArrayList<>();
-
-		cpDefinition = _cpDefinitionService.getCPDefinition(
-			cpDefinition.getCPDefinitionId());
-
-		for (CPDefinitionOptionRel cpDefinitionOptionRel :
-				cpDefinition.getCPDefinitionOptionRels()) {
-
-			productOptionList.add(
-				_toProductOption(
-					cpDefinitionOptionRel.getCPDefinitionOptionRelId()));
-		}
-
-		return productOptionList;
 	}
 
 	@Reference

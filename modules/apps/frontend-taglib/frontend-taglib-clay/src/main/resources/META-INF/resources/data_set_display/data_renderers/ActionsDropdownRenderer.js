@@ -17,7 +17,7 @@ import ClayDropDown from '@clayui/drop-down';
 import ClayIcon from '@clayui/icon';
 import ClayLink from '@clayui/link';
 import ClayLoadingIndicator from '@clayui/loading-indicator';
-import {useIsMounted} from 'frontend-js-react-web';
+import {useIsMounted} from '@liferay/frontend-js-react-web';
 import {openToast} from 'frontend-js-web';
 import PropTypes from 'prop-types';
 import React, {useContext, useState} from 'react';
@@ -352,7 +352,7 @@ function ActionsDropdownRenderer({actions, itemData, itemId}) {
 		});
 
 	return (
-		<div className="d-flex justify-content-end">
+		<div className="d-flex justify-content-end ml-auto">
 			{inlineEditingAlwaysOn && inlineEditingActions}
 			<ClayDropDown
 				active={menuActive}

@@ -22,7 +22,7 @@ definition {
 				value1 = "${dmDocumentFile}");
 		}
 		else if ("${nullFile}" == "true") {
-			AssertElementPresent(locator1 = "TextInput#FILE");
+			AssertElementNotPresent(locator1 = "TextInput#FILE_PRESENT");
 		}
 		else {
 			if (isSet(dmDocumentFile)) {
@@ -180,6 +180,8 @@ definition {
 				value1 = "${validationError}");
 		}
 		else if (isSet(validateFileNameRestriction)) {
+			AssertElementPresent(locator1 = "TextInput#FILE_PRESENT");
+
 			Button.clickPublish();
 
 			Alert.viewRequestFailedToComplete();
@@ -193,6 +195,8 @@ definition {
 				key_alertMessage = "Please select the file again.",
 				locator1 = "Message#ERROR_ENTER_A_VALID_VALUE",
 				value1 = "Please select the file again.");
+
+			AssertElementNotPresent(locator1 = "TextInput#FILE_PRESENT");
 		}
 		else if (isSet(emptyFileNameRestriction)) {
 			Button.clickPublish();
@@ -210,6 +214,21 @@ definition {
 				value1 = "Please select the file again.");
 
 			AssertElementNotPresent(locator1 = "TextInput#FILE_PRESENT");
+		}
+		else if (isSet(validateStorageQuota)) {
+			Button.clickPublish();
+
+			Alert.viewRequestFailedToComplete();
+
+			AssertTextEquals.assertPartialText(
+				key_alertMessage = "You have exceeded the ${storageQuota} storage quota for this instance.",
+				locator1 = "Message#ERROR_ENTER_A_VALID_VALUE",
+				value1 = "You have exceeded the ${storageQuota} storage quota for this instance.");
+
+			AssertTextEquals.assertPartialText(
+				key_alertMessage = "Please select the file again.",
+				locator1 = "Message#ERROR_ENTER_A_VALID_VALUE",
+				value1 = "Please select the file again.");
 		}
 		else if (isSet(requiredFieldValidation)) {
 			Button.clickPublish();
@@ -417,6 +436,12 @@ definition {
 			Select(
 				locator1 = "Select#PERMISSIONS",
 				value1 = "${viewableBy}");
+		}
+
+		if (isSet(validateStorageQuota)) {
+			AssertTextEquals.assertPartialText(
+				locator1 = "DocumentsAndMediaDocument#DOCUMENT_EXCEED_STORAGE_QUOTA_ERROR",
+				value1 = "You have exceeded the ${storageQuota} storage quota for this instance.");
 		}
 
 		AssertClick(
@@ -729,7 +754,7 @@ definition {
 
 		Check(locator1 = "DocumentsAndMedia#DESCRIPTIVE_LIST_DOCUMENT_CHECKBOX");
 
-		Click(locator1 = "Icon#VERTICAL_ELLIPSIS_BUTTON");
+		Click(locator1 = "Icon#TOOLBAR_ELLIPSIS");
 
 		MenuItem.click(menuItem = "Checkin");
 
@@ -794,20 +819,38 @@ definition {
 	macro checkoutCP {
 		var key_dmDocumentTitle = "${dmDocumentTitle}";
 
-		Click(locator1 = "DocumentsAndMedia#DESCRIPTIVE_LIST_DOCUMENT_VERTICAL_ELLIPSIS");
+		if (isSet(editStatus)) {
+			LexiconEntry.gotoEntryMenuItem(
+				menuItem = "Edit",
+				rowEntry = "${dmDocumentTitle}");
 
-		MenuItem.click(menuItem = "Checkout");
+			PortletEntry.checkOut();
+		}
+		else {
+			Click(locator1 = "DocumentsAndMedia#DESCRIPTIVE_LIST_DOCUMENT_VERTICAL_ELLIPSIS");
 
-		Alert.viewSuccessMessage();
+			MenuItem.click(menuItem = "Checkout");
 
-		AssertClick(
-			locator1 = "DocumentsAndMedia#DESCRIPTIVE_LIST_DOCUMENT_TITLE",
-			value1 = "${dmDocumentTitle}");
+			Alert.viewSuccessMessage();
+
+			AssertClick(
+				locator1 = "DocumentsAndMedia#DESCRIPTIVE_LIST_DOCUMENT_TITLE",
+				value1 = "${dmDocumentTitle}");
+		}
 
 		if ("${dmRepositoryName}" == "true") {
 			AssertTextEquals.assertPartialText(
 				locator1 = "Message#CHECKOUT_SUCCESS",
 				value1 = "You now have an indefinite lock on this document. No one else can edit this document until you unlock it. This lock will never expire.");
+		}
+		else if (isSet(editStatus)) {
+			AssertClick(
+				locator1 = "DocumentsAndMedia#DESCRIPTIVE_LIST_DOCUMENT_TITLE",
+				value1 = "${dmDocumentTitle}");
+
+			AssertTextEquals.assertPartialText(
+				locator1 = "Message#CHECKOUT_SUCCESS",
+				value1 = "You now have a lock on this document. No one else can edit this document until you unlock it. This lock will automatically expire in 1 day.");
 		}
 		else {
 			AssertTextEquals.assertPartialText(
@@ -1228,6 +1271,7 @@ definition {
 		DMDocument.editCmd(
 			dmDocumentDescriptionEdit = "${dmDocumentDescriptionEdit}",
 			dmDocumentFileEdit = "${dmDocumentFileEdit}",
+			dmDocumentFileNameEdit = "${dmDocumentFileNameEdit}",
 			dmDocumentTitleEdit = "${dmDocumentTitleEdit}");
 
 		PortletEntry.publish();
@@ -1994,7 +2038,7 @@ definition {
 			DMDocument.gotoEntry(dmDocumentTitle = "${dmDocumentTitle}");
 
 			AssertTextEquals(
-				locator1 = "TextInput#TITLE",
+				locator1 = "DocumentsAndMediaDocument#DOCUMENT_INFO_TITLE",
 				value1 = "${dmDocumentTitle}");
 		}
 	}
@@ -2299,6 +2343,15 @@ definition {
 			AssertTextEquals(
 				locator1 = "DocumentsAndMediaDocument#DOCUMENT_INFO_FILE_NAME",
 				value1 = "${dmDocumentFileName}");
+		}
+	}
+
+	macro viewFieldLabels {
+		for (var fieldFieldLabels : list "${labels}") {
+			AssertTextEquals.assertPartialText(
+				key_fieldFieldLabel = "${fieldFieldLabels}",
+				locator1 = "DDMEditStructure#FORM_FIELD_CONTAINER_LABEL",
+				value1 = "${fieldFieldLabels}");
 		}
 	}
 
@@ -2753,7 +2806,7 @@ definition {
 
 		Check(locator1 = "DocumentsAndMedia#DESCRIPTIVE_LIST_DOCUMENT_CHECKBOX");
 
-		Click(locator1 = "Icon#VERTICAL_ELLIPSIS_BUTTON");
+		Click(locator1 = "Icon#TOOLBAR_ELLIPSIS");
 
 		MenuItem.viewPresent(menuItem = "Download");
 

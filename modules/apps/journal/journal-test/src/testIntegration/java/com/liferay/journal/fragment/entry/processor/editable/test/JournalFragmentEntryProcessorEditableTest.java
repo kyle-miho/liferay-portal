@@ -101,7 +101,7 @@ public class JournalFragmentEntryProcessorEditableTest {
 				StringPool.BLANK, StringPool.BLANK, StringPool.BLANK, 0,
 				StringPool.BLANK, ServiceContextTestUtil.getServiceContext());
 
-		String editableValues = _getJsonFileAsString(
+		String editableValues = _readJSONFileToString(
 			"fragment_entry_link_mapped_ddm.json");
 
 		_fragmentEntryLinkLocalService.updateFragmentEntryLink(
@@ -132,7 +132,7 @@ public class JournalFragmentEntryProcessorEditableTest {
 		return PortalUtil.getClassNameId(compositeClassName);
 	}
 
-	private String _getFileAsString(String fileName) throws Exception {
+	private String _readFileToString(String fileName) throws Exception {
 		Class<?> clazz = getClass();
 
 		return StringUtil.read(
@@ -140,9 +140,9 @@ public class JournalFragmentEntryProcessorEditableTest {
 			"com/liferay/journal/dependencies/" + fileName);
 	}
 
-	private String _getJsonFileAsString(String jsonFileName) throws Exception {
+	private String _readJSONFileToString(String jsonFileName) throws Exception {
 		JSONObject jsonObject = JSONFactoryUtil.createJSONObject(
-			_getFileAsString(jsonFileName));
+			_readFileToString(jsonFileName));
 
 		return jsonObject.toString();
 	}

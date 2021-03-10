@@ -49,6 +49,20 @@ definition {
 				value1 = "${readingTime}");
 		}
 
+		if (isSet(injectCode)) {
+			AssertAlertNotPresent();
+		}
+
+		if (isSet(viewVideoHelpMessage)) {
+			Pause(locator1 = "3000");
+
+			Click.clickNoMouseOverNoWaitForVisible(locator1 = "BlogsEntry#VIDEO_EMBED_HELP_MESSAGE");
+
+			AssertTextEquals.assertPartialText(
+				locator1 = "BlogsEntry#VIDEO_EMBED_HELP_MESSAGE",
+				value1 = "Video playback is disabled during edit mode");
+		}
+
 		PortletEntry.publish();
 	}
 
@@ -343,6 +357,12 @@ definition {
 	}
 
 	macro clickEllipsisItemPG {
+		if (isSet(entryContent)) {
+			Click(
+				key_entryContent = "Blogs Entry Content",
+				locator1 = "BlogsEntry#CONTENT");
+		}
+
 		Click(
 			key_entryTitle = "${entryTitle}",
 			locator1 = "Blogs#WIDGET_VIEW_ENTRY_ELLIPSIS");

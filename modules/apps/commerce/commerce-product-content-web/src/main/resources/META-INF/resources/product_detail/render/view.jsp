@@ -25,8 +25,6 @@ CPSku cpSku = cpContentHelper.getDefaultCPSku(cpCatalogEntry);
 
 long cpDefinitionId = cpCatalogEntry.getCPDefinitionId();
 
-CPContentModel cpContentModel = (CPContentModel)request.getAttribute("cpContentModel");
-
 String hideCssClass = "hide";
 long skuId = 0;
 
@@ -39,7 +37,9 @@ if (cpSku != null) {
 <div class="mb-5 product-detail" id="<portlet:namespace /><%= cpDefinitionId %>ProductContent">
 	<div class="row">
 		<div class="col-12 col-md-6">
-			<commerce-ui:gallery CPDefinitionId="<%= cpDefinitionId %>" />
+			<commerce-ui:gallery
+				CPDefinitionId="<%= cpDefinitionId %>"
+			/>
 		</div>
 
 		<div class="col-12 col-md-6 d-flex flex-column justify-content-center">
@@ -47,7 +47,7 @@ if (cpSku != null) {
 				<div class="availability d-flex mb-4">
 					<div>
 						<commerce-ui:availability-label
-							cpCatalogEntry="<%= cpCatalogEntry %>"
+							CPCatalogEntry="<%= cpCatalogEntry %>"
 							namespace="<%= liferayPortletResponse.getNamespace() %>"
 						/>
 					</div>
@@ -105,7 +105,9 @@ if (cpSku != null) {
 			</h4>
 
 			<div class="product-detail-options">
-				<%= cpContentHelper.renderOptions(renderRequest, renderResponse) %>
+				<form data-senna-off="true" name="fm">
+					<%= cpContentHelper.renderOptions(renderRequest, renderResponse) %>
+				</form>
 
 				<%@ include file="/product_detail/render/form_handlers/metal_js.jspf" %>
 			</div>
@@ -119,11 +121,13 @@ if (cpSku != null) {
 				</c:otherwise>
 			</c:choose>
 
-			<div class="mt-3 price">
-				<commerce-ui:price
-					CPDefinitionId="<%= cpCatalogEntry.getCPDefinitionId() %>"
-					CPInstanceId="<%= (cpSku == null) ? 0 : cpSku.getCPInstanceId() %>"
-				/>
+			<div class="mt-3 price-container row">
+				<div class="col-lg-9 col-sm-12 col-xl-6">
+					<commerce-ui:price
+						CPCatalogEntry="<%= cpCatalogEntry %>"
+						namespace="<%= liferayPortletResponse.getNamespace() %>"
+					/>
+				</div>
 			</div>
 
 			<c:if test="<%= cpSku != null %>">
@@ -134,28 +138,21 @@ if (cpSku != null) {
 			</c:if>
 
 			<div class="align-items-center d-flex mt-3 product-detail-actions">
-				<commerce-ui:add-to-order
-					channelId="<%= cpContentModel.getChannelId() %>"
-					commerceAccountId="<%= cpContentModel.getAccountId() %>"
-					currencyCode="<%= cpContentModel.getCurrencyCode() %>"
-					disabled="<%= skuId == 0 %>"
-					inCart="<%= cpContentModel.isInCart() %>"
+				<commerce-ui:add-to-cart
+					CPCatalogEntry="<%= cpCatalogEntry %>"
+					namespace="<%= liferayPortletResponse.getNamespace() %>"
 					options='<%= "[]" %>'
-					orderId="<%= cpContentModel.getOrderId() %>"
-					skuId="<%= skuId %>"
-					spritemap="<%= cpContentModel.getSpritemap() %>"
-					stockQuantity="<%= cpContentModel.getStockQuantity() %>"
-					willUpdate="<%= true %>"
 				/>
 
 				<commerce-ui:add-to-wish-list
-					cpCatalogEntry="<%= cpCatalogEntry %>"
+					CPCatalogEntry="<%= cpCatalogEntry %>"
+					large="<%= true %>"
 				/>
 			</div>
 
 			<div class="mt-3">
 				<commerce-ui:compare-checkbox
-					cpCatalogEntry="<%= cpCatalogEntry %>"
+					CPCatalogEntry="<%= cpCatalogEntry %>"
 					label='<%= LanguageUtil.get(resourceBundle, "compare") %>'
 				/>
 			</div>

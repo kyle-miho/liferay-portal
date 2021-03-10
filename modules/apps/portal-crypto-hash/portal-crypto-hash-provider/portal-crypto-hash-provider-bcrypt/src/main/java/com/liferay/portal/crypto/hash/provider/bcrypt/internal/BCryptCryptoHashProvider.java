@@ -15,6 +15,7 @@
 package com.liferay.portal.crypto.hash.provider.bcrypt.internal;
 
 import com.liferay.portal.crypto.hash.spi.CryptoHashProvider;
+import com.liferay.portal.crypto.hash.spi.CryptoHashProviderResponse;
 
 import java.nio.charset.StandardCharsets;
 
@@ -26,12 +27,14 @@ import jodd.crypt.BCrypt;
 public class BCryptCryptoHashProvider implements CryptoHashProvider {
 
 	@Override
-	public byte[] generate(byte[] salt, byte[] input) {
+	public CryptoHashProviderResponse generate(byte[] salt, byte[] input) {
 		String hashedPassword = BCrypt.hashpw(
 			new String(input, StandardCharsets.US_ASCII),
 			new String(salt, StandardCharsets.US_ASCII));
 
-		return hashedPassword.getBytes(StandardCharsets.US_ASCII);
+		return new CryptoHashProviderResponse(
+			_CRYPTO_HASH_PROVIDER_NAME,
+			hashedPassword.getBytes(StandardCharsets.US_ASCII));
 	}
 
 	@Override
@@ -40,5 +43,12 @@ public class BCryptCryptoHashProvider implements CryptoHashProvider {
 
 		return salt.getBytes(StandardCharsets.US_ASCII);
 	}
+
+	@Override
+	public String getCryptoHashProviderName() {
+		return _CRYPTO_HASH_PROVIDER_NAME;
+	}
+
+	private static final String _CRYPTO_HASH_PROVIDER_NAME = "BCrypt";
 
 }

@@ -20,6 +20,7 @@ import {
 import {PagesVisitor} from 'dynamic-data-mapping-form-renderer';
 import {useContext} from 'react';
 
+import {sub} from '../../utils/lang.es';
 import FormViewContext from './FormViewContext.es';
 
 /**
@@ -27,7 +28,7 @@ import FormViewContext from './FormViewContext.es';
  * properties by using dataLayoutBuilder
  * @param {object} dataLayoutBuilder
  */
-function getNewFields(dataLayoutBuilder) {
+function getDDMFormFields(dataLayoutBuilder) {
 	const {pages} = dataLayoutBuilder.getStore();
 	const visitor = new PagesVisitor(pages);
 
@@ -47,47 +48,101 @@ function getNewFields(dataLayoutBuilder) {
  * @param {Array} dataDefinition
  * @param {string} fieldName
  */
-function hasField({dataDefinitionFields}, fieldName) {
+function hasFieldWithinDefinitionFields({dataDefinitionFields}, fieldName) {
 	const findByName = ({name}) => fieldName === name;
 
 	return !!dataDefinitionFields.find(findByName);
 }
 
 /**
- * Check if field is required
- * @param {object} dataDefinition
+ * Get label property from definitionField
+ * @param {Array} dataDefinition
  * @param {string} fieldName
  */
-function isRequiredField(dataDefinition, fieldName) {
-	const field = DataDefinitionUtils.getDataDefinitionField(
+function getLabelProperty(dataDefinition, fieldName) {
+	const definitionField = DataDefinitionUtils.getDataDefinitionField(
 		dataDefinition,
 		fieldName
 	);
 
-	return field?.required ?? false;
+	return definitionField.label;
 }
 
-export default ({dataLayoutBuilder}) => {
-	const [{dataDefinition}, dispatch] = useContext(FormViewContext);
+/**
+ * Get required property from definitionField
+ * @param {object} dataDefinition
+ * @param {string} fieldName
+ */
+function getRequiredProperty(dataDefinition, fieldName) {
+	const definitionField = DataDefinitionUtils.getDataDefinitionField(
+		dataDefinition,
+		fieldName
+	);
+
+	return !!definitionField?.required;
+}
+
+/**
+ * Generate language key copy-of-x
+ * @param {Object} label
+ */
+function generateCopyOfLanguageKeys(label = {}) {
+	return Object.keys(label).reduce(
+		(acc, cur) => ({
+			...acc,
+			[cur]: sub(Liferay.Language.get('copy-of-x'), [label[cur]]),
+		}),
+		{}
+	);
+}
+
+export default function useDuplicateField({dataLayoutBuilder}) {
+	const [{dataDefinition, dataLayout}, dispatch] = useContext(
+		FormViewContext
+	);
 
 	return (event) => {
 		dataLayoutBuilder.dispatch('fieldDuplicated', event);
 
-		const dataDefinitionFields = getNewFields(dataLayoutBuilder).map(
-			(newField) => {
-				if (hasField(dataDefinition, newField.name)) {
+		const dataLayoutFields = {...dataLayout.dataLayoutFields};
+
+		const dataDefinitionFields = getDDMFormFields(dataLayoutBuilder).map(
+			(ddmFormField) => {
+				if (
+					hasFieldWithinDefinitionFields(
+						dataDefinition,
+						ddmFormField.name
+					)
+				) {
 					return {
-						...newField,
-						required: isRequiredField(
+						...ddmFormField,
+						label: getLabelProperty(
 							dataDefinition,
-							newField.name
+							ddmFormField.name
+						),
+						required: getRequiredProperty(
+							dataDefinition,
+							ddmFormField.name
 						),
 					};
 				}
 
+				dataLayoutFields[ddmFormField.name] = {
+					...dataLayoutFields[ddmFormField.fieldName],
+					label: generateCopyOfLanguageKeys(
+						dataLayoutFields[event.fieldName].label
+					),
+				};
+
 				return {
-					...newField,
-					required: isRequiredField(dataDefinition, event.fieldName),
+					...ddmFormField,
+					label: generateCopyOfLanguageKeys(
+						getLabelProperty(dataDefinition, event.fieldName)
+					),
+					required: getRequiredProperty(
+						dataDefinition,
+						event.fieldName
+					),
 				};
 			}
 		);
@@ -96,5 +151,10 @@ export default ({dataLayoutBuilder}) => {
 			payload: {dataDefinitionFields},
 			type: DataLayoutBuilderActions.UPDATE_DATA_DEFINITION_FIELDS,
 		});
+
+		dispatch({
+			payload: {dataLayoutFields},
+			type: DataLayoutBuilderActions.UPDATE_DATA_LAYOUT_FIELDS,
+		});
 	};
-};
+}

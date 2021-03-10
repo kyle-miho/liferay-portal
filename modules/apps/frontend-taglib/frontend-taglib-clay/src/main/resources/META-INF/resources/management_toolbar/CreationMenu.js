@@ -14,6 +14,7 @@
 
 import {ClayButtonWithIcon} from '@clayui/button';
 import ClayDropDown from '@clayui/drop-down';
+import classNames from 'classnames';
 import React, {useRef, useState} from 'react';
 
 import LinkOrButton from './LinkOrButton';
@@ -40,6 +41,15 @@ const CreationMenu = ({
 	const totalItemsCountRef = useRef(
 		primaryItems.length + secondaryItemsCountRef.current
 	);
+
+	const getPlusIconLabel = () => {
+		const item =
+			primaryItems?.[0] ??
+			secondaryItems?.[0].items?.[0] ??
+			secondaryItems?.[0];
+
+		return item?.label || Liferay.Language.get('new');
+	};
 
 	const getVisibleItemsCount = () => {
 		const primaryItemsCount = primaryItems.length;
@@ -102,7 +112,13 @@ const CreationMenu = ({
 		let currentItemCount = 0;
 
 		return (
-			<ClayDropDown.ItemList>
+			<ClayDropDown.ItemList
+				className={classNames({
+					'dropdown-menu-indicator-start': primaryItems.some(
+						(item) => item.icon
+					),
+				})}
+			>
 				{primaryItems?.map((item, index) => {
 					currentItemCount++;
 
@@ -145,8 +161,10 @@ const CreationMenu = ({
 					onActiveChange={setActive}
 					trigger={
 						<ClayButtonWithIcon
+							aria-label={getPlusIconLabel()}
 							className="nav-btn nav-btn-monospaced"
 							symbol="plus"
+							title={getPlusIconLabel()}
 						/>
 					}
 				>
@@ -202,6 +220,7 @@ const CreationMenu = ({
 				</ClayDropDown>
 			) : (
 				<LinkOrButton
+					aria-label={getPlusIconLabel()}
 					button={true}
 					className="nav-btn nav-btn-monospaced"
 					displayType="primary"
@@ -210,6 +229,7 @@ const CreationMenu = ({
 						onCreateButtonClick(event, {item: primaryItems[0]});
 					}}
 					symbol="plus"
+					title={getPlusIconLabel()}
 				/>
 			)}
 		</>

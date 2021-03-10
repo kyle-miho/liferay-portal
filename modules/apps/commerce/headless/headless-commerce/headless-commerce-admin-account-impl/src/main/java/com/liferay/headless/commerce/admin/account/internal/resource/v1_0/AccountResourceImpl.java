@@ -30,6 +30,7 @@ import com.liferay.commerce.account.service.CommerceAccountService;
 import com.liferay.commerce.account.service.CommerceAccountUserRelService;
 import com.liferay.commerce.account.service.persistence.CommerceAccountOrganizationRelPK;
 import com.liferay.commerce.account.service.persistence.CommerceAccountUserRelPK;
+import com.liferay.commerce.constants.CommerceAddressConstants;
 import com.liferay.commerce.model.CommerceAddress;
 import com.liferay.commerce.service.CommerceAddressService;
 import com.liferay.headless.commerce.admin.account.dto.v1_0.Account;
@@ -273,6 +274,18 @@ public class AccountResourceImpl
 				true, account.getExternalReferenceCode(),
 				_serviceContextHelper.getServiceContext());
 
+		if (_isValidId(account.getDefaultBillingAccountAddressId())) {
+			_commerceAccountService.updateDefaultBillingAddress(
+				commerceAccount.getCommerceAccountId(),
+				account.getDefaultBillingAccountAddressId());
+		}
+
+		if (_isValidId(account.getDefaultShippingAccountAddressId())) {
+			_commerceAccountService.updateDefaultShippingAddress(
+				commerceAccount.getCommerceAccountId(),
+				account.getDefaultShippingAccountAddressId());
+		}
+
 		// Expando
 
 		Map<String, ?> customFields = account.getCustomFields();
@@ -434,6 +447,14 @@ public class AccountResourceImpl
 		return region.getRegionId();
 	}
 
+	private boolean _isValidId(Long value) {
+		if ((value == null) || (value <= 0)) {
+			return false;
+		}
+
+		return true;
+	}
+
 	private Account _toAccount(CommerceAccount commerceAccount)
 		throws Exception {
 
@@ -461,8 +482,8 @@ public class AccountResourceImpl
 			null, _getEmailAddress(account, commerceAccount),
 			GetterUtil.get(account.getTaxId(), commerceAccount.getTaxId()),
 			commerceAccount.isActive(),
-			commerceAccount.getDefaultBillingAddressId(),
-			commerceAccount.getDefaultShippingAddressId(),
+			account.getDefaultBillingAccountAddressId(),
+			account.getDefaultShippingAccountAddressId(),
 			account.getExternalReferenceCode(), serviceContext);
 
 		// Expando
@@ -523,6 +544,8 @@ public class AccountResourceImpl
 
 				CommerceAddress commerceAddress =
 					_commerceAddressService.addCommerceAddress(
+						GetterUtil.getString(
+							accountAddress.getExternalReferenceCode(), null),
 						commerceAccount.getModelClassName(),
 						commerceAccount.getCommerceAccountId(),
 						accountAddress.getName(),
@@ -533,10 +556,10 @@ public class AccountResourceImpl
 						accountAddress.getZip(),
 						_getRegionId(country, accountAddress),
 						country.getCountryId(), accountAddress.getPhoneNumber(),
-						GetterUtil.get(
-							accountAddress.getDefaultBilling(), false),
-						GetterUtil.get(
-							accountAddress.getDefaultShipping(), false),
+						GetterUtil.getInteger(
+							accountAddress.getType(),
+							CommerceAddressConstants.
+								ADDRESS_TYPE_BILLING_AND_SHIPPING),
 						serviceContext);
 
 				if (GetterUtil.get(accountAddress.getDefaultBilling(), false)) {

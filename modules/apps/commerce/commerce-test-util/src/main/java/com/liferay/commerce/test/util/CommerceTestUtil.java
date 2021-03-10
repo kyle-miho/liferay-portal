@@ -47,6 +47,7 @@ import com.liferay.commerce.service.CommerceOrderLocalServiceUtil;
 import com.liferay.commerce.service.CommerceShippingMethodLocalServiceUtil;
 import com.liferay.commerce.shipping.engine.fixed.model.CommerceShippingFixedOption;
 import com.liferay.commerce.shipping.engine.fixed.service.CommerceShippingFixedOptionLocalServiceUtil;
+import com.liferay.commerce.test.util.context.TestCommerceContext;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.Country;
@@ -305,8 +306,8 @@ public class CommerceTestUtil {
 		throws Exception {
 
 		return CommerceCatalogLocalServiceUtil.addCommerceCatalog(
-			RandomTestUtil.randomString(), commerceCurrencyCode,
-			LocaleUtil.toLanguageId(LocaleUtil.US), null,
+			null, RandomTestUtil.randomString(), commerceCurrencyCode,
+			LocaleUtil.toLanguageId(LocaleUtil.US),
 			ServiceContextTestUtil.getServiceContext(
 				companyId, groupId, userId));
 	}
@@ -316,9 +317,8 @@ public class CommerceTestUtil {
 		throws Exception {
 
 		return CommerceChannelLocalServiceUtil.addCommerceChannel(
-			groupId, RandomTestUtil.randomString(),
+			StringPool.BLANK, groupId, RandomTestUtil.randomString(),
 			RandomTestUtil.randomString(), null, commerceCurrencyCode,
-			StringPool.BLANK,
 			ServiceContextTestUtil.getServiceContext(groupId));
 	}
 
@@ -327,9 +327,9 @@ public class CommerceTestUtil {
 		throws Exception {
 
 		return CommerceChannelLocalServiceUtil.addCommerceChannel(
-			RandomTestUtil.nextLong(), RandomTestUtil.randomString(),
-			RandomTestUtil.randomString(), null, commerceCurrencyCode,
-			StringPool.BLANK, ServiceContextTestUtil.getServiceContext());
+			StringPool.BLANK, RandomTestUtil.nextLong(),
+			RandomTestUtil.randomString(), RandomTestUtil.randomString(), null,
+			commerceCurrencyCode, ServiceContextTestUtil.getServiceContext());
 	}
 
 	public static CommerceChannelRel addCommerceChannelRel(

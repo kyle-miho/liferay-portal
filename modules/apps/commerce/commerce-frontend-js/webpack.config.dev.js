@@ -69,7 +69,26 @@ module.exports = {
 				use: [
 					{loader: 'style-loader'},
 					{loader: 'css-loader'},
-					{loader: 'sass-loader'},
+					{
+						loader: 'sass-loader',
+						options: {
+							sassOptions: {
+								importer: (url, _, done) => {
+									if (url.includes('atlas-variables')) {
+										done({
+											file: path.resolve(
+												__dirname,
+												'../../../node_modules/@clayui/css/src/scss/atlas-variables.scss'
+											),
+										});
+									}
+									else {
+										done({file: url});
+									}
+								},
+							},
+						},
+					},
 				],
 			},
 			{
@@ -92,7 +111,7 @@ module.exports = {
 	],
 	resolve: {
 		alias: {
-			'frontend-js-react-web': path.resolve(
+			'@liferay/frontend-js-react-web': path.resolve(
 				__dirname,
 				'../../../node_modules/frontend-js-react-web/src/main/resources/META-INF/resources/js/index.es.js'
 			),

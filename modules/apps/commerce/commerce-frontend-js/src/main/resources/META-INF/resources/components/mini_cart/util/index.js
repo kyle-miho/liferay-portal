@@ -14,24 +14,9 @@
 
 import {
 	DEFAULT_ORDER_DETAILS_PORTLET_ID,
-	DISCOUNT_LEVEL_PREFIX,
 	ORDER_DETAILS_ENDPOINT,
 	ORDER_UUID_PARAMETER,
 } from './constants';
-
-export function isNonnull(...values) {
-	return !!values.find((value) => parseFloat(value) > 0);
-}
-
-export function collectDiscountLevels(price) {
-	return Object.keys(price).reduce((levels, key) => {
-		if (key.startsWith(DISCOUNT_LEVEL_PREFIX)) {
-			levels.push(price[key].toFixed(2));
-		}
-
-		return levels;
-	}, []);
-}
 
 export function parseOptions(jsonString) {
 	let options;
@@ -57,7 +42,7 @@ function generatedOrderDetailURL() {
 	baseURL.searchParams.append('p_p_lifecycle', '0');
 	baseURL.searchParams.append(
 		`_${DEFAULT_ORDER_DETAILS_PORTLET_ID}_mvcRenderCommandName`,
-		'editCommerceOrder'
+		'/commerce_open_order_content/edit_commerce_order'
 	);
 	baseURL.searchParams.append(
 		`_${DEFAULT_ORDER_DETAILS_PORTLET_ID}_commerceOrderUuid`,

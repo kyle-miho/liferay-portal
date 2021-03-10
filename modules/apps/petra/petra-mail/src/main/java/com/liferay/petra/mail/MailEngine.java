@@ -571,13 +571,13 @@ public class MailEngine {
 			int batchSize)
 		throws MailEngineException {
 
-		if ((_DATA_LIMIT_MAX_MAIL_MESSAGE_PERIOD > 0) &&
-			(_DATA_LIMIT_MAX_MAIL_MESSAGE_COUNT > 0)) {
+		if ((_DATA_LIMIT_MAIL_MESSAGE_MAX_PERIOD > 0) &&
+			(_DATA_LIMIT_MAIL_MESSAGE_MAX_COUNT > 0)) {
 
 			long currentTime = System.currentTimeMillis();
 
 			if (((currentTime - _lastResetTime.get()) / 1000) >
-					_DATA_LIMIT_MAX_MAIL_MESSAGE_PERIOD) {
+					_DATA_LIMIT_MAIL_MESSAGE_MAX_PERIOD) {
 
 				_mailMessageCounts.clear();
 
@@ -588,7 +588,7 @@ public class MailEngine {
 				CompanyThreadLocal.getCompanyId(), id -> new AtomicLong());
 
 			if (mailMessageCount.incrementAndGet() >
-					_DATA_LIMIT_MAX_MAIL_MESSAGE_COUNT) {
+					_DATA_LIMIT_MAIL_MESSAGE_MAX_COUNT) {
 
 				throw new MailEngineException(
 					"Unable to exceed maximum number of allowed mail messages");
@@ -684,13 +684,13 @@ public class MailEngine {
 
 	private static final int _BATCH_SIZE = 0;
 
-	private static final long _DATA_LIMIT_MAX_MAIL_MESSAGE_COUNT =
+	private static final long _DATA_LIMIT_MAIL_MESSAGE_MAX_COUNT =
 		GetterUtil.getLong(
-			PropsUtil.get(PropsKeys.DATA_LIMIT_MAX_MAIL_MESSAGE_COUNT));
+			PropsUtil.get(PropsKeys.DATA_LIMIT_MAIL_MESSAGE_MAX_COUNT));
 
-	private static final long _DATA_LIMIT_MAX_MAIL_MESSAGE_PERIOD =
+	private static final long _DATA_LIMIT_MAIL_MESSAGE_MAX_PERIOD =
 		GetterUtil.getLong(
-			PropsUtil.get(PropsKeys.DATA_LIMIT_MAX_MAIL_MESSAGE_PERIOD));
+			PropsUtil.get(PropsKeys.DATA_LIMIT_MAIL_MESSAGE_MAX_PERIOD));
 
 	private static final String _MULTIPART_TYPE_ALTERNATIVE = "alternative";
 

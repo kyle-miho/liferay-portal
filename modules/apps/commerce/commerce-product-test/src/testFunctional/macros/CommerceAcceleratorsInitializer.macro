@@ -68,9 +68,7 @@ definition {
 	macro createNewOrderFromAccountSelectorDropdown {
 		Click(locator1 = "Button#ANGLE_DOWN");
 
-		Click(
-			key_button = "Create New Order",
-			locator1 = "CommerceAccelerators#ANY_BUTTON");
+		Button.click(button = "Create New Order");
 	}
 
 	macro deactivateCommerceAccountViaFront {
@@ -86,7 +84,7 @@ definition {
 	macro gotoMiniumProductDetailsPage {
 		Click(
 			key_productName = "${productName}",
-			locator1 = "CommerceAccelerators#MINIUM_CARD_NAME");
+			locator1 = "CommerceAccelerators#PRODUCT_CARD_NAME");
 	}
 
 	macro inviteNewMemberWithRoleToAccount {
@@ -159,7 +157,7 @@ definition {
 	macro selectAccountFromAccountSelector {
 		Click.clickNoMouseOver(locator1 = "CommerceAccelerators#ACCOUNT_SELECTOR_DROPDOWN");
 
-		Click(locator1 = "CommerceAccelerators#ACCOUNT_SWITCHER_BACK_BUTTON");
+		Click(locator1 = "CommerceAccelerators#ACCOUNT_SELECTOR_DROPDOWN_BACK_BUTTON");
 
 		Click(
 			key_accountName = "${accountName}",
@@ -205,7 +203,7 @@ definition {
 	macro viewMiniumCardName {
 		AssertTextEquals(
 			key_productName = "${productName}",
-			locator1 = "CommerceAccelerators#MINIUM_CARD_NAME",
+			locator1 = "CommerceAccelerators#PRODUCT_CARD_NAME",
 			value1 = "${productName}");
 	}
 
@@ -213,7 +211,7 @@ definition {
 		Click.clickNoMouseOver(locator1 = "CommerceAccelerators#ACCOUNT_SELECTOR_DROPDOWN");
 
 		AssertTextEquals(
-			locator1 = "CommerceAccelerators#ACCOUNT_SELECTOR_SELECTED_ACCOUNT",
+			locator1 = "CommerceAccelerators#ACCOUNT_SELECTOR_DROPDOWN_MENU_SELECTED_ACCOUNT",
 			value1 = "${selectedAccount}");
 
 		Click.clickNoMouseOver(locator1 = "CommerceAccelerators#ACCOUNT_SELECTOR_DROPDOWN");

@@ -9,9 +9,8 @@ definition {
 
 		if (IsElementNotPresent(key_fragmentName = "${fragmentName}", locator1 = "PageEditor#FRAGMENT_SIDEBAR_COMMENT_SECTION_NAME")) {
 			Click(
-				key_content = "${content}",
-				key_fragmentClass = "${fragmentClass}",
-				locator1 = "Fragment#FRAGMENT");
+				key_fragmentName = "${fragmentName}",
+				locator1 = "Fragment#FRAGMENT_BODY");
 		}
 
 		AssertElementPresent(
@@ -343,6 +342,29 @@ definition {
 		}
 	}
 
+	macro addEntryWithLink {
+		PageEditor.gotoEditableFieldEdit(
+			contributed = "${contributed}",
+			fragmentName = "${fragmentName}",
+			id = "${id}");
+
+		SelectFieldText(
+			key_editor = "content",
+			locator1 = "AlloyEditor#EDITOR");
+
+		Click(locator1 = "AlloyEditor#TEXT_FORMATTING_LINK");
+
+		Type(
+			locator1 = "AlloyEditor#TEXT_FORMATTING_LINK_INPUT",
+			value1 = "${entryExternalURL}");
+
+		Click(locator1 = "AlloyEditor#TEXT_FORMATTING_LINK_INPUT_CONFIRM");
+
+		Click(locator1 = "PageEditor#CONTENT_PAGE_DISABLED_HEADER");
+
+		PageEditor.waitForAutoSave();
+	}
+
 	macro addExperience {
 		var key_experienceName = "${experienceName}";
 		var key_segmentName = "${segmentName}";
@@ -360,6 +382,46 @@ definition {
 		Type(
 			locator1 = "PageEditor#EXPERIENCE_NAME",
 			value1 = "${experienceName}");
+
+		Click(locator1 = "PageEditor#EXPERIENCE_SEGMENT_ANYONE");
+
+		AssertClick(
+			locator1 = "PageEditor#EXPERIENCE_SELECT_SEGMENT",
+			value1 = "${segmentName}");
+
+		Click(locator1 = "Button#SAVE");
+
+		AssertClick(
+			locator1 = "PageEditor#EXPERIENCE_BUTTON_NAME",
+			value1 = "${experienceName}");
+
+		AssertElementPresent(
+			key_experienceName = "${experienceName}",
+			locator1 = "PageEditor#EXPERIENCE_SELECT_ITEM");
+	}
+
+	macro addExperienceWithLanguage {
+		var key_experienceName = "${experienceName}";
+		var key_segmentName = "${segmentName}";
+		var key_language = "${language}";
+
+		AssertTextEquals(
+			locator1 = "PageEditor#EXPERIENCE_LABEL",
+			value1 = "Experience");
+
+		Click(locator1 = "PageEditor#EXPERIENCE_DEFAULT_BUTTON_NAME");
+
+		Click(
+			key_text = "New Experience",
+			locator1 = "Button#ANY");
+
+		Type(
+			locator1 = "PageEditor#EXPERIENCE_NAME",
+			value1 = "${experienceName}");
+
+		Check.checkNotVisible(
+			checkboxName = "${language}",
+			locator1 = "Checkbox#ANY_CHECKBOX");
 
 		Click(locator1 = "PageEditor#EXPERIENCE_SEGMENT_ANYONE");
 
@@ -596,13 +658,27 @@ definition {
 	}
 
 	macro assertAutoImageResolution {
-		var currentSrc = selenium.getAttribute("${element}@currentSrc");
+		if ("${type}" == "backgroundImage") {
+			var backgroundImage = Css.getCssValue(
+				attribute = "background-image",
+				element = "${element}");
 
-		if (contains("${currentSrc}", "${adaptiveMediaName}")) {
-			echo("The auto image resolution is right.");
+			if (contains("${backgroundImage}", "${adaptiveMediaName}")) {
+				echo("The auto image resolution is right.");
+			}
+			else {
+				fail("The auto image resolution is wrong.");
+			}
 		}
 		else {
-			fail("The auto image resolution is wrong.");
+			var currentSrc = selenium.getAttribute("${element}@currentSrc");
+
+			if (contains("${currentSrc}", "${adaptiveMediaName}")) {
+				echo("The auto image resolution is right.");
+			}
+			else {
+				fail("The auto image resolution is wrong.");
+			}
 		}
 	}
 
@@ -622,6 +698,23 @@ definition {
 		PageEditor.clickManagementBar();
 
 		AssertElementPresent(locator1 = "PageEditor#EXPERIENCE_BUTTON_NAME");
+	}
+
+	macro changeExperienceLanguage {
+		var key_experienceName = "${newExperience}";
+		var key_language = "${language}";
+
+		Click(locator1 = "PageEditor#EXPERIENCE_LABEL");
+
+		Click(locator1 = "PageEditor#EXPERIENCE_SELECT_ITEM");
+
+		PageEditor.clickManagementBar();
+
+		AssertElementPresent(locator1 = "PageEditor#EXPERIENCE_BUTTON_NAME");
+
+		Click(locator1 = "PageEditor#EXPERIENCE_LANGUAGE_SELECTOR");
+
+		Click(locator1 = "PageEditor#EXPERIENCE_LANGUAGE_SELECTOR_LOCALE");
 	}
 
 	macro changeLocale {
@@ -758,15 +851,6 @@ definition {
 				key_fieldLabel = "Border Radius",
 				locator1 = "Select#GENERIC_SELECT_FIELD",
 				value1 = "${borderRadius}");
-
-			Pause(locator1 = "3000");
-		}
-
-		if (isSet(bottomSpacing)) {
-			Select(
-				key_fieldLabel = "Bottom Spacing",
-				locator1 = "Select#GENERIC_SELECT_FIELD",
-				value1 = "${bottomSpacing}");
 
 			Pause(locator1 = "3000");
 		}
@@ -1583,7 +1667,8 @@ definition {
 					if (isSet(entryTitle)) {
 						PageEditorMapping.mapEditableFieldToAsset(
 							entryTitle = "${entryTitle}",
-							navItem = "${navItem}");
+							navItem = "${navItem}",
+							uploadFileName = "${uploadFileName}");
 
 						if ("${navItem}" == "Documents and Media") {
 							Select(
@@ -1834,11 +1919,11 @@ definition {
 			}
 		}
 
-		if ("${panel}" == "Link") {
+		if ("${panel}" == "General") {
 			AssertClick(
-				key_navItem = "Link",
+				key_navItem = "General",
 				locator1 = "PageEditor#NAV_ITEM_BUTTON",
-				value1 = "Link");
+				value1 = "General");
 
 			if ("${link}" == "From Content Field") {
 				Select(
@@ -2279,6 +2364,20 @@ definition {
 
 	macro openExperienceMenu {
 		Click(locator1 = "PageEditor#EXPERIENCE_DEFAULT_BUTTON_NAME");
+	}
+
+	macro prioritizeExperience {
+		var key_experienceName = "${experienceName}";
+
+		AssertTextEquals(
+			locator1 = "PageEditor#EXPERIENCE_LABEL",
+			value1 = "Experience");
+
+		AssertClick(
+			locator1 = "PageEditor#EXPERIENCE_BUTTON_NAME",
+			value1 = "${experienceName}");
+
+		Click(locator1 = "PageEditor#EXPERIENCE_PRIORITIZE_BUTTON");
 	}
 
 	macro removeFragment {
@@ -2788,12 +2887,6 @@ definition {
 				key_borderRadius = "${borderRadius}",
 				key_fragmentName = "${fragmentName}",
 				locator1 = "Fragment#FRAGMENT_CONFIGURATION_BORDER_RADIUS");
-		}
-
-		if (isSet(bottomSpacing)) {
-			AssertElementPresent(
-				key_bottomSpacing = "${bottomSpacing}",
-				locator1 = "Fragment#BOTTOM_SPACING");
 		}
 
 		if (isSet(boxShadow)) {

@@ -15,33 +15,38 @@
 package com.liferay.analytics.reports.layout.internal.info.item;
 
 import com.liferay.analytics.reports.info.item.AnalyticsReportsInfoItem;
-import com.liferay.info.item.InfoItemServiceTracker;
 import com.liferay.info.type.WebImage;
+import com.liferay.layout.seo.kernel.LayoutSEOLink;
+import com.liferay.layout.seo.kernel.LayoutSEOLinkManager;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Layout;
-import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
+import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.LayoutLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.service.permission.LayoutPermissionUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.PropsUtil;
+import com.liferay.portal.kernel.util.Validator;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -55,66 +60,77 @@ public class LayoutAnalyticsReportsInfoItem
 
 	@Override
 	public String getAuthorName(Layout layout) {
-		return _getUserOptional(
-			layout
+		return null;
+	}
+
+	@Override
+	public long getAuthorUserId(Layout layout) {
+		return 0L;
+	}
+
+	@Override
+	public WebImage getAuthorWebImage(Layout layout, Locale locale) {
+		return null;
+	}
+
+	@Override
+	public List<Locale> getAvailableLocales(Layout layout) {
+		return Optional.ofNullable(
+			_groupLocalService.fetchGroup(layout.getGroupId())
 		).map(
-			User::getFullName
+			Group::getGroupId
+		).map(
+			_language::getAvailableLocales
+		).map(
+			ListUtil::fromCollection
+		).orElseGet(
+			() -> Collections.singletonList(LocaleUtil.getDefault())
+		);
+	}
+
+	@Override
+	public String getCanonicalURL(Layout layout, Locale locale) {
+		Optional<ThemeDisplay> themeDisplayOptional =
+			_getThemeDisplayOptional();
+
+		return themeDisplayOptional.map(
+			themeDisplay -> {
+				String completeURL = _portal.getCurrentCompleteURL(
+					themeDisplay.getRequest());
+
+				try {
+					String canonicalURL = _portal.getCanonicalURL(
+						completeURL, themeDisplay, layout, false, false);
+
+					LayoutSEOLink layoutSEOLink =
+						_layoutSEOLinkManager.getCanonicalLayoutSEOLink(
+							layout, locale, canonicalURL,
+							_portal.getAlternateURLs(
+								canonicalURL, themeDisplay, layout));
+
+					return layoutSEOLink.getHref();
+				}
+				catch (PortalException portalException) {
+					_log.error(portalException, portalException);
+
+					return StringPool.BLANK;
+				}
+			}
 		).orElse(
 			StringPool.BLANK
 		);
 	}
 
 	@Override
-	public long getAuthorUserId(Layout layout) {
-		return _getUserOptional(
-			layout
-		).map(
-			User::getUserId
-		).orElse(
-			0L
-		);
-	}
-
-	@Override
-	public WebImage getAuthorWebImage(Layout layout, Locale locale) {
-		ThemeDisplay themeDisplay = _getThemeDisplay();
-
-		if (themeDisplay == null) {
-			return new WebImage(StringPool.BLANK);
+	public Locale getDefaultLocale(Layout layout) {
+		try {
+			return _portal.getSiteDefaultLocale(layout.getGroupId());
+		}
+		catch (PortalException portalException) {
+			_log.error(portalException, portalException);
 		}
 
-		Optional<User> userOptional = _getUserOptional(layout);
-
-		return userOptional.map(
-			user -> {
-				try {
-					return new WebImage(user.getPortraitURL(themeDisplay));
-				}
-				catch (PortalException portalException) {
-					_log.error(portalException, portalException);
-
-					return new WebImage(StringPool.BLANK);
-				}
-			}
-		).orElse(
-			new WebImage(StringPool.BLANK)
-		);
-	}
-
-	@Override
-	public List<Locale> getAvailableLocales(Layout layout) {
-		return Stream.of(
-			layout.getAvailableLanguageIds()
-		).map(
-			LocaleUtil::fromLanguageId
-		).collect(
-			Collectors.toList()
-		);
-	}
-
-	@Override
-	public Locale getDefaultLocale(Layout layout) {
-		return LocaleUtil.fromLanguageId(layout.getDefaultLanguageId());
+		return LocaleUtil.getDefault();
 	}
 
 	@Override
@@ -124,12 +140,18 @@ public class LayoutAnalyticsReportsInfoItem
 
 	@Override
 	public String getTitle(Layout layout, Locale locale) {
-		return layout.getTitle(locale);
+		return Optional.ofNullable(
+			layout.getTitle(locale)
+		).filter(
+			Validator::isNotNull
+		).orElseGet(
+			() -> layout.getName(locale)
+		);
 	}
 
 	@Override
 	public boolean isShow(Layout layout) {
-		if (!layout.isTypeContent()) {
+		if (!layout.isTypeContent() && !layout.isTypePortlet()) {
 			return false;
 		}
 
@@ -153,20 +175,12 @@ public class LayoutAnalyticsReportsInfoItem
 		return true;
 	}
 
-	private ThemeDisplay _getThemeDisplay() {
-		ServiceContext serviceContext =
-			ServiceContextThreadLocal.getServiceContext();
-
-		if (serviceContext != null) {
-			return serviceContext.getThemeDisplay();
-		}
-
-		return null;
-	}
-
-	private Optional<User> _getUserOptional(Layout layout) {
+	private Optional<ThemeDisplay> _getThemeDisplayOptional() {
 		return Optional.ofNullable(
-			_userLocalService.fetchUser(layout.getUserId()));
+			ServiceContextThreadLocal.getServiceContext()
+		).map(
+			ServiceContext::getThemeDisplay
+		);
 	}
 
 	private boolean _hasEditPermission(
@@ -203,10 +217,19 @@ public class LayoutAnalyticsReportsInfoItem
 		LayoutAnalyticsReportsInfoItem.class);
 
 	@Reference
-	private InfoItemServiceTracker _infoItemServiceTracker;
+	private GroupLocalService _groupLocalService;
+
+	@Reference
+	private Language _language;
 
 	@Reference
 	private LayoutLocalService _layoutLocalService;
+
+	@Reference
+	private LayoutSEOLinkManager _layoutSEOLinkManager;
+
+	@Reference
+	private Portal _portal;
 
 	@Reference
 	private UserLocalService _userLocalService;

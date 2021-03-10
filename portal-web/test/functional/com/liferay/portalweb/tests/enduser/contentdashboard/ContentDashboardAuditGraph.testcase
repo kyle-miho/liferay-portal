@@ -31,17 +31,189 @@ definition {
 		if ("${testPortalInstance}" == "true") {
 			PortalInstances.tearDownCP();
 		}
-		else {
-			WebContentNavigator.openWebContentAdmin(siteURLKey = "test-site-name");
+	}
 
-			WebContent.viewTitle(webContentTitle = "WC Title");
+	@description = "When a user clicks on one of the colored bars of the audit graph, the filters corresponding to the categories in that bar are applied, they are shown as filter labels in the management tool bar and the list of contents is filtered by them"
+	@priority = "5"
+	test AuditGraphClickOnBar {
+		property portal.acceptance = "true";
 
-			WebContent.deleteCP(
-				siteURLKey = "test-site-name",
-				webContentTitle = "WC Title");
+		JSONCategory.addCategory(
+			groupName = "Global",
+			title = "Audience 2",
+			vocabularyName = "Audience");
 
-			ContentDashboard.tearDown();
-		}
+		JSONCategory.addCategory(
+			groupName = "Global",
+			title = "Stage 2",
+			vocabularyName = "Stage");
+
+		WebContentNavigator.openWebContentAdmin(siteURLKey = "test-site-name");
+
+		WebContentNavigator.gotoAddCP();
+
+		WebContent.addWithCategoryCP(
+			categoryName = "Audience 1",
+			vocabularyName = "Audience",
+			webContentContent = "Web Content Content",
+			webContentTitle = "WC Title");
+
+		WebContentNavigator.openWebContentAdmin(siteURLKey = "test-site-name");
+
+		WebContentNavigator.gotoEditCP(webContentTitle = "WC Title");
+
+		WebContent.selectCategory(
+			categoryName = "Stage 1",
+			vocabularyName = "Stage");
+
+		PortletEntry.publish();
+
+		WebContentNavigator.openWebContentAdmin(siteURLKey = "test-site-name");
+
+		WebContentNavigator.gotoAddCP();
+
+		WebContent.addWithCategoryCP(
+			categoryName = "Audience 2",
+			vocabularyName = "Audience",
+			webContentContent = "Web Content Content",
+			webContentTitle = "WC Title 2");
+
+		WebContentNavigator.openWebContentAdmin(siteURLKey = "test-site-name");
+
+		WebContentNavigator.gotoEditCP(webContentTitle = "WC Title 2");
+
+		WebContent.selectCategory(
+			categoryName = "Stage 2",
+			vocabularyName = "Stage");
+
+		PortletEntry.publish();
+
+		ApplicationsMenu.gotoPortlet(
+			category = "Content",
+			panel = "Applications",
+			portlet = "Content Dashboard");
+
+		Pause(locator1 = "3000");
+
+		ContentDashboard.clickOnFirstBar();
+
+		AssertTextPresent(
+			locator1 = "ContentDashboard#BAR_SELECTED_MESSAGE",
+			value1 = "Press escape to remove the bar's category filters.");
+
+		AssertTextPresent(
+			categoryName = "Audience 1",
+			locator1 = "ContentDashboard#FILTER_CATEGORY_NAME",
+			value1 = "Category:Audience 1");
+
+		AssertTextPresent(
+			categoryName = "Stage 1",
+			locator1 = "ContentDashboard#FILTER_CATEGORY_NAME",
+			value1 = "Category:Stage 1");
+
+		ContentDashboard.clearFilters();
+
+		AssertElementNotPresent(
+			categoryName = "Audience 1",
+			locator1 = "ContentDashboard#FILTER_CATEGORY_NAME");
+
+		AssertElementNotPresent(
+			categoryName = "Stage 1",
+			locator1 = "ContentDashboard#FILTER_CATEGORY_NAME");
+
+		AssertElementNotPresent(locator1 = "ContentDashboard#BAR_SELECTED_MESSAGE");
+	}
+
+	@description = "When a user clicks on one of the colored bars of the audit graph, the filters corresponding to the categories in that bar are applied, they are shown as filter labels in the management tool bar and the list of contents is filtered by them"
+	@priority = "5"
+	test AuditGraphClickOnBarDeleteOneFilter {
+		property portal.acceptance = "true";
+
+		JSONCategory.addCategory(
+			groupName = "Global",
+			title = "Audience 2",
+			vocabularyName = "Audience");
+
+		JSONCategory.addCategory(
+			groupName = "Global",
+			title = "Stage 2",
+			vocabularyName = "Stage");
+
+		WebContentNavigator.openWebContentAdmin(siteURLKey = "test-site-name");
+
+		WebContentNavigator.gotoAddCP();
+
+		WebContent.addWithCategoryCP(
+			categoryName = "Audience 1",
+			vocabularyName = "Audience",
+			webContentContent = "Web Content Content",
+			webContentTitle = "WC Title");
+
+		WebContentNavigator.openWebContentAdmin(siteURLKey = "test-site-name");
+
+		WebContentNavigator.gotoEditCP(webContentTitle = "WC Title");
+
+		WebContent.selectCategory(
+			categoryName = "Stage 1",
+			vocabularyName = "Stage");
+
+		PortletEntry.publish();
+
+		WebContentNavigator.openWebContentAdmin(siteURLKey = "test-site-name");
+
+		WebContentNavigator.gotoAddCP();
+
+		WebContent.addWithCategoryCP(
+			categoryName = "Audience 2",
+			vocabularyName = "Audience",
+			webContentContent = "Web Content Content",
+			webContentTitle = "WC Title 2");
+
+		WebContentNavigator.openWebContentAdmin(siteURLKey = "test-site-name");
+
+		WebContentNavigator.gotoEditCP(webContentTitle = "WC Title 2");
+
+		WebContent.selectCategory(
+			categoryName = "Stage 2",
+			vocabularyName = "Stage");
+
+		PortletEntry.publish();
+
+		ApplicationsMenu.gotoPortlet(
+			category = "Content",
+			panel = "Applications",
+			portlet = "Content Dashboard");
+
+		Pause(locator1 = "3000");
+
+		ContentDashboard.clickOnFirstBar();
+
+		AssertTextPresent(
+			locator1 = "ContentDashboard#BAR_SELECTED_MESSAGE",
+			value1 = "Press escape to remove the bar's category filters.");
+
+		AssertTextPresent(
+			categoryName = "Audience 1",
+			locator1 = "ContentDashboard#FILTER_CATEGORY_NAME",
+			value1 = "Category:Audience 1");
+
+		AssertTextPresent(
+			categoryName = "Stage 1",
+			locator1 = "ContentDashboard#FILTER_CATEGORY_NAME",
+			value1 = "Category:Stage 1");
+
+		ContentDashboard.deleteSecondCategoryFilter();
+
+		AssertTextPresent(
+			categoryName = "Audience 1",
+			locator1 = "ContentDashboard#FILTER_CATEGORY_NAME",
+			value1 = "Category:Audience 1");
+
+		AssertElementNotPresent(
+			categoryName = "Stage 1",
+			locator1 = "ContentDashboard#FILTER_CATEGORY_NAME");
+
+		AssertElementNotPresent(locator1 = "ContentDashboard#BAR_SELECTED_MESSAGE");
 	}
 
 	@description = "When the user clicks on the Flip axes button, the vocabularies will be exchanged, the vocabulary represented in the X (the first in the list in the "In use" box) is sent to the Y, and the other way around"

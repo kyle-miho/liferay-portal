@@ -48,7 +48,7 @@ else {
 
 <div id="<portlet:namespace />editShipmentContainer">
 	<liferay-frontend:screen-navigation
-		fullContainerCssClass="col-12 pt-4"
+		containerWrapperCssClass="container"
 		key="<%= CommerceShipmentScreenNavigationConstants.SCREEN_NAVIGATION_KEY_COMMERCE_SHIPMENT_GENERAL %>"
 		modelBean="<%= commerceShipment %>"
 		portletURL="<%= currentURLObj %>"

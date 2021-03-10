@@ -36,8 +36,8 @@ import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.PropertiesParamUtil;
 import com.liferay.portal.kernel.util.UnicodeProperties;
+import com.liferay.translation.constants.TranslationPortletKeys;
 import com.liferay.translation.service.TranslationEntryService;
-import com.liferay.translation.web.internal.constants.TranslationPortletKeys;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -148,9 +148,11 @@ public class UpdateTranslationMVCActionCommand extends BaseMVCActionCommand {
 									infoItemFieldValues.getInfoFieldValue(
 										infoField.getName());
 
-								biConsumer.accept(
-									sourceLocale,
-									infoFieldValue.getValue(sourceLocale));
+								if (infoFieldValue != null) {
+									biConsumer.accept(
+										sourceLocale,
+										infoFieldValue.getValue(sourceLocale));
+								}
 							}
 						).build()));
 			}

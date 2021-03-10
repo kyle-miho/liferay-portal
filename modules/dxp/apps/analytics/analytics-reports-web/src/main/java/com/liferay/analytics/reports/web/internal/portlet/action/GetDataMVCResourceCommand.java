@@ -16,18 +16,16 @@ package com.liferay.analytics.reports.web.internal.portlet.action;
 
 import com.liferay.analytics.reports.info.item.AnalyticsReportsInfoItem;
 import com.liferay.analytics.reports.info.item.AnalyticsReportsInfoItemTracker;
+import com.liferay.analytics.reports.info.item.ClassNameClassPKInfoItemIdentifier;
 import com.liferay.analytics.reports.info.item.provider.AnalyticsReportsInfoItemObjectProvider;
 import com.liferay.analytics.reports.web.internal.constants.AnalyticsReportsPortletKeys;
 import com.liferay.analytics.reports.web.internal.data.provider.AnalyticsReportsDataProvider;
 import com.liferay.analytics.reports.web.internal.info.item.provider.AnalyticsReportsInfoItemObjectProviderTracker;
-import com.liferay.analytics.reports.web.internal.layout.seo.CanonicalURLProvider;
 import com.liferay.analytics.reports.web.internal.model.TimeRange;
 import com.liferay.analytics.reports.web.internal.model.TimeSpan;
+import com.liferay.info.item.ClassPKInfoItemIdentifier;
 import com.liferay.info.item.InfoItemReference;
 import com.liferay.info.item.InfoItemServiceTracker;
-import com.liferay.info.type.WebImage;
-import com.liferay.layout.display.page.LayoutDisplayPageProviderTracker;
-import com.liferay.layout.seo.kernel.LayoutSEOLinkManager;
 import com.liferay.portal.kernel.exception.NoSuchModelException;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONObject;
@@ -120,10 +118,6 @@ public class GetDataMVCResourceCommand extends BaseMVCResourceCommand {
 						getAnalyticsReportsInfoItem(
 							infoItemReference.getClassName());
 
-			CanonicalURLProvider canonicalURLProvider =
-				new CanonicalURLProvider(
-					httpServletRequest, _layoutDisplayPageProviderTracker,
-					_layoutSEOLinkManager, _portal);
 			ThemeDisplay themeDisplay =
 				(ThemeDisplay)resourceRequest.getAttribute(
 					WebKeys.THEME_DISPLAY);
@@ -133,12 +127,8 @@ public class GetDataMVCResourceCommand extends BaseMVCResourceCommand {
 				JSONUtil.put(
 					"context",
 					_getJSONObject(
-						analyticsReportsInfoItem,
-						canonicalURLProvider.getCanonicalURL(),
-						_portal.getClassNameId(
-							infoItemReference.getClassName()),
-						infoItemReference.getClassPK(),
-						themeDisplay.getCompanyId(), themeDisplay.getLayout(),
+						analyticsReportsInfoItem, themeDisplay.getCompanyId(),
+						infoItemReference, themeDisplay.getLayout(),
 						themeDisplay.getLocale(),
 						_getLocale(
 							httpServletRequest, themeDisplay.getLanguageId()),
@@ -161,35 +151,46 @@ public class GetDataMVCResourceCommand extends BaseMVCResourceCommand {
 		AnalyticsReportsInfoItem<Object> analyticsReportsInfoItem,
 		Locale locale, Object object) {
 
-		String authorProfileImage = null;
+		return Optional.ofNullable(
+			analyticsReportsInfoItem.getAuthorWebImage(object, locale)
+		).filter(
+			webImage -> Validator.isNotNull(webImage.getUrl())
+		).map(
+			webImage -> {
+				long portraitId = GetterUtil.getLong(
+					_http.getParameter(
+						HtmlUtil.escape(webImage.getUrl()), "img_id"));
 
-		WebImage webImage = analyticsReportsInfoItem.getAuthorWebImage(
-			object, locale);
+				if (portraitId > 0) {
+					return JSONUtil.put(
+						"authorId",
+						analyticsReportsInfoItem.getAuthorUserId(object)
+					).put(
+						"name", analyticsReportsInfoItem.getAuthorName(object)
+					).put(
+						"url", webImage.getUrl()
+					);
+				}
 
-		long portraitId = GetterUtil.getLong(
-			_http.getParameter(HtmlUtil.escape(webImage.getUrl()), "img_id"));
-
-		if (portraitId > 0) {
-			authorProfileImage = webImage.getUrl();
-		}
-
-		return JSONUtil.put(
-			"authorId", analyticsReportsInfoItem.getAuthorUserId(object)
-		).put(
-			"name", analyticsReportsInfoItem.getAuthorName(object)
-		).put(
-			"url", authorProfileImage
+				return JSONUtil.put(
+					"authorId", analyticsReportsInfoItem.getAuthorUserId(object)
+				).put(
+					"name", analyticsReportsInfoItem.getAuthorName(object)
+				);
+			}
+		).orElse(
+			null
 		);
 	}
 
 	private String _getClassName(HttpServletRequest httpServletRequest) {
-		long classNameId = ParamUtil.getLong(httpServletRequest, "classNameId");
+		String className = ParamUtil.getString(httpServletRequest, "className");
 
-		if (classNameId == 0) {
+		if (Validator.isNull(className)) {
 			return Layout.class.getName();
 		}
 
-		return _portal.getClassName(classNameId);
+		return className;
 	}
 
 	private long _getClassPK(HttpServletRequest httpServletRequest) {
@@ -206,22 +207,39 @@ public class GetDataMVCResourceCommand extends BaseMVCResourceCommand {
 		return classPK;
 	}
 
+	private String _getClassTypeName(HttpServletRequest httpServletRequest) {
+		return ParamUtil.getString(httpServletRequest, "classTypeName");
+	}
+
 	private InfoItemReference _getInfoItemReference(
 		HttpServletRequest httpServletRequest) {
 
-		return new InfoItemReference(
-			_getClassName(httpServletRequest), _getClassPK(httpServletRequest));
+		return Optional.ofNullable(
+			_getClassTypeName(httpServletRequest)
+		).filter(
+			Validator::isNotNull
+		).map(
+			classTypeName -> new InfoItemReference(
+				_getClassName(httpServletRequest),
+				new ClassNameClassPKInfoItemIdentifier(
+					classTypeName, _getClassPK(httpServletRequest)))
+		).orElseGet(
+			() -> new InfoItemReference(
+				_getClassName(httpServletRequest),
+				_getClassPK(httpServletRequest))
+		);
 	}
 
 	private JSONObject _getJSONObject(
 		AnalyticsReportsInfoItem<Object> analyticsReportsInfoItem,
-		String canonicalURL, long classNameId, long classPK, long companyId,
-		Layout layout, Locale locale, Locale urlLocale, Object object,
+		long companyId, InfoItemReference infoItemReference, Layout layout,
+		Locale locale, Locale urlLocale, Object object,
 		ResourceResponse resourceResponse, TimeRange timeRange) {
 
 		AnalyticsReportsDataProvider analyticsReportsDataProvider =
 			new AnalyticsReportsDataProvider(_http);
-
+		String canonicalURL = analyticsReportsInfoItem.getCanonicalURL(
+			object, urlLocale);
 		ResourceBundle resourceBundle = ResourceBundleUtil.getBundle(
 			locale, getClass());
 
@@ -236,31 +254,31 @@ public class GetDataMVCResourceCommand extends BaseMVCResourceCommand {
 				"analyticsReportsHistoricalReadsURL",
 				String.valueOf(
 					_getResourceURL(
-						classNameId, classPK, urlLocale, resourceResponse,
+						canonicalURL, urlLocale, resourceResponse,
 						"/analytics_reports/get_historical_reads"))
 			).put(
 				"analyticsReportsHistoricalViewsURL",
 				String.valueOf(
 					_getResourceURL(
-						classNameId, classPK, urlLocale, resourceResponse,
+						canonicalURL, urlLocale, resourceResponse,
 						"/analytics_reports/get_historical_views"))
 			).put(
 				"analyticsReportsTotalReadsURL",
 				String.valueOf(
 					_getResourceURL(
-						classNameId, classPK, urlLocale, resourceResponse,
+						canonicalURL, urlLocale, resourceResponse,
 						"/analytics_reports/get_total_reads"))
 			).put(
 				"analyticsReportsTotalViewsURL",
 				String.valueOf(
 					_getResourceURL(
-						classNameId, classPK, urlLocale, resourceResponse,
+						canonicalURL, urlLocale, resourceResponse,
 						"/analytics_reports/get_total_views"))
 			).put(
 				"analyticsReportsTrafficSourcesURL",
 				String.valueOf(
 					_getResourceURL(
-						classNameId, classPK, urlLocale, resourceResponse,
+						canonicalURL, urlLocale, resourceResponse,
 						"/analytics_reports/get_traffic_sources"))
 			)
 		).put(
@@ -296,7 +314,7 @@ public class GetDataMVCResourceCommand extends BaseMVCResourceCommand {
 		).put(
 			"viewURLs",
 			_getViewURLsJSONArray(
-				analyticsReportsInfoItem, classNameId, classPK, object,
+				analyticsReportsInfoItem, infoItemReference, object,
 				resourceResponse, urlLocale)
 		);
 	}
@@ -309,14 +327,55 @@ public class GetDataMVCResourceCommand extends BaseMVCResourceCommand {
 	}
 
 	private ResourceURL _getResourceURL(
-		long classNameId, long classPK, Locale locale,
+		InfoItemReference infoItemReference, Locale locale,
 		ResourceResponse resourceResponse, String resourceID) {
 
 		ResourceURL resourceURL = resourceResponse.createResourceURL();
 
 		resourceURL.setParameter("languageId", LocaleUtil.toLanguageId(locale));
-		resourceURL.setParameter("classNameId", String.valueOf(classNameId));
-		resourceURL.setParameter("classPK", String.valueOf(classPK));
+		resourceURL.setParameter("className", infoItemReference.getClassName());
+
+		if (infoItemReference.getInfoItemIdentifier() instanceof
+				ClassNameClassPKInfoItemIdentifier) {
+
+			ClassNameClassPKInfoItemIdentifier
+				classNameClassPKInfoItemIdentifier =
+					(ClassNameClassPKInfoItemIdentifier)
+						infoItemReference.getInfoItemIdentifier();
+
+			resourceURL.setParameter(
+				"classPK",
+				String.valueOf(
+					classNameClassPKInfoItemIdentifier.getClassPK()));
+			resourceURL.setParameter(
+				"classTypeName",
+				classNameClassPKInfoItemIdentifier.getClassName());
+		}
+		else if (infoItemReference.getInfoItemIdentifier() instanceof
+					ClassPKInfoItemIdentifier) {
+
+			ClassPKInfoItemIdentifier classPKInfoItemIdentifier =
+				(ClassPKInfoItemIdentifier)
+					infoItemReference.getInfoItemIdentifier();
+
+			resourceURL.setParameter(
+				"classPK",
+				String.valueOf(classPKInfoItemIdentifier.getClassPK()));
+		}
+
+		resourceURL.setResourceID(resourceID);
+
+		return resourceURL;
+	}
+
+	private ResourceURL _getResourceURL(
+		String canonicalURL, Locale locale, ResourceResponse resourceResponse,
+		String resourceID) {
+
+		ResourceURL resourceURL = resourceResponse.createResourceURL();
+
+		resourceURL.setParameter("languageId", LocaleUtil.toLanguageId(locale));
+		resourceURL.setParameter("canonicalURL", canonicalURL);
 		resourceURL.setResourceID(resourceID);
 
 		return resourceURL;
@@ -368,7 +427,7 @@ public class GetDataMVCResourceCommand extends BaseMVCResourceCommand {
 
 	private JSONArray _getViewURLsJSONArray(
 		AnalyticsReportsInfoItem<Object> analyticsReportsInfoItem,
-		long classNameId, long classPK, Object object,
+		InfoItemReference infoItemReference, Object object,
 		ResourceResponse resourceResponse, Locale urlLocale) {
 
 		List<Locale> locales = analyticsReportsInfoItem.getAvailableLocales(
@@ -377,7 +436,30 @@ public class GetDataMVCResourceCommand extends BaseMVCResourceCommand {
 		Stream<Locale> stream = locales.stream();
 
 		return JSONUtil.putAll(
-			stream.map(
+			stream.sorted(
+				(locale1, locale2) -> {
+					if (Objects.equals(
+							locale1,
+							analyticsReportsInfoItem.getDefaultLocale(
+								object))) {
+
+						return -1;
+					}
+
+					if (Objects.equals(
+							locale2,
+							analyticsReportsInfoItem.getDefaultLocale(
+								object))) {
+
+						return 1;
+					}
+
+					String languageId1 = LocaleUtil.toBCP47LanguageId(locale1);
+					String languageId2 = LocaleUtil.toBCP47LanguageId(locale2);
+
+					return languageId1.compareToIgnoreCase(languageId2);
+				}
+			).map(
 				locale -> JSONUtil.put(
 					"default",
 					Objects.equals(
@@ -390,7 +472,7 @@ public class GetDataMVCResourceCommand extends BaseMVCResourceCommand {
 				).put(
 					"viewURL",
 					_getResourceURL(
-						classNameId, classPK, locale, resourceResponse,
+						infoItemReference, locale, resourceResponse,
 						"/analytics_reports/get_data")
 				)
 			).toArray());
@@ -426,12 +508,6 @@ public class GetDataMVCResourceCommand extends BaseMVCResourceCommand {
 
 	@Reference
 	private Language _language;
-
-	@Reference
-	private LayoutDisplayPageProviderTracker _layoutDisplayPageProviderTracker;
-
-	@Reference
-	private LayoutSEOLinkManager _layoutSEOLinkManager;
 
 	@Reference
 	private Portal _portal;

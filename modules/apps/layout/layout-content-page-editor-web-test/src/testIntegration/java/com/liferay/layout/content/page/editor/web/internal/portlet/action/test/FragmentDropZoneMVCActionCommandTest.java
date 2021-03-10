@@ -422,7 +422,7 @@ public class FragmentDropZoneMVCActionCommandTest {
 			"fragmentEntryLinkId", String.valueOf(fragmentEntryLinkId));
 		actionRequest.addParameter(
 			"editableValues",
-			_getFileAsString("drop_zone_fragment_entry_editable_values.json"));
+			_readFileToString("drop_zone_fragment_entry_editable_values.json"));
 
 		jsonObject = ReflectionTestUtil.invoke(
 			_updateConfigurationValuesMVCActionCommand,
@@ -470,9 +470,9 @@ public class FragmentDropZoneMVCActionCommandTest {
 			fragmentCollection.getFragmentCollectionId(),
 			StringUtil.randomString(), StringUtil.randomString(),
 			RandomTestUtil.randomString(),
-			_getFileAsString("drop_zone_fragment_entry.html"),
+			_readFileToString("drop_zone_fragment_entry.html"),
 			RandomTestUtil.randomString(),
-			_getFileAsString("drop_zone_fragment_entry_configuration.json"), 0,
+			_readFileToString("drop_zone_fragment_entry_configuration.json"), 0,
 			FragmentConstants.TYPE_COMPONENT, WorkflowConstants.STATUS_APPROVED,
 			serviceContext);
 	}
@@ -488,15 +488,6 @@ public class FragmentDropZoneMVCActionCommandTest {
 			RandomTestUtil.randomString(), RandomTestUtil.randomString(),
 			StringPool.BLANK, LayoutConstants.TYPE_CONTENT, false,
 			StringPool.BLANK, serviceContext);
-	}
-
-	private String _getFileAsString(String fileName) throws Exception {
-		Class<?> clazz = getClass();
-
-		return StringUtil.read(
-			clazz.getClassLoader(),
-			"com/liferay/layout/content/page/editor/web/internal/portlet" +
-				"/action/test/dependencies/" + fileName);
 	}
 
 	private MockHttpServletRequest _getMockHttpServletRequest()
@@ -554,6 +545,15 @@ public class FragmentDropZoneMVCActionCommandTest {
 		themeDisplay.setUser(TestPropsValues.getUser());
 
 		return themeDisplay;
+	}
+
+	private String _readFileToString(String fileName) throws Exception {
+		Class<?> clazz = getClass();
+
+		return StringUtil.read(
+			clazz.getClassLoader(),
+			"com/liferay/layout/content/page/editor/web/internal/portlet" +
+				"/action/test/dependencies/" + fileName);
 	}
 
 	@Inject(

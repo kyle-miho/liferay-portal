@@ -54,6 +54,11 @@
 	<td></td>
 </tr>
 <tr>
+	<td>EDIT_ANSWER</td>
+	<td>//button[contains(@class,'text-reset')]//a[contains(.,'Edit')]</td>
+	<td></td>
+</tr>
+<tr>
 	<td>EMPTY_STATE_MESSAGE</td>
 	<td>//div[contains(@class,'questions-container')]//div[contains(@class,'empty')]//span[contains(text(),'${key_emptyInfo}')]</td>
 	<td></td>
@@ -152,6 +157,11 @@
 	<td>QUESTIONS_LOCKED_ICON</td>
 	<td>//h1[contains(.,'${key_questionTitle}')]//*[name()='svg'][contains(@class,'lexicon-icon-lock')]</td>
 	<td></td>
+</tr>
+<tr>	
+	<td>QUESTIONS_RESPONSE_DATE_LABEL</td>	
+	<td>//span[contains(@class,'text-secondary') and contains(.,'${key_label}')]</td>	
+	<td></td>	
 </tr>
 <tr>
 	<td>QUESTIONS_SUBSCRIBED_BUTTON</td>

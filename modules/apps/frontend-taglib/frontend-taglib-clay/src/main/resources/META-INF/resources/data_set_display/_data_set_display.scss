@@ -1,4 +1,9 @@
 .data-set-display {
+	.table-style-default {
+		border-radius: 0;
+		border-width: 0 0 1px;
+	}
+
 	.data-set-display-management-bar-wrapper {
 		border-bottom: 1px solid $border-color;
 
@@ -11,117 +16,6 @@
 		}
 	}
 
-	.data-set-sub-item {
-		color: $secondary-text;
-
-		a {
-			color: $secondary-text;
-		}
-
-		td {
-			background-color: #f0f5ff;
-			border-bottom-width: 2px;
-			border-color: white;
-			border-top-width: 2px;
-			padding-bottom: 4px;
-			padding-top: 4px;
-
-			&:first-child {
-				border-left-width: 4px;
-			}
-
-			&:last-child {
-				border-right-width: 4px;
-			}
-		}
-
-		&.last-of-group td {
-			border-bottom-width: 4px;
-		}
-
-		.sticker {
-			transform: scale(0.8);
-			transform-origin: left;
-		}
-
-		.table-cell-data-wrapper {
-			background-color: #f0f5ff;
-		}
-	}
-
-	.table {
-		border-collapse: separate;
-		border-spacing: 0;
-
-		td:first-child,
-		th:first-child,
-		.table-cell-start {
-			padding-left: map-get($spacers, 3);
-		}
-
-		td:last-child,
-		th:last-child,
-		.table-cell-end {
-			padding-right: map-get($spacers, 3);
-		}
-
-		td {
-			border-bottom-width: 0;
-			position: relative;
-
-			&:first-child {
-				&::after {
-					background: $primary-color;
-					bottom: 0;
-					content: '';
-					left: 0;
-					position: absolute;
-					top: 0;
-					transform: scaleX(0);
-					transition: transform 0.1s ease-in;
-					width: 3px;
-				}
-			}
-		}
-
-		tr {
-			background: white;
-
-			&:first-of-type td {
-				border-top-color: white;
-			}
-
-			&.active {
-				td::after {
-					transform: scaleX(1);
-				}
-			}
-		}
-
-		.data-set-fields-selector-dropdown {
-			display: inline-block;
-			text-align: center;
-			width: 2rem;
-		}
-
-		.data-set-item-actions-wrapper {
-			padding-bottom: 15px;
-			padding-top: 15px;
-			text-align: right;
-			vertical-align: top;
-		}
-
-		.data-set-item-selector-wrapper {
-			padding-top: 22px;
-			vertical-align: top;
-		}
-	}
-
-	.table-responsive {
-		margin-bottom: 0;
-		overflow-y: hidden;
-	}
-
 	&.data-set-display-fluid {
 		.data-set-display-pagination-wrapper {
 			margin: map-get($spacers, 3) 0 0;
@@ -131,10 +25,6 @@
 	&.data-set-display-inline {
 		.data-set-display-pagination-wrapper {
 			padding-top: 0.5rem;
-		}
-
-		.table {
-			border-bottom: 1px solid $border-color;
 		}
 	}
 
@@ -179,6 +69,10 @@
 	}
 }
 
+.dnd-table .content-renderer-image {
+	width: 1%;
+}
+
 .tooltip-table {
 	color: white;
 	font-weight: 600;
@@ -218,10 +112,6 @@
 			color: $error-l1;
 		}
 	}
-}
-
-.table .content-renderer-image {
-	width: 1%;
 }
 
 .filter-resume {

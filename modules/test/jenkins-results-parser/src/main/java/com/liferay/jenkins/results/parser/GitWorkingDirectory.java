@@ -120,7 +120,8 @@ public class GitWorkingDirectory {
 		LocalGitBranch localGitBranch = createLocalGitBranch(
 			JenkinsResultsParserUtil.combine(
 				branchInformation.getUpstreamBranchName(), "-temp-",
-				String.valueOf(System.currentTimeMillis())),
+				String.valueOf(
+					JenkinsResultsParserUtil.getCurrentTimeMillis())),
 			true);
 
 		try {
@@ -405,7 +406,7 @@ public class GitWorkingDirectory {
 				localGitBranchName.equals(currentLocalGitBranch.getName())) {
 
 				tempLocalGitBranch = createLocalGitBranch(
-					"temp-" + System.currentTimeMillis());
+					"temp-" + JenkinsResultsParserUtil.getCurrentTimeMillis());
 
 				checkoutLocalGitBranch(tempLocalGitBranch);
 			}
@@ -687,12 +688,12 @@ public class GitWorkingDirectory {
 			}
 		}
 
-		long start = System.currentTimeMillis();
+		long start = JenkinsResultsParserUtil.getCurrentTimeMillis();
 
 		GitUtil.ExecutionResult executionResult = executeBashCommands(
 			retries, GitUtil.MILLIS_RETRY_DELAY, 1000 * 60 * 15, sb.toString());
 
-		long duration = System.currentTimeMillis() - start;
+		long duration = JenkinsResultsParserUtil.getCurrentTimeMillis() - start;
 
 		if (executionResult.getExitValue() != 0) {
 			System.out.println(executionResult.getStandardOut());
@@ -818,12 +819,12 @@ public class GitWorkingDirectory {
 		sb.append(remoteURL);
 		sb.append(" refs/heads/*:refs/remotes/origin/*");
 
-		long start = System.currentTimeMillis();
+		long start = JenkinsResultsParserUtil.getCurrentTimeMillis();
 
 		GitUtil.ExecutionResult executionResult = executeBashCommands(
 			3, GitUtil.MILLIS_RETRY_DELAY, 1000 * 60 * 30, sb.toString());
 
-		long duration = System.currentTimeMillis() - start;
+		long duration = JenkinsResultsParserUtil.getCurrentTimeMillis() - start;
 
 		if (executionResult.getExitValue() != 0) {
 			System.out.println(gitBranchesSHAReportStringBuilder.toString());
@@ -863,7 +864,7 @@ public class GitWorkingDirectory {
 			sb.append(branchName);
 		}
 
-		long start = System.currentTimeMillis();
+		long start = JenkinsResultsParserUtil.getCurrentTimeMillis();
 
 		GitUtil.ExecutionResult executionResult = executeBashCommands(
 			3, GitUtil.MILLIS_RETRY_DELAY, 1000 * 60 * 30, sb.toString());
@@ -877,7 +878,7 @@ public class GitWorkingDirectory {
 		}
 
 		String durationString = JenkinsResultsParserUtil.toDurationString(
-			System.currentTimeMillis() - start);
+			JenkinsResultsParserUtil.getCurrentTimeMillis() - start);
 
 		System.out.println("Fetch completed in " + durationString);
 
@@ -1439,7 +1440,7 @@ public class GitWorkingDirectory {
 				currentBranchName.equals(rebasedLocalGitBranchName)) {
 
 				tempLocalGitBranch = createLocalGitBranch(
-					"temp-" + System.currentTimeMillis());
+					"temp-" + JenkinsResultsParserUtil.getCurrentTimeMillis());
 
 				checkoutLocalGitBranch(tempLocalGitBranch);
 			}
@@ -1726,7 +1727,8 @@ public class GitWorkingDirectory {
 		if (currentBranchName == null) {
 			checkoutLocalGitBranch(
 				createLocalGitBranch(
-					upstreamBranchName + "-temp-" + System.currentTimeMillis(),
+					upstreamBranchName + "-temp-" +
+						JenkinsResultsParserUtil.getCurrentTimeMillis(),
 					true, upstreamBranchSHA));
 		}
 
@@ -1751,6 +1753,14 @@ public class GitWorkingDirectory {
 		}
 
 		return false;
+	}
+
+	public boolean isOnlyPackageInfoFilesModified() {
+		return isOnlyMatchingFilesModified(_packageInfoFileNamesMultiPattern);
+	}
+
+	public boolean isOnlyPoshiFilesModified() {
+		return isOnlyMatchingFilesModified(_poshiFileNamesMultiPattern);
 	}
 
 	public boolean isRemoteGitRepositoryAlive(String remoteURL) {
@@ -2237,6 +2247,16 @@ public class GitWorkingDirectory {
 			subdirectories, files);
 	}
 
+	protected boolean isOnlyMatchingFilesModified(MultiPattern multiPattern) {
+		for (File modifiedFile : getModifiedFilesList()) {
+			if (multiPattern.matches(modifiedFile.getName()) == null) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
 	protected String loadGitRepositoryName() {
 		GitRemote upstreamGitRemote = getUpstreamGitRemote();
 
@@ -2633,6 +2653,12 @@ public class GitWorkingDirectory {
 			"(?<message>.*)");
 	private static final Map<String, List<File>> _modifiedFilesMap =
 		new HashMap<>();
+	private static final MultiPattern _packageInfoFileNamesMultiPattern =
+		new MultiPattern("packageinfo");
+	private static final MultiPattern _poshiFileNamesMultiPattern =
+		new MultiPattern(
+			".*\\.function", ".*\\.macro", ".*\\.path", ".*\\.prose",
+			".*\\.testcase");
 	private static final List<String> _privateOnlyGitRepositoryNames =
 		_getBuildPropertyAsList(
 			"git.working.directory.private.only.repository.names");

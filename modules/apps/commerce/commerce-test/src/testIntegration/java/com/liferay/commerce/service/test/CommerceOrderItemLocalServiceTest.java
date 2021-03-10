@@ -60,7 +60,7 @@ import com.liferay.commerce.service.CommerceOrderItemLocalService;
 import com.liferay.commerce.service.CommerceOrderLocalService;
 import com.liferay.commerce.test.util.CommerceInventoryTestUtil;
 import com.liferay.commerce.test.util.CommerceTestUtil;
-import com.liferay.commerce.test.util.TestCommerceContext;
+import com.liferay.commerce.test.util.context.TestCommerceContext;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.model.Company;
@@ -150,8 +150,8 @@ public class CommerceOrderItemLocalServiceTest {
 				_serviceContext);
 
 		_commerceCatalog = CommerceCatalogLocalServiceUtil.addCommerceCatalog(
-			RandomTestUtil.randomString(), _commerceCurrency.getCode(),
-			LocaleUtil.US.getDisplayLanguage(), null, _serviceContext);
+			null, RandomTestUtil.randomString(), _commerceCurrency.getCode(),
+			LocaleUtil.US.getDisplayLanguage(), _serviceContext);
 
 		_commerceContext = new TestCommerceContext(
 			_commerceCurrency, _commerceChannel, _user, _group, null, null);
@@ -857,12 +857,12 @@ public class CommerceOrderItemLocalServiceTest {
 
 		for (CommerceOptionValue commerceOptionValue : commerceOptionValues) {
 			CPOption cpOption = CPOptionLocalServiceUtil.addCPOption(
-				_serviceContext.getUserId(),
+				null, _serviceContext.getUserId(),
 				RandomTestUtil.randomLocaleStringMap(),
 				RandomTestUtil.randomLocaleStringMap(),
 				CPTestUtil.getDefaultDDMFormFieldType(skuContributor),
 				RandomTestUtil.randomBoolean(), RandomTestUtil.randomBoolean(),
-				skuContributor, commerceOptionValue.getOptionKey(), null,
+				skuContributor, commerceOptionValue.getOptionKey(),
 				_serviceContext);
 
 			CPOptionValue cpOptionValue =
@@ -1089,8 +1089,9 @@ public class CommerceOrderItemLocalServiceTest {
 
 		CommerceCatalog commerceCatalog =
 			CommerceCatalogLocalServiceUtil.addCommerceCatalog(
-				RandomTestUtil.randomString(), _commerceCurrency.getCode(),
-				LocaleUtil.US.getDisplayLanguage(), null, _serviceContext);
+				null, RandomTestUtil.randomString(),
+				_commerceCurrency.getCode(), LocaleUtil.US.getDisplayLanguage(),
+				_serviceContext);
 
 		CPDefinition bundleCPDefinition = CPTestUtil.addCPDefinitionFromCatalog(
 			commerceCatalog.getGroupId(), SimpleCPTypeConstants.NAME, true,

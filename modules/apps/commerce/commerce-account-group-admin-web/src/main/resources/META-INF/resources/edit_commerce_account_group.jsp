@@ -38,10 +38,8 @@ portletDisplay.setURLBack(backURL);
 %>
 
 <liferay-frontend:screen-navigation
-	containerCssClass="col-md-10"
+	containerWrapperCssClass="container"
 	context="<%= commerceAccountGroup %>"
-	fullContainerCssClass="col-md-8 offset-md-2"
 	key="<%= CommerceAccountGroupScreenNavigationConstants.SCREEN_NAVIGATION_KEY_COMMERCE_ACCOUNT_GROUP_GENERAL %>"
-	navCssClass="col-md-2"
 	portletURL="<%= currentURLObj %>"
 />

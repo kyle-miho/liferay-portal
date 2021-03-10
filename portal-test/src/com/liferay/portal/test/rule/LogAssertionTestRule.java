@@ -23,6 +23,7 @@ import com.liferay.portal.kernel.io.unsync.UnsyncPrintWriter;
 import com.liferay.portal.kernel.test.rule.AbstractTestRule;
 import com.liferay.portal.test.log.CaptureAppender;
 import com.liferay.portal.test.log.Log4JLoggerTestUtil;
+import com.liferay.portal.test.log.LogEvent;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,9 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
-
-import org.apache.log4j.Level;
-import org.apache.log4j.spi.LoggingEvent;
 
 import org.junit.Assert;
 import org.junit.runner.Description;
@@ -71,13 +69,11 @@ public class LogAssertionTestRule
 
 		for (CaptureAppender captureAppender : captureAppenders) {
 			try {
-				for (LoggingEvent loggingEvent :
-						captureAppender.getLoggingEvents()) {
+				for (LogEvent logEvent : captureAppender.getLogEvents()) {
+					String message = logEvent.getMessage();
 
-					String renderedMessage = loggingEvent.getRenderedMessage();
-
-					if (!isExpected(expectedLogsList, renderedMessage)) {
-						sb.append(renderedMessage);
+					if (!isExpected(expectedLogsList, message)) {
+						sb.append(message);
 						sb.append("\n\n");
 					}
 				}
@@ -149,7 +145,7 @@ public class LogAssertionTestRule
 
 			captureAppenders.add(
 				Log4JLoggerTestUtil.configureLog4JLogger(
-					clazz.getName(), Level.toLevel(expectedLogs.level())));
+					clazz.getName(), expectedLogs.level()));
 		}
 
 		installJdk14Handler();

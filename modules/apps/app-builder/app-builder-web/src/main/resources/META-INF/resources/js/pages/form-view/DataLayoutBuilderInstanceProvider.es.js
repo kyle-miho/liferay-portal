@@ -15,7 +15,7 @@
 import {DataLayoutBuilderActions} from 'data-engine-taglib';
 import React, {useContext, useEffect} from 'react';
 
-import customFields from '../../utils/formRendererCustomFields.es';
+import customFields from '../../components/form-renderer-custom-fields/index.es';
 import DataLayoutBuilderContext from './DataLayoutBuilderInstanceContext.es';
 import FormViewContext from './FormViewContext.es';
 import useDeleteDefinitionField from './useDeleteDefinitionField.es';
@@ -31,6 +31,7 @@ export default ({children, dataLayoutBuilder}) => {
 			dataLayout,
 			editingLanguageId,
 			focusedCustomObjectField,
+			focusedField,
 			hoveredField,
 		},
 		dispatch,
@@ -87,6 +88,9 @@ export default ({children, dataLayoutBuilder}) => {
 
 		const deleteFromObjectAction = {
 			action: (event) => deleteDefinitionFieldModal(event),
+			disabled:
+				focusedField?.nativeField ||
+				hoveredField?.customProperties?.nativeField,
 			label: Liferay.Language.get('delete-from-object'),
 		};
 
@@ -136,6 +140,7 @@ export default ({children, dataLayoutBuilder}) => {
 		dataLayoutBuilder,
 		dispatch,
 		duplicateField,
+		focusedField,
 		hoveredField,
 		deleteDefinitionFieldModal,
 		saveAsFieldset,

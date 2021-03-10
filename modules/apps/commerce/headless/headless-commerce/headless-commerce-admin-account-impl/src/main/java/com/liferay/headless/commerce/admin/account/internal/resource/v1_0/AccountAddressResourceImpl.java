@@ -75,7 +75,7 @@ public class AccountAddressResourceImpl
 
 		CommerceAddress commerceAddress =
 			_commerceAddressService.fetchByExternalReferenceCode(
-				contextCompany.getCompanyId(), externalReferenceCode);
+				externalReferenceCode, contextCompany.getCompanyId());
 
 		if (commerceAddress == null) {
 			throw new NoSuchAddressException(
@@ -104,7 +104,7 @@ public class AccountAddressResourceImpl
 
 		CommerceAddress commerceAddress =
 			_commerceAddressService.fetchByExternalReferenceCode(
-				contextCompany.getCompanyId(), externalReferenceCode);
+				externalReferenceCode, contextCompany.getCompanyId());
 
 		if (commerceAddress == null) {
 			throw new NoSuchAddressException(
@@ -134,7 +134,7 @@ public class AccountAddressResourceImpl
 		return _getAccountAddressesPage(commerceAccount, pagination);
 	}
 
-	@NestedField(parentClass = Account.class, value = "addresses")
+	@NestedField(parentClass = Account.class, value = "accountAddresses")
 	@Override
 	public Page<AccountAddress> getAccountIdAccountAddressesPage(
 			Long id, Pagination pagination)
@@ -169,8 +169,7 @@ public class AccountAddressResourceImpl
 				accountAddress.getCity(), commerceAddress.getCity()),
 			GetterUtil.getString(
 				accountAddress.getZip(), commerceAddress.getZip()),
-			commerceAddress.getCommerceRegionId(),
-			commerceAddress.getCommerceCountryId(),
+			commerceAddress.getRegionId(), commerceAddress.getCountryId(),
 			GetterUtil.getString(
 				accountAddress.getPhoneNumber(),
 				commerceAddress.getPhoneNumber()),
@@ -188,7 +187,7 @@ public class AccountAddressResourceImpl
 
 		CommerceAddress commerceAddress =
 			_commerceAddressService.fetchByExternalReferenceCode(
-				contextCompany.getCompanyId(), externalReferenceCode);
+				externalReferenceCode, contextCompany.getCompanyId());
 
 		if (commerceAddress == null) {
 			throw new NoSuchAddressException(
@@ -213,8 +212,7 @@ public class AccountAddressResourceImpl
 				accountAddress.getCity(), commerceAddress.getCity()),
 			GetterUtil.getString(
 				accountAddress.getZip(), commerceAddress.getZip()),
-			commerceAddress.getCommerceRegionId(),
-			commerceAddress.getCommerceCountryId(),
+			commerceAddress.getRegionId(), commerceAddress.getCountryId(),
 			GetterUtil.getString(
 				accountAddress.getPhoneNumber(),
 				commerceAddress.getPhoneNumber()),
@@ -251,8 +249,8 @@ public class AccountAddressResourceImpl
 		else if (accountAddress.getExternalReferenceCode() != null) {
 			commerceAddress =
 				_commerceAddressService.fetchByExternalReferenceCode(
-					contextCompany.getCompanyId(),
-					accountAddress.getExternalReferenceCode());
+					accountAddress.getExternalReferenceCode(),
+					contextCompany.getCompanyId());
 		}
 
 		if (commerceAddress != null) {
@@ -266,8 +264,8 @@ public class AccountAddressResourceImpl
 					GetterUtil.getString(accountAddress.getStreet3(), null),
 					GetterUtil.getString(accountAddress.getCity(), null),
 					GetterUtil.getString(accountAddress.getZip(), null),
-					commerceAddress.getCommerceRegionId(),
-					commerceAddress.getCommerceCountryId(),
+					commerceAddress.getRegionId(),
+					commerceAddress.getCountryId(),
 					GetterUtil.getString(accountAddress.getPhoneNumber(), null),
 					GetterUtil.getInteger(
 						accountAddress.getType(), commerceAddress.getType()),
@@ -303,8 +301,7 @@ public class AccountAddressResourceImpl
 			GetterUtil.getString(accountAddress.getStreet3()),
 			GetterUtil.getString(accountAddress.getCity()),
 			GetterUtil.getString(accountAddress.getZip()),
-			commerceAddress.getCommerceRegionId(),
-			commerceAddress.getCommerceCountryId(),
+			commerceAddress.getRegionId(), commerceAddress.getCountryId(),
 			GetterUtil.getString(accountAddress.getPhoneNumber()),
 			GetterUtil.getInteger(accountAddress.getType()),
 			_serviceContextHelper.getServiceContext());
@@ -321,6 +318,8 @@ public class AccountAddressResourceImpl
 
 		CommerceAddress commerceAddress =
 			_commerceAddressService.addCommerceAddress(
+				GetterUtil.getString(
+					accountAddress.getExternalReferenceCode(), null),
 				commerceAccount.getModelClassName(),
 				commerceAccount.getCommerceAccountId(),
 				accountAddress.getName(), accountAddress.getDescription(),
@@ -331,8 +330,6 @@ public class AccountAddressResourceImpl
 				GetterUtil.getInteger(
 					accountAddress.getType(),
 					CommerceAddressConstants.ADDRESS_TYPE_BILLING_AND_SHIPPING),
-				GetterUtil.getString(
-					accountAddress.getExternalReferenceCode(), null),
 				_serviceContextHelper.getServiceContext());
 
 		return _accountAddressDTOConverter.toDTO(

@@ -1,10 +1,10 @@
 {
 	"dependencies": {
-		"@clayui/card": "3.6.6",
+		"@clayui/card": "3.25.1",
 		"@clayui/icon": "3.1.0",
 		"@clayui/sticker": "3.3.0",
+		"@liferay/frontend-js-react-web": "*",
 		"classnames": "2.2.6",
-		"frontend-js-react-web": "*",
 		"prop-types": "15.7.2",
 		"react": "16.12.0"
 	},

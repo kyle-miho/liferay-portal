@@ -79,6 +79,71 @@ definition {
 		Click(locator1 = "Sidebar#BACK");
 	}
 
+	macro addFieldGroupWithFields {
+		var index = "1";
+		var firstFieldLabel = "";
+		for (var fieldName : list "${fieldNameList}") {
+			if ("${index}" == "1") {
+				firstFieldLabel = "${fieldName}";
+				DataEngine.addField(
+					fieldFieldLabel = "${fieldName}",
+					fieldName = "${fieldName}");
+			}
+			else if ("${index}" == "2") {
+				DataEngine.addFieldNested(
+					fieldFieldLabel = "${fieldName}",
+					fieldName = "${fieldName}",
+					targetFieldLabel = "${firstFieldLabel}");
+			}
+			else {
+				DataEngine.addFieldNested(
+					fieldFieldLabel = "${fieldName}",
+					fieldName = "${fieldName}",
+					targetFieldGroupLabel = "Fields Group");
+			}
+
+			if ("${fieldName}" == "Select from List" || "${fieldName}" == "Single Selection" || "${fieldName}" == "Multiple Selection") {
+				for (var i : list "1,2,3") {
+					DataEngine.addFieldOption(
+						fieldFieldLabel = "${fieldName}",
+						index = "${i}",
+						optionValue = "Option ${i}");
+				}
+			}
+			else if ("${fieldName}" == "Grid") {
+				for (var i : list "1,2") {
+					DataEngine.addFieldOption(
+						fieldFieldLabel = "${fieldName}",
+						index = "${i}",
+						optionFieldLabel = "Rows",
+						optionValue = "Row ${i}");
+
+					DataEngine.editFieldReferenceOfFieldOption(
+						fieldFieldLabel = "${fieldName}",
+						fieldReferenceOfFieldOption = "R${i}",
+						index = "${i}",
+						optionFieldLabel = "Rows");
+				}
+
+				for (var i : list "1,2") {
+					DataEngine.addFieldOption(
+						fieldFieldLabel = "${fieldName}",
+						index = "${i}",
+						optionFieldLabel = "Columns",
+						optionValue = "Column ${i}");
+
+					DataEngine.editFieldReferenceOfFieldOption(
+						fieldFieldLabel = "${fieldName}",
+						fieldReferenceOfFieldOption = "C${i}",
+						index = "${i}",
+						optionFieldLabel = "Columns");
+				}
+			}
+
+			var index = ${index} + 1;
+		}
+	}
+
 	macro addFieldNested {
 		if (IsElementNotPresent(key_tabName = "Builder", locator1 = "Sidebar#ACTIVE_TAB")) {
 			Navigator.gotoSidebarTab(tabName = "Builder");
@@ -88,12 +153,22 @@ definition {
 			Navigator.gotoNavTab(navTab = "Fields");
 		}
 
-		DragAndDrop.javaScriptDragAndDropToObject(
-			key_fieldFieldLabel = "${targetFieldLabel}",
-			key_fieldName = "${fieldName}",
-			locator1 = "Sidebar#ADD_FIELD_NAME",
-			locator2 = "DDMEditStructure#FORM_FIELD_CONTAINER",
-			value1 = "${fieldName}");
+		if (isSet(targetFieldGroupLabel)) {
+			DragAndDrop.javaScriptDragAndDropToObject(
+				key_fieldFieldGroupLabel = "${targetFieldGroupLabel}",
+				key_fieldName = "${fieldName}",
+				locator1 = "Sidebar#ADD_FIELD_NAME",
+				locator2 = "DDMEditStructure#FORM_FIELD_GROUP_TARGET",
+				value1 = "${fieldName}");
+		}
+		else {
+			DragAndDrop.javaScriptDragAndDropToObject(
+				key_fieldFieldLabel = "${targetFieldLabel}",
+				key_fieldName = "${fieldName}",
+				locator1 = "Sidebar#ADD_FIELD_NAME",
+				locator2 = "DDMEditStructure#FORM_FIELD_CONTAINER",
+				value1 = "${fieldName}");
+		}
 
 		Pause(locator1 = "3000");
 
@@ -238,10 +313,20 @@ definition {
 					optionFieldLabel = "Options",
 					optionValue = "Option 1");
 
+				DataEngine.editFieldReferenceOfFieldOption(
+					fieldReferenceOfFieldOption = "First",
+					index = "1",
+					optionFieldLabel = "Options");
+
 				DataEngine.addFieldOption(
 					index = "2",
 					optionFieldLabel = "Options",
 					optionValue = "Option 2");
+
+				DataEngine.editFieldReferenceOfFieldOption(
+					fieldReferenceOfFieldOption = "Second",
+					index = "2",
+					optionFieldLabel = "Options");
 			}
 			else if ("${fieldName}" == "Select from List") {
 				DataEngine.addFieldOption(
@@ -373,7 +458,7 @@ definition {
 				}
 			}
 
-			Click(locator1 = "Modal#SAVE_BUTTON");
+			Modal.save();
 
 			Alert.viewSuccessMessage();
 		}
@@ -547,7 +632,7 @@ definition {
 			}
 		}
 
-		Click(locator1 = "Modal#SAVE_BUTTON");
+		Modal.save();
 
 		Click(
 			key_text = "Propagate",
@@ -646,7 +731,7 @@ definition {
 			}
 		}
 
-		Click(locator1 = "Modal#SAVE_BUTTON");
+		Modal.save();
 
 		Alert.viewSuccessMessage();
 	}

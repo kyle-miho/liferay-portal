@@ -24,6 +24,7 @@ import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.test.log.CaptureAppender;
 import com.liferay.portal.test.log.Log4JLoggerTestUtil;
+import com.liferay.portal.test.log.LogEvent;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.registry.Registry;
@@ -32,9 +33,6 @@ import com.liferay.registry.RegistryUtil;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.List;
-
-import org.apache.log4j.Level;
-import org.apache.log4j.spi.LoggingEvent;
 
 import org.junit.Assert;
 import org.junit.ClassRule;
@@ -68,7 +66,7 @@ public class AMImageScalerTrackerImplTest {
 		try (CaptureAppender captureAppender =
 				Log4JLoggerTestUtil.configureLog4JLogger(
 					_CLASS_NAME_ADAPTIVE_MEDIA_IMAGE_SCALER_TRACKER_IMPL,
-					Level.WARN)) {
+					Log4JLoggerTestUtil.WARN)) {
 
 			_disableAMDefaultImageScaler();
 
@@ -77,17 +75,14 @@ public class AMImageScalerTrackerImplTest {
 
 			_enableAMDefaultImageScaler();
 
-			List<LoggingEvent> loggingEvents =
-				captureAppender.getLoggingEvents();
+			List<LogEvent> logEvents = captureAppender.getLogEvents();
+
+			Assert.assertEquals(logEvents.toString(), 1, logEvents.size());
+
+			LogEvent logEvent = logEvents.get(0);
 
 			Assert.assertEquals(
-				loggingEvents.toString(), 1, loggingEvents.size());
-
-			LoggingEvent loggingEvent = loggingEvents.get(0);
-
-			Assert.assertEquals(
-				"Unable to find default image scaler",
-				loggingEvent.getMessage());
+				"Unable to find default image scaler", logEvent.getMessage());
 		}
 	}
 
@@ -101,7 +96,7 @@ public class AMImageScalerTrackerImplTest {
 		try (CaptureAppender captureAppender =
 				Log4JLoggerTestUtil.configureLog4JLogger(
 					_CLASS_NAME_ADAPTIVE_MEDIA_IMAGE_SCALER_TRACKER_IMPL,
-					Level.WARN)) {
+					Log4JLoggerTestUtil.WARN)) {
 
 			_disableAMDefaultImageScaler();
 
@@ -113,17 +108,14 @@ public class AMImageScalerTrackerImplTest {
 			_amImageScalerTracker.getAMImageScaler(
 				RandomTestUtil.randomString());
 
-			List<LoggingEvent> loggingEvents =
-				captureAppender.getLoggingEvents();
+			List<LogEvent> logEvents = captureAppender.getLogEvents();
+
+			Assert.assertEquals(logEvents.toString(), 1, logEvents.size());
+
+			LogEvent logEvent = logEvents.get(0);
 
 			Assert.assertEquals(
-				loggingEvents.toString(), 1, loggingEvents.size());
-
-			LoggingEvent loggingEvent = loggingEvents.get(0);
-
-			Assert.assertEquals(
-				"Unable to find default image scaler",
-				loggingEvent.getMessage());
+				"Unable to find default image scaler", logEvent.getMessage());
 		}
 		finally {
 			_unregisterAMImageScaler(amImageScalerServiceRegistration);

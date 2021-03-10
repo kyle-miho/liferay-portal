@@ -40,27 +40,27 @@
 
 		const containerRequest = {
 
-			// set to the container's exported object
+			// Set to the container's exported object
 
 			container: undefined,
 
-			// set if request failed
+			// Set if request failed
 
 			error: undefined,
 
-			// set to true if the .js file has been fetched from the server
+			// Set to true if the .js file has been fetched from the server
 
 			fetched: false,
 
-			// set to the exported values of each module (undefined if error set)
+			// Set to the exported values of each module (undefined if error set)
 
 			modules: undefined,
 
-			// set to the <script> DOM node while it is being retrieved (undefined after)
+			// Set to the <script> DOM node while it is being retrieved (undefined after)
 
 			script,
 
-			// set to an array of functions to be invoked once the <script> loads
+			// Set to an array of functions to be invoked once the <script> loads
 
 			subscribers: [],
 		};
@@ -84,6 +84,24 @@
 	}
 
 	/**
+	 * Compute container URL for a given containerId
+	 */
+	function getContainerURL(containerId) {
+
+		// Strip the scope to derive the context path (this can be done because
+		// our SF rules enforce a certain structure on context and package
+		// names, but it is not valid for the general case).
+
+		if (containerId[0] === '@') {
+			const i = containerId.indexOf('/');
+
+			containerId = containerId.substr(i + 1);
+		}
+
+		return '/o/' + containerId + '/__generated__/container.js';
+	}
+
+	/**
 	 * Fetch a container
 	 */
 	function fetchContainer(callId, containerId, resolve, reject) {
@@ -93,14 +111,14 @@
 			);
 		}
 
-		const url = '/o/' + containerId + '/__generated__/container.js';
+		const url = getContainerURL(containerId);
 
 		explain(callId, 'Fetching container from URL', url);
 
 		containerRequests[containerId] = createContainerRequest(
 			url,
 			(containerRequest) => {
-				explain(callId, 'Fetched container');
+				explain(callId, 'Fetched container', containerId);
 
 				const container = getContainer(containerId);
 
@@ -202,6 +220,10 @@
 	 * Get a defined container object
 	 */
 	function getContainer(containerId) {
+		if (containerId[0] === '@') {
+			containerId = containerId.substr(1).replace('/', '!');
+		}
+
 		return window[CONTAINERS_SYMBOL][containerId];
 	}
 
@@ -334,7 +356,13 @@
 	 * Split a module name in its `containerId` and `path` parts
 	 */
 	function splitModuleName(moduleName) {
-		const i = moduleName.indexOf('/');
+		let i = moduleName.indexOf('/');
+
+		// Skip first / for scoped packages
+
+		if (moduleName[0] === '@') {
+			i = moduleName.indexOf('/', i + 1);
+		}
 
 		let containerId, path;
 

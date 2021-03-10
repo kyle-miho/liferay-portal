@@ -13,17 +13,22 @@
  */
 
 import {ClayCheckbox} from '@clayui/form';
+import ClayLoadingIndicator from '@clayui/loading-indicator';
 import ClayTable from '@clayui/table';
 import PropTypes from 'prop-types';
 import React, {useContext, useEffect, useState} from 'react';
 
 import DataSetDisplayContext from '../../DataSetDisplayContext';
+import EmptyResultMessage from '../../EmptyResultMessage';
 
-function SelectableTable({items: itemsProp, schema, style}) {
+function SelectableTable({dataLoading, items: itemsProp, schema, style}) {
 	const {namespace} = useContext(DataSetDisplayContext);
 	const {selectedItemsKey} = useContext(DataSetDisplayContext);
+	const [items, updateItems] = useState(null);
 
-	const [items, updateItems] = useState(itemsProp);
+	useEffect(() => {
+		updateItems(itemsProp);
+	}, [itemsProp]);
 
 	useEffect(() => {
 		updateItems(items);
@@ -55,6 +60,14 @@ function SelectableTable({items: itemsProp, schema, style}) {
 		});
 
 		updateItems(updatedItems);
+	}
+
+	if (dataLoading) {
+		return <ClayLoadingIndicator className="mt-7" />;
+	}
+
+	if (!items?.length) {
+		return <EmptyResultMessage />;
 	}
 
 	return (

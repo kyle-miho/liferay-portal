@@ -143,7 +143,7 @@ public abstract class BaseBuild implements Build {
 
 		try {
 			writeArchiveFile(
-				String.valueOf(System.currentTimeMillis()),
+				String.valueOf(JenkinsResultsParserUtil.getCurrentTimeMillis()),
 				getArchivePath() + "/archive-marker");
 		}
 		catch (IOException ioException) {
@@ -397,7 +397,9 @@ public abstract class BaseBuild implements Build {
 			JSONObject testResultJSONObject = new JSONObject();
 
 			if (dataTypesList.contains("buildURL")) {
-				testResultJSONObject.put("buildURL", getBuildURL());
+				Build build = testResult.getBuild();
+
+				testResultJSONObject.put("buildURL", build.getBuildURL());
 			}
 
 			if (dataTypesList.contains("duration")) {
@@ -518,7 +520,7 @@ public abstract class BaseBuild implements Build {
 	public Long getDelayTime() {
 		Long startTime = getStartTime();
 
-		long currentTime = System.currentTimeMillis();
+		long currentTime = JenkinsResultsParserUtil.getCurrentTimeMillis();
 
 		if (startTime == null) {
 			startTime = currentTime;
@@ -612,7 +614,8 @@ public abstract class BaseBuild implements Build {
 		if (duration == 0) {
 			long timestamp = buildJSONObject.getLong("timestamp");
 
-			duration = System.currentTimeMillis() - timestamp;
+			duration =
+				JenkinsResultsParserUtil.getCurrentTimeMillis() - timestamp;
 		}
 
 		return duration;
@@ -1138,7 +1141,8 @@ public abstract class BaseBuild implements Build {
 
 	@Override
 	public long getStatusAge() {
-		return System.currentTimeMillis() - statusModifiedTime;
+		return JenkinsResultsParserUtil.getCurrentTimeMillis() -
+			statusModifiedTime;
 	}
 
 	@Override
@@ -1552,6 +1556,21 @@ public abstract class BaseBuild implements Build {
 		}
 
 		return true;
+	}
+
+	@Override
+	public boolean isFailing() {
+		if (!isCompleted()) {
+			return true;
+		}
+
+		String result = getResult();
+
+		if ((result == null) || !result.equals("SUCCESS")) {
+			return true;
+		}
+
+		return false;
 	}
 
 	@Override
@@ -2550,7 +2569,7 @@ public abstract class BaseBuild implements Build {
 
 	protected void extractBuildURLComponents(Matcher matcher) {
 		_buildNumber = Integer.parseInt(matcher.group("buildNumber"));
-		setJenkinsMaster(new JenkinsMaster(matcher.group("master")));
+		setJenkinsMaster(JenkinsMaster.getInstance(matcher.group("master")));
 		setJobName(matcher.group("jobName"));
 	}
 
@@ -3545,7 +3564,7 @@ public abstract class BaseBuild implements Build {
 
 		setJobName(invocationURLMatcher.group("jobName"));
 		setJenkinsMaster(
-			new JenkinsMaster(invocationURLMatcher.group("master")));
+			JenkinsMaster.getInstance(invocationURLMatcher.group("master")));
 
 		loadParametersFromQueryString(invocationURL);
 
@@ -3601,7 +3620,8 @@ public abstract class BaseBuild implements Build {
 
 			long previousStatusModifiedTime = statusModifiedTime;
 
-			statusModifiedTime = System.currentTimeMillis();
+			statusModifiedTime =
+				JenkinsResultsParserUtil.getCurrentTimeMillis();
 
 			statusDurations.put(
 				_previousStatus,

@@ -49,7 +49,7 @@ import com.liferay.commerce.service.CommerceOrderLocalService;
 import com.liferay.commerce.service.CommerceShipmentItemLocalService;
 import com.liferay.commerce.service.CommerceShipmentLocalService;
 import com.liferay.commerce.test.util.CommerceTestUtil;
-import com.liferay.commerce.test.util.TestCommerceContext;
+import com.liferay.commerce.test.util.context.TestCommerceContext;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.model.Group;
@@ -123,9 +123,9 @@ public class CommerceOrderEngineTest {
 			_group.getGroupId());
 
 		_commerceChannel = CommerceChannelLocalServiceUtil.addCommerceChannel(
-			_group.getGroupId(), "Test Channel",
+			null, _group.getGroupId(), "Test Channel",
 			CommerceChannelConstants.CHANNEL_TYPE_SITE, null,
-			_commerceCurrency.getCode(), null, _serviceContext);
+			_commerceCurrency.getCode(), _serviceContext);
 
 		_commerceAccount = CommerceAccountTestUtil.addBusinessCommerceAccount(
 			_user.getUserId(), RandomTestUtil.randomString(),
@@ -660,9 +660,10 @@ public class CommerceOrderEngineTest {
 				_commerceOrder.getOrderStatus(),
 				OpenCommerceOrderStatusImpl.KEY);
 
-			_commerceOrder = _commerceOrderLocalService.updateShippingMethod(
-				_commerceOrder.getCommerceOrderId(), 0, null, BigDecimal.ZERO,
-				_commerceContext);
+			_commerceOrder =
+				_commerceOrderLocalService.updateCommerceShippingMethod(
+					_commerceOrder.getCommerceOrderId(), 0, null,
+					BigDecimal.ZERO, _commerceContext);
 
 			_commerceOrderEngine.checkoutCommerceOrder(
 				_commerceOrder, _user.getUserId());

@@ -41,6 +41,7 @@ import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.test.log.CaptureAppender;
 import com.liferay.portal.test.log.Log4JLoggerTestUtil;
+import com.liferay.portal.test.log.LogEvent;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
@@ -50,9 +51,6 @@ import java.sql.ResultSet;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.log4j.Level;
-import org.apache.log4j.spi.LoggingEvent;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -178,12 +176,12 @@ public class CTSQLTransformerTest {
 				Log4JLoggerTestUtil.configureLog4JLogger(
 					"com.liferay.change.tracking.service.impl." +
 						"CTCollectionLocalServiceImpl",
-					Level.WARN);
+					Log4JLoggerTestUtil.WARN);
 			CaptureAppender captureAppender2 =
 				Log4JLoggerTestUtil.configureLog4JLogger(
 					"com.liferay.change.tracking.internal.search." +
 						"CTSearchEventListener",
-					Level.WARN)) {
+					Log4JLoggerTestUtil.WARN)) {
 
 			for (CTCollection ctCollection : _ctCollections) {
 				_ctCollectionLocalService.deleteCTCollection(ctCollection);
@@ -1217,20 +1215,19 @@ public class CTSQLTransformerTest {
 				Log4JLoggerTestUtil.configureLog4JLogger(
 					"com.liferay.portal.change.tracking.internal." +
 						"CTSQLTransformerImpl",
-					Level.WARN)) {
+					Log4JLoggerTestUtil.WARN)) {
 
 			String newSQL = _ctSQLTransformer.transform(inputSQL);
 
 			Assert.assertEquals(expectedOutputSQL, newSQL);
 
-			List<LoggingEvent> loggingEvents =
-				captureAppender.getLoggingEvents();
+			List<LogEvent> logEvents = captureAppender.getLogEvents();
 
 			if (expectedOutputSQLFile.endsWith("_ct.sql")) {
-				Assert.assertFalse(newSQL, loggingEvents.isEmpty());
+				Assert.assertFalse(newSQL, logEvents.isEmpty());
 			}
 			else {
-				Assert.assertTrue(newSQL, loggingEvents.isEmpty());
+				Assert.assertTrue(newSQL, logEvents.isEmpty());
 			}
 
 			return newSQL;

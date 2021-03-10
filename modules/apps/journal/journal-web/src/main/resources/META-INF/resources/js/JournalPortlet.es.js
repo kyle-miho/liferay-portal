@@ -279,6 +279,24 @@ class JournalPortlet extends PortletBase {
 		this._cleanInputIfNeeded('titleMapAsXML');
 		this._cleanInputIfNeeded('descriptionMapAsXML');
 
+		const formSubmitButtons = Array.from(
+			form.querySelectorAll('button[type=submit]')
+		);
+
+		const handleFormFocus = () => {
+			form.removeEventListener('focusin', handleFormFocus);
+
+			formSubmitButtons.forEach((button) => {
+				button.disabled = false;
+			});
+		};
+
+		formSubmitButtons.forEach((button) => {
+			button.disabled = true;
+		});
+
+		form.addEventListener('focusin', handleFormFocus);
+
 		submitForm(form);
 	}
 

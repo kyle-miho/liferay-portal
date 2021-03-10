@@ -16,10 +16,13 @@ package com.liferay.dispatch.talend.web.internal.archive;
 
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.util.Validator;
 
 import java.io.File;
 
+import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * @author Igor Beslic
@@ -34,6 +37,10 @@ public class TalendArchive {
 		return _contextName;
 	}
 
+	public Properties getContextProperties() {
+		return _contextProperties;
+	}
+
 	public String getJobDirectory() {
 		return _jobDirectory;
 	}
@@ -44,6 +51,18 @@ public class TalendArchive {
 
 	public String getJobMainClassFQN() {
 		return _jobMainClassFQN;
+	}
+
+	public String getJVMOptions() {
+		return _jvmOptions;
+	}
+
+	public boolean hasJVMOptions() {
+		if (Validator.isNotNull(_jvmOptions)) {
+			return true;
+		}
+
+		return false;
 	}
 
 	public static class Builder {
@@ -60,6 +79,19 @@ public class TalendArchive {
 
 		public Builder contextName(String contextName) {
 			_contextName = contextName;
+
+			return this;
+		}
+
+		public Builder contextProperties(Properties contextProperties) {
+			_contextProperties = new Properties();
+
+			for (String propertyName :
+					contextProperties.stringPropertyNames()) {
+
+				_contextProperties.put(
+					propertyName, contextProperties.getProperty(propertyName));
+			}
 
 			return this;
 		}
@@ -82,6 +114,12 @@ public class TalendArchive {
 			return this;
 		}
 
+		public Builder jvmOptionsList(List<String> jvmOptionsList) {
+			_jvmOptionsList = jvmOptionsList;
+
+			return this;
+		}
+
 		private String _buildClassPath() {
 			if (_classPathEntries == null) {
 				return StringPool.BLANK;
@@ -100,26 +138,55 @@ public class TalendArchive {
 			return sb.toString();
 		}
 
+		private String _buildJVMOptions() {
+			if ((_jvmOptionsList == null) || _jvmOptionsList.isEmpty()) {
+				return null;
+			}
+
+			StringBundler sb = new StringBundler(
+				(_jvmOptionsList.size() * 2) - 1);
+
+			Iterator<String> iterator = _jvmOptionsList.iterator();
+
+			while (iterator.hasNext()) {
+				String jvmOption = iterator.next();
+
+				sb.append(jvmOption);
+
+				if (iterator.hasNext()) {
+					sb.append(StringPool.SPACE);
+				}
+			}
+
+			return sb.toString();
+		}
+
 		private List<String> _classPathEntries;
 		private String _contextName;
+		private Properties _contextProperties;
 		private String _jobDirectory;
 		private String _jobJarPath;
 		private String _jobMainClassFQN;
+		private List<String> _jvmOptionsList;
 
 	}
 
 	private TalendArchive(Builder builder) {
 		_classPath = builder._buildClassPath();
 		_contextName = builder._contextName;
+		_contextProperties = builder._contextProperties;
 		_jobDirectory = builder._jobDirectory;
 		_jobJarPath = builder._jobJarPath;
 		_jobMainClassFQN = builder._jobMainClassFQN;
+		_jvmOptions = builder._buildJVMOptions();
 	}
 
 	private final String _classPath;
 	private final String _contextName;
+	private final Properties _contextProperties;
 	private final String _jobDirectory;
 	private final String _jobJarPath;
 	private final String _jobMainClassFQN;
+	private final String _jvmOptions;
 
 }

@@ -114,21 +114,22 @@ if (cpAttachmentFileEntry != null) {
 
 	Liferay.componentReady('ProductOptions<%= cpDefinitionId %>').then(
 		(ddmForm) => {
-			if (!ddmForm.on) {
-				return;
-			}
-
 			if (!fieldValues.length) {
-				fieldValues = FormsHelper.getDefaultFieldsShape(ddmForm);
+				var ddmFormJSONShape = ddmForm.reactComponentRef.current.toJSON();
+				fieldValues = FormsHelper.getDefaultFieldsShape(ddmFormJSONShape);
 			}
-
-			ddmForm.on('fieldEdited', (field) => {
-				fieldValues = FormsHelper.updateFields(fieldValues, field);
-
-				var form = document['<portlet:namespace />fm'];
-				form['<portlet:namespace />ddmFormValues'].value = JSON.stringify(
-					fieldValues
-				);
+			ddmForm.unstable_onEvent((event) => {
+				var eventName = event.type;
+				if (eventName === 'fieldEdited') {
+					fieldValues = FormsHelper.updateFields(
+						fieldValues,
+						event.payload
+					);
+					var form = document['<portlet:namespace />fm'];
+					form[
+						'<portlet:namespace />ddmFormValues'
+					].value = JSON.stringify(fieldValues);
+				}
 			});
 		}
 	);

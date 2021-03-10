@@ -133,7 +133,7 @@ definition {
 	@description = "This is a test for LPS-98076. As a Developer, I want to Implement the HTML field type"
 	@priority = "5"
 	test RepeatRichTextOnUpload {
-		property portal.acceptance = "false";
+		property portal.acceptance = "quarantine";
 
 		DataEngine.addField(
 			fieldFieldLabel = "Repeatable Rich Text",
@@ -199,13 +199,34 @@ definition {
 	}
 
 	@description = "This is a test for LPS-98076. As a Developer, I want to Implement the HTML field type"
-	@ignore = "true"
 	@priority = "3"
 	test SetFieldReferenceOfRichTextWithInvalidCharacters {
-		property portal.acceptance = "false";
+		var richTextValue = "Rich Text";
+		var dmDocumentTitle = "New Document Type";
+		var fieldReferenceWithInvalidChars = "Myreference@#$%¨&*";
 
-		// TODO LPS-98076 SetFieldReferenceOfRichTextWithInvalidCharacters pending implementation
+		DataEngine.addField(
+			fieldFieldLabel = "${richTextValue}",
+			fieldName = "${richTextValue}");
 
+		Button.clickSave();
+
+		DMNavigator.gotoDocumentCP(dmDocumentTitle = "${dmDocumentTitle}");
+
+		DataEngine.editFieldReference(
+			assertFieldReference = "Myreference",
+			fieldFieldLabel = "${richTextValue}",
+			fieldName = "${richTextValue}",
+			fieldReference = "${fieldReferenceWithInvalidChars}");
+
+		Button.clickSave();
+
+		DMNavigator.gotoDocumentCP(dmDocumentTitle = "${dmDocumentTitle}");
+
+		DataEngine.viewFieldReference(
+			fieldFieldLabel = "${richTextValue}",
+			fieldName = "${richTextValue}",
+			fieldReference = "Myreference");
 	}
 
 	@description = "This is a test for LPS-98076. As a Developer, I want to Implement the HTML field type"
@@ -286,15 +307,6 @@ definition {
 		DMNavigator.gotoDocumentCP(dmDocumentTitle = "DM Document Type Name");
 
 		AssertElementPresent(locator1 = "FormFields#FIELD_ADD_DUPLICATE");
-	}
-
-	@description = "This is a test for LPS-98076. As a Developer, I want to Implement the HTML field type"
-	@ignore = "true"
-	@priority = "4"
-	test SetRichTextSearchableAsDisabled {
-		property portal.acceptance = "false";
-
-		// TODO LPS-98076 SetRichTextSearchableAsDisabled pending implementation
 	}
 
 	@description = "This is a test for LPS-98076. As a Developer, I want to Implement the HTML field type"
@@ -456,7 +468,7 @@ definition {
 	@description = "This is a test for LPS-98076. As a Developer, I want to Implement the HTML field type"
 	@priority = "4"
 	test VerifyRichFieldHelpTextOnUpload {
-		property portal.acceptance = "false";
+		property portal.upstream = "quarantine";
 
 		DMNavigator.gotoDocumentType();
 

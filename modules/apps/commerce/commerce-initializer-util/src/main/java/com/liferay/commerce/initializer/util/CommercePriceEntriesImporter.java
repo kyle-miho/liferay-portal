@@ -161,7 +161,7 @@ public class CommercePriceEntriesImporter {
 
 		CommercePriceList commercePriceList =
 			_commercePriceListLocalService.fetchByExternalReferenceCode(
-				serviceContext.getCompanyId(), priceListExternalReferenceCode);
+				priceListExternalReferenceCode, serviceContext.getCompanyId());
 
 		if (commercePriceList == null) {
 			throw new NoSuchPriceListException(
@@ -174,7 +174,7 @@ public class CommercePriceEntriesImporter {
 
 		CPInstance cpInstance =
 			_cpInstanceLocalService.fetchByExternalReferenceCode(
-				serviceContext.getCompanyId(), externalReferenceCode);
+				externalReferenceCode, serviceContext.getCompanyId());
 
 		if (cpInstance == null) {
 			throw new NoSuchCPInstanceException(

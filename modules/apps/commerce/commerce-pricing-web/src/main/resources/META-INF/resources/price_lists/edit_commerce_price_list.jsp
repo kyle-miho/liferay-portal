@@ -54,10 +54,9 @@ else {
 />
 
 <liferay-frontend:screen-navigation
-	containerCssClass="col-md-10"
+	containerWrapperCssClass="container"
 	key="<%= CommercePriceListScreenNavigationConstants.SCREEN_NAVIGATION_KEY_COMMERCE_PRICE_LIST_GENERAL %>"
 	modelBean="<%= commercePriceListDisplayContext.getCommercePriceList() %>"
-	navCssClass="col-md-2"
 	portletURL="<%= currentURLObj %>"
 />
 

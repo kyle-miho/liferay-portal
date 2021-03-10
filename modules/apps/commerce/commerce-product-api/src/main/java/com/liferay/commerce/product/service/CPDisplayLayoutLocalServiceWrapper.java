@@ -271,6 +271,11 @@ public class CPDisplayLayoutLocalServiceWrapper
 			dynamicQuery, projection);
 	}
 
+	/**
+	 * @deprecated As of Athanasius (7.3.x), replaced by {@link
+	 #fetchCPDisplayLayout(long, Class, long)}
+	 */
+	@Deprecated
 	@Override
 	public com.liferay.commerce.product.model.CPDisplayLayout
 		fetchCPDisplayLayout(Class<?> clazz, long classPK) {
@@ -285,6 +290,14 @@ public class CPDisplayLayoutLocalServiceWrapper
 
 		return _cpDisplayLayoutLocalService.fetchCPDisplayLayout(
 			CPDisplayLayoutId);
+	}
+
+	@Override
+	public com.liferay.commerce.product.model.CPDisplayLayout
+		fetchCPDisplayLayout(long groupId, Class<?> clazz, long classPK) {
+
+		return _cpDisplayLayoutLocalService.fetchCPDisplayLayout(
+			groupId, clazz, classPK);
 	}
 
 	@Override

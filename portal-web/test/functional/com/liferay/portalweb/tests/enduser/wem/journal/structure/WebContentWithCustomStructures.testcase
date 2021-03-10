@@ -205,7 +205,7 @@ definition {
 	@description = "This is a use case for LPS-69560."
 	@priority = "5"
 	test AddStructureWithWebContentAndGeolocationFields {
-		property portal.acceptance = "quarantine";
+		property portal.acceptance = "true";
 		property testray.component.names = "Web Content Administration";
 
 		JSONWebcontent.addWebContent(
@@ -2136,9 +2136,10 @@ definition {
 	}
 
 	@description = "This is a test for LPS-125933. Create, read, update and delete a Web Content from a Structure with all possible fields and using a Template with all posible fields."
-	@ignore = "true"
 	@priority = "5"
 	test ViewAndEditAsWellAsDeleteContentWithTitleAndAllFields {
+		property portal.acceptance = "true";
+
 		task ("Add two widget pages") {
 			JSONLayout.addPublicLayout(
 				groupName = "Test Site Name",
@@ -2511,7 +2512,7 @@ definition {
 
 		Type(
 			key_fieldFieldLabel = "Image",
-			locator1 = "WCEditWebContent#IMAGE_DESCRPTION",
+			locator1 = "WCEditWebContent#IMAGE_DESCRIPTION",
 			value1 = "Spanish (Spain) Image Description");
 
 		PortletEntry.changeLocale(locale = "en-US");
@@ -2522,7 +2523,7 @@ definition {
 
 		AssertTextEquals(
 			key_fieldFieldLabel = "Image",
-			locator1 = "WCEditWebContent#IMAGE_DESCRPTION",
+			locator1 = "WCEditWebContent#IMAGE_DESCRIPTION",
 			value1 = "English (United States) Image Description");
 
 		PortletEntry.changeLocale(locale = "es-ES");
@@ -2533,7 +2534,7 @@ definition {
 
 		AssertTextEquals(
 			key_fieldFieldLabel = "Image",
-			locator1 = "WCEditWebContent#IMAGE_DESCRPTION",
+			locator1 = "WCEditWebContent#IMAGE_DESCRIPTION",
 			value1 = "Spanish (Spain) Image Description");
 
 		PortletEntry.publish();

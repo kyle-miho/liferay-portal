@@ -25,10 +25,12 @@ import {LayoutSelector} from '../../../common/components/LayoutSelector';
 import MappingSelector from '../../../common/components/MappingSelector';
 import {ConfigurationFieldPropTypes} from '../../../prop-types/index';
 import {EDITABLE_TYPES} from '../../config/constants/editableTypes';
+import {config} from '../../config/index';
 import selectLanguageId from '../../selectors/selectLanguageId';
 import {useSelector} from '../../store/index';
 import isMapped from '../../utils/editable-value/isMapped';
 import isMappedToLayout from '../../utils/editable-value/isMappedToLayout';
+import isMappedToStructure from '../../utils/editable-value/isMappedToStructure';
 import resolveEditableValue from '../../utils/editable-value/resolveEditableValue';
 import {useId} from '../../utils/useId';
 import {useGetFieldValue} from '../CollectionItemContext';
@@ -90,7 +92,7 @@ export default function LinkField({field, onValueSelect, value}) {
 	const targetInputId = useId();
 
 	useEffect(() => {
-		if (isMapped(nextValue)) {
+		if (isMapped(nextValue) && !isMappedToStructure(nextValue)) {
 			setMappedHrefPreview('');
 
 			resolveEditableValue(nextValue, languageId, getFieldValue).then(
@@ -106,7 +108,7 @@ export default function LinkField({field, onValueSelect, value}) {
 
 	const handleChange = (value) => {
 		const updatedValue = {
-			...nextValue,
+			...(Object.keys(value).length && nextValue),
 			...value,
 		};
 
@@ -130,7 +132,13 @@ export default function LinkField({field, onValueSelect, value}) {
 				<ClaySelectWithOption
 					id={sourceInputId}
 					onChange={handleSourceChange}
-					options={Object.values(SOURCE_OPTIONS)}
+					options={
+						config.layoutMappingEnabled
+							? Object.values(SOURCE_OPTIONS)
+							: Object.values(SOURCE_OPTIONS).filter(
+									({value}) => value !== 'fromLayout'
+							  )
+					}
 					value={source}
 				/>
 			</ClayForm.Group>

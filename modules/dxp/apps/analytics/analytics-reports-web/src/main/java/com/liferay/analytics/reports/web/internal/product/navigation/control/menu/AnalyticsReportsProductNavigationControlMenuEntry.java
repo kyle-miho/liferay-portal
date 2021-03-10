@@ -14,11 +14,11 @@
 
 package com.liferay.analytics.reports.web.internal.product.navigation.control.menu;
 
+import com.liferay.analytics.reports.constants.AnalyticsReportsWebKeys;
 import com.liferay.analytics.reports.info.item.AnalyticsReportsInfoItem;
 import com.liferay.analytics.reports.info.item.AnalyticsReportsInfoItemTracker;
 import com.liferay.analytics.reports.info.item.provider.AnalyticsReportsInfoItemObjectProvider;
 import com.liferay.analytics.reports.web.internal.constants.AnalyticsReportsPortletKeys;
-import com.liferay.analytics.reports.web.internal.constants.AnalyticsReportsWebKeys;
 import com.liferay.analytics.reports.web.internal.info.item.provider.AnalyticsReportsInfoItemObjectProviderTracker;
 import com.liferay.analytics.reports.web.internal.util.AnalyticsReportsUtil;
 import com.liferay.info.item.InfoItemReference;
@@ -129,10 +129,8 @@ public class AnalyticsReportsProductNavigationControlMenuEntry
 				values.put(
 					"analyticsReportsPanelURL",
 					AnalyticsReportsUtil.getAnalyticsReportsPanelURL(
-						_portal.getClassNameId(
-							infoItemReference.getClassName()),
-						infoItemReference.getClassPK(), httpServletRequest,
-						_portal, _portletURLFactory));
+						infoItemReference, httpServletRequest, _portal,
+						_portletURLFactory));
 			}
 			catch (Exception exception) {
 				ReflectionUtil.throwException(exception);

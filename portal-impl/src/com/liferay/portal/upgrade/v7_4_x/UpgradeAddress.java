@@ -31,16 +31,28 @@ public class UpgradeAddress extends UpgradeProcess {
 					"externalReferenceCode", "VARCHAR(75) null"));
 		}
 
-		if (!hasColumn("Address", "name")) {
-			alter(
-				AddressTable.class,
-				new AlterTableAddColumn("name", "VARCHAR(255) null"));
-		}
-
 		if (!hasColumn("Address", "description")) {
 			alter(
 				AddressTable.class,
 				new AlterTableAddColumn("description", "STRING null"));
+		}
+
+		if (!hasColumn("Address", "latitude")) {
+			alter(
+				AddressTable.class,
+				new AlterTableAddColumn("latitude", "DOUBLE"));
+		}
+
+		if (!hasColumn("Address", "longitude")) {
+			alter(
+				AddressTable.class,
+				new AlterTableAddColumn("longitude", "DOUBLE"));
+		}
+
+		if (!hasColumn("Address", "name")) {
+			alter(
+				AddressTable.class,
+				new AlterTableAddColumn("name", "VARCHAR(255) null"));
 		}
 
 		if (hasColumn("Address", "street1")) {
@@ -61,16 +73,16 @@ public class UpgradeAddress extends UpgradeProcess {
 				new AlterColumnType("street3", "VARCHAR(255) null"));
 		}
 
-		if (!hasColumn("Address", "latitude")) {
+		if (!hasColumn("Address", "validationDate")) {
 			alter(
 				AddressTable.class,
-				new AlterTableAddColumn("latitude", "DOUBLE"));
+				new AlterTableAddColumn("validationDate", "DATE null"));
 		}
 
-		if (!hasColumn("Address", "longitude")) {
+		if (!hasColumn("Address", "validationStatus")) {
 			alter(
 				AddressTable.class,
-				new AlterTableAddColumn("longitude", "DOUBLE"));
+				new AlterTableAddColumn("validationStatus", "INTEGER"));
 		}
 	}
 

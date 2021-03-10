@@ -17,8 +17,8 @@ import ClayButton from '@clayui/button';
 import {ClayRadio, ClayRadioGroup} from '@clayui/form';
 import ClayLoadingIndicator from '@clayui/loading-indicator';
 import ClayModal from '@clayui/modal';
+import {useIsMounted} from '@liferay/frontend-js-react-web';
 import {AssetTagsSelector} from 'asset-taglib';
-import {useIsMounted} from 'frontend-js-react-web';
 import {fetch} from 'frontend-js-web';
 import PropTypes from 'prop-types';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
@@ -77,7 +77,9 @@ const EditTagsModal = ({
 			};
 
 			return fetch(`${pathModule}${url}`, init)
-				.then((response) => response.json())
+				.then((response) =>
+					response.status === 204 ? '' : response.json()
+				)
 				.catch(() => {
 					onModalClose();
 				});

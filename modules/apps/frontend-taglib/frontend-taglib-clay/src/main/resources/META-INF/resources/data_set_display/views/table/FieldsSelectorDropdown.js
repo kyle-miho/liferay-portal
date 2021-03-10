@@ -53,14 +53,12 @@ const FieldsSelectorDropdown = ({fields}) => {
 	return (
 		<ClayDropDown
 			active={active}
-			className="data-set-fields-selector-dropdown"
+			className="ml-auto"
 			onActiveChange={setActive}
 			trigger={
 				<ClayButtonWithIcon
 					borderless
-					className="p-0"
 					displayType="secondary"
-					monospaced={false}
 					symbol={active ? 'caret-top' : 'caret-bottom'}
 				/>
 			}

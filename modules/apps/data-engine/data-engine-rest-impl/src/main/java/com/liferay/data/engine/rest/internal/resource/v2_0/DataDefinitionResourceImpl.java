@@ -180,9 +180,11 @@ public class DataDefinitionResourceImpl
 
 		dataLayoutResource.deleteDataLayoutsDataDefinition(dataDefinitionId);
 
+		DataListViewResource.Builder dataListViewResourceBuilder =
+			_dataListViewResourceFactory.create();
+
 		DataListViewResource dataListViewResource =
-			DataListViewResource.builder(
-			).checkPermissions(
+			dataListViewResourceBuilder.checkPermissions(
 				false
 			).user(
 				contextUser
@@ -705,6 +707,10 @@ public class DataDefinitionResourceImpl
 						groupId, _portal.getClassNameId(DDMStructure.class),
 						dataDefinitionId, fieldSetDDMStructureId,
 						ddmFormField.getName());
+
+				_addDataDefinitionFieldLinks(
+					dataDefinitionId, ddmFormField.getNestedDDMFormFields(),
+					groupId);
 			}
 		}
 	}
@@ -1200,9 +1206,11 @@ public class DataDefinitionResourceImpl
 			Set<Long> deDataListViewIds, String[] removedFieldNames)
 		throws Exception {
 
+		DataListViewResource.Builder dataListViewResourceBuilder =
+			_dataListViewResourceFactory.create();
+
 		DataListViewResource dataListViewResource =
-			DataListViewResource.builder(
-			).checkPermissions(
+			dataListViewResourceBuilder.checkPermissions(
 				false
 			).user(
 				contextUser
@@ -1582,6 +1590,9 @@ public class DataDefinitionResourceImpl
 
 	@Reference
 	private DataEngineNativeObjectTracker _dataEngineNativeObjectTracker;
+
+	@Reference
+	private DataListViewResource.Factory _dataListViewResourceFactory;
 
 	@Reference
 	private DDLRecordSetLocalService _ddlRecordSetLocalService;

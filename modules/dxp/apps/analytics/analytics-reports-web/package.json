@@ -1,7 +1,7 @@
 {
 	"dependencies": {
 		"@clayui/button": "3.6.0",
-		"@clayui/drop-down": "3.9.1",
+		"@clayui/drop-down": "3.25.1",
 		"@clayui/form": "3.14.4",
 		"@clayui/icon": "3.1.0",
 		"@clayui/label": "3.4.1",
@@ -9,8 +9,8 @@
 		"@clayui/loading-indicator": "3.2.0",
 		"@clayui/sticker": "3.3.0",
 		"@clayui/tooltip": "3.4.5",
+		"@liferay/frontend-js-react-web": "*",
 		"classnames": "2.2.6",
-		"frontend-js-react-web": "*",
 		"frontend-js-web": "*",
 		"prop-types": "15.7.2",
 		"react": "16.12.0",

@@ -32,10 +32,12 @@ import com.liferay.commerce.product.service.CPInstanceService;
 import com.liferay.commerce.product.service.CPOptionService;
 import com.liferay.commerce.product.service.CPSpecificationOptionService;
 import com.liferay.commerce.product.service.CommerceCatalogLocalService;
+import com.liferay.commerce.product.service.CommerceChannelRelService;
 import com.liferay.commerce.service.CPDefinitionInventoryService;
 import com.liferay.headless.commerce.admin.catalog.dto.v1_0.Attachment;
 import com.liferay.headless.commerce.admin.catalog.dto.v1_0.Category;
 import com.liferay.headless.commerce.admin.catalog.dto.v1_0.Product;
+import com.liferay.headless.commerce.admin.catalog.dto.v1_0.ProductChannel;
 import com.liferay.headless.commerce.admin.catalog.dto.v1_0.ProductConfiguration;
 import com.liferay.headless.commerce.admin.catalog.dto.v1_0.ProductOption;
 import com.liferay.headless.commerce.admin.catalog.dto.v1_0.ProductOptionValue;
@@ -85,9 +87,13 @@ import com.liferay.upload.UniqueFileNameProvider;
 
 import java.io.Serializable;
 
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
@@ -135,7 +141,7 @@ public class ProductResourceImpl
 		CPDefinition cpDefinition =
 			_cpDefinitionService.
 				fetchCPDefinitionByCProductExternalReferenceCode(
-					contextCompany.getCompanyId(), externalReferenceCode);
+					externalReferenceCode, contextCompany.getCompanyId());
 
 		if (cpDefinition == null) {
 			throw new NoSuchCPDefinitionException(
@@ -177,7 +183,7 @@ public class ProductResourceImpl
 		CPDefinition cpDefinition =
 			_cpDefinitionService.
 				fetchCPDefinitionByCProductExternalReferenceCode(
-					contextCompany.getCompanyId(), externalReferenceCode);
+					externalReferenceCode, contextCompany.getCompanyId());
 
 		if (cpDefinition == null) {
 			throw new NoSuchCPDefinitionException(
@@ -214,8 +220,8 @@ public class ProductResourceImpl
 
 		if (!Validator.isBlank(product.getExternalReferenceCode())) {
 			_cpDefinitionService.updateExternalReferenceCode(
-				cpDefinition.getCPDefinitionId(),
-				product.getExternalReferenceCode());
+				product.getExternalReferenceCode(),
+				cpDefinition.getCPDefinitionId());
 		}
 
 		Response.ResponseBuilder responseBuilder = Response.ok();
@@ -231,7 +237,7 @@ public class ProductResourceImpl
 		CPDefinition cpDefinition =
 			_cpDefinitionService.
 				fetchCPDefinitionByCProductExternalReferenceCode(
-					contextCompany.getCompanyId(), externalReferenceCode);
+					externalReferenceCode, contextCompany.getCompanyId());
 
 		if (cpDefinition == null) {
 			throw new NoSuchCPDefinitionException(
@@ -248,7 +254,7 @@ public class ProductResourceImpl
 
 	@Override
 	public Product postProduct(Product product) throws Exception {
-		CPDefinition cpDefinition = _upsertProduct(product);
+		CPDefinition cpDefinition = _addOrUpdateProduct(product);
 
 		return _toProduct(cpDefinition.getCPDefinitionId());
 	}
@@ -261,7 +267,7 @@ public class ProductResourceImpl
 		CPDefinition cpDefinition =
 			_cpDefinitionService.
 				fetchCPDefinitionByCProductExternalReferenceCode(
-					contextCompany.getCompanyId(), externalReferenceCode);
+					externalReferenceCode, contextCompany.getCompanyId());
 
 		if (cpDefinition == null) {
 			throw new NoSuchCPDefinitionException();
@@ -308,6 +314,137 @@ public class ProductResourceImpl
 			cpDefinition.getCPDefinitionId(), commerceCatalog.getGroupId());
 
 		return _toProduct(cpDefinition.getCPDefinitionId());
+	}
+
+	private CPDefinition _addOrUpdateProduct(Product product) throws Exception {
+		CommerceCatalog commerceCatalog =
+			_commerceCatalogLocalService.getCommerceCatalog(
+				product.getCatalogId());
+
+		ServiceContext serviceContext = _serviceContextHelper.getServiceContext(
+			commerceCatalog.getGroupId());
+
+		Calendar displayCalendar = CalendarFactoryUtil.getCalendar(
+			serviceContext.getTimeZone());
+
+		DateConfig displayDateConfig = new DateConfig(displayCalendar);
+
+		Calendar expirationCalendar = CalendarFactoryUtil.getCalendar(
+			serviceContext.getTimeZone());
+
+		expirationCalendar.add(Calendar.MONTH, 1);
+
+		DateConfig expirationDateConfig = new DateConfig(expirationCalendar);
+
+		ProductShippingConfiguration shippingConfiguration =
+			_getProductShippingConfiguration(product);
+		ProductSubscriptionConfiguration subscriptionConfiguration =
+			_getProductSubscriptionConfiguration(product);
+		ProductTaxConfiguration taxConfiguration = _getProductTaxConfiguration(
+			product);
+
+		CPDefinition cpDefinition =
+			_cpDefinitionService.
+				fetchCPDefinitionByCProductExternalReferenceCode(
+					product.getExternalReferenceCode(),
+					contextCompany.getCompanyId());
+
+		if ((product.getCategories() == null) && (cpDefinition != null)) {
+			long[] categoryIds = _assetCategoryLocalService.getCategoryIds(
+				cpDefinition.getModelClassName(),
+				cpDefinition.getCPDefinitionId());
+
+			serviceContext.setAssetCategoryIds(categoryIds);
+		}
+
+		Map<String, String> nameMap = product.getName();
+
+		if ((cpDefinition != null) && (nameMap == null)) {
+			nameMap = LanguageUtils.getLanguageIdMap(cpDefinition.getNameMap());
+		}
+
+		Map<String, String> shortDescriptionMap = product.getShortDescription();
+
+		if ((cpDefinition != null) && (shortDescriptionMap == null)) {
+			shortDescriptionMap = LanguageUtils.getLanguageIdMap(
+				cpDefinition.getShortDescriptionMap());
+		}
+
+		Map<String, String> descriptionMap = product.getDescription();
+
+		if ((cpDefinition != null) && (descriptionMap == null)) {
+			descriptionMap = LanguageUtils.getLanguageIdMap(
+				cpDefinition.getDescriptionMap());
+		}
+
+		boolean ignoreSKUCombinations = true;
+
+		if (cpDefinition != null) {
+			ignoreSKUCombinations = cpDefinition.isIgnoreSKUCombinations();
+		}
+
+		cpDefinition = _cpDefinitionService.upsertCPDefinition(
+			product.getExternalReferenceCode(), commerceCatalog.getGroupId(),
+			contextUser.getUserId(), LanguageUtils.getLocalizedMap(nameMap),
+			LanguageUtils.getLocalizedMap(shortDescriptionMap),
+			LanguageUtils.getLocalizedMap(descriptionMap), null,
+			LanguageUtils.getLocalizedMap(product.getMetaTitle()),
+			LanguageUtils.getLocalizedMap(product.getMetaDescription()),
+			LanguageUtils.getLocalizedMap(product.getMetaKeyword()),
+			product.getProductType(), ignoreSKUCombinations,
+			GetterUtil.getBoolean(shippingConfiguration.getShippable(), true),
+			GetterUtil.getBoolean(
+				shippingConfiguration.getFreeShipping(), true),
+			GetterUtil.getBoolean(
+				shippingConfiguration.getShippingSeparately(), true),
+			GetterUtil.getDouble(shippingConfiguration.getShippingExtraPrice()),
+			GetterUtil.getDouble(shippingConfiguration.getWidth()),
+			GetterUtil.getDouble(shippingConfiguration.getHeight()),
+			GetterUtil.getDouble(shippingConfiguration.getDepth()),
+			GetterUtil.getDouble(shippingConfiguration.getWeight()),
+			GetterUtil.getLong(taxConfiguration.getId()),
+			ProductUtil.isTaxExempt(null, taxConfiguration), false, null, true,
+			displayDateConfig.getMonth(), displayDateConfig.getDay(),
+			displayDateConfig.getYear(), displayDateConfig.getHour(),
+			displayDateConfig.getMinute(), expirationDateConfig.getMonth(),
+			expirationDateConfig.getDay(), expirationDateConfig.getYear(),
+			expirationDateConfig.getHour(), expirationDateConfig.getMinute(),
+			GetterUtil.getBoolean(product.getNeverExpire(), true),
+			product.getDefaultSku(),
+			GetterUtil.getBoolean(subscriptionConfiguration.getEnable()),
+			GetterUtil.getInteger(subscriptionConfiguration.getLength(), 1),
+			GetterUtil.getString(
+				subscriptionConfiguration.getSubscriptionTypeAsString()),
+			null,
+			GetterUtil.getLong(subscriptionConfiguration.getNumberOfLength()),
+			serviceContext);
+
+		// Workflow
+
+		if ((product.getActive() != null) && !product.getActive()) {
+			Map<String, Serializable> workflowContext = new HashMap<>();
+
+			_cpDefinitionService.updateStatus(
+				contextUser.getUserId(), cpDefinition.getCPDefinitionId(),
+				WorkflowConstants.STATUS_INACTIVE, serviceContext,
+				workflowContext);
+		}
+
+		// Expando
+
+		Map<String, ?> expando = product.getExpando();
+
+		if ((expando != null) && !expando.isEmpty()) {
+			ExpandoUtil.updateExpando(
+				serviceContext.getCompanyId(), CPDefinition.class,
+				cpDefinition.getPrimaryKey(), expando);
+		}
+
+		// Update nested resources
+
+		_updateNestedResources(product, cpDefinition, serviceContext);
+
+		return cpDefinition;
 	}
 
 	private Map<String, Map<String, String>> _getActions(
@@ -567,6 +704,39 @@ public class ProductResourceImpl
 
 		}
 
+		// Channels visibility
+
+		_commerceChannelRelService.deleteCommerceChannelRels(
+			CPDefinition.class.getName(), cpDefinition.getCPDefinitionId());
+
+		ProductChannel[] productChannels = product.getProductChannels();
+
+		if (productChannels == null) {
+			return cpDefinition;
+		}
+
+		Stream<ProductChannel> stream = Arrays.stream(productChannels);
+
+		List<Long> channelIds = stream.map(
+			ProductChannel::getChannelId
+		).collect(
+			Collectors.toList()
+		);
+
+		for (long commerceChannelId : channelIds) {
+			if (commerceChannelId == 0) {
+				continue;
+			}
+
+			_commerceChannelRelService.addCommerceChannelRel(
+				CPDefinition.class.getName(), cpDefinition.getCPDefinitionId(),
+				commerceChannelId, serviceContext);
+		}
+
+		_cpDefinitionService.updateCPDefinitionChannelFilter(
+			cpDefinition.getCPDefinitionId(),
+			GetterUtil.getBoolean(product.getProductChannelFilter()));
+
 		return cpDefinition;
 	}
 
@@ -661,137 +831,6 @@ public class ProductResourceImpl
 		return _updateNestedResources(product, cpDefinition, serviceContext);
 	}
 
-	private CPDefinition _upsertProduct(Product product) throws Exception {
-		CommerceCatalog commerceCatalog =
-			_commerceCatalogLocalService.getCommerceCatalog(
-				product.getCatalogId());
-
-		ServiceContext serviceContext = _serviceContextHelper.getServiceContext(
-			commerceCatalog.getGroupId());
-
-		Calendar displayCalendar = CalendarFactoryUtil.getCalendar(
-			serviceContext.getTimeZone());
-
-		DateConfig displayDateConfig = new DateConfig(displayCalendar);
-
-		Calendar expirationCalendar = CalendarFactoryUtil.getCalendar(
-			serviceContext.getTimeZone());
-
-		expirationCalendar.add(Calendar.MONTH, 1);
-
-		DateConfig expirationDateConfig = new DateConfig(expirationCalendar);
-
-		ProductShippingConfiguration shippingConfiguration =
-			_getProductShippingConfiguration(product);
-		ProductSubscriptionConfiguration subscriptionConfiguration =
-			_getProductSubscriptionConfiguration(product);
-		ProductTaxConfiguration taxConfiguration = _getProductTaxConfiguration(
-			product);
-
-		CPDefinition cpDefinition =
-			_cpDefinitionService.
-				fetchCPDefinitionByCProductExternalReferenceCode(
-					contextCompany.getCompanyId(),
-					product.getExternalReferenceCode());
-
-		if ((product.getCategories() == null) && (cpDefinition != null)) {
-			long[] categoryIds = _assetCategoryLocalService.getCategoryIds(
-				cpDefinition.getModelClassName(),
-				cpDefinition.getCPDefinitionId());
-
-			serviceContext.setAssetCategoryIds(categoryIds);
-		}
-
-		Map<String, String> nameMap = product.getName();
-
-		if ((cpDefinition != null) && (nameMap == null)) {
-			nameMap = LanguageUtils.getLanguageIdMap(cpDefinition.getNameMap());
-		}
-
-		Map<String, String> shortDescriptionMap = product.getShortDescription();
-
-		if ((cpDefinition != null) && (shortDescriptionMap == null)) {
-			shortDescriptionMap = LanguageUtils.getLanguageIdMap(
-				cpDefinition.getShortDescriptionMap());
-		}
-
-		Map<String, String> descriptionMap = product.getDescription();
-
-		if ((cpDefinition != null) && (descriptionMap == null)) {
-			descriptionMap = LanguageUtils.getLanguageIdMap(
-				cpDefinition.getDescriptionMap());
-		}
-
-		boolean ignoreSKUCombinations = true;
-
-		if (cpDefinition != null) {
-			ignoreSKUCombinations = cpDefinition.isIgnoreSKUCombinations();
-		}
-
-		cpDefinition = _cpDefinitionService.upsertCPDefinition(
-			commerceCatalog.getGroupId(), contextUser.getUserId(),
-			LanguageUtils.getLocalizedMap(nameMap),
-			LanguageUtils.getLocalizedMap(shortDescriptionMap),
-			LanguageUtils.getLocalizedMap(descriptionMap), null,
-			LanguageUtils.getLocalizedMap(product.getMetaTitle()),
-			LanguageUtils.getLocalizedMap(product.getMetaDescription()),
-			LanguageUtils.getLocalizedMap(product.getMetaKeyword()),
-			product.getProductType(), ignoreSKUCombinations,
-			GetterUtil.getBoolean(shippingConfiguration.getShippable(), true),
-			GetterUtil.getBoolean(
-				shippingConfiguration.getFreeShipping(), true),
-			GetterUtil.getBoolean(
-				shippingConfiguration.getShippingSeparately(), true),
-			GetterUtil.getDouble(shippingConfiguration.getShippingExtraPrice()),
-			GetterUtil.getDouble(shippingConfiguration.getWidth()),
-			GetterUtil.getDouble(shippingConfiguration.getHeight()),
-			GetterUtil.getDouble(shippingConfiguration.getDepth()),
-			GetterUtil.getDouble(shippingConfiguration.getWeight()),
-			GetterUtil.getLong(taxConfiguration.getId()),
-			ProductUtil.isTaxExempt(null, taxConfiguration), false, null, true,
-			displayDateConfig.getMonth(), displayDateConfig.getDay(),
-			displayDateConfig.getYear(), displayDateConfig.getHour(),
-			displayDateConfig.getMinute(), expirationDateConfig.getMonth(),
-			expirationDateConfig.getDay(), expirationDateConfig.getYear(),
-			expirationDateConfig.getHour(), expirationDateConfig.getMinute(),
-			GetterUtil.getBoolean(product.getNeverExpire(), true),
-			product.getDefaultSku(),
-			GetterUtil.getBoolean(subscriptionConfiguration.getEnable()),
-			GetterUtil.getInteger(subscriptionConfiguration.getLength()),
-			GetterUtil.getString(
-				subscriptionConfiguration.getSubscriptionTypeAsString()),
-			null,
-			GetterUtil.getLong(subscriptionConfiguration.getNumberOfLength()),
-			product.getExternalReferenceCode(), serviceContext);
-
-		// Workflow
-
-		if ((product.getActive() != null) && !product.getActive()) {
-			Map<String, Serializable> workflowContext = new HashMap<>();
-
-			_cpDefinitionService.updateStatus(
-				contextUser.getUserId(), cpDefinition.getCPDefinitionId(),
-				WorkflowConstants.STATUS_INACTIVE, serviceContext,
-				workflowContext);
-		}
-
-		// Expando
-
-		Map<String, ?> expando = product.getExpando();
-
-		if ((expando != null) && !expando.isEmpty()) {
-			ExpandoUtil.updateExpando(
-				serviceContext.getCompanyId(), CPDefinition.class,
-				cpDefinition.getPrimaryKey(), expando);
-		}
-
-		// Update nested resources
-
-		_updateNestedResources(product, cpDefinition, serviceContext);
-
-		return cpDefinition;
-	}
-
 	@Reference
 	private AssetCategoryLocalService _assetCategoryLocalService;
 
@@ -800,6 +839,9 @@ public class ProductResourceImpl
 
 	@Reference
 	private CommerceCatalogLocalService _commerceCatalogLocalService;
+
+	@Reference
+	private CommerceChannelRelService _commerceChannelRelService;
 
 	@Reference
 	private CPAttachmentFileEntryService _cpAttachmentFileEntryService;

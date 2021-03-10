@@ -28,11 +28,6 @@ import com.liferay.asset.kernel.service.AssetTagLocalService;
 import com.liferay.asset.kernel.service.persistence.AssetEntryQuery;
 import com.liferay.asset.util.AssetHelper;
 import com.liferay.asset.util.AssetPublisherAddItemHolder;
-import com.liferay.dynamic.data.mapping.form.field.type.constants.DDMFormFieldTypeConstants;
-import com.liferay.dynamic.data.mapping.model.DDMFormField;
-import com.liferay.dynamic.data.mapping.model.DDMStructure;
-import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
-import com.liferay.dynamic.data.mapping.storage.constants.FieldConstants;
 import com.liferay.dynamic.data.mapping.util.DDMIndexer;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
@@ -71,9 +66,7 @@ import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.search.legacy.searcher.SearchRequestBuilderFactory;
-import com.liferay.portal.search.query.Queries;
 import com.liferay.portal.search.sort.FieldSort;
-import com.liferay.portal.search.sort.NestedSort;
 import com.liferay.portal.search.sort.SortOrder;
 import com.liferay.portal.search.sort.Sorts;
 import com.liferay.portlet.asset.util.AssetSearcher;
@@ -87,7 +80,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.TimeZone;
@@ -574,109 +566,6 @@ public class AssetHelperImpl implements AssetHelper {
 		return assetSearcher;
 	}
 
-	private DDMFormField _getDDMFormField(String sortField) throws Exception {
-		String[] sortFields = sortField.split(DDMIndexer.DDM_FIELD_SEPARATOR);
-
-		long ddmStructureId = GetterUtil.getLong(sortFields[2]);
-		String fieldName = sortFields[3];
-
-		DDMStructure ddmStructure = _ddmStructureLocalService.getStructure(
-			ddmStructureId);
-
-		return ddmStructure.getDDMFormField(fieldName);
-	}
-
-	private boolean _getDDMFormFieldLocalizable(String sortField)
-		throws Exception {
-
-		DDMFormField ddmFormField = _getDDMFormField(sortField);
-
-		return GetterUtil.getBoolean(ddmFormField.getProperty("localizable"));
-	}
-
-	private String _getDDMFormFieldTypeOrderByCol(
-		DDMFormField ddmFormField, String sortField, boolean fieldLocalizable,
-		int sortType, Locale locale) {
-
-		StringBundler sb = new StringBundler(5);
-
-		if (_ddmIndexer.isLegacyDDMIndexFieldsEnabled()) {
-			sb.append(sortField);
-			sb.append(StringPool.UNDERLINE);
-
-			if (fieldLocalizable) {
-				sb.append(LocaleUtil.toLanguageId(locale));
-				sb.append(StringPool.UNDERLINE);
-			}
-		}
-		else {
-			sb.append(DDMIndexer.DDM_FIELD_ARRAY);
-			sb.append(StringPool.PERIOD);
-
-			try {
-				String indexType =
-					sortField.split(DDMIndexer.DDM_FIELD_SEPARATOR)[1];
-
-				if (fieldLocalizable) {
-					sb.append(_ddmIndexer.getValueFieldName(indexType, locale));
-					sb.append(StringPool.UNDERLINE);
-				}
-				else {
-					sb.append(_ddmIndexer.getValueFieldName(indexType));
-					sb.append(StringPool.UNDERLINE);
-				}
-			}
-			catch (ArrayIndexOutOfBoundsException
-						arrayIndexOutOfBoundsException) {
-
-				_log.error(
-					"Unable to get order by column",
-					arrayIndexOutOfBoundsException);
-
-				throw arrayIndexOutOfBoundsException;
-			}
-		}
-
-		String suffix = "String";
-
-		if (!Objects.equals(
-				ddmFormField.getType(), DDMFormFieldTypeConstants.DATE) &&
-			((sortType == Sort.DOUBLE_TYPE) || (sortType == Sort.FLOAT_TYPE) ||
-			 (sortType == Sort.INT_TYPE) || (sortType == Sort.LONG_TYPE))) {
-
-			suffix = "Number";
-		}
-
-		sb.append(suffix);
-
-		return Field.getSortableFieldName(sb.toString());
-	}
-
-	private int _getDDMFormFieldTypeSortType(DDMFormField ddmFormField) {
-		int sortType = Sort.STRING_TYPE;
-
-		if (Objects.equals(
-				ddmFormField.getType(), DDMFormFieldTypeConstants.DATE)) {
-
-			sortType = Sort.LONG_TYPE;
-		}
-		else if (Objects.equals(
-					ddmFormField.getType(),
-					DDMFormFieldTypeConstants.NUMERIC)) {
-
-			if (Objects.equals(
-					ddmFormField.getDataType(), FieldConstants.INTEGER)) {
-
-				sortType = Sort.INT_TYPE;
-			}
-			else {
-				sortType = Sort.DOUBLE_TYPE;
-			}
-		}
-
-		return sortType;
-	}
-
 	private String _getOrderByCol(String sortField, Locale locale) {
 		if (sortField.equals("modifiedDate")) {
 			sortField = Field.MODIFIED_DATE;
@@ -693,39 +582,28 @@ public class AssetHelperImpl implements AssetHelper {
 			String orderByType, String sortField, Locale locale)
 		throws Exception {
 
-		Sort sort = _getSort(orderByType, sortField, locale);
+		if (sortField.startsWith(DDMIndexer.DDM_FIELD_PREFIX)) {
+			SortOrder sortOrder = SortOrder.ASC;
+
+			if (Validator.isNotNull(orderByType) &&
+				!StringUtil.equalsIgnoreCase(orderByType, "asc")) {
+
+				sortOrder = SortOrder.DESC;
+			}
+
+			return _ddmIndexer.createDDMStructureFieldSort(
+				sortField, locale, sortOrder);
+		}
+
+		Sort sort = SortFactoryUtil.getSort(
+			AssetEntry.class, _getSortType(sortField),
+			_getOrderByCol(sortField, locale), true, orderByType);
 
 		FieldSort fieldSort = _sorts.field(sort.getFieldName());
 
 		if (sort.isReverse()) {
 			fieldSort.setSortOrder(SortOrder.DESC);
 		}
-
-		if (!sortField.startsWith(DDMIndexer.DDM_FIELD_PREFIX) ||
-			_ddmIndexer.isLegacyDDMIndexFieldsEnabled()) {
-
-			return fieldSort;
-		}
-
-		NestedSort nestedSort = _sorts.nested(DDMIndexer.DDM_FIELD_ARRAY);
-
-		StringBundler sb = new StringBundler(3);
-
-		sb.append(sortField);
-
-		if (_getDDMFormFieldLocalizable(sortField)) {
-			sb.append(StringPool.UNDERLINE);
-			sb.append(LocaleUtil.toLanguageId(locale));
-		}
-
-		nestedSort.setFilterQuery(
-			_queries.term(
-				StringBundler.concat(
-					DDMIndexer.DDM_FIELD_ARRAY, StringPool.PERIOD,
-					DDMIndexer.DDM_FIELD_NAME),
-				sb.toString()));
-
-		fieldSort.setNestedSort(nestedSort);
 
 		return fieldSort;
 	}
@@ -742,27 +620,6 @@ public class AssetHelperImpl implements AssetHelper {
 			locale);
 
 		return new com.liferay.portal.search.sort.Sort[] {sort1, sort2};
-	}
-
-	private Sort _getSort(String orderByType, String sortField, Locale locale)
-		throws Exception {
-
-		if (sortField.startsWith(DDMIndexer.DDM_FIELD_PREFIX)) {
-			DDMFormField ddmFormField = _getDDMFormField(sortField);
-
-			int sortType = _getDDMFormFieldTypeSortType(ddmFormField);
-
-			return SortFactoryUtil.getSort(
-				AssetEntry.class, sortType,
-				_getDDMFormFieldTypeOrderByCol(
-					ddmFormField, sortField,
-					_getDDMFormFieldLocalizable(sortField), sortType, locale),
-				false, orderByType);
-		}
-
-		return SortFactoryUtil.getSort(
-			AssetEntry.class, _getSortType(sortField),
-			_getOrderByCol(sortField, locale), true, orderByType);
 	}
 
 	private int _getSortType(String fieldType) {
@@ -801,9 +658,6 @@ public class AssetHelperImpl implements AssetHelper {
 	private DDMIndexer _ddmIndexer;
 
 	@Reference
-	private DDMStructureLocalService _ddmStructureLocalService;
-
-	@Reference
 	private GroupLocalService _groupLocalService;
 
 	@Reference
@@ -814,9 +668,6 @@ public class AssetHelperImpl implements AssetHelper {
 
 	@Reference
 	private PortletLocalService _portletLocalService;
-
-	@Reference
-	private Queries _queries;
 
 	@Reference
 	private SearchRequestBuilderFactory _searchRequestBuilderFactory;

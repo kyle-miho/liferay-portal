@@ -28,6 +28,7 @@ import {
 	UPDATE_APP_PROPS,
 	UPDATE_CONFIG,
 	UPDATE_DATA_DEFINITION,
+	UPDATE_DATA_DEFINITION_AVAILABLE_LANGUAGE,
 	UPDATE_DATA_DEFINITION_FIELDS,
 	UPDATE_DATA_LAYOUT,
 	UPDATE_DATA_LAYOUT_FIELDS,
@@ -181,7 +182,7 @@ const editFocusedCustomObjectField = (
  * @param {object} dataDefinition
  * @param {object} field
  */
-const getUnformattedDefinitionField = (dataDefinition, {fieldName}) => {
+const getDefinitionField = (dataDefinition, {fieldName}) => {
 	return getDataDefinitionField(dataDefinition, fieldName);
 };
 
@@ -199,17 +200,26 @@ const setDataDefinitionFields = (
 	const newFields = [];
 
 	visitor.mapFields((field) => {
-		const formattedDefinitionField = convertFieldToDataDefinition(field);
+		const convertedField = convertFieldToDataDefinition(field);
 
 		if (dataLayoutBuilder.props.contentType === 'app-builder') {
+			const definitionField = getDefinitionField(dataDefinition, field);
+
 			newFields.push({
-				...formattedDefinitionField,
-				required: !!getUnformattedDefinitionField(dataDefinition, field)
-					?.required,
+				...convertedField,
+				customProperties: {
+					...convertedField.customProperties,
+					labelAtStructureLevel:
+						definitionField?.customProperties
+							?.labelAtStructureLevel ??
+						convertedField?.customProperties?.labelAtStructureLevel,
+				},
+				label: definitionField?.label ?? convertedField?.label,
+				required: !!definitionField?.required,
 			});
 		}
 		else {
-			newFields.push(formattedDefinitionField);
+			newFields.push(convertedField);
 		}
 	});
 
@@ -409,6 +419,22 @@ const createReducer = (dataLayoutBuilder) => {
 						dataDefinition.availableLanguageIds,
 				};
 			}
+			case UPDATE_DATA_DEFINITION_AVAILABLE_LANGUAGE: {
+				const {dataDefinition} = state;
+
+				return {
+					...state,
+					dataDefinition: {
+						...dataDefinition,
+						availableLanguageIds: [
+							...new Set([
+								...dataDefinition.availableLanguageIds,
+								action.payload,
+							]),
+						],
+					},
+				};
+			}
 			case UPDATE_DATA_DEFINITION_FIELDS: {
 				const {dataDefinitionFields} = action.payload;
 
@@ -485,19 +511,8 @@ const createReducer = (dataLayoutBuilder) => {
 				};
 			}
 			case UPDATE_EDITING_LANGUAGE_ID: {
-				const {dataDefinition} = state;
-
 				return {
 					...state,
-					dataDefinition: {
-						...dataDefinition,
-						availableLanguageIds: [
-							...new Set([
-								...dataDefinition.availableLanguageIds,
-								action.payload,
-							]),
-						],
-					},
 					editingLanguageId: action.payload,
 				};
 			}

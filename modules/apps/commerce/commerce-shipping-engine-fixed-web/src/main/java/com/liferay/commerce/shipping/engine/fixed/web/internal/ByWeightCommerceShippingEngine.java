@@ -15,13 +15,17 @@
 package com.liferay.commerce.shipping.engine.fixed.web.internal;
 
 import com.liferay.commerce.context.CommerceContext;
+import com.liferay.commerce.currency.model.CommerceCurrency;
 import com.liferay.commerce.currency.model.CommerceMoney;
+import com.liferay.commerce.currency.service.CommerceCurrencyService;
 import com.liferay.commerce.exception.CommerceShippingEngineException;
 import com.liferay.commerce.model.CommerceAddress;
 import com.liferay.commerce.model.CommerceOrder;
 import com.liferay.commerce.model.CommerceShippingEngine;
 import com.liferay.commerce.model.CommerceShippingMethod;
 import com.liferay.commerce.model.CommerceShippingOption;
+import com.liferay.commerce.product.model.CommerceChannel;
+import com.liferay.commerce.product.service.CommerceChannelService;
 import com.liferay.commerce.service.CommerceAddressRestrictionLocalService;
 import com.liferay.commerce.service.CommerceShippingMethodLocalService;
 import com.liferay.commerce.shipping.engine.fixed.model.CommerceShippingFixedOption;
@@ -29,6 +33,7 @@ import com.liferay.commerce.shipping.engine.fixed.model.CommerceShippingFixedOpt
 import com.liferay.commerce.shipping.engine.fixed.service.CommerceShippingFixedOptionLocalService;
 import com.liferay.commerce.shipping.engine.fixed.service.CommerceShippingFixedOptionRelLocalService;
 import com.liferay.commerce.util.CommerceShippingHelper;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.LanguageUtil;
@@ -37,6 +42,7 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.ResourceBundleUtil;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -123,14 +129,22 @@ public class ByWeightCommerceShippingEngine implements CommerceShippingEngine {
 		double orderWeight = _commerceShippingHelper.getWeight(
 			commerceOrder.getCommerceOrderItems());
 
+		long commerceCountryId = 0;
+		long commerceRegionId = 0;
+		String zip = StringPool.BLANK;
+
+		if (commerceAddress != null) {
+			commerceCountryId = commerceAddress.getCountryId();
+			commerceRegionId = commerceAddress.getRegionId();
+			zip = commerceAddress.getZip();
+		}
+
 		CommerceShippingFixedOptionRel commerceShippingFixedOptionRel =
 			_commerceShippingFixedOptionRelLocalService.
 				fetchCommerceShippingFixedOptionRel(
 					commerceShippingFixedOption.
 						getCommerceShippingFixedOptionId(),
-					commerceAddress.getCommerceCountryId(),
-					commerceAddress.getCommerceRegionId(),
-					commerceAddress.getZip(), orderWeight);
+					commerceCountryId, commerceRegionId, zip, orderWeight);
 
 		if (commerceShippingFixedOptionRel == null) {
 			return null;
@@ -162,6 +176,30 @@ public class ByWeightCommerceShippingEngine implements CommerceShippingEngine {
 		amount = amount.add(
 			ratePercentage.multiply(orderPrice.divide(new BigDecimal(100))));
 
+		CommerceChannel commerceChannel =
+			_commerceChannelService.getCommerceChannelByOrderGroupId(
+				commerceOrder.getGroupId());
+
+		CommerceCurrency commerceCurrency = commerceOrder.getCommerceCurrency();
+
+		String commerceCurrencyCode = commerceCurrency.getCode();
+
+		if (!commerceCurrencyCode.equals(
+				commerceChannel.getCommerceCurrencyCode())) {
+
+			CommerceCurrency commerceChannelCommerceCurrency =
+				_commerceCurrencyService.getCommerceCurrency(
+					commerceOrder.getCompanyId(),
+					commerceChannel.getCommerceCurrencyCode());
+
+			amount = amount.divide(
+				commerceChannelCommerceCurrency.getRate(),
+				RoundingMode.valueOf(
+					commerceChannelCommerceCurrency.getRoundingMode()));
+
+			amount = amount.multiply(commerceCurrency.getRate());
+		}
+
 		return new CommerceShippingOption(name, name, amount);
 	}
 
@@ -172,7 +210,13 @@ public class ByWeightCommerceShippingEngine implements CommerceShippingEngine {
 		List<CommerceShippingOption> commerceShippingOptions =
 			new ArrayList<>();
 
+		long commerceCountryId = 0;
+
 		CommerceAddress commerceAddress = commerceOrder.getShippingAddress();
+
+		if (commerceAddress != null) {
+			commerceCountryId = commerceAddress.getCountryId();
+		}
 
 		List<CommerceShippingFixedOption> commerceShippingFixedOptions =
 			_getCommerceShippingFixedOptions(commerceOrder.getGroupId());
@@ -185,7 +229,7 @@ public class ByWeightCommerceShippingEngine implements CommerceShippingEngine {
 					isCommerceShippingMethodRestricted(
 						commerceShippingFixedOption.
 							getCommerceShippingMethodId(),
-						commerceAddress.getCommerceCountryId());
+						commerceCountryId);
 
 			if (restricted) {
 				continue;
@@ -215,6 +259,12 @@ public class ByWeightCommerceShippingEngine implements CommerceShippingEngine {
 	@Reference
 	private CommerceAddressRestrictionLocalService
 		_commerceAddressRestrictionLocalService;
+
+	@Reference
+	private CommerceChannelService _commerceChannelService;
+
+	@Reference
+	private CommerceCurrencyService _commerceCurrencyService;
 
 	@Reference
 	private CommerceShippingFixedOptionLocalService

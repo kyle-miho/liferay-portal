@@ -454,6 +454,8 @@ definition {
 	@description = "This is a test for LPS-121626. The elements information of Slider is organized in Selection panel."
 	@priority = "5"
 	test ViewElementInfoOrderOfSliderInSelectionPanel {
+		property portal.acceptance = "true";
+
 		task ("Add a Slider fragment to page") {
 			ContentPagesNavigator.openEditContentPage(
 				pageName = "Test Page Name",
@@ -485,6 +487,8 @@ definition {
 	@description = "This is a test for LPS-121281. The elements information of Tabs is organized in Selection panel."
 	@priority = "5"
 	test ViewElementInfoOrderOfTabsInSelectionPanel {
+		property portal.acceptance = "true";
+
 		task ("Add a Tabs fragment to page") {
 			ContentPagesNavigator.openEditContentPage(
 				pageName = "Test Page Name",
@@ -513,7 +517,7 @@ definition {
 		}
 
 		task ("Change the Number of Tabs to 5") {
-			PageEditor.gotoStyle(fragmentName = "Tabs");
+			PageEditor.gotoConfiguration(fragmentName = "Tabs");
 
 			PageEditor.configureFragment(numberOfTabs = "5");
 		}
@@ -536,7 +540,7 @@ definition {
 		}
 
 		task ("Change the Number of Tabs to 3") {
-			PageEditor.gotoStyle(fragmentName = "Tabs");
+			PageEditor.gotoConfiguration(fragmentName = "Tabs");
 
 			PageEditor.configureFragment(numberOfTabs = "3");
 		}

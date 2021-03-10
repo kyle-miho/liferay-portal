@@ -177,6 +177,7 @@ import com.liferay.portal.kernel.util.ListMergeable;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.LocalizationUtil;
+import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.MethodHandler;
 import com.liferay.portal.kernel.util.MethodKey;
 import com.liferay.portal.kernel.util.ParamUtil;
@@ -1436,11 +1437,12 @@ public class PortalImpl implements Portal {
 
 		if (forceLayoutFriendlyURL ||
 			((!layout.isFirstParent() || Validator.isNotNull(parametersURL)) &&
-			 (groupFriendlyURL.contains(
-				 siteGroup.getFriendlyURL() +
-					 themeDisplay.getLayoutFriendlyURL(layout)) ||
-			  groupFriendlyURL.endsWith(
-				  StringPool.SLASH + layout.getLayoutId())))) {
+			 _requiresLayoutFriendlyURL(
+				 siteGroup.getFriendlyURL(),
+				 themeDisplay.getLayoutFriendlyURL(layout),
+				 groupFriendlyURL)) ||
+			groupFriendlyURL.endsWith(
+				StringPool.SLASH + layout.getLayoutId())) {
 
 			canonicalLayoutFriendlyURL = defaultLayoutFriendlyURL;
 		}
@@ -2754,7 +2756,7 @@ public class PortalImpl implements Portal {
 		if (Validator.isNotNull(queryString)) {
 			layoutActualURL = layoutActualURL.concat(queryString);
 		}
-		else if (params.isEmpty()) {
+		else if (MapUtil.isEmpty(params)) {
 			UnicodeProperties typeSettingsUnicodeProperties =
 				layout.getTypeSettingsProperties();
 
@@ -6665,8 +6667,8 @@ public class PortalImpl implements Portal {
 		}
 
 		if (exception instanceof NoSuchImageException) {
-			if (_logWebServerServlet.isWarnEnabled()) {
-				_logWebServerServlet.warn(exception, exception);
+			if (_webServerServletLog.isWarnEnabled()) {
+				_webServerServletLog.warn(exception, exception);
 			}
 		}
 		else if (exception instanceof PortalException) {
@@ -8753,8 +8755,24 @@ public class PortalImpl implements Portal {
 		return group;
 	}
 
-	private static final Log _logWebServerServlet = LogFactoryUtil.getLog(
-		WebServerServlet.class);
+	private boolean _requiresLayoutFriendlyURL(
+		String siteGroupFriendlyURL, String layoutFriendlyURL,
+		String groupFriendlyURL) {
+
+		if (groupFriendlyURL.contains("/web")) {
+			if (groupFriendlyURL.contains(
+					StringBundler.concat(
+						"/web", siteGroupFriendlyURL, layoutFriendlyURL))) {
+
+				return true;
+			}
+		}
+		else if (groupFriendlyURL.contains(layoutFriendlyURL)) {
+			return true;
+		}
+
+		return false;
+	}
 
 	private static final String _J_SECURITY_CHECK = "j_security_check";
 
@@ -8787,6 +8805,8 @@ public class PortalImpl implements Portal {
 	private static final MethodHandler _resetCDNHostsMethodHandler =
 		new MethodHandler(new MethodKey(PortalUtil.class, "resetCDNHosts"));
 	private static final Date _upTime = new Date();
+	private static final Log _webServerServletLog = LogFactoryUtil.getLog(
+		WebServerServlet.class);
 
 	static {
 		Locale locale = LocaleUtil.getDefault();

@@ -12,6 +12,18 @@ definition {
 
 		Navigator.openURL();
 
+		ApplicationsMenu.gotoPortlet(
+			category = "Configuration",
+			panel = "Control Panel",
+			portlet = "Instance Settings");
+
+		SystemSettings.gotoConfiguration(
+			configurationCategory = "User Authentication",
+			configurationName = "General",
+			configurationScope = "Virtual Instance Scope");
+
+		PortalSettings.uncheckStrangersVerifyEmailCheckbox();
+
 		// Create site and content page
 
 		JSONGroup.addGroup(groupName = "Test Site Name");
@@ -150,6 +162,108 @@ definition {
 		PageEditor.clickPublish();
 	}
 
+	@description = "When the user opens the experiences selection modal and select a different locale for an experience, the experience version for that language is shown"
+	@priority = "5"
+	test AddNewExperienceWithLanguage {
+		property portal.acceptance = "true";
+
+		Navigator.openWithAppendToBaseURL(urlAppend = "web/test-site-name/experience-content-page");
+
+		ContentPages.clickPencil();
+
+		PageEditor.addFragment(
+			collectionName = "Basic Components",
+			fragmentName = "Heading");
+
+		PageEditor.editFragmentText(
+			fragmentName = "Heading",
+			id = "element-text",
+			text = "Text in english");
+
+		Button.clickPublish();
+
+		Navigator.openWithAppendToBaseURL(urlAppend = "web/test-site-name/experience-content-page");
+
+		ContentPages.clickPencil();
+
+		PageEditor.addExperienceWithLanguage(
+			experienceName = "NewAnyoneExperience",
+			language = "Spanish",
+			segmentName = "Anyone");
+
+		Refresh();
+
+		PageEditor.changeExperienceLanguage(
+			language = "es-ES",
+			newExperience = "NewAnyoneExperience");
+
+		PageEditor.editFragmentText(
+			fragmentName = "Heading",
+			id = "element-text",
+			text = "Texto en español");
+
+		Button.clickPublish();
+
+		Navigator.openWithAppendToBaseURL(urlAppend = "web/test-site-name/experience-content-page");
+
+		ContentPages.clickPencil();
+
+		PageEditor.changeExperience(newExperience = "NewAnyoneExperience");
+
+		PageEditor.prioritizeExperience(experienceName = "NewAnyoneExperience");
+
+		Button.clickPublish();
+
+		JSONUser.addUser(
+			userEmailAddress = "userea@liferay.com",
+			userFirstName = "userfn",
+			userLastName = "userln",
+			userScreenName = "usersn");
+
+		ApplicationsMenu.gotoPortlet(
+			category = "Users",
+			panel = "Control Panel",
+			portlet = "Users and Organizations");
+
+		User.editPasswordCP(
+			requirePasswordReset = "true",
+			userEmailAddress = "userea@liferay.com",
+			userScreenName = "usersn");
+
+		ApplicationsMenu.gotoPortlet(
+			category = "Users",
+			panel = "Control Panel",
+			portlet = "Users and Organizations");
+
+		User.editDisplaySettingsCP(
+			languageName = "español (España)",
+			userScreenName = "usersn");
+
+		User.logoutPG();
+
+		Navigator.gotoSitePage(
+			pageName = "Experience Content Page",
+			siteName = "Test Site Name");
+
+		AssertTextEquals(
+			locator1 = "Experience#FRAGMENT_HEADING",
+			value1 = "Text in english");
+
+		User.loginUserPG(
+			password = "test",
+			userEmailAddress = "userea@liferay.com");
+
+		Navigator.gotoSitePage(
+			pageName = "Experience Content Page",
+			siteName = "Test Site Name");
+
+		AssertTextEquals(
+			locator1 = "Experience#FRAGMENT_HEADING",
+			value1 = "Texto en español");
+
+		User.firstLoginPG();
+	}
+
 	@description = "When the user clicks on the Duplicate option of an experience, a new experience with [the same name] + Copy and the same audience (Segment) appears in the last position of the list, always below the default experience"
 	@priority = "5"
 	test DuplicateExperience {
@@ -168,6 +282,73 @@ definition {
 		PageEditor.changeExperience(newExperience = "NewExp1");
 
 		PageEditor.duplicateExperience(experienceName = "NewExp1");
+
+		PageEditor.clickPublish();
+	}
+
+	@description = "When the user duplicates an experience, the new experience has the same locales selected than the duplicated one"
+	@priority = "5"
+	test DuplicateExperienceWithLanguage {
+		property portal.acceptance = "true";
+
+		Navigator.openWithAppendToBaseURL(urlAppend = "web/test-site-name/experience-content-page");
+
+		ContentPages.clickPencil();
+
+		PageEditor.addFragment(
+			collectionName = "Basic Components",
+			fragmentName = "Heading");
+
+		PageEditor.editFragmentText(
+			fragmentName = "Heading",
+			id = "element-text",
+			text = "Text in english");
+
+		Button.clickPublish();
+
+		Navigator.openWithAppendToBaseURL(urlAppend = "web/test-site-name/experience-content-page");
+
+		ContentPages.clickPencil();
+
+		PageEditor.addExperienceWithLanguage(
+			experienceName = "NewAnyoneExperience",
+			language = "Spanish",
+			segmentName = "Anyone");
+
+		Refresh();
+
+		PageEditor.changeExperienceLanguage(
+			language = "es-ES",
+			newExperience = "NewAnyoneExperience");
+
+		PageEditor.editFragmentText(
+			fragmentName = "Heading",
+			id = "element-text",
+			text = "Texto en español");
+
+		Button.clickPublish();
+
+		Navigator.openWithAppendToBaseURL(urlAppend = "web/test-site-name/experience-content-page");
+
+		ContentPages.clickPencil();
+
+		PageEditor.changeExperience(newExperience = "NewAnyoneExperience");
+
+		PageEditor.duplicateExperience(experienceName = "NewAnyoneExperience");
+
+		PageEditor.clickPublish();
+
+		Navigator.openWithAppendToBaseURL(urlAppend = "web/test-site-name/experience-content-page");
+
+		ContentPages.clickPencil();
+
+		PageEditor.changeExperienceLanguage(
+			language = "es-ES",
+			newExperience = "NewAnyoneExperience (Copy)");
+
+		AssertTextEquals(
+			locator1 = "Experience#FRAGMENT_HEADING",
+			value1 = "Texto en español");
 
 		PageEditor.clickPublish();
 	}

@@ -14,9 +14,16 @@
 
 package com.liferay.commerce.service;
 
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.util.tracker.ServiceTracker;
+import com.liferay.commerce.model.CommerceAddress;
+import com.liferay.petra.sql.dsl.query.DSLQuery;
+import com.liferay.portal.kernel.dao.orm.DynamicQuery;
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.model.PersistedModel;
+import com.liferay.portal.kernel.util.OrderByComparator;
+
+import java.io.Serializable;
+
+import java.util.List;
 
 /**
  * Provides the local service utility for CommerceAddress. This utility wraps
@@ -48,8 +55,8 @@ public class CommerceAddressLocalServiceUtil {
 	 * @param commerceAddress the commerce address
 	 * @return the commerce address that was added
 	 */
-	public static com.liferay.commerce.model.CommerceAddress addCommerceAddress(
-		com.liferay.commerce.model.CommerceAddress commerceAddress) {
+	public static CommerceAddress addCommerceAddress(
+		CommerceAddress commerceAddress) {
 
 		return getService().addCommerceAddress(commerceAddress);
 	}
@@ -58,53 +65,51 @@ public class CommerceAddressLocalServiceUtil {
 	 * @deprecated As of Mueller (7.2.x), defaultBilling/Shipping exist on Account Entity. Pass type.
 	 */
 	@Deprecated
-	public static com.liferay.commerce.model.CommerceAddress addCommerceAddress(
+	public static CommerceAddress addCommerceAddress(
 			String className, long classPK, String name, String description,
 			String street1, String street2, String street3, String city,
-			String zip, long commerceRegionId, long commerceCountryId,
-			String phoneNumber, boolean defaultBilling, boolean defaultShipping,
+			String zip, long regionId, long countryId, String phoneNumber,
+			boolean defaultBilling, boolean defaultShipping,
 			com.liferay.portal.kernel.service.ServiceContext serviceContext)
-		throws com.liferay.portal.kernel.exception.PortalException {
+		throws PortalException {
 
 		return getService().addCommerceAddress(
 			className, classPK, name, description, street1, street2, street3,
-			city, zip, commerceRegionId, commerceCountryId, phoneNumber,
-			defaultBilling, defaultShipping, serviceContext);
+			city, zip, regionId, countryId, phoneNumber, defaultBilling,
+			defaultShipping, serviceContext);
 	}
 
-	public static com.liferay.commerce.model.CommerceAddress addCommerceAddress(
+	public static CommerceAddress addCommerceAddress(
 			String className, long classPK, String name, String description,
 			String street1, String street2, String street3, String city,
-			String zip, long commerceRegionId, long commerceCountryId,
-			String phoneNumber, int type,
+			String zip, long regionId, long countryId, String phoneNumber,
+			int type,
 			com.liferay.portal.kernel.service.ServiceContext serviceContext)
-		throws com.liferay.portal.kernel.exception.PortalException {
+		throws PortalException {
 
 		return getService().addCommerceAddress(
 			className, classPK, name, description, street1, street2, street3,
-			city, zip, commerceRegionId, commerceCountryId, phoneNumber, type,
-			serviceContext);
+			city, zip, regionId, countryId, phoneNumber, type, serviceContext);
 	}
 
-	public static com.liferay.commerce.model.CommerceAddress addCommerceAddress(
-			String className, long classPK, String name, String description,
-			String street1, String street2, String street3, String city,
-			String zip, long commerceRegionId, long commerceCountryId,
-			String phoneNumber, int type, String externalReferenceCode,
+	public static CommerceAddress addCommerceAddress(
+			String externalReferenceCode, String className, long classPK,
+			String name, String description, String street1, String street2,
+			String street3, String city, String zip, long regionId,
+			long countryId, String phoneNumber, int type,
 			com.liferay.portal.kernel.service.ServiceContext serviceContext)
-		throws com.liferay.portal.kernel.exception.PortalException {
+		throws PortalException {
 
 		return getService().addCommerceAddress(
-			className, classPK, name, description, street1, street2, street3,
-			city, zip, commerceRegionId, commerceCountryId, phoneNumber, type,
-			externalReferenceCode, serviceContext);
+			externalReferenceCode, className, classPK, name, description,
+			street1, street2, street3, city, zip, regionId, countryId,
+			phoneNumber, type, serviceContext);
 	}
 
-	public static com.liferay.commerce.model.CommerceAddress
-			copyCommerceAddress(
-				long commerceAddressId, String className, long classPK,
-				com.liferay.portal.kernel.service.ServiceContext serviceContext)
-		throws com.liferay.portal.kernel.exception.PortalException {
+	public static CommerceAddress copyCommerceAddress(
+			long commerceAddressId, String className, long classPK,
+			com.liferay.portal.kernel.service.ServiceContext serviceContext)
+		throws PortalException {
 
 		return getService().copyCommerceAddress(
 			commerceAddressId, className, classPK, serviceContext);
@@ -116,8 +121,8 @@ public class CommerceAddressLocalServiceUtil {
 	 * @param commerceAddressId the primary key for the new commerce address
 	 * @return the new commerce address
 	 */
-	public static com.liferay.commerce.model.CommerceAddress
-		createCommerceAddress(long commerceAddressId) {
+	public static CommerceAddress createCommerceAddress(
+		long commerceAddressId) {
 
 		return getService().createCommerceAddress(commerceAddressId);
 	}
@@ -125,9 +130,9 @@ public class CommerceAddressLocalServiceUtil {
 	/**
 	 * @throws PortalException
 	 */
-	public static com.liferay.portal.kernel.model.PersistedModel
-			createPersistedModel(java.io.Serializable primaryKeyObj)
-		throws com.liferay.portal.kernel.exception.PortalException {
+	public static PersistedModel createPersistedModel(
+			Serializable primaryKeyObj)
+		throws PortalException {
 
 		return getService().createPersistedModel(primaryKeyObj);
 	}
@@ -143,10 +148,9 @@ public class CommerceAddressLocalServiceUtil {
 	 * @return the commerce address that was removed
 	 * @throws PortalException
 	 */
-	public static com.liferay.commerce.model.CommerceAddress
-			deleteCommerceAddress(
-				com.liferay.commerce.model.CommerceAddress commerceAddress)
-		throws com.liferay.portal.kernel.exception.PortalException {
+	public static CommerceAddress deleteCommerceAddress(
+			CommerceAddress commerceAddress)
+		throws PortalException {
 
 		return getService().deleteCommerceAddress(commerceAddress);
 	}
@@ -162,51 +166,45 @@ public class CommerceAddressLocalServiceUtil {
 	 * @return the commerce address that was removed
 	 * @throws PortalException if a commerce address with the primary key could not be found
 	 */
-	public static com.liferay.commerce.model.CommerceAddress
-			deleteCommerceAddress(long commerceAddressId)
-		throws com.liferay.portal.kernel.exception.PortalException {
+	public static CommerceAddress deleteCommerceAddress(long commerceAddressId)
+		throws PortalException {
 
 		return getService().deleteCommerceAddress(commerceAddressId);
 	}
 
 	public static void deleteCommerceAddresses(String className, long classPK)
-		throws com.liferay.portal.kernel.exception.PortalException {
+		throws PortalException {
 
 		getService().deleteCommerceAddresses(className, classPK);
 	}
 
-	public static void deleteCountryCommerceAddresses(long commerceCountryId)
-		throws com.liferay.portal.kernel.exception.PortalException {
+	public static void deleteCountryCommerceAddresses(long countryId)
+		throws PortalException {
 
-		getService().deleteCountryCommerceAddresses(commerceCountryId);
+		getService().deleteCountryCommerceAddresses(countryId);
 	}
 
 	/**
 	 * @throws PortalException
 	 */
-	public static com.liferay.portal.kernel.model.PersistedModel
-			deletePersistedModel(
-				com.liferay.portal.kernel.model.PersistedModel persistedModel)
-		throws com.liferay.portal.kernel.exception.PortalException {
+	public static PersistedModel deletePersistedModel(
+			PersistedModel persistedModel)
+		throws PortalException {
 
 		return getService().deletePersistedModel(persistedModel);
 	}
 
-	public static void deleteRegionCommerceAddresses(long commerceRegionId)
-		throws com.liferay.portal.kernel.exception.PortalException {
+	public static void deleteRegionCommerceAddresses(long regionId)
+		throws PortalException {
 
-		getService().deleteRegionCommerceAddresses(commerceRegionId);
+		getService().deleteRegionCommerceAddresses(regionId);
 	}
 
-	public static <T> T dslQuery(
-		com.liferay.petra.sql.dsl.query.DSLQuery dslQuery) {
-
+	public static <T> T dslQuery(DSLQuery dslQuery) {
 		return getService().dslQuery(dslQuery);
 	}
 
-	public static com.liferay.portal.kernel.dao.orm.DynamicQuery
-		dynamicQuery() {
-
+	public static DynamicQuery dynamicQuery() {
 		return getService().dynamicQuery();
 	}
 
@@ -216,9 +214,7 @@ public class CommerceAddressLocalServiceUtil {
 	 * @param dynamicQuery the dynamic query
 	 * @return the matching rows
 	 */
-	public static <T> java.util.List<T> dynamicQuery(
-		com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery) {
-
+	public static <T> List<T> dynamicQuery(DynamicQuery dynamicQuery) {
 		return getService().dynamicQuery(dynamicQuery);
 	}
 
@@ -234,9 +230,8 @@ public class CommerceAddressLocalServiceUtil {
 	 * @param end the upper bound of the range of model instances (not inclusive)
 	 * @return the range of matching rows
 	 */
-	public static <T> java.util.List<T> dynamicQuery(
-		com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery, int start,
-		int end) {
+	public static <T> List<T> dynamicQuery(
+		DynamicQuery dynamicQuery, int start, int end) {
 
 		return getService().dynamicQuery(dynamicQuery, start, end);
 	}
@@ -254,10 +249,9 @@ public class CommerceAddressLocalServiceUtil {
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	 * @return the ordered range of matching rows
 	 */
-	public static <T> java.util.List<T> dynamicQuery(
-		com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery, int start,
-		int end,
-		com.liferay.portal.kernel.util.OrderByComparator<T> orderByComparator) {
+	public static <T> List<T> dynamicQuery(
+		DynamicQuery dynamicQuery, int start, int end,
+		OrderByComparator<T> orderByComparator) {
 
 		return getService().dynamicQuery(
 			dynamicQuery, start, end, orderByComparator);
@@ -269,9 +263,7 @@ public class CommerceAddressLocalServiceUtil {
 	 * @param dynamicQuery the dynamic query
 	 * @return the number of rows matching the dynamic query
 	 */
-	public static long dynamicQueryCount(
-		com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery) {
-
+	public static long dynamicQueryCount(DynamicQuery dynamicQuery) {
 		return getService().dynamicQueryCount(dynamicQuery);
 	}
 
@@ -283,23 +275,20 @@ public class CommerceAddressLocalServiceUtil {
 	 * @return the number of rows matching the dynamic query
 	 */
 	public static long dynamicQueryCount(
-		com.liferay.portal.kernel.dao.orm.DynamicQuery dynamicQuery,
+		DynamicQuery dynamicQuery,
 		com.liferay.portal.kernel.dao.orm.Projection projection) {
 
 		return getService().dynamicQueryCount(dynamicQuery, projection);
 	}
 
-	public static com.liferay.commerce.model.CommerceAddress
-		fetchByExternalReferenceCode(
-			long companyId, String externalReferenceCode) {
+	public static CommerceAddress fetchByExternalReferenceCode(
+		String externalReferenceCode, long companyId) {
 
 		return getService().fetchByExternalReferenceCode(
-			companyId, externalReferenceCode);
+			externalReferenceCode, companyId);
 	}
 
-	public static com.liferay.commerce.model.CommerceAddress
-		fetchCommerceAddress(long commerceAddressId) {
-
+	public static CommerceAddress fetchCommerceAddress(long commerceAddressId) {
 		return getService().fetchCommerceAddress(commerceAddressId);
 	}
 
@@ -310,17 +299,16 @@ public class CommerceAddressLocalServiceUtil {
 	 * @param externalReferenceCode the commerce address's external reference code
 	 * @return the matching commerce address, or <code>null</code> if a matching commerce address could not be found
 	 */
-	public static com.liferay.commerce.model.CommerceAddress
-		fetchCommerceAddressByReferenceCode(
-			long companyId, String externalReferenceCode) {
+	public static CommerceAddress fetchCommerceAddressByReferenceCode(
+		long companyId, String externalReferenceCode) {
 
 		return getService().fetchCommerceAddressByReferenceCode(
 			companyId, externalReferenceCode);
 	}
 
-	public static com.liferay.commerce.model.CommerceAddress
-			geolocateCommerceAddress(long commerceAddressId)
-		throws com.liferay.portal.kernel.exception.PortalException {
+	public static CommerceAddress geolocateCommerceAddress(
+			long commerceAddressId)
+		throws PortalException {
 
 		return getService().geolocateCommerceAddress(commerceAddressId);
 	}
@@ -331,28 +319,25 @@ public class CommerceAddressLocalServiceUtil {
 		return getService().getActionableDynamicQuery();
 	}
 
-	public static java.util.List<com.liferay.commerce.model.CommerceAddress>
-		getBillingAndShippingCommerceAddresses(
-			long companyId, String className, long classPK) {
+	public static List<CommerceAddress> getBillingAndShippingCommerceAddresses(
+		long companyId, String className, long classPK) {
 
 		return getService().getBillingAndShippingCommerceAddresses(
 			companyId, className, classPK);
 	}
 
-	public static java.util.List<com.liferay.commerce.model.CommerceAddress>
-			getBillingCommerceAddresses(
-				long companyId, String className, long classPK)
-		throws com.liferay.portal.kernel.exception.PortalException {
+	public static List<CommerceAddress> getBillingCommerceAddresses(
+			long companyId, String className, long classPK)
+		throws PortalException {
 
 		return getService().getBillingCommerceAddresses(
 			companyId, className, classPK);
 	}
 
-	public static java.util.List<com.liferay.commerce.model.CommerceAddress>
-			getBillingCommerceAddresses(
-				long companyId, String className, long classPK, String keywords,
-				int start, int end, com.liferay.portal.kernel.search.Sort sort)
-		throws com.liferay.portal.kernel.exception.PortalException {
+	public static List<CommerceAddress> getBillingCommerceAddresses(
+			long companyId, String className, long classPK, String keywords,
+			int start, int end, com.liferay.portal.kernel.search.Sort sort)
+		throws PortalException {
 
 		return getService().getBillingCommerceAddresses(
 			companyId, className, classPK, keywords, start, end, sort);
@@ -360,7 +345,7 @@ public class CommerceAddressLocalServiceUtil {
 
 	public static int getBillingCommerceAddressesCount(
 			long companyId, String className, long classPK, String keywords)
-		throws com.liferay.portal.kernel.exception.PortalException {
+		throws PortalException {
 
 		return getService().getBillingCommerceAddressesCount(
 			companyId, className, classPK, keywords);
@@ -373,9 +358,8 @@ public class CommerceAddressLocalServiceUtil {
 	 * @return the commerce address
 	 * @throws PortalException if a commerce address with the primary key could not be found
 	 */
-	public static com.liferay.commerce.model.CommerceAddress getCommerceAddress(
-			long commerceAddressId)
-		throws com.liferay.portal.kernel.exception.PortalException {
+	public static CommerceAddress getCommerceAddress(long commerceAddressId)
+		throws PortalException {
 
 		return getService().getCommerceAddress(commerceAddressId);
 	}
@@ -391,8 +375,8 @@ public class CommerceAddressLocalServiceUtil {
 	 * @param end the upper bound of the range of commerce addresses (not inclusive)
 	 * @return the range of commerce addresses
 	 */
-	public static java.util.List<com.liferay.commerce.model.CommerceAddress>
-		getCommerceAddresses(int start, int end) {
+	public static List<CommerceAddress> getCommerceAddresses(
+		int start, int end) {
 
 		return getService().getCommerceAddresses(start, end);
 	}
@@ -401,8 +385,8 @@ public class CommerceAddressLocalServiceUtil {
 	 * @deprecated As of Mueller (7.2.x), commerceAddress is scoped to Company use *ByCompanyId
 	 */
 	@Deprecated
-	public static java.util.List<com.liferay.commerce.model.CommerceAddress>
-		getCommerceAddresses(long groupId, String className, long classPK) {
+	public static List<CommerceAddress> getCommerceAddresses(
+		long groupId, String className, long classPK) {
 
 		return getService().getCommerceAddresses(groupId, className, classPK);
 	}
@@ -411,42 +395,32 @@ public class CommerceAddressLocalServiceUtil {
 	 * @deprecated As of Mueller (7.2.x), commerceAddress is scoped to Company use *ByCompanyId
 	 */
 	@Deprecated
-	public static java.util.List<com.liferay.commerce.model.CommerceAddress>
-		getCommerceAddresses(
-			long groupId, String className, long classPK, int start, int end,
-			com.liferay.portal.kernel.util.OrderByComparator
-				<com.liferay.commerce.model.CommerceAddress>
-					orderByComparator) {
+	public static List<CommerceAddress> getCommerceAddresses(
+		long groupId, String className, long classPK, int start, int end,
+		OrderByComparator<CommerceAddress> orderByComparator) {
 
 		return getService().getCommerceAddresses(
 			groupId, className, classPK, start, end, orderByComparator);
 	}
 
-	public static java.util.List<com.liferay.commerce.model.CommerceAddress>
-		getCommerceAddresses(
-			String className, long classPK, int start, int end,
-			com.liferay.portal.kernel.util.OrderByComparator
-				<com.liferay.commerce.model.CommerceAddress>
-					orderByComparator) {
+	public static List<CommerceAddress> getCommerceAddresses(
+		String className, long classPK, int start, int end,
+		OrderByComparator<CommerceAddress> orderByComparator) {
 
 		return getService().getCommerceAddresses(
 			className, classPK, start, end, orderByComparator);
 	}
 
-	public static java.util.List<com.liferay.commerce.model.CommerceAddress>
-		getCommerceAddressesByCompanyId(
-			long companyId, String className, long classPK) {
+	public static List<CommerceAddress> getCommerceAddressesByCompanyId(
+		long companyId, String className, long classPK) {
 
 		return getService().getCommerceAddressesByCompanyId(
 			companyId, className, classPK);
 	}
 
-	public static java.util.List<com.liferay.commerce.model.CommerceAddress>
-		getCommerceAddressesByCompanyId(
-			long companyId, String className, long classPK, int start, int end,
-			com.liferay.portal.kernel.util.OrderByComparator
-				<com.liferay.commerce.model.CommerceAddress>
-					orderByComparator) {
+	public static List<CommerceAddress> getCommerceAddressesByCompanyId(
+		long companyId, String className, long classPK, int start, int end,
+		OrderByComparator<CommerceAddress> orderByComparator) {
 
 		return getService().getCommerceAddressesByCompanyId(
 			companyId, className, classPK, start, end, orderByComparator);
@@ -504,27 +478,24 @@ public class CommerceAddressLocalServiceUtil {
 	/**
 	 * @throws PortalException
 	 */
-	public static com.liferay.portal.kernel.model.PersistedModel
-			getPersistedModel(java.io.Serializable primaryKeyObj)
-		throws com.liferay.portal.kernel.exception.PortalException {
+	public static PersistedModel getPersistedModel(Serializable primaryKeyObj)
+		throws PortalException {
 
 		return getService().getPersistedModel(primaryKeyObj);
 	}
 
-	public static java.util.List<com.liferay.commerce.model.CommerceAddress>
-			getShippingCommerceAddresses(
-				long companyId, String className, long classPK)
-		throws com.liferay.portal.kernel.exception.PortalException {
+	public static List<CommerceAddress> getShippingCommerceAddresses(
+			long companyId, String className, long classPK)
+		throws PortalException {
 
 		return getService().getShippingCommerceAddresses(
 			companyId, className, classPK);
 	}
 
-	public static java.util.List<com.liferay.commerce.model.CommerceAddress>
-			getShippingCommerceAddresses(
-				long companyId, String className, long classPK, String keywords,
-				int start, int end, com.liferay.portal.kernel.search.Sort sort)
-		throws com.liferay.portal.kernel.exception.PortalException {
+	public static List<CommerceAddress> getShippingCommerceAddresses(
+			long companyId, String className, long classPK, String keywords,
+			int start, int end, com.liferay.portal.kernel.search.Sort sort)
+		throws PortalException {
 
 		return getService().getShippingCommerceAddresses(
 			companyId, className, classPK, keywords, start, end, sort);
@@ -532,7 +503,7 @@ public class CommerceAddressLocalServiceUtil {
 
 	public static int getShippingCommerceAddressesCount(
 			long companyId, String className, long classPK, String keywords)
-		throws com.liferay.portal.kernel.exception.PortalException {
+		throws PortalException {
 
 		return getService().getShippingCommerceAddressesCount(
 			companyId, className, classPK, keywords);
@@ -543,21 +514,21 @@ public class CommerceAddressLocalServiceUtil {
 	 */
 	@Deprecated
 	public static com.liferay.portal.kernel.search.BaseModelSearchResult
-		<com.liferay.commerce.model.CommerceAddress> searchCommerceAddresses(
+		<CommerceAddress> searchCommerceAddresses(
 				long companyId, long groupId, String className, long classPK,
 				String keywords, int start, int end,
 				com.liferay.portal.kernel.search.Sort sort)
-			throws com.liferay.portal.kernel.exception.PortalException {
+			throws PortalException {
 
 		return getService().searchCommerceAddresses(
 			companyId, groupId, className, classPK, keywords, start, end, sort);
 	}
 
 	public static com.liferay.portal.kernel.search.BaseModelSearchResult
-		<com.liferay.commerce.model.CommerceAddress> searchCommerceAddresses(
+		<CommerceAddress> searchCommerceAddresses(
 				long companyId, String className, long classPK, String keywords,
 				int start, int end, com.liferay.portal.kernel.search.Sort sort)
-			throws com.liferay.portal.kernel.exception.PortalException {
+			throws PortalException {
 
 		return getService().searchCommerceAddresses(
 			companyId, className, classPK, keywords, start, end, sort);
@@ -573,9 +544,8 @@ public class CommerceAddressLocalServiceUtil {
 	 * @param commerceAddress the commerce address
 	 * @return the commerce address that was updated
 	 */
-	public static com.liferay.commerce.model.CommerceAddress
-		updateCommerceAddress(
-			com.liferay.commerce.model.CommerceAddress commerceAddress) {
+	public static CommerceAddress updateCommerceAddress(
+		CommerceAddress commerceAddress) {
 
 		return getService().updateCommerceAddress(commerceAddress);
 	}
@@ -584,59 +554,37 @@ public class CommerceAddressLocalServiceUtil {
 	 * @deprecated As of Mueller (7.2.x), defaultBilling/Shipping exist on Account Entity. Pass type.
 	 */
 	@Deprecated
-	public static com.liferay.commerce.model.CommerceAddress
-			updateCommerceAddress(
-				long commerceAddressId, String name, String description,
-				String street1, String street2, String street3, String city,
-				String zip, long commerceRegionId, long commerceCountryId,
-				String phoneNumber, boolean defaultBilling,
-				boolean defaultShipping,
-				com.liferay.portal.kernel.service.ServiceContext serviceContext)
-		throws com.liferay.portal.kernel.exception.PortalException {
+	public static CommerceAddress updateCommerceAddress(
+			long commerceAddressId, String name, String description,
+			String street1, String street2, String street3, String city,
+			String zip, long regionId, long countryId, String phoneNumber,
+			boolean defaultBilling, boolean defaultShipping,
+			com.liferay.portal.kernel.service.ServiceContext serviceContext)
+		throws PortalException {
 
 		return getService().updateCommerceAddress(
 			commerceAddressId, name, description, street1, street2, street3,
-			city, zip, commerceRegionId, commerceCountryId, phoneNumber,
-			defaultBilling, defaultShipping, serviceContext);
+			city, zip, regionId, countryId, phoneNumber, defaultBilling,
+			defaultShipping, serviceContext);
 	}
 
-	public static com.liferay.commerce.model.CommerceAddress
-			updateCommerceAddress(
-				long commerceAddressId, String name, String description,
-				String street1, String street2, String street3, String city,
-				String zip, long commerceRegionId, long commerceCountryId,
-				String phoneNumber, int type,
-				com.liferay.portal.kernel.service.ServiceContext serviceContext)
-		throws com.liferay.portal.kernel.exception.PortalException {
+	public static CommerceAddress updateCommerceAddress(
+			long commerceAddressId, String name, String description,
+			String street1, String street2, String street3, String city,
+			String zip, long regionId, long countryId, String phoneNumber,
+			int type,
+			com.liferay.portal.kernel.service.ServiceContext serviceContext)
+		throws PortalException {
 
 		return getService().updateCommerceAddress(
 			commerceAddressId, name, description, street1, street2, street3,
-			city, zip, commerceRegionId, commerceCountryId, phoneNumber, type,
-			serviceContext);
+			city, zip, regionId, countryId, phoneNumber, type, serviceContext);
 	}
 
 	public static CommerceAddressLocalService getService() {
-		return _serviceTracker.getService();
+		return _service;
 	}
 
-	private static ServiceTracker
-		<CommerceAddressLocalService, CommerceAddressLocalService>
-			_serviceTracker;
-
-	static {
-		Bundle bundle = FrameworkUtil.getBundle(
-			CommerceAddressLocalService.class);
-
-		ServiceTracker<CommerceAddressLocalService, CommerceAddressLocalService>
-			serviceTracker =
-				new ServiceTracker
-					<CommerceAddressLocalService, CommerceAddressLocalService>(
-						bundle.getBundleContext(),
-						CommerceAddressLocalService.class, null);
-
-		serviceTracker.open();
-
-		_serviceTracker = serviceTracker;
-	}
+	private static volatile CommerceAddressLocalService _service;
 
 }

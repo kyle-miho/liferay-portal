@@ -29,13 +29,18 @@
 	<td></td>
 </tr>
 <tr>
+	<td>AUDIT_GRAPH_FIRST_BAR</td>
+	<td>//*[contains(@class, 'recharts-rectangle') and @fill='#4B9FFF']</td>
+	<td></td>
+</tr>
+<tr>
 	<td>AUDIT_GRAPH_TITLE</td>
 	<td>//*[contains(@class, 'autofit-col autofit-col-expand') and contains(text(),'${auditGraphTitle}')]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>AUTHOR_SELECT_DISPLAY_MODE_BUTTON</td>
-	<td>//button[contains(@class, 'dropdown-toggle') and contains(@class, 'btn-unstyled') and contains(@class, 'nav-link-monospaced') and contains(@class, 'btn nav-link')]</td>
+	<td>//button[contains(@class, 'dropdown-toggle') and contains(@class, 'btn-unstyled') and contains(@class, 'nav-link-monospaced') and contains(@class, 'nav-link')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -63,18 +68,28 @@
 	<td></td>
 </tr>
 <tr>
+	<td>BAR_SELECTED_MESSAGE</td>
+	<td>//span[contains(text(),'Press escape')]</td>
+	<td></td>
+</tr>
+<tr>
 	<td>CATEGORY_NAME_ELEMENT</td>
 	<td>//*[contains(@class, 'text-truncate') and contains(text(),'${categoryName}')]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>CLEAR_FILTERS_BUTTON</td>
-	<td>//*[contains(@class, ' component-link tbar-link') and contains(text(),'Clear')]</td>
+	<td>//*[contains(@class, 'component-link tbar-link') and contains(text(),'Clear')]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>CLOSE_INFO_PANEL_BUTTON</td>
 	<td>//*[contains(@class, 'component-action btn btn-monospaced btn-unstyled')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>DELETE_SECOND_FILTER_SELECTED</td>
+	<td>//*[contains(@class, 'tbar-item-expand')]//*[contains(@class, 'close')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -94,12 +109,17 @@
 </tr>
 <tr>
 	<td>FILTER_AND_ORDER_DROPDOWN</td>
-	<td>//*[contains(@class, 'dropdown-toggle btn nav-link btn-unstyled')]</td>
+	<td>//*[contains(@class, 'dropdown-toggle') and contains(@class, 'nav-link') and contains(@class, 'btn-unstyled')]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>FILTER_BY_OPTION</td>
 	<td>//*[contains(@class, 'dropdown-item') and contains(text(),'${filterOption}')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>FILTER_CATEGORY_NAME</td>
+	<td>//*[contains(@class,'label') and contains(text(),'Category:${categoryName}')]</td>
 	<td></td>
 </tr>
 <tr>

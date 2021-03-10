@@ -28,6 +28,7 @@ export const Layout = ({components, editable, rows}) => {
 		activePage,
 		allowNestedFields,
 		containerElement,
+		defaultLanguageId,
 		pageIndex,
 		spritemap,
 	} = usePage();
@@ -47,7 +48,7 @@ export const Layout = ({components, editable, rows}) => {
 		>
 			{({index: rowIndex, row}) => (
 				<Components.Row key={rowIndex} row={row}>
-					{({column, index}) => (
+					{({column, index, ...otherProps}) => (
 						<Components.Column
 							activePage={activePage}
 							allowNestedFields={allowNestedFields}
@@ -56,12 +57,15 @@ export const Layout = ({components, editable, rows}) => {
 							index={index}
 							key={index}
 							pageIndex={pageIndex}
+							row={row}
 							rowIndex={rowIndex}
+							{...otherProps}
 						>
 							{(fieldProps) => (
 								<Field
 									{...fieldProps}
 									activePage={activePage}
+									defaultLanguageId={defaultLanguageId}
 									editable={editable}
 									key={
 										fieldProps.field?.instanceId ??

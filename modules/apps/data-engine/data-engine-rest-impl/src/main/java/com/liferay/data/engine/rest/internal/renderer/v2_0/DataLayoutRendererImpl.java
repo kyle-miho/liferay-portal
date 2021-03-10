@@ -26,7 +26,6 @@ import com.liferay.dynamic.data.mapping.model.DDMStructureLayout;
 import com.liferay.dynamic.data.mapping.model.DDMStructureVersion;
 import com.liferay.dynamic.data.mapping.service.DDMStructureLayoutLocalService;
 import com.liferay.dynamic.data.mapping.service.DDMStructureVersionLocalService;
-import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.security.auth.GuestOrUserUtil;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermission;
@@ -91,6 +90,8 @@ public class DataLayoutRendererImpl implements DataLayoutRenderer {
 				dataLayoutRendererContext.getDefaultLanguageId());
 		}
 
+		ddmFormRenderingContext.addProperty(
+			"persisted", dataLayoutRendererContext.isPersisted());
 		ddmFormRenderingContext.setContainerId(
 			dataLayoutRendererContext.getContainerId());
 		ddmFormRenderingContext.setDDMFormValues(
@@ -109,7 +110,7 @@ public class DataLayoutRendererImpl implements DataLayoutRenderer {
 
 		String languageId = ParamUtil.get(
 			dataLayoutRendererContext.getHttpServletRequest(), "languageId",
-			StringPool.BLANK);
+			dataLayoutRendererContext.getLanguageId());
 
 		if (Validator.isNull(languageId)) {
 			locale = ddmForm.getDefaultLocale();

@@ -45,6 +45,7 @@ const Form = React.forwardRef(
 			readOnly,
 			rules,
 			successPageSettings,
+			viewMode,
 			...otherProps
 		},
 		ref
@@ -63,6 +64,7 @@ const Form = React.forwardRef(
 						pages,
 						portletNamespace,
 						rules,
+						viewMode,
 					})
 				),
 			[
@@ -74,6 +76,7 @@ const Form = React.forwardRef(
 				pages,
 				portletNamespace,
 				rules,
+				viewMode,
 			]
 		);
 
@@ -121,6 +124,7 @@ const Form = React.forwardRef(
 					pages,
 					portletNamespace,
 					rules,
+					viewMode,
 				}),
 			get: (key) => {
 				const props = {
@@ -154,13 +158,14 @@ const Form = React.forwardRef(
 				successPageSettings,
 			}),
 			updateEditingLanguageId: ({
+				defaultLanguageId: nextDefaultLanguageId = defaultLanguageId,
 				editingLanguageId: nextEditingLanguageId = '',
 				preserveValue,
 			}) =>
 				dispatch(
 					pageLanguageUpdate({
 						ddmStructureLayoutId,
-						defaultLanguageId,
+						defaultLanguageId: nextDefaultLanguageId,
 						nextEditingLanguageId,
 						pages,
 						portletNamespace,
@@ -235,6 +240,7 @@ const Form = React.forwardRef(
 				readOnly={readOnly}
 				rules={rules}
 				successPageSettings={successPageSettings}
+				viewMode={viewMode}
 				{...otherProps}
 				ref={containerRef}
 			/>

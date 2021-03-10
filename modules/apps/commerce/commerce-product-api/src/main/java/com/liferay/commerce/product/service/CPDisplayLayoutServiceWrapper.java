@@ -58,6 +58,10 @@ public class CPDisplayLayoutServiceWrapper
 			userId, groupId, clazz, classPK, layoutUuid);
 	}
 
+	/**
+	 * @deprecated As of Athanasius (7.3.x), with no direct replacement
+	 */
+	@Deprecated
 	@Override
 	public void deleteCPDisplayLayout(Class<?> clazz, long classPK)
 		throws com.liferay.portal.kernel.exception.PortalException {

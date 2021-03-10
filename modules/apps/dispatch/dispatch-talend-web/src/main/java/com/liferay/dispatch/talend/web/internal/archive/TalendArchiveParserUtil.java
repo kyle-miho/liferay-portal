@@ -15,13 +15,17 @@
 package com.liferay.dispatch.talend.web.internal.archive;
 
 import com.liferay.petra.string.CharPool;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.util.Validator;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -53,6 +57,59 @@ public class TalendArchiveParserUtil {
 		}
 
 		return null;
+	}
+
+	private static void _addJVMOptionsList(
+		List<String> jvmOptionsList, String commandLine) {
+
+		if (Validator.isNull(commandLine) || !commandLine.startsWith("java")) {
+			return;
+		}
+
+		String[] tokens = commandLine.split("\\s");
+
+		for (String token : tokens) {
+			if (token.startsWith(StringPool.QUOTE) ||
+				token.startsWith(StringPool.APOSTROPHE)) {
+
+				token = token.substring(1);
+			}
+
+			if (token.endsWith(StringPool.QUOTE) ||
+				token.endsWith(StringPool.APOSTROPHE)) {
+
+				token = token.substring(0, token.length() - 1);
+			}
+
+			if (token.startsWith("-X")) {
+				jvmOptionsList.add(token);
+			}
+		}
+	}
+
+	private static Properties _getContextProperties(
+			String contextName, String jobExecutableJarPath)
+		throws IOException {
+
+		Properties properties = new Properties();
+
+		String contextPropertiesSuffix = contextName + ".properties";
+
+		try (ZipFile zipFile = new ZipFile(new File(jobExecutableJarPath))) {
+			Enumeration<? extends ZipEntry> enumeration = zipFile.entries();
+
+			while (enumeration.hasMoreElements()) {
+				ZipEntry zipEntry = enumeration.nextElement();
+
+				String name = zipEntry.getName();
+
+				if (name.endsWith(contextPropertiesSuffix)) {
+					properties.load(zipFile.getInputStream(zipEntry));
+				}
+			}
+		}
+
+		return properties;
 	}
 
 	private static File _getJobDirectory(InputStream jobArchiveInputStream)
@@ -88,9 +145,11 @@ public class TalendArchiveParserUtil {
 						Path filePath, BasicFileAttributes basicFileAttributes)
 					throws IOException {
 
-					String path = filePath.toString();
+					String pathString = filePath.toString();
 
-					if (path.endsWith(".jar") && path.contains(jobName)) {
+					if (pathString.endsWith(".jar") &&
+						pathString.contains(jobName)) {
+
 						pathReference.set(filePath);
 
 						return FileVisitResult.TERMINATE;
@@ -114,7 +173,7 @@ public class TalendArchiveParserUtil {
 	private static List<String> _getJobLibEntries(Path jobDirectoryPath)
 		throws IOException {
 
-		List<String> paths = new ArrayList<>();
+		List<String> pathStrings = new ArrayList<>();
 
 		Files.walkFileTree(
 			jobDirectoryPath.resolve("lib"),
@@ -125,10 +184,10 @@ public class TalendArchiveParserUtil {
 						Path filePath, BasicFileAttributes basicFileAttributes)
 					throws IOException {
 
-					String path = filePath.toString();
+					String pathString = filePath.toString();
 
-					if (path.endsWith(".jar")) {
-						paths.add(path);
+					if (pathString.endsWith(".jar")) {
+						pathStrings.add(pathString);
 					}
 
 					return FileVisitResult.CONTINUE;
@@ -136,9 +195,9 @@ public class TalendArchiveParserUtil {
 
 			});
 
-		paths.sort(null);
+		pathStrings.sort(null);
 
-		return paths;
+		return pathStrings;
 	}
 
 	private static String _getJobMainClassFQN(
@@ -182,6 +241,69 @@ public class TalendArchiveParserUtil {
 		return properties;
 	}
 
+	private static List<String> _getJobScriptPathStrings(Path jobDirectoryPath)
+		throws IOException {
+
+		List<String> pathStrings = new ArrayList<>();
+
+		Files.walkFileTree(
+			jobDirectoryPath,
+			new SimpleFileVisitor<Path>() {
+
+				@Override
+				public FileVisitResult visitFile(
+					Path filePath, BasicFileAttributes basicFileAttributes) {
+
+					String pathString = filePath.toString();
+
+					if (pathString.endsWith(".bat") ||
+						pathString.endsWith(".ps1") ||
+						pathString.endsWith(".sh")) {
+
+						pathStrings.add(pathString);
+					}
+
+					return FileVisitResult.CONTINUE;
+				}
+
+			});
+
+		pathStrings.sort(null);
+
+		return pathStrings;
+	}
+
+	private static List<String> _getJVMOptionsList(
+			File jobDirectory, String jobName)
+		throws IOException {
+
+		Path path = jobDirectory.toPath();
+
+		List<String> jobScriptPathStrings = _getJobScriptPathStrings(
+			path.resolve(jobName));
+
+		List<String> jvmOptionsList = new ArrayList<>();
+
+		for (String jobScriptPathString : jobScriptPathStrings) {
+			BufferedReader bufferedReader = new BufferedReader(
+				new FileReader(jobScriptPathString));
+
+			String line = bufferedReader.readLine();
+
+			while (line != null) {
+				_addJVMOptionsList(jvmOptionsList, line);
+
+				line = bufferedReader.readLine();
+			}
+
+			if (!jvmOptionsList.isEmpty()) {
+				break;
+			}
+		}
+
+		return jvmOptionsList;
+	}
+
 	private static TalendArchive _parse(InputStream jobZIPInputStream)
 		throws IOException {
 
@@ -196,18 +318,26 @@ public class TalendArchiveParserUtil {
 
 		talendArchiveBuilder.classPathEntries(
 			_getJobLibEntries(jobDirectoryPath));
-		talendArchiveBuilder.contextName(
-			(String)jobProperties.get("contextName"));
-		talendArchiveBuilder.jobDirectory(jobDirectory.getAbsolutePath());
+
+		String contextName = (String)jobProperties.get("contextName");
+
+		talendArchiveBuilder.contextName(contextName);
 
 		String jobName = (String)jobProperties.get("job");
 
 		Path jobJarPath = _getJobJarPath(jobName, jobDirectoryPath);
 
-		talendArchiveBuilder.jobJarPath(jobJarPath.toString());
+		talendArchiveBuilder.contextProperties(
+			_getContextProperties(contextName, jobJarPath.toString()));
 
+		talendArchiveBuilder.jobDirectory(jobDirectory.getAbsolutePath());
+
+		talendArchiveBuilder.jobJarPath(jobJarPath.toString());
 		talendArchiveBuilder.jobMainClassFQN(
 			_getJobMainClassFQN(jobName, jobJarPath.toString()));
+
+		talendArchiveBuilder.jvmOptionsList(
+			_getJVMOptionsList(jobDirectory, jobName));
 
 		return talendArchiveBuilder.build();
 	}

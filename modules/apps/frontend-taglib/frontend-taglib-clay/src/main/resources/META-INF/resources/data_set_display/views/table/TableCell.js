@@ -12,7 +12,6 @@
  * details.
  */
 
-import ClayTable from '@clayui/table';
 import React, {useContext, useEffect, useState} from 'react';
 
 import DataSetDisplayContext from '../../DataSetDisplayContext';
@@ -22,6 +21,7 @@ import {
 	getDataRendererByURL,
 	getInputRendererById,
 } from '../../utils/dataRenderers';
+import DndTableCell from './dnd_table/Cell';
 
 function InlineEditInputRenderer({
 	itemId,
@@ -114,7 +114,7 @@ function TableCell({
 		(itemInlineChanges || inlineEditingSettings?.alwaysOn)
 	) {
 		return (
-			<ClayTable.Cell>
+			<DndTableCell columnName={String(options.fieldName)}>
 				<InlineEditInputRenderer
 					actions={actions}
 					itemData={itemData}
@@ -125,12 +125,12 @@ function TableCell({
 					value={value}
 					valuePath={valuePath}
 				/>
-			</ClayTable.Cell>
+			</DndTableCell>
 		);
 	}
 
 	return (
-		<ClayTable.Cell>
+		<DndTableCell columnName={String(options.fieldName)}>
 			{currentView.Component && !loading ? (
 				<currentView.Component
 					actions={actions}
@@ -147,7 +147,7 @@ function TableCell({
 					className="loading-animation loading-animation-sm"
 				/>
 			)}
-		</ClayTable.Cell>
+		</DndTableCell>
 	);
 }
 

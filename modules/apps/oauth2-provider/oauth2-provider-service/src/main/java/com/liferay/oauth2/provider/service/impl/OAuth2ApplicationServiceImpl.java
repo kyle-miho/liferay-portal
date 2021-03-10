@@ -53,12 +53,19 @@ public class OAuth2ApplicationServiceImpl
 			String description, List<String> featuresList, String homePageURL,
 			long iconFileEntryId, String name, String privacyPolicyURL,
 			List<String> redirectURIsList, List<String> scopeAliasesList,
-			ServiceContext serviceContext)
+			boolean trustedApplication, ServiceContext serviceContext)
 		throws PortalException {
 
 		ModelResourcePermissionUtil.check(
 			_oAuth2ApplicationModelResourcePermission, getPermissionChecker(),
 			0, 0, OAuth2ProviderActionKeys.ACTION_ADD_APPLICATION);
+
+		if (trustedApplication) {
+			ModelResourcePermissionUtil.check(
+				_oAuth2ApplicationModelResourcePermission,
+				getPermissionChecker(), 0, 0,
+				OAuth2ProviderActionKeys.ACTION_ADD_TRUSTED_APPLICATION);
+		}
 
 		User user = getUser();
 
@@ -73,7 +80,38 @@ public class OAuth2ApplicationServiceImpl
 			allowedGrantTypesList, clientCredentialUserId, clientId,
 			clientProfile, clientSecret, description, featuresList, homePageURL,
 			iconFileEntryId, name, privacyPolicyURL, redirectURIsList,
-			scopeAliasesList, serviceContext);
+			scopeAliasesList, trustedApplication, serviceContext);
+	}
+
+	/**
+	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link
+	 *             #addOAuth2Application(List, long, String, int, String,
+	 *             String, List, String, long, String, String, List, List,
+	 *             boolean, ServiceContext)}
+	 */
+	@Deprecated
+	@Override
+	public OAuth2Application addOAuth2Application(
+			List<GrantType> allowedGrantTypesList, long clientCredentialUserId,
+			String clientId, int clientProfile, String clientSecret,
+			String description, List<String> featuresList, String homePageURL,
+			long iconFileEntryId, String name, String privacyPolicyURL,
+			List<String> redirectURIsList, List<String> scopeAliasesList,
+			ServiceContext serviceContext)
+		throws PortalException {
+
+		ModelResourcePermissionUtil.check(
+			_oAuth2ApplicationModelResourcePermission, getPermissionChecker(),
+			0, 0, OAuth2ProviderActionKeys.ACTION_ADD_APPLICATION);
+
+		User user = getUser();
+
+		return oAuth2ApplicationLocalService.addOAuth2Application(
+			user.getCompanyId(), user.getUserId(), user.getFullName(),
+			allowedGrantTypesList, clientCredentialUserId, clientId,
+			clientProfile, clientSecret, description, featuresList, homePageURL,
+			iconFileEntryId, name, privacyPolicyURL, redirectURIsList,
+			scopeAliasesList, false, serviceContext);
 	}
 
 	/**
@@ -192,6 +230,13 @@ public class OAuth2ApplicationServiceImpl
 			oAuth2ApplicationId, inputStream);
 	}
 
+	/**
+	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link
+	 *             #updateOAuth2Application(long, List, long, String, int,
+	 *             String, String, List, String, long, String, String, List,
+	 *             long, ServiceContext)}
+	 */
+	@Deprecated
 	@Override
 	public OAuth2Application updateOAuth2Application(
 			long oAuth2ApplicationId, List<GrantType> allowedGrantTypesList,
@@ -199,24 +244,21 @@ public class OAuth2ApplicationServiceImpl
 			String clientSecret, String description, List<String> featuresList,
 			String homePageURL, long iconFileEntryId, String name,
 			String privacyPolicyURL, List<String> redirectURIsList,
-			long auth2ApplicationScopeAliasesId, ServiceContext serviceContext)
+			long oAuth2ApplicationScopeAliasesId, ServiceContext serviceContext)
 		throws PortalException {
 
-		_oAuth2ApplicationModelResourcePermission.check(
-			getPermissionChecker(),
+		OAuth2Application oAuth2Application =
 			oAuth2ApplicationLocalService.getOAuth2Application(
-				oAuth2ApplicationId),
-			ActionKeys.UPDATE);
+				oAuth2ApplicationId);
 
-		if (allowedGrantTypesList.contains(GrantType.CLIENT_CREDENTIALS)) {
-			_checkCanImpersonateClientCredentialUser(clientCredentialUserId);
-		}
+		_oAuth2ApplicationModelResourcePermission.check(
+			getPermissionChecker(), oAuth2Application, ActionKeys.UPDATE);
 
 		return oAuth2ApplicationLocalService.updateOAuth2Application(
-			oAuth2ApplicationId, allowedGrantTypesList, clientCredentialUserId,
-			clientId, clientProfile, clientSecret, description, featuresList,
-			homePageURL, iconFileEntryId, name, privacyPolicyURL,
-			redirectURIsList, auth2ApplicationScopeAliasesId, serviceContext);
+			oAuth2ApplicationId, oAuth2ApplicationScopeAliasesId,
+			allowedGrantTypesList, clientCredentialUserId, clientId,
+			clientProfile, clientSecret, description, featuresList, homePageURL,
+			iconFileEntryId, name, privacyPolicyURL, redirectURIsList, false);
 	}
 
 	/**
@@ -229,7 +271,7 @@ public class OAuth2ApplicationServiceImpl
 			String clientId, int clientProfile, String clientSecret,
 			String description, List<String> featuresList, String homePageURL,
 			long iconFileEntryId, String name, String privacyPolicyURL,
-			List<String> redirectURIsList, long auth2ApplicationScopeAliasesId,
+			List<String> redirectURIsList, long oAuth2ApplicationScopeAliasesId,
 			ServiceContext serviceContext)
 		throws PortalException {
 
@@ -245,7 +287,42 @@ public class OAuth2ApplicationServiceImpl
 			oAuth2Application.getClientCredentialUserId(), clientId,
 			clientProfile, clientSecret, description, featuresList, homePageURL,
 			iconFileEntryId, name, privacyPolicyURL, redirectURIsList,
-			auth2ApplicationScopeAliasesId, serviceContext);
+			oAuth2ApplicationScopeAliasesId, serviceContext);
+	}
+
+	@Override
+	public OAuth2Application updateOAuth2Application(
+			long oAuth2ApplicationId, long oAuth2ApplicationScopeAliasesId,
+			List<GrantType> allowedGrantTypesList, long clientCredentialUserId,
+			String clientId, int clientProfile, String clientSecret,
+			String description, List<String> featuresList, String homePageURL,
+			long iconFileEntryId, String name, String privacyPolicyURL,
+			List<String> redirectURIsList, boolean trustedApplication)
+		throws PortalException {
+
+		_oAuth2ApplicationModelResourcePermission.check(
+			getPermissionChecker(),
+			oAuth2ApplicationLocalService.getOAuth2Application(
+				oAuth2ApplicationId),
+			ActionKeys.UPDATE);
+
+		if (trustedApplication) {
+			ModelResourcePermissionUtil.check(
+				_oAuth2ApplicationModelResourcePermission,
+				getPermissionChecker(), 0, 0,
+				OAuth2ProviderActionKeys.ACTION_ADD_TRUSTED_APPLICATION);
+		}
+
+		if (allowedGrantTypesList.contains(GrantType.CLIENT_CREDENTIALS)) {
+			_checkCanImpersonateClientCredentialUser(clientCredentialUserId);
+		}
+
+		return oAuth2ApplicationLocalService.updateOAuth2Application(
+			oAuth2ApplicationId, oAuth2ApplicationScopeAliasesId,
+			allowedGrantTypesList, clientCredentialUserId, clientId,
+			clientProfile, clientSecret, description, featuresList, homePageURL,
+			iconFileEntryId, name, privacyPolicyURL, redirectURIsList,
+			trustedApplication);
 	}
 
 	@Override

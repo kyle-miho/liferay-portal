@@ -64,10 +64,9 @@ else {
 />
 
 <liferay-frontend:screen-navigation
-	containerCssClass="col-md-10"
+	containerWrapperCssClass="container"
 	key="<%= CPDefinitionScreenNavigationConstants.SCREEN_NAVIGATION_KEY_CP_DEFINITION_GENERAL %>"
 	modelBean="<%= cpDefinition %>"
-	navCssClass="col-md-2"
 	portletURL="<%= currentURLObj %>"
 />
 
