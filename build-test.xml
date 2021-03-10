@@ -4497,6 +4497,13 @@ org.apache.catalina.startup.ClassLoaderFactory.level=INFO]]>
 						</else>
 					</if>
 
+					<if>
+						<isset property="portal.license.file" />
+						<then>
+							<swap-portal-license portal.license.file="${portal.license.file}" />
+						</then>
+					</if>
+
 					<get-testcase-property property.name="deploy.lcs.token.file" />
 
 					<if>
@@ -5615,6 +5622,19 @@ org.apache.catalina.startup.ClassLoaderFactory.level=INFO]]>
 				file="${liferay.home}/deploy/@{commerce.license.file}"
 				token="${macaddress}"
 				value="${mac.address}"
+			/>
+		</sequential>
+	</macrodef>
+
+	<macrodef name="swap-portal-license">
+		<attribute name="portal.license.file" />
+
+		<sequential>
+			<delete failonerror="false" file="${liferay.home}/deploy/ci-license.xml" verbose="true" />
+
+			<copy
+				file="${project.dir}/portal-web/test/functional/com/liferay/portalweb/dependencies/license/@{portal.license.file}"
+				todir="${liferay.home}/deploy"
 			/>
 		</sequential>
 	</macrodef>
