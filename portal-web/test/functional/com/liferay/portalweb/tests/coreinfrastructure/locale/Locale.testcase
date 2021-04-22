@@ -158,6 +158,8 @@ definition {
 
 	@priority = "3"
 	test LocaleNotAppendedToAlternateDefaultLocaleURL {
+		property portal.acceptance = "kyle";
+
 		User.firstLoginPG();
 
 		JSONLayout.addPublicLayout(
@@ -184,6 +186,7 @@ definition {
 	@priority = "4"
 	test PrependFriendlyURLStyle {
 		property custom.properties = "locale.prepend.friendly.url.style=3";
+		property portal.acceptance = "kyle";
 		property test.name.skip.portal.instance = "Locale#PrependFriendlyURLStyle";
 
 		var portalURL = PropsUtil.get("portal.url");
@@ -358,6 +361,7 @@ definition {
 
 	@priority = "3"
 	test UserLockoutShowsTimezoneInformation {
+		property portal.acceptance = "kyle";
 		property test.name.skip.portal.instance = "Locale#UserLockoutShowsTimezoneInformation";
 		property user.time.zone = "UTC";
 
@@ -512,6 +516,8 @@ definition {
 
 	@priority = "4"
 	test ViewLocaleInNewVirtualInstance {
+		property portal.acceptance = "kyle";
+
 		User.firstLoginPG();
 
 		PortalSettings.gotoConfiguration(
