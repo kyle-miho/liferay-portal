@@ -66,11 +66,9 @@ public class PortalCacheExtenderTest {
 
 	@Before
 	public void setUp() throws Exception {
-		_multiVmXML = _generateXMLContent(
-			"module-multi-vm", 1001, "test.cache.multi", 51);
+		_multiVmXML = _generateXMLContent(1001, "test.cache.multi", 51);
 
-		_singleVmXML = _generateXMLContent(
-			"module-single-vm", 1001, "test.cache.single", 51);
+		_singleVmXML = _generateXMLContent(1001, "test.cache.single", 51);
 
 		_bundle = _installBundle(
 			_BUNDLE_SYMBOLIC_NAME, _multiVmXML, _singleVmXML);
@@ -134,9 +132,9 @@ public class PortalCacheExtenderTest {
 		Bundle overridingBundle = null;
 
 		String multiVmXMLUpdated = _generateXMLContent(
-			"module-multi-vm", 2001, "test.cache.multi", 101);
+			2001, "test.cache.multi", 101);
 		String singleVmXMLUpdated = _generateXMLContent(
-			"module-single-vm", 2001, "test.cache.single", 101);
+			2001, "test.cache.single", 101);
 
 		try {
 			overridingBundle = _installBundle(
@@ -240,16 +238,14 @@ public class PortalCacheExtenderTest {
 	}
 
 	private String _generateXMLContent(
-		String ehCacheName, int maxElementsInMemory, String cacheName,
-		int timeToIdleSeconds) {
+		int maxElementsInMemory, String cacheName, int timeToIdleSeconds) {
 
-		StringBundler sb = new StringBundler(12);
+		StringBundler sb = new StringBundler(11);
 
-		sb.append("<ehcache dynamicConfig=\"true\" monitoring=\"off\" name=\"");
-		sb.append(ehCacheName);
-		sb.append("\" updateCheck=\"false\" xmlns:xsi=\"http://www.w3.org");
-		sb.append("/2001/XMLSchema-instance\" xsi:noNamespaceSchemaLocation=");
-		sb.append("\"http://www.ehcache.org/ehcache.xsd\">");
+		sb.append("<ehcache dynamicConfig=\"true\" monitoring=\"off\" ");
+		sb.append("updateCheck=\"false\" xmlns:xsi=\"http://www.w3.org/2001");
+		sb.append("/XMLSchema-instance\" xsi:noNamespaceSchemaLocation=\"");
+		sb.append("http://www.ehcache.org/ehcache.xsd\">");
 		sb.append("<cache eternal=\"false\" maxElementsInMemory=\"");
 		sb.append(maxElementsInMemory);
 		sb.append("\" name=\"");
