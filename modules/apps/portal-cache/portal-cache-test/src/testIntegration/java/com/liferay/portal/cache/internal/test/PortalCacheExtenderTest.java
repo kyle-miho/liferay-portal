@@ -84,11 +84,9 @@ public class PortalCacheExtenderTest {
 	@Test
 	public void testAddAndRemoveConfig() throws Exception {
 		_assertCacheConfig(
-			PortalCacheManagerNames.MULTI_VM, false, 1001, _TEST_CACHE_MULTI,
-			true, 51L);
+			PortalCacheManagerNames.MULTI_VM, 1001, _TEST_CACHE_MULTI, 51L);
 		_assertCacheConfig(
-			PortalCacheManagerNames.SINGLE_VM, false, 1001, _TEST_CACHE_SINGLE,
-			true, 51L);
+			PortalCacheManagerNames.SINGLE_VM, 1001, _TEST_CACHE_SINGLE, 51L);
 
 		_bundle.stop();
 
@@ -102,8 +100,7 @@ public class PortalCacheExtenderTest {
 				PortalCacheManagerNames.MULTI_VM, _TEST_CACHE_MULTI));
 
 		_assertCacheConfig(
-			PortalCacheManagerNames.SINGLE_VM, false, 1001, _TEST_CACHE_SINGLE,
-			true, 51L);
+			PortalCacheManagerNames.SINGLE_VM, 1001, _TEST_CACHE_SINGLE, 51L);
 
 		_bundle.stop();
 
@@ -116,18 +113,15 @@ public class PortalCacheExtenderTest {
 				PortalCacheManagerNames.SINGLE_VM, _TEST_CACHE_SINGLE));
 
 		_assertCacheConfig(
-			PortalCacheManagerNames.MULTI_VM, false, 1001, _TEST_CACHE_MULTI,
-			true, 51L);
+			PortalCacheManagerNames.MULTI_VM, 1001, _TEST_CACHE_MULTI, 51L);
 	}
 
 	@Test
 	public void testUpdateConfig() throws Exception {
 		_assertCacheConfig(
-			PortalCacheManagerNames.MULTI_VM, false, 1001, _TEST_CACHE_MULTI,
-			true, 51L);
+			PortalCacheManagerNames.MULTI_VM, 1001, _TEST_CACHE_MULTI, 51L);
 		_assertCacheConfig(
-			PortalCacheManagerNames.SINGLE_VM, false, 1001, _TEST_CACHE_SINGLE,
-			true, 51L);
+			PortalCacheManagerNames.SINGLE_VM, 1001, _TEST_CACHE_SINGLE, 51L);
 
 		Bundle overridingBundle = null;
 
@@ -142,11 +136,11 @@ public class PortalCacheExtenderTest {
 				singleVmXMLUpdated);
 
 			_assertCacheConfig(
-				PortalCacheManagerNames.MULTI_VM, false, 2001,
-				_TEST_CACHE_MULTI, true, 101L);
+				PortalCacheManagerNames.MULTI_VM, 2001, _TEST_CACHE_MULTI,
+				101L);
 			_assertCacheConfig(
-				PortalCacheManagerNames.SINGLE_VM, false, 2001,
-				_TEST_CACHE_SINGLE, true, 101L);
+				PortalCacheManagerNames.SINGLE_VM, 2001, _TEST_CACHE_SINGLE,
+				101L);
 		}
 		finally {
 			if ((overridingBundle != null) &&
@@ -158,8 +152,8 @@ public class PortalCacheExtenderTest {
 	}
 
 	private void _assertCacheConfig(
-			String cacheManagerName, boolean eternal, int maxElementsInMemory,
-			String name, boolean overflowToDisk, long timeToIdleSeconds)
+			String cacheManagerName, int maxElementsInMemory, String name,
+			long timeToIdleSeconds)
 		throws Exception {
 
 		MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
@@ -170,14 +164,9 @@ public class PortalCacheExtenderTest {
 				cacheManagerName, ",name=", name));
 
 		Assert.assertEquals(
-			eternal, mBeanServer.getAttribute(objectName, "Eternal"));
-		Assert.assertEquals(
 			maxElementsInMemory,
 			mBeanServer.getAttribute(objectName, "MaxElementsInMemory"));
 		Assert.assertEquals(name, mBeanServer.getAttribute(objectName, "Name"));
-		Assert.assertEquals(
-			overflowToDisk,
-			mBeanServer.getAttribute(objectName, "OverflowToDisk"));
 		Assert.assertEquals(
 			timeToIdleSeconds,
 			mBeanServer.getAttribute(objectName, "TimeToIdleSeconds"));
@@ -246,11 +235,11 @@ public class PortalCacheExtenderTest {
 		sb.append("updateCheck=\"false\" xmlns:xsi=\"http://www.w3.org/2001");
 		sb.append("/XMLSchema-instance\" xsi:noNamespaceSchemaLocation=\"");
 		sb.append("http://www.ehcache.org/ehcache.xsd\">");
-		sb.append("<cache eternal=\"false\" maxElementsInMemory=\"");
+		sb.append("<cache maxElementsInMemory=\"");
 		sb.append(maxElementsInMemory);
 		sb.append("\" name=\"");
 		sb.append(cacheName);
-		sb.append("\" overflowToDisk=\"true\" timeToIdleSeconds=\"");
+		sb.append("timeToIdleSeconds=\"");
 		sb.append(timeToIdleSeconds);
 		sb.append("\"> </cache> </ehcache>");
 
