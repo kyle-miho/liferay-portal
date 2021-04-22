@@ -66,9 +66,9 @@ public class PortalCacheExtenderTest {
 
 	@Before
 	public void setUp() throws Exception {
-		_multiVmXML = _generateXMLContent("test.cache.multi", 1001, 51);
+		_multiVmXML = _generateXMLContent(_TEST_CACHE_MULTI, 1001, 51);
 
-		_singleVmXML = _generateXMLContent("test.cache.single", 1001, 51);
+		_singleVmXML = _generateXMLContent(_TEST_CACHE_SINGLE, 1001, 51);
 
 		_bundle = _installBundle(
 			_BUNDLE_SYMBOLIC_NAME, _multiVmXML, _singleVmXML);
@@ -84,10 +84,10 @@ public class PortalCacheExtenderTest {
 	@Test
 	public void testAddAndRemoveConfig() throws Exception {
 		_assertCacheConfig(
-			PortalCacheManagerNames.MULTI_VM, false, 1001, "test.cache.multi",
+			PortalCacheManagerNames.MULTI_VM, false, 1001, _TEST_CACHE_MULTI,
 			true, 51L);
 		_assertCacheConfig(
-			PortalCacheManagerNames.SINGLE_VM, false, 1001, "test.cache.single",
+			PortalCacheManagerNames.SINGLE_VM, false, 1001, _TEST_CACHE_SINGLE,
 			true, 51L);
 
 		_bundle.stop();
@@ -99,10 +99,10 @@ public class PortalCacheExtenderTest {
 
 		Assert.assertNull(
 			_fetchMBeanObject(
-				PortalCacheManagerNames.MULTI_VM, "test.cache.multi"));
+				PortalCacheManagerNames.MULTI_VM, _TEST_CACHE_MULTI));
 
 		_assertCacheConfig(
-			PortalCacheManagerNames.SINGLE_VM, false, 1001, "test.cache.single",
+			PortalCacheManagerNames.SINGLE_VM, false, 1001, _TEST_CACHE_SINGLE,
 			true, 51L);
 
 		_bundle.stop();
@@ -113,28 +113,28 @@ public class PortalCacheExtenderTest {
 
 		Assert.assertNull(
 			_fetchMBeanObject(
-				PortalCacheManagerNames.SINGLE_VM, "test.cache.single"));
+				PortalCacheManagerNames.SINGLE_VM, _TEST_CACHE_SINGLE));
 
 		_assertCacheConfig(
-			PortalCacheManagerNames.MULTI_VM, false, 1001, "test.cache.multi",
+			PortalCacheManagerNames.MULTI_VM, false, 1001, _TEST_CACHE_MULTI,
 			true, 51L);
 	}
 
 	@Test
 	public void testUpdateConfig() throws Exception {
 		_assertCacheConfig(
-			PortalCacheManagerNames.MULTI_VM, false, 1001, "test.cache.multi",
+			PortalCacheManagerNames.MULTI_VM, false, 1001, _TEST_CACHE_MULTI,
 			true, 51L);
 		_assertCacheConfig(
-			PortalCacheManagerNames.SINGLE_VM, false, 1001, "test.cache.single",
+			PortalCacheManagerNames.SINGLE_VM, false, 1001, _TEST_CACHE_SINGLE,
 			true, 51L);
 
 		Bundle overridingBundle = null;
 
 		String multiVmXMLUpdated = _generateXMLContent(
-			"test.cache.multi", 2001, 101);
+			_TEST_CACHE_MULTI, 2001, 101);
 		String singleVmXMLUpdated = _generateXMLContent(
-			"test.cache.single", 2001, 101);
+			_TEST_CACHE_SINGLE, 2001, 101);
 
 		try {
 			overridingBundle = _installBundle(
@@ -143,10 +143,10 @@ public class PortalCacheExtenderTest {
 
 			_assertCacheConfig(
 				PortalCacheManagerNames.MULTI_VM, false, 2001,
-				"test.cache.multi", true, 101L);
+				_TEST_CACHE_MULTI, true, 101L);
 			_assertCacheConfig(
 				PortalCacheManagerNames.SINGLE_VM, false, 2001,
-				"test.cache.single", true, 101L);
+				_TEST_CACHE_SINGLE, true, 101L);
 		}
 		finally {
 			if ((overridingBundle != null) &&
@@ -335,6 +335,10 @@ public class PortalCacheExtenderTest {
 
 	private static final String _BUNDLE_SYMBOLIC_NAME =
 		"com.liferay.portal.cache.internal.test.PortalCacheTestModule";
+
+	private static final String _TEST_CACHE_MULTI = "test.cache.multi";
+
+	private static final String _TEST_CACHE_SINGLE = "test.cache.single";
 
 	private static Bundle _bundle;
 	private static String _multiVmXML;
