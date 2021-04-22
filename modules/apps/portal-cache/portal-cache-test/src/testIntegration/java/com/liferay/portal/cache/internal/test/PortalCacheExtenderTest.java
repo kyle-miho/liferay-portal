@@ -66,9 +66,9 @@ public class PortalCacheExtenderTest {
 
 	@Before
 	public void setUp() throws Exception {
-		_multiVmXML = _generateXMLContent(1001, "test.cache.multi", 51);
+		_multiVmXML = _generateXMLContent("test.cache.multi", 1001, 51);
 
-		_singleVmXML = _generateXMLContent(1001, "test.cache.single", 51);
+		_singleVmXML = _generateXMLContent("test.cache.single", 1001, 51);
 
 		_bundle = _installBundle(
 			_BUNDLE_SYMBOLIC_NAME, _multiVmXML, _singleVmXML);
@@ -132,9 +132,9 @@ public class PortalCacheExtenderTest {
 		Bundle overridingBundle = null;
 
 		String multiVmXMLUpdated = _generateXMLContent(
-			2001, "test.cache.multi", 101);
+			"test.cache.multi", 2001, 101);
 		String singleVmXMLUpdated = _generateXMLContent(
-			2001, "test.cache.single", 101);
+			"test.cache.single", 2001, 101);
 
 		try {
 			overridingBundle = _installBundle(
@@ -238,7 +238,7 @@ public class PortalCacheExtenderTest {
 	}
 
 	private String _generateXMLContent(
-		int maxElementsInMemory, String cacheName, int timeToIdleSeconds) {
+		String cacheName, int maxElementsInMemory, int timeToIdleSeconds) {
 
 		StringBundler sb = new StringBundler(11);
 
