@@ -290,7 +290,7 @@ definition {
 	test LoginWithUI {
 		property environment.acceptance = "true";
 		property portal.acceptance = "true";
-		property test.name.skip.portal.instance = "Login#DefaultPortalLandingPageSetByProperty";
+		property test.name.skip.portal.instance = "Login#LoginWithUI";
 
 		User.firstLoginUI();
 
