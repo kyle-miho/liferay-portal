@@ -44,6 +44,10 @@ import org.json.JSONObject;
 public class TestHistoryMap
 	extends HashMap<Map<String, String>, TestHistoryMap.TestHistory> {
 
+	public TestHistoryMap(JSONObject buildResultJSONObject) {
+		populate(buildResultJSONObject);
+	}
+
 	public TestHistoryMap(String jenkinsJobURL, int maxBuildCount) {
 		populate(jenkinsJobURL, maxBuildCount);
 	}

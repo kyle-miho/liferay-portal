@@ -1,0 +1,37 @@
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+
+		<title>Test Duration Report</title>
+	</head>
+
+	<body>
+		<h2>Test Duration Report</h2>
+
+		<div class="date">
+			<p id="duration-data-date"></p>
+			<p>Data collected from the last 25 builds of <a href="https://testray.liferay.com/home/-/testray/builds?testrayRoutineId=1306753891">EE Development Acceptance (master)</a></p>
+		</div>
+
+		<div>
+			<i class="fa fa-search"></i>
+
+			<input id="search" onkeyup="search()" placeholder="Search for test name or batch type (e.g. PortalSmoke#Smoke, modules-integration)" type="text" />
+		</div>
+
+		<table class="sortable-theme-bootstrap" data-sortable id="duration-data-table">
+		</table>
+
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/sortable/0.8.0/js/sortable.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/timeago.js/4.0.2/timeago.min.js"></script>
+		<script src="js/test-duration-data.js"></script>
+
+		<script src="js/main.js"></script>
+
+		<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+		<link href="https://cdnjs.cloudflare.com/ajax/libs/sortable/0.8.0/css/sortable-theme-bootstrap.min.css" rel="stylesheet" />
+
+		<link href="css/main.css" rel="stylesheet" />
+	</body>
+</html>
