@@ -302,6 +302,34 @@ definition {
 			portlet = "Roles");
 	}
 
+	@description = "Since we log in through navigation by default normally, this will test the login through the UI for a new user."
+	@priority = "5"
+	test LoginWithUINewUser {
+		property custom.properties = "jsonws.web.service.paths.excludes=";
+		property environment.acceptance = "true";
+		property portal.acceptance = "true";
+		property test.name.skip.portal.instance = "Login#LoginWithUINewUser";
+
+		JSONUser.addUser(
+			userEmailAddress = "userea@liferay.com",
+			userFirstName = "userfn",
+			userLastName = "userln",
+			userScreenName = "usersn");
+
+		JSONUser.setFirstPassword(
+			agreeToTermsAndAnswerReminderQuery = "false",
+			requireReset = "false",
+			userEmailAddress = "userea@liferay.com");
+
+		User.firstLoginUI(
+			password = "test",
+			userEmailAddress = "userea@liferay.com");
+
+		// Standard and safe UI action to assert Portal is accessible after login
+
+		AssertElementPresent(locator1 = "UserBar#USER_AVATAR_IMAGE");
+	}
+
 	@description = "This is a use case for LPS-105151."
 	@priority = "4"
 	test MultipleOpenIDConnectProvider {
