@@ -358,6 +358,7 @@ definition {
 
 	@priority = "3"
 	test UserLockoutShowsTimezoneInformation {
+		property portal.acceptance = "true";
 		property test.name.skip.portal.instance = "Locale#UserLockoutShowsTimezoneInformation";
 		property user.time.zone = "UTC";
 
