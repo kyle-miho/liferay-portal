@@ -44,9 +44,9 @@ definition {
 			userEmailAddress = "test@liferay.com");
 
 		User.loginPG(
-			nodePort = "9080",
 			password = "test",
-			userEmailAddress = "test@liferay.com");
+			userEmailAddress = "test@liferay.com",
+			virtualHostsURL = "http://localhost:9080");
 
 		Page.assertNodePortPG(nodePort = "9080");
 
@@ -94,7 +94,6 @@ definition {
 			userEmailAddress = "test@liferay.com");
 
 		User.loginPG(
-			nodePort = "8080",
 			password = "test",
 			userEmailAddress = "test@liferay.com");
 
@@ -140,9 +139,9 @@ definition {
 			userEmailAddress = "test@liferay.com");
 
 		User.loginPG(
-			nodePort = "9080",
 			password = "test",
-			userEmailAddress = "test@liferay.com");
+			userEmailAddress = "test@liferay.com",
+			virtualHostsURL = "http://localhost:9080");
 
 		Page.assertNodePortPG(nodePort = "9080");
 
@@ -172,9 +171,9 @@ definition {
 			userEmailAddress = "test@liferay.com");
 
 		User.loginPG(
-			nodePort = "9080",
 			password = "test",
-			userEmailAddress = "test@liferay.com");
+			userEmailAddress = "test@liferay.com",
+			virtualHostsURL = "http://localhost:9080");
 
 		Page.assertNodePortPG(nodePort = "9080");
 
@@ -201,9 +200,9 @@ definition {
 		User.logoutPG(specificURL = "http://localhost:10080");
 
 		User.loginPG(
-			nodePort = "9080",
 			password = "test",
-			userEmailAddress = "test@liferay.com");
+			userEmailAddress = "test@liferay.com",
+			virtualHostsURL = "http://localhost:9080");
 
 		Page.assertNodePortPG(nodePort = "9080");
 
@@ -295,9 +294,9 @@ definition {
 			userEmailAddress = "test@liferay.com");
 
 		User.loginPG(
-			nodePort = "9080",
 			password = "test",
-			userEmailAddress = "test@liferay.com");
+			userEmailAddress = "test@liferay.com",
+			virtualHostsURL = "http://localhost:9080");
 
 		Page.assertNodePortPG(nodePort = "9080");
 
@@ -384,9 +383,9 @@ definition {
 			userEmailAddress = "test@liferay.com");
 
 		User.loginPG(
-			nodePort = "9080",
 			password = "test",
-			userEmailAddress = "test@liferay.com");
+			userEmailAddress = "test@liferay.com",
+			virtualHostsURL = "http://localhost:9080");
 
 		Page.assertNodePortPG(nodePort = "9080");
 
@@ -430,9 +429,9 @@ definition {
 			userEmailAddress = "test@liferay.com");
 
 		User.loginPG(
-			nodePort = "9080",
 			password = "test",
-			userEmailAddress = "test@liferay.com");
+			userEmailAddress = "test@liferay.com",
+			virtualHostsURL = "http://localhost:9080");
 
 		Page.assertNodePortPG(nodePort = "9080");
 
@@ -525,9 +524,9 @@ definition {
 			userEmailAddress = "test@liferay.com");
 
 		User.loginPG(
-			nodePort = "9080",
 			password = "test",
-			userEmailAddress = "test@liferay.com");
+			userEmailAddress = "test@liferay.com",
+			virtualHostsURL = "http://localhost:9080");
 
 		Page.assertNodePortPG(nodePort = "9080");
 
@@ -598,9 +597,9 @@ definition {
 			userEmailAddress = "test@liferay.com");
 
 		User.loginPG(
-			nodePort = "9080",
 			password = "test",
-			userEmailAddress = "test@liferay.com");
+			userEmailAddress = "test@liferay.com",
+			virtualHostsURL = "http://localhost:9080");
 
 		Page.assertNodePortPG(nodePort = "9080");
 
@@ -678,9 +677,9 @@ definition {
 		}
 
 		User.loginPG(
-			nodePort = "9080",
 			password = "test",
-			userEmailAddress = "test@liferay.com");
+			userEmailAddress = "test@liferay.com",
+			virtualHostsURL = "http://localhost:9080");
 
 		ProductMenu.gotoPortlet(
 			category = "Content &amp; Data",
@@ -749,7 +748,6 @@ definition {
 		}
 
 		User.loginPG(
-			nodePort = "8080",
 			password = "test",
 			userEmailAddress = "test@liferay.com");
 
@@ -878,9 +876,9 @@ definition {
 		User.logoutPG();
 
 		User.loginPG(
-			nodePort = "9080",
 			password = "test",
-			userEmailAddress = "test@liferay.com");
+			userEmailAddress = "test@liferay.com",
+			virtualHostsURL = "http://localhost:9080");
 
 		Page.assertNodePortPG(nodePort = "9080");
 

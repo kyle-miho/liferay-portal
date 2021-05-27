@@ -95,7 +95,6 @@ definition {
 		DMDocument.viewCP(dmDocumentTitle = "DM Document Title");
 
 		User.loginPG(
-			nodePort = "8080",
 			password = "test",
 			userEmailAddress = "test@liferay.com");
 
@@ -177,7 +176,6 @@ definition {
 			userScreenName = "usersn");
 
 		User.loginPG(
-			nodePort = "8080",
 			password = "test",
 			userEmailAddress = "test@liferay.com");
 
@@ -293,7 +291,6 @@ definition {
 			previewImage = "Document_1.jpg");
 
 		User.loginPG(
-			nodePort = "8080",
 			password = "test",
 			userEmailAddress = "test@liferay.com");
 
@@ -389,7 +386,6 @@ definition {
 		DMDocument.viewDocumentTypePG(imageName = "Document_1.jpg");
 
 		User.loginPG(
-			nodePort = "8080",
 			password = "test",
 			userEmailAddress = "test@liferay.com");
 
@@ -522,7 +518,6 @@ definition {
 		DMDocumentType.viewCP(dmDocumentTypeName = "DM Document Type Name");
 
 		User.loginPG(
-			nodePort = "8080",
 			password = "test",
 			userEmailAddress = "test@liferay.com");
 
@@ -644,7 +639,6 @@ definition {
 			textContent = "DM Document Text");
 
 		User.loginPG(
-			nodePort = "8080",
 			password = "test",
 			userEmailAddress = "test@liferay.com");
 
@@ -865,7 +859,6 @@ definition {
 			metadataLabel = "Content Type");
 
 		User.loginPG(
-			nodePort = "8080",
 			password = "test",
 			userEmailAddress = "test@liferay.com");
 
@@ -1000,7 +993,6 @@ definition {
 			key_image = "Document_2.jpg");
 
 		User.loginPG(
-			nodePort = "8080",
 			password = "test",
 			userEmailAddress = "test@liferay.com");
 
@@ -1110,7 +1102,6 @@ definition {
 			key_image = "Document_2.jpg");
 
 		User.loginPG(
-			nodePort = "8080",
 			password = "test",
 			userEmailAddress = "test@liferay.com");
 

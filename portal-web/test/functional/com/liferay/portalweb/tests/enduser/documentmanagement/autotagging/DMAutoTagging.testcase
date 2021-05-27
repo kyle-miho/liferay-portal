@@ -260,9 +260,9 @@ definition {
 			userEmailAddress = "test@liferay.com");
 
 		User.loginPG(
-			nodePort = "9080",
 			password = "test",
-			userEmailAddress = "test@liferay.com");
+			userEmailAddress = "test@liferay.com",
+			virtualHostsURL = "http://localhost:9080");
 
 		DMNavigator.openToEntryInAdmin(
 			baseURL = "http://localhost:9080",

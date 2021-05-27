@@ -30,9 +30,9 @@ definition {
 		Pause(locator1 = "360000");
 
 		User.loginPG(
-			nodePort = "9080",
 			password = "test",
-			userEmailAddress = "test@liferay.com");
+			userEmailAddress = "test@liferay.com",
+			virtualHostsURL = "http://localhost:9080");
 
 		Alert.viewErrorMessage(errorMessage = "Grace period which already ended");
 
@@ -118,9 +118,9 @@ definition {
 		CommerceLicense.viewCommerceAvailable();
 
 		User.loginPG(
-			nodePort = "9080",
 			password = "test",
-			userEmailAddress = "test@liferay.com");
+			userEmailAddress = "test@liferay.com",
+			virtualHostsURL = "http://localhost:9080");
 
 		CommerceLicense.viewCommerceAvailable();
 
@@ -159,9 +159,9 @@ definition {
 		User.firstLoginPG();
 
 		User.loginPG(
-			nodePort = "9080",
 			password = "test",
-			userEmailAddress = "test@liferay.com");
+			userEmailAddress = "test@liferay.com",
+			virtualHostsURL = "http://localhost:9080");
 
 		Clustering.shutdownSpecificServer(nodePort = "9080");
 
@@ -199,9 +199,9 @@ definition {
 		}
 
 		User.loginPG(
-			nodePort = "9080",
 			password = "test",
-			userEmailAddress = "test@liferay.com");
+			userEmailAddress = "test@liferay.com",
+			virtualHostsURL = "http://localhost:9080");
 
 		Alert.viewErrorMessage(errorMessage = "will be automatically deactivated and shut down");
 
@@ -251,9 +251,9 @@ definition {
 		CommerceLicense.viewCommerceAvailable();
 
 		User.loginPG(
-			nodePort = "9080",
 			password = "test",
-			userEmailAddress = "test@liferay.com");
+			userEmailAddress = "test@liferay.com",
+			virtualHostsURL = "http://localhost:9080");
 
 		CommerceLicense.viewCommerceAvailable();
 
@@ -273,7 +273,6 @@ definition {
 		CommerceLicense.viewCommerceAvailable();
 
 		User.loginPG(
-			nodePort = "8080",
 			password = "test",
 			userEmailAddress = "test@liferay.com");
 
@@ -284,9 +283,9 @@ definition {
 			nodePort = "9080");
 
 		User.loginPG(
-			nodePort = "9080",
 			password = "test",
-			userEmailAddress = "test@liferay.com");
+			userEmailAddress = "test@liferay.com",
+			virtualHostsURL = "http://localhost:9080");
 
 		CommerceLicense.viewCommerceAvailable();
 
@@ -326,9 +325,9 @@ definition {
 		User.firstLoginPG();
 
 		User.loginPG(
-			nodePort = "9080",
 			password = "test",
-			userEmailAddress = "test@liferay.com");
+			userEmailAddress = "test@liferay.com",
+			virtualHostsURL = "http://localhost:9080");
 
 		Clustering.shutdownSpecificServer(nodePort = "9080");
 
@@ -352,9 +351,9 @@ definition {
 			nodePort = "9080");
 
 		User.loginPG(
-			nodePort = "9080",
 			password = "test",
-			userEmailAddress = "test@liferay.com");
+			userEmailAddress = "test@liferay.com",
+			virtualHostsURL = "http://localhost:9080");
 
 		Alert.viewErrorMessage(errorMessage = "licensed for this cluster has been exceeded");
 		Alert.viewErrorMessage(errorMessage = "grace period");
@@ -479,9 +478,9 @@ definition {
 		CommerceLicense.viewCommerceAvailable();
 
 		User.loginPG(
-			nodePort = "9080",
 			password = "test",
-			userEmailAddress = "test@liferay.com");
+			userEmailAddress = "test@liferay.com",
+			virtualHostsURL = "http://localhost:9080");
 
 		Page.assertNodePortPG(nodePort = "9080");
 

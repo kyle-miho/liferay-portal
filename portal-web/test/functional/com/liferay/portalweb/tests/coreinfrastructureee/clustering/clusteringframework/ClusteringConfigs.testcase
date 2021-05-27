@@ -47,9 +47,9 @@ definition {
 			nodePort = "9080");
 
 		User.loginPG(
-			nodePort = "9080",
 			password = "test",
-			userEmailAddress = "test@liferay.com");
+			userEmailAddress = "test@liferay.com",
+			virtualHostsURL = "http://localhost:9080");
 
 		echo("Successfully logged in to both nodes on JDBC_PING");
 	}
