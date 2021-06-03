@@ -110,6 +110,7 @@ definition {
 	@priority = "5"
 	test ViewConfiguredSetupWizardValue {
 		property database.types = "mysql";
+		property portal.acceptance = "true";
 		property test.name.skip.portal.instance = "SetupWizard#ViewConfiguredSetupWizardValue";
 
 		SetupWizard.viewDefaultPortalNamePG();
