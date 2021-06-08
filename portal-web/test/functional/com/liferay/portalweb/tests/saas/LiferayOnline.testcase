@@ -31,6 +31,8 @@ definition {
 
 	@priority = "5"
 	test Smoke {
+		property portal.acceptance = "kyle";
+
 		AssertConsoleTextPresent(value1 = "Stopping blacklisted bundle");
 
 		HeadlessPortalInstanceAPI.addPortalInstance(
