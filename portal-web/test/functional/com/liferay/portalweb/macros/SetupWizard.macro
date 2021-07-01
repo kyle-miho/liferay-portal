@@ -132,23 +132,7 @@ definition {
 
 		SetupWizard.viewConfiguredDatabaseInConsole(databaseType = "${databaseType}");
 
-		if (isSet(virtualHostsURL)) {
-			Navigator.openSpecificURL(url = "${virtualHostsURL}");
-		}
-		else {
-			Navigator.openURL();
-		}
-
-		User.acceptEndUserLicenseAgreement();
-
-		User.resetPassword(
-			resetPassword = "${resetPassword}",
-			setupWizardEnabled = "${setupWizardEnabled}",
-			syntaxCheckingEnabled = "${syntaxCheckingEnabled}");
-
-		User.answerPasswordReminder();
-
-		AssertElementPresent(locator1 = "UserBar#USER_AVATAR_IMAGE");
+		User.loginPG();
 
 		User.viewLoggedInPG();
 	}
