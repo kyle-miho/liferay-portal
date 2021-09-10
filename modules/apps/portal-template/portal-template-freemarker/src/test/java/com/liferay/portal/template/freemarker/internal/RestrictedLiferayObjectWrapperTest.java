@@ -495,6 +495,11 @@ public class RestrictedLiferayObjectWrapperTest
 		}
 
 		@Override
+		public TestBaseModel cloneWithOriginalValues() {
+			return null;
+		}
+
+		@Override
 		public int compareTo(TestBaseModel testBaseModel) {
 			return 0;
 		}
