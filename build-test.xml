@@ -8600,6 +8600,8 @@ ${update.properties}</echo>
 		<Logger level="${dialect.detector.log.level}" name="com.liferay.portal.spring.hibernate.DialectDetector" />
 
 		<Logger level="ERROR" name="com.zaxxer.hikari.pool.PoolBase" />
+
+		<Logger level="ERROR" name="com.liferay.portal.kernel.servlet.filters.invoker.InvokerFilterHelper" />
 	</Loggers>
 </Configuration>]]></echo>
 
