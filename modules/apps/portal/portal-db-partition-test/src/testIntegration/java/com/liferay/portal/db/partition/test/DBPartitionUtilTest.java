@@ -50,6 +50,7 @@ import org.junit.runner.RunWith;
 /**
  * @author Alberto Chaparro
  */
+@Ignore
 @RunWith(Arquillian.class)
 public class DBPartitionUtilTest extends BaseDBPartitionTestCase {
 
