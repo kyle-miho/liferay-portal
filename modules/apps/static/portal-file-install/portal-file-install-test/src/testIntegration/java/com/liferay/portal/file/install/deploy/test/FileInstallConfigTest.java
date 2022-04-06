@@ -355,7 +355,10 @@ public class FileInstallConfigTest {
 		File configurationFile = configurationFilePath.toFile();
 
 		if (readOnly) {
-			configurationFile.setReadOnly();
+			Boolean temp = configurationFile.setReadOnly();
+
+			Assert.assertTrue("FAIL, config file was not set as readOnly",
+				temp);
 		}
 
 		CountDownLatch countDownLatch = new CountDownLatch(2);
