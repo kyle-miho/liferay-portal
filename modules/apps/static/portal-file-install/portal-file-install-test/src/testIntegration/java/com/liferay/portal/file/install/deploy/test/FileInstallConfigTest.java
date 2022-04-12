@@ -332,7 +332,9 @@ public class FileInstallConfigTest {
 		Set<Configuration.ConfigurationAttribute> configurationAttributes =
 			_configuration.getAttributes();
 
-		Assert.assertTrue(
+		System.out.println(configurationAttributes.toString());
+
+		Assert.assertTrue(configurationAttributes.toString(),
 			configurationAttributes.contains(
 				Configuration.ConfigurationAttribute.READ_ONLY));
 	}
