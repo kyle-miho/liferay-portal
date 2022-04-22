@@ -16,10 +16,13 @@ package com.liferay.portal.file.install.deploy.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.petra.function.UnsafeRunnable;
+import com.liferay.petra.log4j.Log4JUtil;
 import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.configuration.test.util.ConfigurationTestUtil;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -75,6 +78,9 @@ public class FileInstallConfigTest {
 
 	@Before
 	public void setUp() {
+		Log4JUtil.setLevel("com.liferay.portal.file.install.deploy.test.FileInstallConfigTest", "DEBUG", false);
+		Log4JUtil.setLevel("org.apache.felix.cm.impl.ConfigurationManager", "DEBUG", false);
+
 		Bundle bundle = FrameworkUtil.getBundle(FileInstallConfigTest.class);
 
 		_bundleContext = bundle.getBundleContext();
@@ -318,12 +324,15 @@ public class FileInstallConfigTest {
 
 	@Test
 	public void testReadOnlyConfiguration() throws Exception {
+		_log.debug("Starting testReadOnlyConfiguration");
 		String configurationPid = _CONFIGURATION_PID_PREFIX.concat(
 			".testReadOnlyConfiguration");
 
 		_configurationPath = Paths.get(
 			PropsValues.MODULE_FRAMEWORK_CONFIGS_DIR,
 			configurationPid.concat(".config"));
+
+		_log.debug("BEFORE _creatConfiguration(4x)");
 
 		_configuration = _createConfiguration(
 			Charset.defaultCharset(), configurationPid, "testKey=\"testValue\"",
@@ -332,9 +341,9 @@ public class FileInstallConfigTest {
 		Set<Configuration.ConfigurationAttribute> configurationAttributes =
 			_configuration.getAttributes();
 
-		System.out.println(configurationAttributes.toString());
+		_log.debug("Configuration attributes:" + configurationAttributes.toString());
 
-		Assert.assertTrue(configurationAttributes.toString(),
+		Assert.assertTrue(
 			configurationAttributes.contains(
 				Configuration.ConfigurationAttribute.READ_ONLY));
 	}
@@ -351,17 +360,32 @@ public class FileInstallConfigTest {
 			boolean readOnly)
 		throws Exception {
 
+		_log.debug("ENTERING _creatConfiguration(4x)");
+
 		Path configurationFilePath = Files.write(
 			_configurationPath, content.getBytes(charset));
 
 		File configurationFile = configurationFilePath.toFile();
 
 		if (readOnly) {
-			Boolean temp = configurationFile.setReadOnly();
+			_log.debug("SETTING READ ONLY");
 
-			Assert.assertTrue("FAIL, config file was not set as readOnly",
-				temp);
+			boolean readOnlySuccess = configurationFile.setReadOnly();
+
+			_log.debug("Checking if file is writeable...");
+
+			Assert.assertFalse(configurationFile.canWrite());
+
+			if (readOnlySuccess) {
+				_log.debug("READ ONLY SUCCESS");
+			} else {
+				_log.debug("READ ONLY FAILURE");
+			}
+		} else {
+			_log.debug("NOT SETTING READ ONLY");
 		}
+
+		_log.debug("configurationFile: " + configurationFile.toString());
 
 		CountDownLatch countDownLatch = new CountDownLatch(2);
 
@@ -378,13 +402,25 @@ public class FileInstallConfigTest {
 			serviceRegistration.unregister();
 		}
 
+		_log.debug("Configuration sucessfully read");
+
 		Configuration[] configurations = _configurationAdmin.listConfigurations(
 			StringBundler.concat(
 				"(", Constants.SERVICE_PID, "=", configurationPid, ")"));
 
 		if (configurations == null) {
+			_log.debug("configuration is null");
 			return null;
 		}
+		_log.debug("Configurations found: " + configurations.length);
+		_log.debug("Configuration 1: " + configurations[0].toString());
+
+		Set<Configuration.ConfigurationAttribute> configurationAttributes =
+			configurations[0].getAttributes();
+
+		_log.debug("Configuration attributes inside _createConfiguration:" + configurationAttributes.toString());
+
+		_log.debug("LEAVING CONFIGURATION SUCCESSFULLY");
 
 		return configurations[0];
 	}
@@ -496,5 +532,8 @@ public class FileInstallConfigTest {
 	private BundleContext _bundleContext;
 	private Configuration _configuration;
 	private Path _configurationPath;
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		FileInstallConfigTest.class);
 
 }
