@@ -7958,6 +7958,10 @@ war.path=${app.server.portal.dir}/</echo>
 		</sequential>
 	</macrodef>
 
+	<target name="build-service">
+		<gradle-execute dir="${project.dir}/${gradle.file.path}" task="buildService" />
+	</target>
+
 	<target name="build-sql-file">
 		<get-testcase-property property.name="portal.version" />
 
@@ -14974,6 +14978,26 @@ url=${short.hostname}:8080</echo>
 		/>
 
 		<print-file file.name="${osgi.configs.dir}/${osgi.module.configuration.file.names}" />
+	</target>
+
+	<target name="update-service-builder-spring-sample-to-ds">
+		<replaceregexp
+			file="${project.dir}/modules/util/portal-tools-service-builder-spring-sample-service/service.xml"
+			match="(auto-namespace-tables=&quot;false&quot;)"
+			replace="\1 dependency-injector=&quot;ds&quot;"
+		/>
+
+		<replaceregexp
+			file="${project.dir}/modules/util/portal-tools-service-builder-spring-sample-service/bnd.bnd"
+			match="(Liferay-Service: true)"
+			replace="\1${line.separator}-dsannotations-options: inherit;"
+		/>
+
+		<replaceregexp
+			file="${project.dir}/modules/util/portal-tools-service-builder-spring-sample-service/build.gradle"
+			match="(compileOnly project\(&quot;:apps:portal:portal-spring-extender-api&quot;\))"
+			replace="\1${line.separator}compileOnly project(&quot;:apps:portal:portal-aop-api&quot;)"
+		/>
 	</target>
 
 	<target name="upgrade-legacy-database">
