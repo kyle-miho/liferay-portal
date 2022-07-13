@@ -1,5 +1,22 @@
 definition {
 
+	@summary = "Get the groupId for a given company"
+	macro _getPortalInstanceGroupId {
+		Variables.assertDefined(parameterList = "${companyId}");
+
+		var portalURL = JSONCompany.getDefaultPortalURL();
+
+		var curl = '''
+			${portalURL}/api/jsonws/group/get-company-group \
+			-u test@liferay.com:test \
+			-d companyId=${companyId}
+		''';
+
+		var groupId = JSONCurlUtil.post("${curl}", "$..['groupId']");
+
+		return "${groupId}";
+	}
+
 	@summary = "Get all current companies in a JSON format"
 	macro _getPortalInstances {
 		var portalURL = JSONCompany.getDefaultPortalURL();
