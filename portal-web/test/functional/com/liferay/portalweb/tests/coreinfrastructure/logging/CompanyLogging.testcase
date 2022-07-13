@@ -165,12 +165,37 @@ definition {
 	}
 
 	@description = "A company admin should only be able to see the logs from the company they are an admin of"
-	@ignore = "Test Stub"
 	@priority = "5"
 	test GetCompanyAdminLogs {
+		task ("Given a new instance is created") {
+			HeadlessPortalInstanceAPI.addPortalInstance(
+				domain = "www.able.com",
+				portalInstanceId = "www.able.com",
+				virtualHost = "www.able.com");
+		}
 
-		// TODO LRQA-75855
+		task ("And given the admin for that virtual instance logs in") {
+			User.logoutPG();
 
+			User.firstLoginPG(
+				password = "test",
+				userEmailAddress = "test@www.able.com",
+				virtualHostsURL = "http://www.able.com:8080");
+		}
+
+		task ("When the instance admin navigates to the company logging UI access point") {
+			Navigator.openSpecificURL(url = "http://www.able.com:8080/o/company-log");
+		}
+
+		task ("Then only logs for that instance are shown") {
+			AssertElementPresent(
+				key_virtualHost = "www.able.com",
+				locator1 = "CompanyLogs#COMPANY_LOG_TITLE");
+
+			AssertElementNotPresent(
+				key_virtualHost = "liferay.com",
+				locator1 = "CompanyLogs#COMPANY_LOG_TITLE");
+		}
 	}
 
 	@description = "A company admin that tries to directly download the logs of a company they do not have access to should get a permissions error"
