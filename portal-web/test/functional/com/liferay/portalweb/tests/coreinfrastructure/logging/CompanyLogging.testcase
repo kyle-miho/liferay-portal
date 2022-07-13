@@ -68,12 +68,100 @@ definition {
 	}
 
 	@description = "An Omniadmin can get log names from all companies and download logs from all companies though the UI"
-	@ignore = "Test Stub"
 	@priority = "4"
 	test GetAllCompanyLogs {
+		task ("Given two new virtual instances are created") {
+			HeadlessPortalInstanceAPI.addPortalInstance(
+				domain = "www.able.com",
+				portalInstanceId = "www.able.com",
+				virtualHost = "www.able.com");
 
-		// TODO LRQA-75854
+			User.logoutPG();
 
+			User.firstLoginPG(
+				password = "test",
+				userEmailAddress = "test@www.able.com",
+				virtualHostsURL = "http://www.able.com:8080");
+
+			ApplicationsMenu.gotoSite(key_site = "www.able.com");
+
+			HeadlessPortalInstanceAPI.addPortalInstance(
+				domain = "www.baker.com",
+				portalInstanceId = "www.baker.com",
+				virtualHost = "www.baker.com");
+
+			User.logoutPG();
+
+			User.firstLoginPG(
+				password = "test",
+				userEmailAddress = "test@www.baker.com",
+				virtualHostsURL = "http://www.baker.com:8080");
+
+			ApplicationsMenu.gotoSite(key_site = "www.baker.com");
+
+			User.logoutAndLoginPG(
+				userLoginEmailAddress = "test@liferay.com",
+				userLoginFullName = "Test Test");
+
+			PortalInstances.openVirtualInstancesAdmin();
+
+			var companyId1 = TestUtils.getElementTextContent(element = "//tr[contains(.,'liferay.com')]/td[1]//a");
+			var companyId2 = TestUtils.getElementTextContent(element = "//tr[contains(.,'www.able.com')]/td[1]//a");
+			var companyId3 = TestUtils.getElementTextContent(element = "//tr[contains(.,'www.baker.com')]/td[1]//a");
+		}
+
+		task ("When the user navigates to the company logging UI access point") {
+			Navigator.openWithAppendToBaseURL(urlAppend = "o/company-log");
+		}
+
+		task ("Then logs files are present for each company") {
+			for (var companyTitle : list "liferay.com,www.able.com,www.baker.com") {
+				AssertElementPresent(
+					key_virtualHost = "${companyTitle}",
+					locator1 = "CompanyLogs#COMPANY_LOG_TITLE");
+			}
+		}
+
+		task ("And the log files can be downloaded") {
+			for (var companyTitle : list "liferay.com,www.able.com,www.baker.com") {
+				var logName = TestUtils.getElementTextContent(element = "//h1[text()='${companyTitle}']//following::a[1]");
+
+				var logSize = StringUtil.extractLast("${logName}", "log");
+
+				var logName = StringUtil.replace("${logName}", "${logSize}", "");
+
+				Click(
+					key_virtualHost = "${companyTitle}",
+					locator1 = "CompanyLogs#COMPANY_LOG_NAME");
+
+				DownloadTempFile();
+
+				DMDocument.assertFileNameFromTempFolder(fileName = "${logName}");
+			}
+		}
+
+		task ("And the log files contain logs for the specific company") {
+			for (var companies : list "liferay.com:${companyId1},www.able.com:${companyId2},www.baker.com:${companyId3}") {
+				var companyTitle = StringUtil.extractFirst("${companies}", ":");
+				var companyId = StringUtil.extractLast("${companies}", ":");
+
+				var groupId = HeadlessPortalInstanceAPI._getPortalInstanceGroupId(companyId = "${companyId}");
+
+				var groupId = ${groupId} - 2;
+
+				Click(
+					key_virtualHost = "${companyTitle}",
+					locator1 = "CompanyLogs#COMPANY_LOG_VIEW");
+
+				SelectWindow.selectPopUp(locator1 = "null");
+
+				AssertElementPresent(
+					key_logContent = "Initializing com.liferay.site.initializer.welcome for group ${groupId}",
+					locator1 = "CompanyLogs#COMPANY_LOG_CONTENT");
+
+				Close.closeWindow();
+			}
+		}
 	}
 
 	@description = "A company admin should only be able to see the logs from the company they are an admin of"
