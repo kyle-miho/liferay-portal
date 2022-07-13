@@ -24,12 +24,87 @@ definition {
 	}
 
 	@description = "Any logs that would appear in specifically company A should never appear in the logs of company B"
-	@ignore = "Test Stub"
 	@priority = "3"
 	test AssertCompanyLogsIsolated {
+		task ("When two new virtual instances are created") {
+			HeadlessPortalInstanceAPI.addPortalInstance(
+				domain = "www.able.com",
+				portalInstanceId = "www.able.com",
+				virtualHost = "www.able.com");
 
-		// TODO LRQA-75859
+			User.logoutPG();
 
+			User.firstLoginPG(
+				password = "test",
+				userEmailAddress = "test@www.able.com",
+				virtualHostsURL = "http://www.able.com:8080");
+
+			ApplicationsMenu.gotoSite(key_site = "www.able.com");
+
+			HeadlessPortalInstanceAPI.addPortalInstance(
+				domain = "www.baker.com",
+				portalInstanceId = "www.baker.com",
+				virtualHost = "www.baker.com");
+
+			User.logoutPG();
+
+			User.firstLoginPG(
+				password = "test",
+				userEmailAddress = "test@www.baker.com",
+				virtualHostsURL = "http://www.baker.com:8080");
+
+			ApplicationsMenu.gotoSite(key_site = "www.baker.com");
+
+			User.logoutAndLoginPG(
+				userLoginEmailAddress = "test@liferay.com",
+				userLoginFullName = "Test Test");
+
+			PortalInstances.openVirtualInstancesAdmin();
+
+			var companyId1 = TestUtils.getElementTextContent(element = "//tr[contains(.,'www.able.com')]/td[1]//a");
+			var companyId2 = TestUtils.getElementTextContent(element = "//tr[contains(.,'www.baker.com')]/td[1]//a");
+		}
+
+		task ("Then the logs of one company should not appear in the logs of the other") {
+			Navigator.openWithAppendToBaseURL(urlAppend = "o/company-log");
+
+			var groupId1 = HeadlessPortalInstanceAPI._getPortalInstanceGroupId(companyId = "${companyId1}");
+			var groupId2 = HeadlessPortalInstanceAPI._getPortalInstanceGroupId(companyId = "${companyId2}");
+			var groupId1 = ${groupId1} - 2;
+			var groupId2 = ${groupId2} - 2;
+
+			Click(
+				key_virtualHost = "www.able.com",
+				locator1 = "CompanyLogs#COMPANY_LOG_VIEW");
+
+			SelectWindow.selectPopUp(locator1 = "null");
+
+			AssertElementPresent(
+				key_logContent = "Initializing com.liferay.site.initializer.welcome for group ${groupId1}",
+				locator1 = "CompanyLogs#COMPANY_LOG_CONTENT");
+
+			AssertElementNotPresent(
+				key_logContent = "Initializing com.liferay.site.initializer.welcome for group ${groupId2}",
+				locator1 = "CompanyLogs#COMPANY_LOG_CONTENT");
+
+			Close.closeWindow();
+
+			Click(
+				key_virtualHost = "www.baker.com",
+				locator1 = "CompanyLogs#COMPANY_LOG_VIEW");
+
+			SelectWindow.selectPopUp(locator1 = "null");
+
+			AssertElementPresent(
+				key_logContent = "Initializing com.liferay.site.initializer.welcome for group ${groupId2}",
+				locator1 = "CompanyLogs#COMPANY_LOG_CONTENT");
+
+			AssertElementNotPresent(
+				key_logContent = "Initializing com.liferay.site.initializer.welcome for group ${groupId1}",
+				locator1 = "CompanyLogs#COMPANY_LOG_CONTENT");
+
+			Close.closeWindow();
+		}
 	}
 
 	@description = "If company.log.enabled=false, there should not be additional logging files created for each company and the UI access point should be unavailable"
