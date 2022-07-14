@@ -274,21 +274,100 @@ definition {
 	}
 
 	@description = "A company admin that tries to directly download the logs of a company they do not have access to should get a permissions error"
-	@ignore = "Test Stub"
 	@priority = "4"
 	test GetCompanyAdminLogsFromDifferentCompany {
+		task ("Given a new instance is created") {
+			HeadlessPortalInstanceAPI.addPortalInstance(
+				domain = "www.able.com",
+				portalInstanceId = "www.able.com",
+				virtualHost = "www.able.com");
+		}
 
-		// TODO LRQA-75856
+		task ("And given the admin for that virtual instance logs in") {
+			PortalInstances.openVirtualInstancesAdmin();
 
+			var companyId = TestUtils.getElementTextContent(element = "//tr[contains(.,'liferay.com')]/td[1]//a");
+
+			Navigator.openWithAppendToBaseURL(urlAppend = "o/company-log");
+
+			var logName = TestUtils.getElementTextContent(element = "//h1[text()='liferay.com']//following::a[1]");
+
+			var logSize = StringUtil.extractLast("${logName}", "log");
+
+			var logName = StringUtil.replace("${logName}", "${logSize}", "");
+
+			User.logoutPG();
+
+			User.firstLoginPG(
+				password = "test",
+				userEmailAddress = "test@www.able.com",
+				virtualHostsURL = "http://www.able.com:8080");
+		}
+
+		task ("When the company admin tries accessing the company logging UI to download a specific company log from a different company") {
+			Navigator.openWithAppendToBaseURL(urlAppend = "o/company-log/${companyId}/${logName}?download=true");
+		}
+
+		task ("Then a permissions error is shown and no log is downloaded") {
+			AssertTextPresent(
+				locator1 = "//body",
+				value1 = "You don't have authorization to view this page.");
+
+			DownloadTempFile();
+
+			DMDocument.assertNoFileNameFromTempFolder(fileName = "${logName}");
+		}
 	}
 
 	@description = "A non-administrative user should get a permissions denied error when trying to access the UI to get company logging information"
-	@ignore = "Test Stub"
 	@priority = "4"
 	test GetCompanyLogsAsGuest {
+		task ("Given a new user") {
+			JSONUser.addUser(
+				userEmailAddress = "userea@liferay.com",
+				userFirstName = "userfn",
+				userLastName = "userln",
+				userScreenName = "usersn");
 
-		// TODO LRQA-75857
+			JSONUser.setFirstPassword(
+				agreeToTermsAndAnswerReminderQuery = "true",
+				requireReset = "false",
+				userEmailAddress = "userea@liferay.com");
+		}
 
+		task ("When the user tries accessing the company logging UI to download a specific company log") {
+			PortalInstances.openVirtualInstancesAdmin();
+
+			var companyId = TestUtils.getElementTextContent(element = "//tr[contains(.,'liferay.com')]/td[1]//a");
+
+			Navigator.openWithAppendToBaseURL(urlAppend = "o/company-log");
+
+			var logName = TestUtils.getElementTextContent(element = "//h1[text()='liferay.com']//following::a[1]");
+
+			var logSize = StringUtil.extractLast("${logName}", "log");
+
+			var logName = StringUtil.replace("${logName}", "${logSize}", "");
+
+			User.logoutAndLoginPG(
+				userLoginEmailAddress = "userea@liferay.com",
+				userLoginFullName = "userfn userln");
+
+			Navigator.openWithAppendToBaseURL(urlAppend = "o/company-log/${companyId}/${logName}?download=true");
+		}
+
+		task ("Then a permissions error is shown and no log is downloaded") {
+			AssertTextPresent(
+				locator1 = "//body",
+				value1 = "You don't have authorization to view this page.");
+
+			AssertTextPresent(
+				locator1 = "//body",
+				value1 = "HTTP ERROR 403");
+
+			DownloadTempFile();
+
+			DMDocument.assertNoFileNameFromTempFolder(fileName = "${logName}");
+		}
 	}
 
 	@description = "If there are no logs available for a company, there should be some kind of message to notify the user when they try to check the available log names"
