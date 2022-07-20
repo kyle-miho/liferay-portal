@@ -10,6 +10,7 @@ definition {
 	property testray.main.component.name = "Logging";
 
 	setUp {
+
 		TestCase.setUpPortalInstance();
 
 		User.firstLoginPG();
@@ -24,12 +25,81 @@ definition {
 	}
 
 	@description = "Any logs that would appear in specifically company A should never appear in the logs of company B"
-	@ignore = "Test Stub"
 	@priority = "3"
 	test AssertCompanyLogsIsolated {
+		task ("When two new virtual instances are created") {
+			HeadlessPortalInstanceAPI.addPortalInstanceWithVirtualInstanceInitializer(
+				domain = "www.able.com",
+				portalInstanceId = "www.able.com",
+				siteInitializerKey = "com.liferay.site.initializer.masterclass",
+				virtualHost = "www.able.com");
 
-		// TODO LRQA-75859
+			HeadlessPortalInstanceAPI.addPortalInstanceWithVirtualInstanceInitializer(
+				domain = "www.baker.com",
+				portalInstanceId = "www.baker.com",
+				siteInitializerKey = "com.liferay.site.initializer.team.extranet",
+				virtualHost = "www.baker.com");
+		}
 
+		task ("Then the logs of one company should not appear in the logs of the other") {
+			Navigator.openWithAppendToBaseURL(urlAppend = "o/company-log");
+
+			var logName = TestUtils.getElementTextContent(element = "//h1[text()='www.able.com']//following::a[1]");
+
+			var logSize = StringUtil.extractLast("${logName}", "log");
+
+			var logName = StringUtil.replace("${logName}", "${logSize}", "");
+
+			Click(
+				key_virtualHost = "www.able.com",
+				locator1 = "CompanyLogs#COMPANY_LOG_NAME");
+
+			DownloadTempFile();
+
+			DMDocument.assertFileNameFromTempFolder(fileName = "${logName}");
+
+			var logContent = TestCase.getTempFileContent(fileName = "${logName}");
+
+			if (!(contains("${logContent}", "Initializing com.liferay.site.initializer.masterclass"))) {
+				fail("The ${logName} file content does not match the expected log content.");
+			}
+
+			if (contains("${logContent}", "Initializing com.liferay.site.initializer.team.extranet")) {
+				fail("The ${logName} file contains logs from the www.baker.com company");
+			}
+
+			if (contains("${logContent}", "Initializing com.liferay.site.initializer.welcome")) {
+				fail("The ${logName} file contains logs from the liferay.com company");
+			}
+
+			var logName = TestUtils.getElementTextContent(element = "//h1[text()='www.baker.com']//following::a[1]");
+
+			var logSize = StringUtil.extractLast("${logName}", "log");
+
+			var logName = StringUtil.replace("${logName}", "${logSize}", "");
+
+			Click(
+				key_virtualHost = "www.baker.com",
+				locator1 = "CompanyLogs#COMPANY_LOG_NAME");
+
+			DownloadTempFile();
+
+			DMDocument.assertFileNameFromTempFolder(fileName = "${logName}");
+
+			var logContent = TestCase.getTempFileContent(fileName = "${logName}");
+
+			if (!(contains("${logContent}", "Initializing com.liferay.site.initializer.team.extranet"))) {
+				fail("The ${logName} file content does not match the expected log content.");
+			}
+
+			if (contains("${logContent}", "Initializing com.liferay.site.initializer.masterclass")) {
+				fail("The ${logName} file contains logs from the www.able.com company");
+			}
+
+			if (contains("${logContent}", "Initializing com.liferay.site.initializer.welcome")) {
+				fail("The ${logName} file contains logs from the liferay.com company");
+			}
+		}
 	}
 
 	@description = "If company.log.enabled=false, there should not be additional logging files created for each company and the UI access point should be unavailable"
