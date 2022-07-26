@@ -27,7 +27,7 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -87,7 +87,8 @@ public class JSONWebServiceServletTest {
 
 	private void _setCurrentURL(String currentURL) {
 		Mockito.when(
-			_portal.getCurrentURL(Matchers.any(HttpServletRequest.class))
+			_portal.getCurrentURL(
+				ArgumentMatchers.any(HttpServletRequest.class))
 		).thenReturn(
 			currentURL
 		);
