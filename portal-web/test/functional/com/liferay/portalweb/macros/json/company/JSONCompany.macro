@@ -1,5 +1,32 @@
 definition {
 
+	macro assertCompanyLogIsolated {
+		var logContent = CompanyLogging.downloadCompanyLog(portalInstanceName = "${portalInstanceName}");
+
+		CompanyLogging.assertCompanyLogContent(
+			logContent = "${logContent}",
+			portalInstanceName = "${portalInstanceName}");
+
+		var companyTitles = JSONCompany.getAllCompanyNames();
+
+		var companyTitles = ListUtil.newListFromString("${companyTitles}");
+
+		ListUtil.remove("${companyTitles}", "${portalInstanceName}");
+
+		for (var companyTitle : list "${companyTitles}") {
+			if ("${companyTitle}" == "liferay.com") {
+				var companyId = JSONCompany.getCompanyId();
+			}
+			else {
+				var companyId = JSONCompany.getCompanyId(portalInstanceName = "${companyTitle}");
+			}
+
+			if (contains("${logContent}", "companyId=${companyId}")) {
+				fail("The ${portalInstanceName} company log file contains logs from the ${companyTitle} company");
+			}
+		}
+	}
+
 	macro getAllCompanyNames {
 		if (!(isSet(portalInstanceName))) {
 			var portalInstanceName = JSONCompany.getPortalInstanceNameNoSelenium();
