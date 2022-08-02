@@ -148,7 +148,7 @@ definition {
 
 		var testRunEnvironment = PropsUtil.get("test.run.environment");
 
-		if ("${testRunEnvironment}" == "EE") {
+		if (("${testRunEnvironment}" == "EE") && (IsElementPresent(locator1 = "Button#DONE"))) {
 			Click(locator1 = "Button#DONE");
 		}
 
