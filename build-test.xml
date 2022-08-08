@@ -15043,6 +15043,37 @@ url=${short.hostname}:8080</echo>
 		<start-docker-database />
 	</target>
 
+	<target name="start-docker-database-postgresql">
+		<stop-docker-database />
+
+		<if>
+			<not>
+				<isset property="database.version" />
+			</not>
+			<then>
+				<var name="database.version" value="14.4" />
+			</then>
+		</if>
+
+		<delete file="test.${user.name}.properties" />
+
+		<echo file="test.${user.name}.properties">database.type=postgresql
+database.postgresql.docker.image=postgres:${database.version}
+database.postgresql.docker.run.options=--env=POSTGRES_USER=root --expose=5432 -p 5432:5432 --env=POSTGRES_HOST_AUTH_METHOD=trust
+database.postgresql.name=PostgreSQL</echo>
+
+		<antcall inheritAll="false" target="start-docker-database">
+		</antcall>
+
+		<antcall target="rebuild-database">
+			<param name="database.type" value="postgresql" />
+			<param name="sql.dir" value="sql/create-bare/" />
+			<param name="sql.file" value="create-bare-postgresql.sql" />
+		</antcall>
+
+		<antcall target="prepare-portal-ext-properties" />
+	</target>
+
 	<target name="start-test-smtp-server">
 		<start-test-smtp-server />
 	</target>
