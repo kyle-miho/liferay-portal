@@ -108,6 +108,13 @@
 
 		<exec dir="${liferay.faces.bridge.impl.dir}" executable="git">
 			<arg line="cherry-pick" />
+			<arg line="157f915539d9b263e515b311f9976c1080f288aa" />
+			<arg line="--strategy-option " />
+			<arg line="theirs " />
+		</exec>
+
+		<exec dir="${liferay.faces.bridge.impl.dir}" executable="git">
+			<arg line="cherry-pick" />
 			<arg line="434358cb40c1ff30243062bfc1d8db5850efcbdf" />
 			<arg line="--strategy-option " />
 			<arg line="theirs " />
