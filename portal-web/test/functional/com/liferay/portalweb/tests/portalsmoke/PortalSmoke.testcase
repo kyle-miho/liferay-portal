@@ -27,6 +27,25 @@ definition {
 		}
 	}
 
+	@description = "Verify a module can be deployed after adding a hotfix qualifier to its build version"
+	@priority = "3"
+	test HotfixQualifierSmoke {
+		property skip.portal.instance = "PortalSmoke#HotfixQualifierSmoke";
+		
+		var liferayHome = PropsUtil.get("liferay.home.dir.name");
+		var moduleBaseDir = "/modules/apps/account/account-admin-web";
+
+		AntCommand(
+			locator1 = "build-test.xml",
+			value1 = "add-hotfix-qualifier -Dhotfix.qualifier=hotfix-0-8000 -Dmodule.base.dir=${moduleBaseDir}");
+
+		AntCommand(
+			locator1 = "build-test.xml",
+			value1 = "deploy-osgi-module-to-specific-bundle -Dmodule.base.dir=${moduleBaseDir} -DliferayHome=${liferayHome}");
+
+		WaitForConsoleTextPresent(value1 = "STARTED com.liferay.account.admin.web_");
+	}
+
 	@description = "Ensure that the super admin can add pages, add portlets, navigate to the product menu, use the WYSIWYG editor, and view alert messages."
 	@priority = "5"
 	test Smoke {
