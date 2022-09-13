@@ -27,15 +27,14 @@ import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ProgressTracker;
 import com.liferay.portal.util.PropsUtil;
 
+import javax.servlet.ServletInputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-
-import javax.servlet.ServletInputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 /**
  * @author Brian Myunghun Kim
@@ -149,8 +148,16 @@ public class LiferayInputStream extends ServletInputStreamAdapter {
 			}
 		}
 
-		ProgressTracker progressTracker =
-			(ProgressTracker)_httpSession.getAttribute(ProgressTracker.PERCENT);
+		Object object = _httpSession.getAttribute(ProgressTracker.PERCENT);
+
+		if (object instanceof Boolean) {
+			System.out.println("#####");
+			System.out.println("Boolean Detected: ");
+			System.out.println(object);
+			System.out.println("#####");
+		}
+
+		ProgressTracker progressTracker = (ProgressTracker)object;
 
 		Integer curPercent = null;
 
