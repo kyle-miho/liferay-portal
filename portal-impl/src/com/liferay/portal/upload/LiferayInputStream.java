@@ -151,10 +151,11 @@ public class LiferayInputStream extends ServletInputStreamAdapter {
 		Object object = _httpSession.getAttribute(ProgressTracker.PERCENT);
 
 		if (object instanceof Boolean) {
-			System.out.println("#####");
-			System.out.println("Boolean Detected: ");
-			System.out.println(object);
-			System.out.println("#####");
+			_log.debug(
+				StringBundler.concat("#####", "Boolean Detected: ", object, "#####"));
+		} else if (!(object instanceof ProgressTracker)) {
+			_log.debug(
+				StringBundler.concat("#####", "Non-ProgressTracker Detected: ", object, "#####"));
 		}
 
 		ProgressTracker progressTracker = (ProgressTracker)object;

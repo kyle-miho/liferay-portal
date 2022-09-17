@@ -34,6 +34,7 @@
 	<Loggers>
 		<Logger level="WARN" name="aQute.bnd.osgi" />
 		<Logger level="ERROR" name="com.browseengine.bobo" />
+		<Logger level="DEBUG" name="com.liferay.portal.upload.LiferayInputStream" />
 		<Logger level="ERROR" name="com.ecyrd.jspwiki" />
 		<Logger level="ERROR" name="com.liferay" />
 		<Logger level="INFO" name="com.liferay.bean.portlet" />
