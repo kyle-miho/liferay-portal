@@ -951,7 +951,7 @@ definition {
 		property test.name.skip.portal.instance = "Locale#VirtualHostLanguageCanBeChangedWithUserDefaultLanguage";
 
 		User.firstLoginPG();
-		
+
 		JSONLayout.addPublicLayout(
 			groupName = "Test Site Name",
 			layoutName = "Test Page");
@@ -975,7 +975,7 @@ definition {
 
 		Site.openSiteSettingsAdmin(siteURLKey = "test-site-name");
 
-		Site.editVirtualHostLanguagueCP(languageVirtualHost = "Spanish (Spain)");
+		Site.editVirtualHostLanguageCP(languageVirtualHost = "Spanish (Spain)");
 
 		Navigator.openSpecificURL(url = "http://www.able.com:8080");
 
