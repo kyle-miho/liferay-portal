@@ -1624,4 +1624,18 @@ definition {
 		AssertLocation(value1 = "${sitePageURL}");
 	}
 
+	macro editVirtualHostLanguagueCP {
+		Click(
+			key_itemName = "Site Configuration",
+			locator1 = "ListGroupItem#ITEM_TEXT");
+
+		Navigator.gotoNavTab(navTab = "Site URL");
+
+		Select(
+			key_selectFieldLabel = "Language",
+			locator1 = "Select#ANY",
+			value1 = "${languageVirtualHost}");
+
+		PortletEntry.save();
+	}
 }
