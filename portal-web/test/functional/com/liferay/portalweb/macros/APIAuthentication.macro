@@ -1,5 +1,43 @@
 definition {
 
+	macro assertConfigInSystemSettings {
+		if ("${enabled}" == "true") {
+			AssertChecked.assertCheckedNotVisible(
+				checkboxName = "Enabled",
+				locator1 = "Checkbox#ANY_CHECKBOX");
+		}
+
+		if ("${enabled}" == "false") {
+			AssertNotChecked.assertNotCheckedNotVisible(
+				checkboxName = "Enabled",
+				locator1 = "Checkbox#ANY_CHECKBOX");
+		}
+
+		if (isSet(hostsAllowed)) {
+			SystemSettings.viewTextareaValue(
+				fieldName = "Hosts Allowed",
+				fieldValue = "${hostsAllowed}");
+		}
+
+		if (isSet(serviceAccessPolicyName)) {
+			SystemSettings.viewTextareaValue(
+				fieldName = "Service Access Policy Name",
+				fieldValue = "${serviceAccessPolicyName}");
+		}
+
+		if (isSet(urlsInclude)) {
+			SystemSettings.viewTextareaValue(
+				fieldName = "URLs Includes",
+				fieldValue = "${urlsInclude}");
+		}
+
+		if (isSet(urlsExclude)) {
+			SystemSettings.viewTextareaValue(
+				fieldName = "URLs Includes",
+				fieldValue = "${urlsExclude}");
+		}
+	}
+
 	macro openToConfigInInstanceSettings {
 		if (!(isSet(baseURL))) {
 			var baseURL = PropsUtil.get("portal.url");
