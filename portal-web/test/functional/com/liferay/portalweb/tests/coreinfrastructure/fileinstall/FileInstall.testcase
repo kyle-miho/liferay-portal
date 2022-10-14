@@ -191,6 +191,73 @@ definition {
 		}
 	}
 
+	@description = "Verify when an existing factory config is renamed, the old entry is removed and the new one is added."
+	@priority = "3"
+	test RenameFactoryConfig {
+		property osgi.module.configuration.file.names = "com.liferay.portal.security.auth.verifier.internal.tunnel.configuration.TunnelAuthVerifierConfiguration~test.config";
+		property osgi.module.configurations = "enabled=&quot;true&quot;${line.separator}hostsAllowed=&quot;127.0.0.1,SERVER_IP&quot;${line.separator}serviceAccessPolicyName=&quot;SYSTEM_USER_PASSWORD&quot;${line.separator}urlsIncludes=&quot;/api/liferay/test&quot;";
+		property test.name.skip.portal.instance = "FileInstall#RenameFactoryConfig";
+
+		task ("When a factory configuration is renamed") {
+			var liferayHome = PropsUtil.get("liferay.home.dir.name");
+			var configName = "com.liferay.portal.security.auth.verifier.internal.tunnel.configuration.TunnelAuthVerifierConfiguration";
+
+			var configFile = "${liferayHome}/osgi/configs/${configName}~test.config";
+			var configFileRename = "${liferayHome}/osgi/configs/${configName}~rename.config";
+
+			ServerAdministration.openServerAdmin();
+
+			var script = '''
+			File file = new File("${configFile}");
+
+			File rename = new File("${configFileRename}"); 
+
+			boolean renamedFile = file.renameTo(rename); 
+
+ 			if (renamedFile == true) { 
+           	 	out.println("File successfully renamed"); 
+   			} 
+
+ 			else { 
+            	out.println("File could not be renamed"); 
+          	}
+		''';
+
+			ServerAdministration.executeScript(
+				language = "Groovy",
+				script = "${script}");
+
+			AssertTextEquals(
+				locator1 = "ServerAdministrationScript#OUTPUT_FIELD",
+				value1 = "File successfully renamed");
+		}
+
+		task ("Then the old entry is removed and the new one is added") {
+			Portlet.shutdownServer();
+
+			Portlet.startServer(deleteLiferayHome = "false");
+
+			SystemSettings.openSystemSettingsAdmin();
+
+			SystemSettings.gotoConfiguration(
+				configurationCategory = "API Authentication",
+				configurationName = "Tunnel Authentication",
+				configurationScope = "System Scope");
+
+			LexiconEntry.viewEntryName(rowEntry = "/api/liferay/test");
+
+			AssertElementNotPresent(locator1 = "//*[@data-qa-id='row'][contains(.,'/api/liferay/test')][2]");
+
+			LexiconEntry.gotoEntryMenuItemNoError(
+				menuItem = "Export",
+				rowEntry = "/api/liferay/test");
+
+			DownloadTempFile();
+
+			DMDocument.assertFileNameFromTempFolder(fileName = "${configName}_rename.config");
+		}
+	}
+
 	@priority = "4"
 	test UninstallJarOffline {
 		property test.name.skip.portal.instance = "FileInstall#UninstallJarOffline";
