@@ -105,6 +105,39 @@ definition {
 		GogoShell.viewNoOutput(outputContent = "Active");
 	}
 
+	@description = "Verify multiple factory configurations can be created."
+	@priority = "3"
+	test DeployFactoryConfigs {
+		property osgi.module.configuration.file.names = "com.liferay.portal.security.auth.verifier.internal.tunnel.configuration.TunnelAuthVerifierConfiguration~test1.config:com.liferay.portal.security.auth.verifier.internal.tunnel.configuration.TunnelAuthVerifierConfiguration~test2.config";
+		property osgi.module.configurations = "enabled=&quot;true&quot;${line.separator}hostsAllowed=&quot;127.0.0.1,SERVER_IP&quot;${line.separator}serviceAccessPolicyName=&quot;SYSTEM_USER_PASSWORD&quot;${line.separator}urlsIncludes=&quot;/api/liferay/test&quot;:enabled=&quot;false&quot;${line.separator}hostsAllowed=&quot;127.0.0.0&quot;${line.separator}serviceAccessPolicyName=&quot;SYSTEM_USER_PASSWORD_2&quot;${line.separator}urlsIncludes=&quot;/api/liferay/test2&quot;";
+		property test.name.skip.portal.instance = "FileInstall#DeployFactoryConfigs";
+		
+		SystemSettings.openSystemSettingsAdmin();
+
+		SystemSettings.gotoConfiguration(
+			configurationCategory = "API Authentication",
+			configurationName = "Tunnel Authentication",
+			configurationScope = "System Scope");
+
+		LexiconEntry.gotoEntry(rowEntry = "/api/liferay/test");
+
+		APIAuthentication.assertConfigInSystemSettings(
+			enabled = "true",
+			hostsAllowed = "127.0.0.1,SERVER_IP",
+			serviceAccessPolicyName = "SYSTEM_USER_PASSWORD",
+			urlsInclude = "/api/liferay/test");
+
+		Navigator.gotoBack();
+
+		LexiconEntry.gotoEntry(rowEntry = "/api/liferay/test2");
+
+		APIAuthentication.assertConfigInSystemSettings(
+			enabled = "false",
+			hostsAllowed = "127.0.0.0",
+			serviceAccessPolicyName = "SYSTEM_USER_PASSWORD_2",
+			urlsInclude = "/api/liferay/test2");
+	}
+
 	@priority = "4"
 	test InstallOSGiConfigWithHiddenFile {
 		property create.osgi.hidden.file = "true";
