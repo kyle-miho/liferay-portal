@@ -154,6 +154,43 @@ definition {
 			configurationScope = "System Scope");
 	}
 
+	@description = "Verify an existing factory config can be modified."
+	@priority = "3"
+	test ModifyFactoryConfig {
+		property osgi.module.configuration.file.names = "com.liferay.portal.security.auth.verifier.internal.tunnel.configuration.TunnelAuthVerifierConfiguration~test.config";
+		property osgi.module.configurations = "enabled=&quot;true&quot;${line.separator}hostsAllowed=&quot;127.0.0.1,SERVER_IP&quot;${line.separator}serviceAccessPolicyName=&quot;SYSTEM_USER_PASSWORD&quot;${line.separator}urlsIncludes=&quot;/api/liferay/test&quot;";
+		property test.name.skip.portal.instance = "FileInstall#ModifyFactoryConfig";
+		
+		task ("When a factory configuration is modified") {
+			OSGiConfig.deployOSGiConfigFile(
+				osgiConfigFileName = "com.liferay.portal.security.auth.verifier.internal.tunnel.configuration.TunnelAuthVerifierConfiguration~test.config",
+				osgiConfigs = "enabled=&quot;false&quot;,hostsAllowed=&quot;127.0.0.1&quot;,serviceAccessPolicyName=&quot;SYSTEM_USER_PASSWORD_2&quot;,urlsIncludes=&quot;/api/liferay/test2&quot;");
+		}
+
+		task ("Then the factory configuration should be successfully updated") {
+			Portlet.shutdownServer();
+
+			Portlet.startServer(deleteLiferayHome = "false");
+
+			SystemSettings.openSystemSettingsAdmin();
+
+			SystemSettings.gotoConfiguration(
+				configurationCategory = "API Authentication",
+				configurationName = "Tunnel Authentication",
+				configurationScope = "System Scope");
+
+			LexiconEntry.viewNoEntry(rowEntry = "/api/liferay/test");
+
+			LexiconEntry.gotoEntry(rowEntry = "/api/liferay/test2");
+
+			APIAuthentication.assertConfigInSystemSettings(
+				enabled = "false",
+				hostsAllowed = "127.0.0.1",
+				serviceAccessPolicyName = "SYSTEM_USER_PASSWORD_2",
+				urlsInclude = "/api/liferay/test2");
+		}
+	}
+
 	@priority = "4"
 	test UninstallJarOffline {
 		property test.name.skip.portal.instance = "FileInstall#UninstallJarOffline";
