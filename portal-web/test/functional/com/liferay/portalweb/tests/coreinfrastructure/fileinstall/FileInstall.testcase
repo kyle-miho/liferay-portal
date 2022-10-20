@@ -111,7 +111,7 @@ definition {
 		property osgi.module.configuration.file.names = "com.liferay.portal.security.auth.verifier.internal.tunnel.configuration.TunnelAuthVerifierConfiguration~test1.config:com.liferay.portal.security.auth.verifier.internal.tunnel.configuration.TunnelAuthVerifierConfiguration~test2.config";
 		property osgi.module.configurations = "enabled=&quot;true&quot;${line.separator}hostsAllowed=&quot;127.0.0.1,SERVER_IP&quot;${line.separator}serviceAccessPolicyName=&quot;SYSTEM_USER_PASSWORD&quot;${line.separator}urlsIncludes=&quot;/api/liferay/test&quot;:enabled=&quot;false&quot;${line.separator}hostsAllowed=&quot;127.0.0.0&quot;${line.separator}serviceAccessPolicyName=&quot;SYSTEM_USER_PASSWORD_2&quot;${line.separator}urlsIncludes=&quot;/api/liferay/test2&quot;";
 		property test.name.skip.portal.instance = "FileInstall#DeployFactoryConfigs";
-		
+
 		SystemSettings.openSystemSettingsAdmin();
 
 		SystemSettings.gotoConfiguration(
@@ -160,7 +160,7 @@ definition {
 		property osgi.module.configuration.file.names = "com.liferay.portal.security.auth.verifier.internal.tunnel.configuration.TunnelAuthVerifierConfiguration~test.config";
 		property osgi.module.configurations = "enabled=&quot;true&quot;${line.separator}hostsAllowed=&quot;127.0.0.1,SERVER_IP&quot;${line.separator}serviceAccessPolicyName=&quot;SYSTEM_USER_PASSWORD&quot;${line.separator}urlsIncludes=&quot;/api/liferay/test&quot;";
 		property test.name.skip.portal.instance = "FileInstall#ModifyFactoryConfig";
-		
+
 		task ("When a factory configuration is modified") {
 			OSGiConfig.deployOSGiConfigFile(
 				osgiConfigFileName = "com.liferay.portal.security.auth.verifier.internal.tunnel.configuration.TunnelAuthVerifierConfiguration~test.config",
@@ -188,6 +188,54 @@ definition {
 				hostsAllowed = "127.0.0.1",
 				serviceAccessPolicyName = "SYSTEM_USER_PASSWORD_2",
 				urlsInclude = "/api/liferay/test2");
+		}
+	}
+
+	@description = "Verify the default factory config created by the OSGI configurator can be overriden."
+	@priority = "3"
+	test OverrideDefaultFactoryConfig {
+		property test.name.skip.portal.instance = "FileInstall#OverrideDefaultFactoryConfig";
+
+		task ("Given the default factory config created by the OSGI configurator is deleted") {
+			SystemSettings.openSystemSettingsAdmin();
+
+			SystemSettings.gotoConfiguration(
+				configurationCategory = "API Authentication",
+				configurationName = "Tunnel Authentication",
+				configurationScope = "System Scope");
+
+			LexiconEntry.gotoEntryMenuItemNoError(
+				menuItem = "Delete",
+				rowEntry = "/api/liferay/do");
+
+			LexiconEntry.viewNoEntry(rowEntry = "/api/liferay/do");
+		}
+
+		task ("When the default factory config is recreated via an OSGI config file") {
+			OSGiConfig.deployOSGiConfigFile(
+				osgiConfigFileName = "com.liferay.portal.security.auth.verifier.internal.tunnel.configuration.TunnelAuthVerifierConfiguration~default.config",
+				osgiConfigs = "enabled=&quot;false&quot;,hostsAllowed=&quot;127.0.0.1&quot;,serviceAccessPolicyName=&quot;SYSTEM_USER_PASSWORD_2&quot;,urlsIncludes=&quot;/api/liferay/test&quot;");
+		}
+
+		task ("Then the default factory configuration should be successfully re-added") {
+			Portlet.shutdownServer();
+
+			Portlet.startServer();
+
+			SystemSettings.openSystemSettingsAdmin();
+
+			SystemSettings.gotoConfiguration(
+				configurationCategory = "API Authentication",
+				configurationName = "Tunnel Authentication",
+				configurationScope = "System Scope");
+
+			LexiconEntry.gotoEntry(rowEntry = "/api/liferay/test");
+
+			APIAuthentication.assertConfigInSystemSettings(
+				enabled = "false",
+				hostsAllowed = "127.0.0.1",
+				serviceAccessPolicyName = "SYSTEM_USER_PASSWORD_2",
+				urlsInclude = "/api/liferay/test");
 		}
 	}
 
