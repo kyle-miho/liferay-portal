@@ -193,6 +193,55 @@ definition {
 		}
 	}
 
+	@description = "Verify when an existing factory config is renamed, the old entry is removed and the new one is added."
+	@priority = "3"
+	test RenameFactoryConfig {
+		property osgi.module.configuration.file.names = "com.liferay.portal.security.auth.verifier.internal.tunnel.configuration.TunnelAuthVerifierConfiguration~original.config";
+		property osgi.module.configurations = "enabled=&quot;true&quot;${line.separator}hostsAllowed=&quot;127.0.0.1,SERVER_IP&quot;${line.separator}serviceAccessPolicyName=&quot;SYSTEM_USER_PASSWORD&quot;${line.separator}urlsIncludes=&quot;/api/liferay/to&quot;";
+		property test.name.skip.portal.instance = "FileInstall#RenameFactoryConfig";
+
+		task ("When a factory configuration is renamed") {
+			var configName = "com.liferay.portal.security.auth.verifier.internal.tunnel.configuration.TunnelAuthVerifierConfiguration";
+			var liferayHome = PropsUtil.get("liferay.home.dir.name");
+
+			var configFileOriginal = "${liferayHome}/osgi/configs/${configName}~original.config";
+			var configFileNew = "${liferayHome}/osgi/configs/${configName}~new.config";
+
+			AntCommand(
+				locator1 = "build-test.xml",
+				value1 = "rename-file -Dfile.name=${configFileOriginal} -Dfile.rename=${configFileNew}");
+		}
+
+		task ("Then the old entry is removed from the database and the new one is added") {
+			Portlet.shutdownServer();
+
+			Portlet.startServer(deleteLiferayHome = "false");
+
+			var configName = "com.liferay.portal.security.auth.verifier.internal.tunnel.configuration.TunnelAuthVerifierConfiguration";
+
+			var configTable = SQL.executeMySQLStatement(mysqlStatement = "SELECT * FROM lportal.Configuration_ WHERE configurationId LIKE '%${configName}~original%'");
+
+			if (contains("${configTable}", "${configName}~original.config")) {
+				fail("Original factory config is still present in the database");
+			}
+
+			var configTable = SQL.executeMySQLStatement(mysqlStatement = "SELECT * FROM lportal.Configuration_ WHERE configurationId LIKE '%${configName}~new%'");
+
+			if (!(contains("${configTable}", "${configName}~new.config"))) {
+				fail("New factory config is not present in the database");
+			}
+
+			SystemSettings.openSystemSettingsAdmin();
+
+			SystemSettings.gotoConfiguration(
+				configurationCategory = "API Authentication",
+				configurationName = "Tunnel Authentication",
+				configurationScope = "System Scope");
+
+			LexiconEntry.gotoEntry(rowEntry = "/api/liferay/to");
+		}
+	}
+
 	@priority = "4"
 	test UninstallJarOffline {
 		property test.name.skip.portal.instance = "FileInstall#UninstallJarOffline";
