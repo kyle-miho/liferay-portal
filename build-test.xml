@@ -5790,6 +5790,30 @@ tell application "Safari" to quit
 		</sequential>
 	</macrodef>
 
+	<macrodef name="rename-file">
+		<attribute name="file.name" />
+		<attribute name="file.rename" />
+
+		<sequential>
+			<beanshell>
+				<![CDATA[
+					File file = new File("@{file.name}");
+
+					File rename = new File("@{file.rename}");
+
+					boolean fileRenamed = file.renameTo(rename);
+
+ 					if (fileRenamed == true) {
+           	 			System.out.println("File successfully renamed");
+   					}
+ 					else {
+            			throw new Exception("File could not be renamed");
+          			}
+				]]>
+			</beanshell>
+		</sequential>
+	</macrodef>
+
 	<macrodef name="request-cmis-repository-vm">
 		<attribute name="cmis.repository.type" />
 
@@ -14001,6 +14025,10 @@ if (ppstate.equals("normal")) {
 				includes="${plugin.name}-*.war"
 			/>
 		</delete>
+	</target>
+
+	<target name="rename-file">
+		<rename-file file.name="${file.name}" file.rename="${file.rename}" />
 	</target>
 
 	<target name="rename-finder-column">
