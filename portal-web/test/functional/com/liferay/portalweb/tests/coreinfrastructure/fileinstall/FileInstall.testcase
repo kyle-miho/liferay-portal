@@ -109,7 +109,7 @@ definition {
 	@priority = "3"
 	test DeployFactoryConfigs {
 		property osgi.module.configuration.file.names = "com.liferay.portal.security.auth.verifier.internal.tunnel.configuration.TunnelAuthVerifierConfiguration~test1.config:com.liferay.portal.security.auth.verifier.internal.tunnel.configuration.TunnelAuthVerifierConfiguration~test2.config";
-		property osgi.module.configurations = "enabled=&quot;true&quot;${line.separator}hostsAllowed=&quot;127.0.0.1,SERVER_IP&quot;${line.separator}serviceAccessPolicyName=&quot;SYSTEM_USER_PASSWORD&quot;${line.separator}urlsIncludes=&quot;/api/liferay/test&quot;:enabled=&quot;false&quot;${line.separator}hostsAllowed=&quot;127.0.0.0&quot;${line.separator}serviceAccessPolicyName=&quot;SYSTEM_USER_PASSWORD_2&quot;${line.separator}urlsIncludes=&quot;/api/liferay/test2&quot;";
+		property osgi.module.configurations = "enabled=\"true\"${line.separator}hostsAllowed=\"127.0.0.1,SERVER_IP\"${line.separator}serviceAccessPolicyName=\"SYSTEM_USER_PASSWORD\"${line.separator}urlsIncludes=\"/api/liferay/test\":enabled=\"false\"${line.separator}hostsAllowed=\"127.0.0.0\"${line.separator}serviceAccessPolicyName=\"SYSTEM_USER_PASSWORD_2\"${line.separator}urlsIncludes=\"/api/liferay/test2\"";
 		property test.name.skip.portal.instance = "FileInstall#DeployFactoryConfigs";
 
 		SystemSettings.openSystemSettingsAdmin();
@@ -158,13 +158,13 @@ definition {
 	@priority = "3"
 	test ModifyFactoryConfig {
 		property osgi.module.configuration.file.names = "com.liferay.portal.security.auth.verifier.internal.tunnel.configuration.TunnelAuthVerifierConfiguration~test.config";
-		property osgi.module.configurations = "enabled=&quot;true&quot;${line.separator}hostsAllowed=&quot;127.0.0.1,SERVER_IP&quot;${line.separator}serviceAccessPolicyName=&quot;SYSTEM_USER_PASSWORD&quot;${line.separator}urlsIncludes=&quot;/api/liferay/original&quot;";
+		property osgi.module.configurations = "enabled=\"true\"${line.separator}hostsAllowed=\"127.0.0.1,SERVER_IP\"${line.separator}serviceAccessPolicyName=\"SYSTEM_USER_PASSWORD\"${line.separator}urlsIncludes=\"/api/liferay/original\"";
 		property test.name.skip.portal.instance = "FileInstall#ModifyFactoryConfig";
 
 		task ("When a factory configuration is modified") {
 			OSGiConfig.deployOSGiConfigFile(
 				osgiConfigFileName = "com.liferay.portal.security.auth.verifier.internal.tunnel.configuration.TunnelAuthVerifierConfiguration~test.config",
-				osgiConfigs = "enabled=&quot;false&quot;,hostsAllowed=&quot;127.0.0.1&quot;,serviceAccessPolicyName=&quot;SYSTEM_USER_PASSWORD_2&quot;,urlsIncludes=&quot;/api/liferay/new&quot;");
+				osgiConfigs = "enabled=\"false\",hostsAllowed=\"127.0.0.1\",serviceAccessPolicyName=\"SYSTEM_USER_PASSWORD_2\",urlsIncludes=\"/api/liferay/new\"");
 		}
 
 		task ("Then the factory configuration should be successfully updated") {
@@ -197,7 +197,7 @@ definition {
 	@priority = "3"
 	test OverrideDefaultFactoryConfig {
 		property osgi.module.configuration.file.names = "com.liferay.portal.security.auth.verifier.internal.tunnel.configuration.TunnelAuthVerifierConfiguration~default.config";
-		property osgi.module.configurations = "enabled=&quot;false&quot;${line.separator}hostsAllowed=&quot;127.0.0.1&quot;${line.separator}serviceAccessPolicyName=&quot;SYSTEM_USER_PASSWORD_2&quot;${line.separator}urlsIncludes=&quot;/api/liferay/new&quot;";
+		property osgi.module.configurations = "enabled=\"false\"${line.separator}hostsAllowed=\"127.0.0.1\"${line.separator}serviceAccessPolicyName=\"SYSTEM_USER_PASSWORD_2\"${line.separator}urlsIncludes=\"/api/liferay/new\"";
 		property test.name.skip.portal.instance = "FileInstall#OverrideDefaultFactoryConfig";
 
 		SystemSettings.openSystemSettingsAdmin();
@@ -245,7 +245,7 @@ definition {
 		task ("When the default factory config is recreated via an OSGI config file") {
 			OSGiConfig.deployOSGiConfigFile(
 				osgiConfigFileName = "com.liferay.portal.security.auth.verifier.internal.tunnel.configuration.TunnelAuthVerifierConfiguration~default.config",
-				osgiConfigs = "enabled=&quot;true&quot;,hostsAllowed=&quot;127.0.0.1&quot;,serviceAccessPolicyName=&quot;SYSTEM_USER_PASSWORD&quot;,urlsIncludes=&quot;/api/liferay/do&quot;");
+				osgiConfigs = "enabled=\"true\",hostsAllowed=\"127.0.0.1\",serviceAccessPolicyName=\"SYSTEM_USER_PASSWORD\",urlsIncludes=\"/api/liferay/do\"");
 		}
 
 		task ("Then the default factory configuration should be successfully re-added") {
@@ -274,7 +274,7 @@ definition {
 	@priority = "3"
 	test RenameFactoryConfig {
 		property osgi.module.configuration.file.names = "com.liferay.portal.security.auth.verifier.internal.tunnel.configuration.TunnelAuthVerifierConfiguration~original.config";
-		property osgi.module.configurations = "enabled=&quot;true&quot;${line.separator}hostsAllowed=&quot;127.0.0.1,SERVER_IP&quot;${line.separator}serviceAccessPolicyName=&quot;SYSTEM_USER_PASSWORD&quot;${line.separator}urlsIncludes=&quot;/api/liferay/to&quot;";
+		property osgi.module.configurations = "enabled=\"true\"${line.separator}hostsAllowed=\"127.0.0.1,SERVER_IP\"${line.separator}serviceAccessPolicyName=\"SYSTEM_USER_PASSWORD\"${line.separator}urlsIncludes=\"/api/liferay/to\"";
 		property test.name.skip.portal.instance = "FileInstall#RenameFactoryConfig";
 
 		task ("When a factory configuration is renamed") {
