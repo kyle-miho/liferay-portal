@@ -1,0 +1,34 @@
+@component-name = "portal-util-misc"
+definition {
+
+	property portal.release = "true";
+	property portal.upstream = "true";
+	property testray.main.component.name = "Ext";
+
+	setUp {
+		TestCase.setUpPortalInstance();
+
+		User.firstLoginPG();
+	}
+
+	tearDown {
+		var testPortalInstance = PropsUtil.get("test.portal.instance");
+
+		if ("${testPortalInstance}" == "true") {
+			PortalInstances.tearDownCP();
+		}
+	}
+
+	@description = "Verify portal-ext properties can be set with environment variables after setting company-id-properties=true via system-ext.properties"
+	@priority = "3"
+	test ConfigurePortalExtPropertyViaSystemExt {
+		property custom.system.properties = "company-id-properties=true";
+		property test.environment.variables = "LIFERAY_PROPS_BY_COMPANY_20097=feature.flag.COMMERCE-8087=true";
+		property test.name.skip.portal.instance = "EnvironmentVariables#ConfigurePortalExtPropertyViaSystemExt";
+
+		ImportExport.openImportExportAdmin();
+
+		ImportExport.gotoImport();
+	}
+
+}
