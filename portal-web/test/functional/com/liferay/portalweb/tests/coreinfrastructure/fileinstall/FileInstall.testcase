@@ -303,6 +303,44 @@ definition {
 		}
 	}
 
+	@description = "Verify OSGI configs files added to osgi/marketplace are not read."
+	@priority = "3"
+	test OSGIConfigsInOSGIMarketplaceNotRead {
+		property test.name.skip.portal.instance = "FileInstall#OSGIConfigsInOSGIMarketplaceNotRead";
+
+		task ("When an OSGI config file is added to osgi/marketplace") {
+			var config = "checkInterval=I\"44\"";
+
+			var config = '''${config}''';
+			var configName = "com.liferay.commerce.product.definitions.web.internal.configuration.CPInstanceConfiguration";
+			var liferayHome = PropsUtil.get("liferay.home.dir.name");
+
+			FileUtil.write("${liferayHome}/osgi/marketplace/${configName}.config", "${config}");
+		}
+
+		task ("Then the config should not be read") {
+			Portlet.shutdownServer();
+
+			Portlet.startServer(deleteLiferayHome = "false");
+
+			SQL.assertTextInMySQLStatementResult(
+				mysqlStatement = "SELECT COUNT(*) FROM lportal.Configuration_ WHERE configurationId LIKE '%${configName}%'",
+				text = "0");
+
+			SystemSettings.openSystemSettingsAdmin();
+
+			SystemSettings.gotoConfiguration(
+				configurationCategory = "Catalog",
+				configurationName = "SKUs",
+				configurationScope = "System Scope");
+
+			AssertTextNotEquals(
+				key_text = "Check Interval",
+				locator1 = "TextInput#ANY",
+				value1 = "44");
+		}
+	}
+
 	@description = "Verify OSGI configs files added to osgi/modules are not read."
 	@priority = "3"
 	test OSGIConfigsInOSGIModulesNotRead {
