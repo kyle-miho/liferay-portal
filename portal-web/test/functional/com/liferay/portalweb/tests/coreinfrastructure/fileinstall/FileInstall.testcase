@@ -266,6 +266,7 @@ definition {
 	}
 
 	@description = "Verify OSGI configs files added to osgi/client-extensions are not read."
+	@ignore = "true"
 	@priority = "3"
 	test OSGIConfigsInOSGIClientExtensionsNotRead {
 		property test.name.skip.portal.instance = "FileInstall#OSGIConfigsInOSGIClientExtensionsNotRead";
@@ -304,6 +305,7 @@ definition {
 	}
 
 	@description = "Verify OSGI configs files added to osgi/marketplace are not read."
+	@ignore = "true"
 	@priority = "3"
 	test OSGIConfigsInOSGIMarketplaceNotRead {
 		property test.name.skip.portal.instance = "FileInstall#OSGIConfigsInOSGIMarketplaceNotRead";
@@ -342,6 +344,7 @@ definition {
 	}
 
 	@description = "Verify OSGI configs files added to osgi/modules are not read."
+	@ignore = "true"
 	@priority = "3"
 	test OSGIConfigsInOSGIModulesNotRead {
 		property test.name.skip.portal.instance = "FileInstall#OSGIConfigsInOSGIModulesNotRead";
@@ -380,6 +383,7 @@ definition {
 	}
 
 	@description = "Verify OSGI configs files added to osgi/portal are not read."
+	@ignore = "true"
 	@priority = "3"
 	test OSGIConfigsInOSGIPortalNotRead {
 		property test.name.skip.portal.instance = "FileInstall#OSGIConfigsInOSGIPortalNotRead";
@@ -418,6 +422,7 @@ definition {
 	}
 
 	@description = "Verify OSGI configs files added to osgi/war are not read."
+	@ignore = "true"
 	@priority = "3"
 	test OSGIConfigsInOSGIWarNotRead {
 		property test.name.skip.portal.instance = "FileInstall#OSGIConfigsInOSGIWarNotRead";
