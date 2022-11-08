@@ -19,6 +19,17 @@ definition {
 		}
 	}
 
+	@description = "Verify portal-ext properties can be set with environment variables after setting company-id-properties=true via jvm argument."
+	@priority = "3"
+	test ConfigurePortalExtPropertyViaJVM {
+		property test.environment.variables = "LIFERAY_PROPS_BY_COMPANY_20097=feature.flag.COMMERCE-8087=true${line.separator}CATALINA_OPTS=\"$CATALINA_OPTS -Dcompany-id-properties=true\"";
+		property test.name.skip.portal.instance = "EnvironmentVariables#ConfigurePortalExtPropertyViaJVM";
+
+		ImportExport.openImportExportAdmin();
+
+		ImportExport.gotoImport();
+	}
+
 	@description = "Verify portal-ext properties can be set with environment variables after setting company-id-properties=true via system-ext.properties"
 	@priority = "3"
 	test ConfigurePortalExtPropertyViaSystemExt {
