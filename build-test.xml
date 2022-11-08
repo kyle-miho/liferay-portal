@@ -4983,6 +4983,30 @@ tell application "Safari" to quit
 		</sequential>
 	</macrodef>
 
+	<macrodef name="prepare-test-environment-variables">
+		<attribute name="test.environment.variables" />
+
+		<sequential>
+			<for delimiter="${line.separator}" list="@{test.environment.variables}" param="variable">
+				<sequential>
+					<if>
+						<not>
+							<resourcecontains
+								resource="${app.server.tomcat.dir}/bin/setenv.sh"
+								substring="@{variable}"
+							/>
+						</not>
+						<then>
+							<echo append="true" file="${app.server.tomcat.bin.dir}/setenv.sh">
+
+export @{variable}</echo>
+						</then>
+					</if>
+				</sequential>
+			</for>
+		</sequential>
+	</macrodef>
+
 	<macrodef name="print-file">
 		<attribute default="-1" name="file.line.count" />
 		<attribute name="file.name" />
@@ -12885,6 +12909,17 @@ ANT_OPTS=${env.ANT_OPTS}</echo>
 		<lstopwatch action="total" name="prepare.bundles.${app.server.name}" />
 	</target>
 
+	<target name="prepare-test-environment-variables">
+		<get-testcase-property property.name="test.environment.variables" />
+
+		<if>
+			<isset property="test.environment.variables" />
+			<then>
+				<prepare-test-environment-variables test.environment.variables="${test.environment.variables}" />
+			</then>
+		</if>
+	</target>
+
 	<target name="prepare-upgrade-original-bundle-test-environment">
 		<property location="${app.server.parent.dir}/../" name="test.release.bundle.parent.dir" />
 
@@ -14255,6 +14290,8 @@ mail.send.blacklist=</echo>
 				<antcall target="prepare-portlet-ext-properties" />
 
 				<antcall target="prepare-system-ext-properties" />
+
+				<antcall target="prepare-test-environment-variables" />
 			</else>
 		</if>
 
