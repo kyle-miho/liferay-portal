@@ -163,6 +163,35 @@ definition {
 		}
 	}
 
+	@description = "Verify OSGI configs files added to osgi/client-extensions are not read."
+	@ignore = "true"
+	@priority = "3"
+	test OSGIConfigsInOSGIClientExtensionsNotRead {
+		property test.name.skip.portal.instance = "OSGIConfiguration#OSGIConfigsInOSGIClientExtensionsNotRead";
+
+		// TODO Un-ignore test when LPS-167572 is fixed
+
+		task ("When an OSGI config file is added to osgi/osgi/client-extensions") {
+			var config = "checkInterval=I\"44\"";
+
+			var config = '''${config}''';
+			var configName = "com.liferay.commerce.product.definitions.web.internal.configuration.CPInstanceConfiguration";
+			var liferayHome = PropsUtil.get("liferay.home.dir.name");
+
+			FileUtil.write("${liferayHome}/osgi/client-extensions/${configName}.config", "${config}");
+		}
+
+		task ("Then the config should not be added to the database") {
+			Portlet.shutdownServer();
+
+			Portlet.startServer(deleteLiferayHome = "false");
+
+			SQL.assertTextInMySQLStatementResult(
+				mysqlStatement = "SELECT COUNT(*) FROM lportal.Configuration_ WHERE configurationId LIKE '%${configName}%'",
+				text = "0");
+		}
+	}
+
 	@description = "Verify OSGI configs files added to osgi/modules are not read."
 	@ignore = "true"
 	@priority = "3"
