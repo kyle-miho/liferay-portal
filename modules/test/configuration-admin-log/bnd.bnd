@@ -1,0 +1,3 @@
+Bundle-Name: Liferay Configuration Admin Log
+Bundle-SymbolicName: com.liferay.configuration.admin.log
+Bundle-Version: 1.0.0
