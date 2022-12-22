@@ -1825,7 +1825,7 @@ public class CompanyLocalServiceImpl extends CompanyLocalServiceBaseImpl {
 
 	}
 
-	private User _addDefaultUser(Company company) throws PortalException {
+	private User _addDefaultUser(Company company) {
 		Date date = new Date();
 
 		User defaultUser = _userPersistence.create(
@@ -1863,11 +1863,7 @@ public class CompanyLocalServiceImpl extends CompanyLocalServiceBaseImpl {
 		// Invoke updateImpl so that we do not trigger model listeners. See
 		// LPS-108239.
 
-		_userPersistence.updateImpl(defaultUser);
-
-		// Force update _defaultUsers map
-
-		defaultUser = _userLocalService.getDefaultUser(company.getCompanyId());
+		defaultUser = _userPersistence.updateImpl(defaultUser);
 
 		// Contact
 
