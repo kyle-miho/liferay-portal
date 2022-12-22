@@ -358,6 +358,7 @@ definition {
 	@description = "Sync Liferay Data Source Contacts"
 	@priority = "5"
 	test CanSyncAllContactsFromDXPToAC {
+		property portal.acceptance = "kyle";
 		property analytics.cloud.upstream = "false";
 		property portal.release = "true";
 
