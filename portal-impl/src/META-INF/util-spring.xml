@@ -11,6 +11,7 @@
 	<bean class="com.liferay.expando.kernel.service.permission.ExpandoColumnPermissionUtil" id="com.liferay.expando.kernel.service.permission.ExpandoColumnPermissionUtil">
 		<property name="expandoColumnPermission" ref="com.liferay.expando.kernel.service.permission.ExpandoColumnPermission" />
 	</bean>
+	<bean class="com.liferay.mail.util.DummyHook" id="com.liferay.mail.util.DummyHook" />
 	<bean class="com.liferay.portal.bean.BeanPropertiesImpl" id="com.liferay.portal.bean.BeanPropertiesImpl" />
 	<bean class="com.liferay.portal.dao.jdbc.CurrentConnectionImpl" id="com.liferay.portal.dao.jdbc.CurrentConnectionImpl" />
 	<bean class="com.liferay.portal.format.IdenticalPhoneNumberFormatImpl" id="com.liferay.portal.format.IdenticalPhoneNumberFormatImpl" />
