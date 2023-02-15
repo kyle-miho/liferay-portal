@@ -14,21 +14,26 @@
 
 package com.liferay.configuration.admin.log;
 
+import com.liferay.petra.string.StringBundler;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.MapUtil;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.cm.Configuration;
+import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.cm.ConfigurationEvent;
 import org.osgi.service.cm.ManagedService;
 import org.osgi.service.cm.SynchronousConfigurationListener;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+
+import java.io.IOException;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Rafael Praxedes
@@ -61,9 +66,19 @@ public class ConfigurationAdminLogSynchronousConfigurationListener
 					" has been deleted");
 		}
 		else if (type == ConfigurationEvent.CM_UPDATED) {
-			_log.info(
-				"Configuration with pid " + configurationEvent.getPid() +
-					" has been updated");
+			try {
+				Configuration configuration =
+					_configurationAdmin.getConfiguration(
+						configurationEvent.getPid(), StringPool.QUESTION);
+
+				_log.info(
+					StringBundler.concat(
+						"Configuration with pid ", configurationEvent.getPid(),
+						" has been updated with properties ",
+						configuration.getProperties()));
+			}
+			catch (IOException ioException) {
+			}
 		}
 
 		ServiceRegistration<ManagedService> serviceRegistration =
@@ -76,6 +91,10 @@ public class ConfigurationAdminLogSynchronousConfigurationListener
 		ConfigurationAdminLogSynchronousConfigurationListener.class);
 
 	private BundleContext _bundleContext;
+
+	@Reference
+	private ConfigurationAdmin _configurationAdmin;
+
 	private final Map<String, ServiceRegistration<ManagedService>>
 		_serviceRegistrationMap = new ConcurrentHashMap<>();
 
