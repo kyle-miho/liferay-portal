@@ -16444,6 +16444,15 @@ diff -y -B -W250 upgraded.sql fresh.sql | expand | grep -E -C40 '^.{123} [|>]( |
 	<target name="wait-for-server-shutdown">
 		<sleep seconds="10" />
 
+		<if>
+			<not>
+				<isset property="app.server.port.number" />
+			</not>
+			<then>
+				<var name="app.server.port.number" value="8080" />
+			</then>
+		</if>
+
 		<waitfor checkevery="5" checkeveryunit="second" maxwait="5" maxwaitunit="minute" timeoutproperty="app.server.shutdown.timeout">
 			<not>
 				<http url="http://localhost:${app.server.port.number}/web/guest" />
