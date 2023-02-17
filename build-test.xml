@@ -16077,6 +16077,8 @@ database.type=sqlserver
 		<stop-app-server
 			app.server.bundle.index="${app.server.bundle.index}"
 		/>
+
+		<antcall target="wait-for-server-shutdown" />
 	</target>
 
 	<target name="stop-docker-browser">
