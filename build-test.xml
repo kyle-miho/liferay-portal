@@ -15503,6 +15503,8 @@ mail.send.blacklist=</echo>
 			app.server.bundle.index="${app.server.bundle.index}"
 			testable.portal.started.marker.file="${testable.portal.started.marker.file}"
 		/>
+
+		<antcall target="wait-for-plugins-deployment" />
 	</target>
 
 	<target name="start-app-server-preserve-liferay-home">
