@@ -1,0 +1,53 @@
+@component-name = "core-infrastructure"
+definition {
+
+	property ci.retries.disabled = "true";
+	property portal.release = "true";
+	property portal.upstream = "true";
+	property testray.main.component.name = "Deployment";
+
+	setUp {
+		User.firstLoginPG();
+	}
+
+	@description = "LPS-157580. Verify users can deploy to custom module framework paths."
+	@priority = 4
+	test CustomPathDeploy {
+		property test.name.skip.portal.instance = "ModuleFrameworkPath#CustomPathDeploy";
+
+		task ("Given a custom path is set for module.framework.configs.dir") {
+			Portlet.shutdownServer();
+
+			var liferayHome = PropsUtil.get("liferay.home.dir.name");
+
+			var newProperty = "module.framework.configs.dir=${liferayHome}/test/configs";
+
+			AntCommands.runCommand("build-test.xml", "portal-ext-properties-update -Dadd.new.properties=true -Dupdate.properties=${newProperty}");
+
+			Portlet.startServer(deleteLiferayHome = "false");
+		}
+
+		task ("When a config is deployed to that path") {
+			var configName = "com.liferay.commerce.price.list.configuration.CommercePriceEntryConfiguration.config";
+			var osgiConfig = "checkInterval=\"25\"";
+
+			FileUtil.write("${liferayHome}/test/configs/${configName}", ${osgiConfig});
+
+			OSGiConfig.waitForOSGiConfig();
+		}
+
+		task ("Then the config is deployed successfully") {
+			SystemSettings.openSystemSettingsAdmin();
+
+			SystemSettings.gotoConfiguration(
+				configurationCategory = "Pricing",
+				configurationName = "Price Entries",
+				configurationScope = "System Scope");
+
+			SystemSettings.viewInputText(
+				fieldLabel = "Check Interval",
+				fieldValue = 25);
+		}
+	}
+
+}
