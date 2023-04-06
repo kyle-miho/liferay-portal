@@ -32,4 +32,34 @@ definition {
 			portlet = "Web Content");
 	}
 
+	@description = "This is a use case for LPS-167717. Verify triggering one scheduled job does not trigger all jobs."
+	@priority = 4
+	test TriggeringOneJobDoesNotTriggerAllJobs {
+		property test.assert.warning.exceptions = "true";
+
+		task ("Given several job triggers") {
+			FileInstall.deployFileOnServer(jarFile = "test-scheduler-job.war");
+
+			WaitForConsoleTextPresent(value1 = "STARTED test-scheduler-job");
+		}
+
+		task ("When the user triggers one of the jobs") {
+			JobScheduler.openJobSchedulerAdmin();
+
+			Navigator.gotoNavTab(navTab = "Scheduled Jobs");
+
+			Pagination.changePagination(itemsPerPage = 60);
+
+			Click(
+				key_name = "Test1",
+				locator1 = "JobScheduler#RUN_NOW_BUTTON");
+		}
+
+		task ("Then only that job is triggered") {
+			WaitForConsoleTextPresent(value1 = "Trigger 1");
+
+			AssertConsoleTextNotPresent(value1 = "Trigger 2");
+		}
+	}
+
 }
