@@ -33,6 +33,12 @@ definition {
 				password = "test",
 				userEmailAddress = "test@liferay.com");
 
+			// Pausing 10 seconds due to LRQA-75909
+
+			Pause(locator1 = 10000);
+
+			Refresh();
+
 			Alert.viewErrorMessage(errorMessage = "The maximum number of 2 nodes licensed for this cluster has been exceeded. Please shut down excess nodes as soon as possible. An additional 2 nodes are temporarily permitted during the grace period");
 
 			Alert.viewErrorMessage(errorMessage = "This current node is within the licensed node count and will not be automatically deactivated nor shut down after the grace period expires.");
@@ -42,6 +48,12 @@ definition {
 			nodePort = 10080,
 			password = "test",
 			userEmailAddress = "test@liferay.com");
+
+		// Pausing 30 seconds due to LRQA-75909
+
+		Pause(locator1 = 30000);
+
+		Refresh();
 
 		Alert.viewErrorMessage(errorMessage = "This current node is within the temporarily permitted node count and will be automatically deactivated after the grace period expires");
 
@@ -306,6 +318,12 @@ definition {
 
 			Page.assertNodePortPG(nodePort = "${nodeNumber}080");
 
+			// Pausing 10 seconds due to LRQA-75909
+
+			Pause(locator1 = 10000);
+
+			Refresh();
+
 			Alert.viewErrorMessage(errorMessage = "licensed for this cluster has been exceeded");
 
 			Alert.viewErrorMessage(errorMessage = "grace period");
@@ -315,10 +333,10 @@ definition {
 
 		Navigator.openSpecificURL(url = "http://localhost:10080/c/portal/logout");
 
-		User.loginPG(
-			nodePort = 10080,
+		User.firstLoginUI(
 			password = "test",
-			userEmailAddress = "test@liferay.com");
+			specificURL = "http://localhost:10080",
+			userEmailAddress = "userea@liferay.com");
 
 		AssertElementNotPresent(locator1 = "Message#ERROR");
 
@@ -359,6 +377,12 @@ definition {
 				userEmailAddress = "test@liferay.com");
 
 			Page.assertNodePortPG(nodePort = "${nodeNumber}080");
+
+			// Pausing 10 seconds due to LRQA-75909
+
+			Pause(locator1 = 10000);
+
+			Refresh();
 
 			Alert.viewErrorMessage(errorMessage = "licensed for this cluster has been exceeded");
 
