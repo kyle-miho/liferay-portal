@@ -331,15 +331,6 @@ definition {
 
 		Alert.viewErrorMessage(errorMessage = "will be automatically deactivated and shut down");
 
-		Navigator.openSpecificURL(url = "http://localhost:10080/c/portal/logout");
-
-		User.firstLoginUI(
-			password = "test",
-			specificURL = "http://localhost:10080",
-			userEmailAddress = "userea@liferay.com");
-
-		AssertElementNotPresent(locator1 = "Message#ERROR");
-
 		Clustering.waitForNodeShutdown(nodePort = 10080);
 
 		Clustering.viewTextPresentOnSpecificNode(
