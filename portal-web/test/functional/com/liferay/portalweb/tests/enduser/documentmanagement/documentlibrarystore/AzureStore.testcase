@@ -31,8 +31,6 @@ definition {
 	@description = "This is a use case for LPS-129271."
 	@priority = 4
 	test AssertNoErrorMessageAfterExportAndImportSiteLAR {
-		property test.name.skip.portal.instance = "AzureStore#AssertNoErrorMessageAfterExportAndImportSiteLAR";
-
 		var containerId = PropsUtil.get("azure.container.id");
 		var companyId = JSONCompany.getCompanyId();
 		var groupId = JSONGroupAPI._getGroupIdByName(
@@ -81,7 +79,6 @@ definition {
 	@priority = 3
 	test AzureStoreDataMigration {
 		property store.migration.test = "true";
-		property test.name.skip.portal.instance = "AzureStore#AzureStoreDataMigration";
 
 		task ("Given a document is added to the default store") {
 			var containerId = PropsUtil.get("azure.container.id");
@@ -158,8 +155,6 @@ definition {
 
 	@priority = 5
 	test AzureStoreSmoke {
-		property test.name.skip.portal.instance = "AzureStore#AzureStoreSmoke";
-
 		var containerId = PropsUtil.get("azure.container.id");
 		var companyId = JSONCompany.getCompanyId();
 		var groupId = JSONGroupAPI._getGroupIdByName(
