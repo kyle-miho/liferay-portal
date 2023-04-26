@@ -66,8 +66,6 @@ definition {
 
 	@priority = 4
 	test CanChangeDefaultCompanyLocale {
-		property test.name.skip.portal.instance = "Locale#CanChangeDefaultCompanyLocale";
-
 		User.firstLoginPG();
 
 		ContentPages.viewFragmentText(
@@ -669,8 +667,6 @@ definition {
 
 	@priority = 4
 	test ViewDefaultAvailableTimeZonesForInstancesAndUsers {
-		property test.name.skip.portal.instance = "Locale#ViewDefaultAvailableTimeZonesForInstancesAndUsers";
-
 		User.firstLoginPG();
 
 		PortalSettings.gotoConfiguration(
@@ -968,8 +964,6 @@ definition {
 	@description = "This is a use case for LPS-157252."
 	@priority = 3
 	test VirtualHostLanguageCanBeChangedWithUserDefaultLanguage {
-		property test.name.skip.portal.instance = "Locale#VirtualHostLanguageCanBeChangedWithUserDefaultLanguage";
-
 		User.firstLoginPG();
 
 		JSONLayout.addPublicLayout(
