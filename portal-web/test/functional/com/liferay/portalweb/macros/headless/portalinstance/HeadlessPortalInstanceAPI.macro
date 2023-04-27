@@ -111,13 +111,13 @@ definition {
 
 		var portalInstanceIds = JSONUtil.getWithJSONPath(${portalInstanceJson}, "$.items..portalInstanceId");
 
-		for (var portalInstanceId : list ${portalInstanceIds}) {
-			if (${portalInstanceId} != "liferay.com") {
-				HeadlessPortalInstanceAPI.deletePortalInstance(
-					authenticationMethod = ${authenticationMethod},
-					portalInstanceId = ${portalInstanceId});
-			}
-		}
+		// for (var portalInstanceId : list ${portalInstanceIds}) {
+		// 	if (${portalInstanceId} != "liferay.com") {
+		// 		HeadlessPortalInstanceAPI.deletePortalInstance(
+		// 			authenticationMethod = ${authenticationMethod},
+		// 			portalInstanceId = ${portalInstanceId});
+		// 	}
+		// }
 	}
 
 	@summary = "Deletes a Portal Instance with portalInstanceId resembling webId"
