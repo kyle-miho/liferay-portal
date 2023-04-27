@@ -65,11 +65,13 @@ definition {
 
 		var portalURL = StringUtil.extractFirst(${portalURL}, ":8");
 
+		var randomInstanceId = StringUtil.randomString(16);
+
 		HeadlessPortalInstanceAPI.addPortalInstance(
 			authenticationMethod = ${authenticationMethod},
 			domain = "liferay.com",
-			portalInstanceId = ${portalURL},
-			virtualHost = ${portalURL});
+			portalInstanceId = ${randomInstanceId},
+			virtualHost = ${randomInstanceId});
 	}
 
 	macro signInSpecificURL {

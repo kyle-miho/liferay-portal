@@ -207,7 +207,7 @@ definition {
 	}
 
 	macro setUpPortalInstance {
-		var virtualInstanceCleanUp = PropsUtil.get("virtual.instance.cleanup")
+		var virtualInstanceCleanUp = PropsUtil.get("virtual.instance.cleanup");
 		var testNameSkipPortalInstance = PropsUtil.get("test.name.skip.portal.instance");
 		var testPortalInstance = PropsUtil.get("test.portal.instance");
 
@@ -221,7 +221,7 @@ definition {
 			if (${virtualInstanceCleanUp} != "false") {
 				HeadlessPortalInstanceAPI.cleanAllPortalInstances(authenticationMethod = ${authenticationMethod});
 			}
-			
+
 			SignIn.signInPortalInstanceSetUp();
 		}
 	}
