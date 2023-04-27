@@ -207,6 +207,7 @@ definition {
 	}
 
 	macro setUpPortalInstance {
+		var virtualInstanceCleanUp = PropsUtil.get("virtual.instance.cleanup")
 		var testNameSkipPortalInstance = PropsUtil.get("test.name.skip.portal.instance");
 		var testPortalInstance = PropsUtil.get("test.portal.instance");
 
@@ -216,12 +217,12 @@ definition {
 
 		var testLiferayVirtualInstance = PropsUtil.get("test.liferay.virtual.instance");
 
-		if (${isolatedInstance} != "true" || ${testLiferayVirtualInstance} == "true") {
-			HeadlessPortalInstanceAPI.cleanAllPortalInstances(authenticationMethod = ${authenticationMethod});
-
-			if (${testPortalInstance} == "true") {
-				SignIn.signInPortalInstanceSetUp();
+		if (${isolatedInstance} != "true" || ${testLiferayVirtualInstance} == "true" || ${testPortalInstance} == "true") {
+			if (${virtualInstanceCleanUp} != "false") {
+				HeadlessPortalInstanceAPI.cleanAllPortalInstances(authenticationMethod = ${authenticationMethod});
 			}
+			
+			SignIn.signInPortalInstanceSetUp();
 		}
 	}
 
