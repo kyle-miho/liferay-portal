@@ -210,17 +210,13 @@ definition {
 		var testNameSkipPortalInstance = PropsUtil.get("test.name.skip.portal.instance");
 		var testPortalInstance = PropsUtil.get("test.portal.instance");
 
-		if (!(IsTestName(locator1 = "", value1 = ${testNameSkipPortalInstance}))) {
-			HeadlessPortalInstanceAPI.cleanAllPortalInstances(authenticationMethod = ${authenticationMethod});
-
-			if (${testPortalInstance} == "true") {
-				SignIn.signInPortalInstanceSetUp();
-			}
+		if (IsTestName(locator1 = "", value1 = ${testNameSkipPortalInstance})) {
+			var isolatedInstance = "true";
 		}
 
 		var testLiferayVirtualInstance = PropsUtil.get("test.liferay.virtual.instance");
 
-		if (${testLiferayVirtualInstance} == "true") {
+		if (${isolatedInstance} != "true" || ${testLiferayVirtualInstance} == "true") {
 			HeadlessPortalInstanceAPI.cleanAllPortalInstances(authenticationMethod = ${authenticationMethod});
 
 			if (${testPortalInstance} == "true") {
