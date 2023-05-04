@@ -19,10 +19,13 @@ definition {
 			PortalInstances.tearDownCP();
 		}
 		else {
-			JSONUser.tearDownNonAdminUsers();
-
 			PortalInstances.tearDownCP();
 		}
+	}
+
+	@priority = 4
+	test Kyle {
+		echo("##### TEST #####");
 	}
 
 	@priority = 5

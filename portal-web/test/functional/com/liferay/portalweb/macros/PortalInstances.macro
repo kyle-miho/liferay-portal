@@ -170,7 +170,18 @@ definition {
 
 	@summary = "Clean up Portal Instances as part of standard teardown"
 	macro tearDownCP {
-		JSONUser.tearDownNonAdminUsers(authenticationMethod = ${authenticationMethod});
+		var testPortalInstance = PropsUtil.get("test.portal.instance");
+
+		echo("testPortalInstance=${testPortalInstance}");
+
+		if (${testPortalInstance} == "true") {
+			var portalInstanceId = PropsUtil.get("portal.url");
+
+			var portalInstanceId = StringUtil.replace(${portalInstanceId}, ":8080", "");
+
+			HeadlessPortalInstanceAPI.deletePortalInstance(portalInstanceId = ${portalInstanceId});
+		}
+		
 
 		//HeadlessPortalInstanceAPI.cleanAllPortalInstances(authenticationMethod = ${authenticationMethod});
 	}

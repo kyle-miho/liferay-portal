@@ -216,11 +216,15 @@ definition {
 		}
 
 		var testLiferayVirtualInstance = PropsUtil.get("test.liferay.virtual.instance");
+		echo("#########TEST1#####");
 
 		if (${isolatedInstance} != "true" || ${testLiferayVirtualInstance} == "true" || ${testPortalInstance} == "true") {
-			if (${virtualInstanceCleanUp} != "false") {
+			if (${virtualInstanceCleanUp} == "true") {
+				echo("#########FAIL1-cleanup#####");
 				HeadlessPortalInstanceAPI.cleanAllPortalInstances(authenticationMethod = ${authenticationMethod});
 			}
+
+			echo("#########PASS1#####");
 
 			SignIn.signInPortalInstanceSetUp();
 		}

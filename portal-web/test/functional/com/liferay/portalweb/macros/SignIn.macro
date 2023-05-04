@@ -61,17 +61,15 @@ definition {
 	macro signInPortalInstanceSetUp {
 		var portalURL = PropsUtil.get("portal.url");
 
-		var portalURL = StringUtil.replace(${portalURL}, "http://", "");
+		var portalInstanceId = StringUtil.replace(${portalURL}, ":8080", "");
 
-		var portalURL = StringUtil.extractFirst(${portalURL}, ":8");
-
-		var randomInstanceId = StringUtil.randomString(16);
+		echo("Creating Virtual Instance with name ${portalURL}");
 
 		HeadlessPortalInstanceAPI.addPortalInstance(
 			authenticationMethod = ${authenticationMethod},
 			domain = "liferay.com",
-			portalInstanceId = ${randomInstanceId},
-			virtualHost = ${randomInstanceId});
+			portalInstanceId = ${portalInstanceId},
+			virtualHost = ${portalInstanceId});
 	}
 
 	macro signInSpecificURL {
