@@ -142,7 +142,7 @@ definition {
 
 	@summary = "returns ${userEmail}:${password} to be used in JSON calls ONLY"
 	macro formatJSONUser {
-		var defaultUserEmail = JSONUtil2.getDefaultUserEmail();
+		var defaultUserEmail = JSONUtil2.getDefaultUserEmail(specificURL = ${specificURL});
 		var defaultUserPassword = JSONUtil2.getDefaultUserPassword();
 
 		return "${defaultUserEmail}:${defaultUserPassword}";
@@ -150,10 +150,17 @@ definition {
 
 	@summary = "This will grab the default user email to be used in JSON or other omniadmin actions ONLY"
 	macro getDefaultUserEmail {
-		var customDefaultUserEmail = PropsUtil.get("custom.default.user.email");
+		if (isSet(specificURL)) {
+			var portalInstanceName = JSONCompany.parsePortalInstanceURL(portalURL = ${specificURL});
 
-		if (!(isSet(customDefaultUserEmail))) {
-			var customDefaultUserEmail = "test@liferay.com";
+			var customDefaultUserEmail = "test@${portalInstanceName}";
+		}
+		else {
+			var customDefaultUserEmail = PropsUtil.get("custom.default.user.email");
+
+			if (!(isSet(customDefaultUserEmail))) {
+				var customDefaultUserEmail = "test@liferay.com";
+			}
 		}
 
 		return ${customDefaultUserEmail};
