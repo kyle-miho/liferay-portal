@@ -210,6 +210,9 @@ definition {
 		var testNameSkipPortalInstance = PropsUtil.get("test.name.skip.portal.instance");
 		var testPortalInstance = PropsUtil.get("test.portal.instance");
 
+		var currentTimeMili = DateUtil.getTimeInMilliseconds();
+		echo("### Current time in milis pre company creation:${currentTimeMili} ###");
+
 		if (!(IsTestName(locator1 = "", value1 = ${testNameSkipPortalInstance}))) {
 			HeadlessPortalInstanceAPI.cleanAllPortalInstances(authenticationMethod = ${authenticationMethod});
 
@@ -227,6 +230,9 @@ definition {
 				SignIn.signInPortalInstanceSetUp();
 			}
 		}
+
+		var currentTimeMili = DateUtil.getTimeInMilliseconds();
+		echo("### Current time in milis post company creation:${currentTimeMili} ###");
 	}
 
 	macro setUpPortalInstanceNoSelenium {

@@ -1,13 +1,14 @@
 @component-name = "portal-wcm"
 definition {
 
+	property portal.acceptance = "true";
 	property portal.release = "true";
 	property portal.upstream = "true";
 	property testray.main.component.name = "Fragments";
 
 	setUp {
 		task ("Set up instance and sign in") {
-			TestCase.setUpPortalInstance();
+			//TestCase.setUpPortalInstance();
 
 			User.firstLoginPG();
 		}
@@ -35,14 +36,7 @@ definition {
 	}
 
 	tearDown {
-		var testPortalInstance = PropsUtil.get("test.portal.instance");
-
-		if (${testPortalInstance} == "true") {
-			PortalInstances.tearDownCP();
-		}
-		else {
-			JSONGroup.deleteGroupByName(groupName = "Test Site Name");
-		}
+		JSONGroup.deleteGroupByName(groupName = "Test Site Name");
 	}
 
 	@description = "This is a test for LPS-76817. Can namespace the CSS of a Web Fragment to avoid affecting the rest of the page."
