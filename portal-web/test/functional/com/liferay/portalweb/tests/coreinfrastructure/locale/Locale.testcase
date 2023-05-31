@@ -244,6 +244,8 @@ definition {
 
 		User.firstLoginPG();
 
+		HeadlessSite.addSite(siteName = "Test Site Name");
+
 		AssertLocation(value1 = "http://localhost:8080/fr/web/guest?SM_USER=test@liferay.com");
 
 		ApplicationsMenu.gotoSite(key_site = "Test Site Name");
@@ -531,6 +533,8 @@ definition {
 		property test.name.skip.portal.instance = "Locale#RestrictAvailableLocales";
 
 		User.firstLoginPG();
+
+		HeadlessSite.addSite(siteName = "Test Site Name");
 
 		PortalSettings.gotoConfiguration(
 			configurationCategory = "Localization",
