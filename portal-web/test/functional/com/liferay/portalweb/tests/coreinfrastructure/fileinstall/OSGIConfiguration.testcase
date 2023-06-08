@@ -2,6 +2,7 @@
 definition {
 
 	property ci.retries.disabled = "true";
+	property portal.acceptance = "kyle";
 	property portal.release = "true";
 	property portal.upstream = "true";
 	property testray.main.component.name = "File Install";
@@ -27,13 +28,11 @@ definition {
 	}
 
 	@description = "This is a test for LPS-173655. Verify if virtual instances can be created via OSGI config file."
-	@ignore = "true"
 	@priority = 4
 	test CanCreateVirtualInstanceViaConfig {
 		property osgi.module.configuration.file.names = "com.liferay.portal.instances.internal.configuration.PortalInstancesConfiguration~www.able.com.config";
 		property osgi.module.configurations = "mx=\"www.able.com\"${line.separator}virtualHostname=\"www.able.com\"";
 		property test.assert.warning.exceptions = "true";
-		property test.name.skip.portal.instance = "OSGIConfiguration#CanCreateVirtualInstanceViaConfig";
 
 		ApplicationsMenu.gotoPortlet(
 			category = "System",
@@ -52,7 +51,6 @@ definition {
 	@priority = 3
 	test ConfigAddedViaUIDoesNotCreateNewConfigFile {
 		property database.types = "mysql";
-		property test.name.skip.portal.instance = "OSGIConfiguration#ConfigAddedViaUIDoesNotCreateNewConfigFile";
 
 		task ("Given no osgi config file exists for a specific config") {
 			var configName = "com.liferay.commerce.product.definitions.web.internal.configuration.CPInstanceConfiguration";
@@ -95,7 +93,6 @@ definition {
 		property database.types = "mysql";
 		property osgi.module.configuration.file.names = "com.liferay.commerce.product.definitions.web.internal.configuration.CPInstanceConfiguration.config";
 		property osgi.module.configurations = "checkInterval=I\"33\"";
-		property test.name.skip.portal.instance = "OSGIConfiguration#ConfigAddedViaUIUpdatesExistingOSGIConfigFile";
 
 		task ("Given an osgi config file exists for a specific config") {
 			var configName = "com.liferay.commerce.product.definitions.web.internal.configuration.CPInstanceConfiguration";
@@ -218,7 +215,6 @@ definition {
 	@priority = 3
 	test OSGIConfigFileUpdatesExistingConfigInDatabase {
 		property database.types = "mysql";
-		property test.name.skip.portal.instance = "OSGIConfiguration#OSGIConfigFileUpdatesExistingConfigInDatabase";
 
 		task ("Given no osgi config file exists for a specific config") {
 			var configName = "com.liferay.commerce.product.definitions.web.internal.configuration.CPInstanceConfiguration";
@@ -289,7 +285,6 @@ definition {
 	@priority = 3
 	test RecreateDefaultFactoryConfig {
 		property database.types = "mysql";
-		property test.name.skip.portal.instance = "FileInstall#OverrideDefaultFactoryConfig";
 
 		task ("Given the default factory config created by the OSGI configurator is deleted") {
 			SystemSettings.openSystemSettingsAdmin();
@@ -373,7 +368,6 @@ definition {
 	@priority = 3
 	test TikaConfigurationWithCustomTikaXML {
 		property app.server.types = "tomcat";
-		property test.name.skip.portal.instance = "OSGIConfiguration#TikaConfigurationWithCustomTikaXML";
 
 		var projectDir = PropsUtil.get("project.dir");
 
