@@ -185,6 +185,20 @@ public class PortalCacheExtenderTest {
 		return sb.toString();
 	}
 
+	private String _getResourceAsString(String resourceName) {
+		Class<?> clazz = getClass();
+
+		try (InputStream inputStream = clazz.getResourceAsStream(
+				resourceName)) {
+
+			return StringUtil.read(inputStream);
+		}
+		catch (IOException ioException) {
+			throw new RuntimeException(
+				"Unable to load resource: " + resourceName, ioException);
+		}
+	}
+
 	private Bundle _installBundle(
 			String bundleSymbolicName, String multiCacheConfigContent,
 			String singleCacheConfigContent)
