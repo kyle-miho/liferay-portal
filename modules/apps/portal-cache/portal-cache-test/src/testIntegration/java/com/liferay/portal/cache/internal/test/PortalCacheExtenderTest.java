@@ -20,7 +20,9 @@ import com.liferay.petra.io.unsync.UnsyncByteArrayInputStream;
 import com.liferay.petra.io.unsync.UnsyncByteArrayOutputStream;
 import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.cache.PortalCacheManagerNames;
+import com.liferay.portal.kernel.dao.orm.FinderCache;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
@@ -66,6 +68,45 @@ public class PortalCacheExtenderTest {
 	public void tearDown() throws Exception {
 		if (_bundle.getState() != Bundle.UNINSTALLED) {
 			_bundle.uninstall();
+		}
+	}
+
+	@Test
+	public void testRecreateMultiVmConfig() throws Exception {
+		String multiCacheConfigName = "module-multi-vm.xml";
+
+		_multiVmXML = _getResourceAsString(
+			"/com/liferay/portal/cache/internal/test/" + multiCacheConfigName);
+
+		_bundle = _installBundle(_BUNDLE_SYMBOLIC_NAME, _multiVmXML, null);
+
+		_assertCacheConfig(
+			PortalCacheManagerNames.MULTI_VM, 1001, _TEST_CACHE_MULTI_RECREATE,
+			51L);
+
+		Bundle overridingBundle = null;
+
+		try {
+			String multiCacheConfigUpdatedName = "module-multi-vm-updated.xml";
+
+			String multiVmXMLUpdated = _getResourceAsString(
+				"/com/liferay/portal/cache/internal/test/" +
+					multiCacheConfigUpdatedName);
+
+			overridingBundle = _installBundle(
+				_BUNDLE_SYMBOLIC_NAME.concat(".updated"), multiVmXMLUpdated,
+				null);
+
+			_assertCacheConfig(
+				PortalCacheManagerNames.MULTI_VM, 1001,
+				_TEST_CACHE_MULTI_RECREATE, 51L);
+		}
+		finally {
+			if ((overridingBundle != null) &&
+				(overridingBundle.getState() != Bundle.UNINSTALLED)) {
+
+				overridingBundle.uninstall();
+			}
 		}
 	}
 
@@ -278,7 +319,14 @@ public class PortalCacheExtenderTest {
 	private static final String _BUNDLE_SYMBOLIC_NAME =
 		"com.liferay.portal.cache.internal.test.PortalCacheTestModule";
 
+	private static final String _FINDER_CACHE_GROUP_KEY_PREFIX =
+		FinderCache.class.getName() + StringPool.PERIOD;
+
 	private static final String _TEST_CACHE_MULTI = "test.cache.multi";
+
+	private static final String _TEST_CACHE_MULTI_RECREATE =
+		_FINDER_CACHE_GROUP_KEY_PREFIX +
+			"com.liferay.journal.model.impl.JournalArticleImpl";
 
 	private static final String _TEST_CACHE_SINGLE = "test.cache.single";
 
