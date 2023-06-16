@@ -100,6 +100,8 @@ definition {
 		if (${gogoShellLPKGExists} == "false") {
 			AntCommands.runCommand("build-test.xml", "deploy-osgi-apps -Dosgi.app.includes=gogo-shell");
 
+			// Restart is needed to complete Gogo Shell installation
+
 			Portlet.shutdownServer();
 
 			Portlet.startServer(deleteLiferayHome = "false");
@@ -222,6 +224,8 @@ definition {
 		if (${gogoShellLPKGExists} == "false") {
 			AntCommands.runCommand("build-test.xml", "deploy-osgi-apps -Dosgi.app.includes=gogo-shell");
 
+			// Restart is needed to complete Gogo Shell installation
+
 			Portlet.shutdownServer();
 
 			Portlet.startServer(deleteLiferayHome = "false");
@@ -323,6 +327,8 @@ definition {
 
 		if (${gogoShellLPKGExists} == "false") {
 			AntCommands.runCommand("build-test.xml", "deploy-osgi-apps -Dosgi.app.includes=gogo-shell");
+
+			// Restart is needed to complete Gogo Shell installation
 
 			Portlet.shutdownServer();
 
@@ -548,6 +554,8 @@ definition {
 
 		if (${gogoShellLPKGExists} == "false") {
 			AntCommands.runCommand("build-test.xml", "deploy-osgi-apps -Dosgi.app.includes=gogo-shell");
+
+			// Restart is needed to complete Gogo Shell installation
 
 			Portlet.shutdownServer();
 
