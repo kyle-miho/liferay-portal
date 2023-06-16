@@ -105,15 +105,11 @@ definition {
 			Portlet.startServer(deleteLiferayHome = "false");
 		}
 
-		ApplicationsMenu.gotoPortlet(
-			category = "System",
-			panel = "Control Panel",
-			portlet = "Gogo Shell");
+		GogoShell.openGogoShellAdmin();
 
-		ApplicationsMenu.gotoPortlet(
-			category = "Configuration",
-			panel = "Control Panel",
-			portlet = "System Settings");
+		AssertElementPresent(locator1 = "GogoShell#COMMAND_FIELD");
+
+		SystemSettings.openSystemSettingsAdmin();
 
 		SystemSettings.gotoConfiguration(
 			configurationCategory = "Module Container",
@@ -243,10 +239,7 @@ definition {
 			panel = "Control Panel",
 			portlet = "Gogo Shell");
 
-		ApplicationsMenu.gotoPortlet(
-			category = "Configuration",
-			panel = "Control Panel",
-			portlet = "System Settings");
+		SystemSettings.openSystemSettingsAdmin();
 
 		SystemSettings.gotoConfiguration(
 			configurationCategory = "Module Container",
@@ -265,10 +258,9 @@ definition {
 
 		Navigator.openURL();
 
-		ApplicationsMenu.gotoPortlet(
-			category = "System",
-			panel = "Control Panel",
-			portlet = "Gogo Shell");
+		GogoShell.openGogoShellAdmin();
+
+		AssertElementPresent(locator1 = "GogoShell#COMMAND_FIELD");
 	}
 
 	@priority = 3
@@ -349,10 +341,7 @@ definition {
 			panel = "Control Panel",
 			portlet = "Gogo Shell");
 
-		ApplicationsMenu.gotoPortlet(
-			category = "Configuration",
-			panel = "Control Panel",
-			portlet = "System Settings");
+		SystemSettings.openSystemSettingsAdmin();
 
 		SystemSettings.gotoConfiguration(
 			configurationCategory = "Module Container",
@@ -398,10 +387,7 @@ definition {
 
 		Navigator.openURL();
 
-		ApplicationsMenu.gotoPortlet(
-			category = "Configuration",
-			panel = "Control Panel",
-			portlet = "System Settings");
+		SystemSettings.openSystemSettingsAdmin();
 
 		SystemSettings.gotoConfiguration(
 			configurationCategory = "Module Container",
@@ -485,10 +471,7 @@ definition {
 	test ExportBundleBlacklistConfig {
 		property test.name.skip.portal.instance = "BundleBlacklist#ExportBundleBlacklistConfig";
 
-		ApplicationsMenu.gotoPortlet(
-			category = "Configuration",
-			panel = "Control Panel",
-			portlet = "System Settings");
+		SystemSettings.openSystemSettingsAdmin();
 
 		SystemSettings.gotoConfiguration(
 			configurationCategory = "Module Container",
@@ -514,10 +497,7 @@ definition {
 	test RestartCanNotEnableBlacklistedModuleJarViaUI {
 		property test.name.skip.portal.instance = "BundleBlacklist#RestartCanNotEnableBlacklistedModuleJarViaUI";
 
-		ApplicationsMenu.gotoPortlet(
-			category = "Configuration",
-			panel = "Control Panel",
-			portlet = "System Settings");
+		SystemSettings.openSystemSettingsAdmin();
 
 		SystemSettings.gotoConfiguration(
 			configurationCategory = "Module Container",
@@ -574,10 +554,7 @@ definition {
 			Portlet.startServer(deleteLiferayHome = "false");
 		}
 
-		ApplicationsMenu.gotoPortlet(
-			category = "Configuration",
-			panel = "Control Panel",
-			portlet = "System Settings");
+		SystemSettings.openSystemSettingsAdmin();
 
 		SystemSettings.gotoConfiguration(
 			configurationCategory = "Module Container",
@@ -611,10 +588,7 @@ definition {
 	test RestartCanNotEnableBlacklistedModuleWarViaUI {
 		property test.name.skip.portal.instance = "BundleBlacklist#RestartCanNotEnableBlacklistedModuleWarViaUI";
 
-		ApplicationsMenu.gotoPortlet(
-			category = "Configuration",
-			panel = "Control Panel",
-			portlet = "System Settings");
+		SystemSettings.openSystemSettingsAdmin();
 
 		SystemSettings.gotoConfiguration(
 			configurationCategory = "Module Container",
