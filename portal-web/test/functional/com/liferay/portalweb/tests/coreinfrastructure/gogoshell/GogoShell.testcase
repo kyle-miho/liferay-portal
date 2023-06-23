@@ -25,6 +25,7 @@ definition {
 		}
 	}
 
+	@Shared
 	@priority = 5
 	test AccessGogoShellCommandViaPortlet {
 		property portal.acceptance = "true";
@@ -46,6 +47,7 @@ definition {
 		}
 	}
 
+	@Shared
 	@description = "This is a use case for LPS-83660."
 	@priority = 3
 	test GogoShellCommandDisconnectNotSupported {
@@ -63,6 +65,7 @@ definition {
 		AssertConsoleTextNotPresent(value1 = "is not serializable and will prevent this session from being replicated");
 	}
 
+	@Company
 	@priority = 4
 	test GogoShellPortletOnlyOnMainInstance {
 		property test.name.skip.portal.instance = "GogoShell#GogoShellPortletOnlyOnMainInstance";
@@ -97,6 +100,7 @@ definition {
 			portlet = "Gogo Shell");
 	}
 
+	@Shared
 	@priority = 4
 	test OmniAdminCanAccessGogoShellCommandViaPortlet {
 		property test.name.skip.portal.instance = "GogoShell#OmniAdminCanAccessGogoShellCommandViaPortlet";
@@ -135,6 +139,7 @@ definition {
 		GogoShell.viewOutput(outputContent = "Liferay Portal");
 	}
 
+	@Shared
 	@priority = 4
 	test SiteAdminCannotAccessGogoShellPortlet {
 		property test.name.skip.portal.instance = "GogoShell#SiteAdminCannotAccessGogoShellPortlet";

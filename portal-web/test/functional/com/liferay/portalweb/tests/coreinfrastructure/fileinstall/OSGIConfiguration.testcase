@@ -26,6 +26,7 @@ definition {
 		}
 	}
 
+	@Shared
 	@description = "This is a test for LPS-173655. Verify if virtual instances can be created via OSGI config file."
 	@ignore = "true"
 	@priority = 4
@@ -48,6 +49,7 @@ definition {
 			userEmailAddress = "test@www.able.com");
 	}
 
+	@Shared
 	@description = "Verify if no osgi config file exists, when a config is updated via UI, then the config is added to the database and a config file is not created."
 	@priority = 3
 	test ConfigAddedViaUIDoesNotCreateNewConfigFile {
@@ -89,6 +91,7 @@ definition {
 		}
 	}
 
+	@Shared
 	@description = "Verify if an osgi config file exists, when a config is updated via UI, then the config file is updated with the new values."
 	@priority = 3
 	test ConfigAddedViaUIUpdatesExistingOSGIConfigFile {
@@ -142,6 +145,7 @@ definition {
 		}
 	}
 
+	@Shared
 	@description = "Verify OSGI config files added to auto deploy directories other than osgi/configs are not read."
 	@priority = 3
 	test ConfigFilesReadOnlyFromOSGIConfigs {
@@ -166,6 +170,7 @@ definition {
 		}
 	}
 
+	@Shared
 	@description = "Verify multiple factory configurations can be created."
 	@priority = 3
 	test DeployFactoryConfigs {
@@ -184,6 +189,7 @@ definition {
 			text = "urlsIncludes=\"/api/liferay/test2\"");
 	}
 
+	@Shared
 	@description = "Verify an existing factory config can be modified."
 	@priority = 3
 	test ModifyFactoryConfig {
@@ -214,6 +220,7 @@ definition {
 		}
 	}
 
+	@Shared
 	@description = "Verify if a config exists only in the database, when a OSGI config file is added, the databse entry is updated."
 	@priority = 3
 	test OSGIConfigFileUpdatesExistingConfigInDatabase {
@@ -267,6 +274,7 @@ definition {
 		}
 	}
 
+	@Shared
 	@description = "LPS-132645 Verify the default factory config created by the OSGI configurator can be overriden by an OSGI config file."
 	@priority = 3
 	test OverrideDefaultFactoryConfig {
@@ -285,6 +293,7 @@ definition {
 			text = 1);
 	}
 
+	@Shared
 	@description = "LPS-132645 Verify the default factory config created by the OSGI configurator can be recreated using an OSGI config file if it is deleted."
 	@priority = 3
 	test RecreateDefaultFactoryConfig {
@@ -331,6 +340,7 @@ definition {
 		}
 	}
 
+	@Shared
 	@description = "Verify when an existing factory config is renamed, the old entry is removed and the new one is added."
 	@priority = 3
 	test RenameFactoryConfig {
@@ -369,6 +379,7 @@ definition {
 		}
 	}
 
+	@Shared
 	@description = "This is a test for LPS-169760. Verify the tika configurations in custom tika.xml file can be loaded."
 	@priority = 3
 	test TikaConfigurationWithCustomTikaXML {

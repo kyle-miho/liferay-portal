@@ -28,6 +28,7 @@ definition {
 		FileInstall.deleteWarOffline(warFile = "test-theme.war");
 	}
 
+	@Shared
 	@priority = 5
 	test BlacklistModuleBundleSymbolicName {
 		property osgi.modules.includes = "frontend-taglib-clay-sample-web";
@@ -80,6 +81,7 @@ definition {
 		}
 	}
 
+	@Shared
 	@priority = 5
 	test BlacklistModuleLPKG {
 		property portal.acceptance = "true";
@@ -141,6 +143,7 @@ definition {
 			portlet = "Gogo Shell");
 	}
 
+	@Shared
 	@priority = 4
 	test BlacklistModuleWar {
 		property test.name.skip.portal.instance = "BundleBlacklist#BlacklistModuleWar";
@@ -168,6 +171,7 @@ definition {
 		AssertTextNotPresent(value1 = "test-theme-7-4");
 	}
 
+	@Shared
 	@priority = 3
 	test CanEnableBlacklistedModuleJarAfterRestart {
 		property osgi.module.configurations = "blacklistBundleSymbolicNames=[\"com.liferay.frontend.taglib.clay.sample.web\"]";
@@ -210,6 +214,7 @@ definition {
 		}
 	}
 
+	@Shared
 	@priority = 3
 	test CanEnableBlacklistedModuleLPKGAfterRestart {
 		property test.name.skip.portal.instance = "BundleBlacklist#CanEnableBlacklistedModuleLPKGAfterRestart";
@@ -275,6 +280,7 @@ definition {
 			portlet = "Gogo Shell");
 	}
 
+	@Shared
 	@priority = 3
 	test CanEnableBlacklistedModuleWarAfterRestart {
 		property test.name.skip.portal.instance = "BundleBlacklist#CanEnableBlacklistedModuleWarAfterRestart";
@@ -318,6 +324,7 @@ definition {
 		}
 	}
 
+	@Shared
 	@priority = 3
 	test CanRemoveBlacklistedModuleLPKGViaUI {
 		property test.name.skip.portal.instance = "BundleBlacklist#CanRemoveBlacklistedModuleLPKGViaUI";
@@ -374,6 +381,7 @@ definition {
 		AssertConsoleTextPresent(value1 = "STARTED ${symbolicName}");
 	}
 
+	@Shared
 	@priority = 3
 	test CanRemoveBlacklistedModuleWarViaUI {
 		property osgi.module.configurations = "blacklistBundleSymbolicNames=[\"minium-theme\"]";
@@ -442,6 +450,7 @@ definition {
 			value1 = "Minium");
 	}
 
+	@Shared
 	@priority = 3
 	test EnableBlacklistedModuleAfterShutdown {
 		property osgi.modules.includes = "frontend-taglib-clay-sample-web";
@@ -487,6 +496,7 @@ definition {
 		}
 	}
 
+	@Shared
 	@priority = 5
 	test ExportBundleBlacklistConfig {
 		property test.name.skip.portal.instance = "BundleBlacklist#ExportBundleBlacklistConfig";
@@ -516,6 +526,7 @@ definition {
 		AssertConsoleTextNotPresent(value1 = "Reinstalling bundle com.liferay.gogo.shell.web");
 	}
 
+	@Global
 	@priority = 3
 	test RestartCanNotEnableBlacklistedModuleJarViaUI {
 		property test.name.skip.portal.instance = "BundleBlacklist#RestartCanNotEnableBlacklistedModuleJarViaUI";
@@ -555,6 +566,7 @@ definition {
 		AssertConsoleTextNotPresent(value1 = "Reinstalling bundle com.liferay.gogo.shell.web");
 	}
 
+	@Global
 	@priority = 3
 	test RestartCanNotEnableBlacklistedModuleLPKGViaUI {
 		property test.name.skip.portal.instance = "BundleBlacklist#RestartCanNotEnableBlacklistedModuleLPKGViaUI";
@@ -613,6 +625,7 @@ definition {
 			portlet = "Gogo Shell");
 	}
 
+	@Global
 	@priority = 3
 	test RestartCanNotEnableBlacklistedModuleWarViaUI {
 		property test.name.skip.portal.instance = "BundleBlacklist#RestartCanNotEnableBlacklistedModuleWarViaUI";
