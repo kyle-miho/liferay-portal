@@ -277,9 +277,11 @@ definition {
 
 		var minutestoExpire = RegexUtil.replace(${nodeLog}, "temporarily permitted during the grace period which expires in (.*[0-9]) minutes", 1);
 
-		var mstoExpire = ${minutestoExpire} * 60000;
+		var minutestoExpire = ${minutestoExpire} + 1;
 
-		var mstoExpire = ${mstoExpire} + 60000;
+		// Convert minutes to milliseconds for Pause function
+
+		var mstoExpire = ${mstoExpire} * 60000;
 
 		var javascript = '''
 var num=${mstoExpire};
