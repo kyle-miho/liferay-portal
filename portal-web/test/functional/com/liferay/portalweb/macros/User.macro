@@ -1462,9 +1462,11 @@ definition {
 
 		if (IsElementPresent(checkboxName = "Require Password Reset", locator1 = "Checkbox#ANY_CHECKBOX")) {
 			if (${requirePasswordReset} == "true") {
-				Check(
-					checkboxName = "Require Password Reset",
-					locator1 = "Checkbox#ANY_CHECKBOX");
+				if (IsNotChecked(checkboxName = "Require Password Reset", locator1 = "Checkbox#ANY_CHECKBOX")) {
+					Check(
+						checkboxName = "Require Password Reset",
+						locator1 = "Checkbox#ANY_CHECKBOX");
+				}
 			}
 			else {
 				Uncheck(
