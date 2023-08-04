@@ -363,7 +363,7 @@ public class FileInstallConfigTest {
 			Charset.defaultCharset(), configurationPid, content);
 	}
 
-	private void _createFacotryConfiguration(
+	private void _createFactoryConfiguration(
 			String factoryPid, UnsafeRunnable<Exception> runnable)
 		throws Exception {
 
@@ -429,7 +429,7 @@ public class FileInstallConfigTest {
 		String testKey = "testKey";
 		String testValue = "testValue";
 
-		_createFacotryConfiguration(
+		_createFactoryConfiguration(
 			factoryPid,
 			() -> {
 				String content = StringBundler.concat(
