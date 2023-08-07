@@ -329,6 +329,30 @@ public class FileInstallConfigTest {
 				Configuration.ConfigurationAttribute.READ_ONLY));
 	}
 
+	@Test
+	public void testUpdateFactoryConfiguration() throws Exception {
+		String factoryConfigurationName = StringBundler.concat(
+			StringUtil.randomId(), CharPool.DASH, StringUtil.randomId());
+
+		_testFactoryConfiguration(CharPool.TILDE, factoryConfigurationName);
+
+		String content = "testKey=\"testValue2\"";
+
+		Files.write(_configurationPath, content.getBytes());
+
+		Thread.sleep(20000);
+
+		String factoryPid = _CONFIGURATION_PID_PREFIX.concat(
+			".testFactoryConfiguration");
+
+		_configuration = _configurationAdmin.getFactoryConfiguration(
+			factoryPid, factoryConfigurationName, StringPool.QUESTION);
+
+		Dictionary<String, Object> dictionary = _configuration.getProperties();
+
+		Assert.assertEquals("testValue2", dictionary.get("testKey"));
+	}
+
 	private Configuration _createConfiguration(
 			Charset charset, String configurationPid, String content)
 		throws Exception {
@@ -417,6 +441,13 @@ public class FileInstallConfigTest {
 	private void _testFactoryConfiguration(char separator) throws Exception {
 		String factoryConfigurationName = StringBundler.concat(
 			StringUtil.randomId(), CharPool.DASH, StringUtil.randomId());
+
+		_testFactoryConfiguration(separator, factoryConfigurationName);
+	}
+
+	private void _testFactoryConfiguration(
+			char separator, String factoryConfigurationName)
+		throws Exception {
 
 		String factoryPid = _CONFIGURATION_PID_PREFIX.concat(
 			".testFactoryConfiguration");
