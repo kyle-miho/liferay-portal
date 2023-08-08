@@ -307,6 +307,46 @@ public class FileInstallConfigTest {
 		_testFactoryConfiguration(CharPool.UNDERLINE);
 	}
 
+	@Test
+	public void testMultipleFactoryConfigurations() throws Exception {
+		_testFactoryConfiguration(CharPool.TILDE);
+
+		String factoryConfigurationName = StringBundler.concat(
+			StringUtil.randomId(), CharPool.DASH, StringUtil.randomId());
+
+		String factoryPid = _CONFIGURATION_PID_PREFIX.concat(
+			".testFactoryConfiguration");
+
+		Path factoryConfigurationPath = Paths.get(
+			PropsValues.MODULE_FRAMEWORK_CONFIGS_DIR,
+			StringBundler.concat(
+				factoryPid, CharPool.TILDE, factoryConfigurationName,
+				".config"));
+
+		_createFactoryConfiguration(
+			factoryPid,
+			() -> {
+				String content = "testKey=\"testValue2\"";
+
+				Files.write(factoryConfigurationPath, content.getBytes());
+			});
+
+		Thread.sleep(20000);
+
+		Configuration factoryConfiguration =
+			_configurationAdmin.getFactoryConfiguration(
+				factoryPid, factoryConfigurationName, StringPool.QUESTION);
+
+		Dictionary<String, Object> dictionary =
+			factoryConfiguration.getProperties();
+
+		Assert.assertEquals("testValue2", dictionary.get("testKey"));
+
+		Files.deleteIfExists(factoryConfigurationPath);
+
+		ConfigurationTestUtil.deleteConfiguration(factoryConfiguration);
+	}
+
 	@Ignore
 	@Test
 	public void testReadOnlyConfiguration() throws Exception {
