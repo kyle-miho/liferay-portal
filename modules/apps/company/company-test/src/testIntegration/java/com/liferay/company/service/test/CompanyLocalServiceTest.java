@@ -33,6 +33,7 @@ import com.liferay.portal.kernel.exception.NoSuchPasswordPolicyException;
 import com.liferay.portal.kernel.exception.NoSuchVirtualHostException;
 import com.liferay.portal.kernel.exception.RequiredCompanyException;
 import com.liferay.portal.kernel.language.Language;
+import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.BaseModelListener;
@@ -85,9 +86,13 @@ import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.PortletKeys;
 import com.liferay.portal.kernel.util.PrefsProps;
 import com.liferay.portal.kernel.util.PropsKeys;
+import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.kernel.util.UnicodePropertiesBuilder;
+import com.liferay.portal.test.log.LogCapture;
+import com.liferay.portal.test.log.LogEntry;
+import com.liferay.portal.test.log.LoggerTestUtil;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
@@ -107,6 +112,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.CopyOnWriteArrayList;
+
+import org.hibernate.engine.jdbc.spi.SqlExceptionHelper;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -184,6 +191,37 @@ public class CompanyLocalServiceTest {
 
 		for (String webId : PortalInstances.getWebIds()) {
 			Assert.assertNotEquals(company.getWebId(), webId);
+		}
+	}
+
+	@Test
+	public void testAddAndDeleteCompanyWithAllLocalesEnabled()
+		throws Exception {
+
+		PropsValues.LOCALES_ENABLED = PropsUtil.getArray(PropsKeys.LOCALES);
+
+		LanguageUtil.init();
+
+		Company company = null;
+
+		try (LogCapture logCapture = LoggerTestUtil.configureLog4JLogger(
+				SqlExceptionHelper.class.getName(), LoggerTestUtil.WARN)) {
+
+			company = addCompany();
+
+			List<LogEntry> logEntries = logCapture.getLogEntries();
+
+			Assert.assertEquals(logEntries.toString(), 0, logEntries.size());
+		}
+		finally {
+			if (company != null) {
+				_companyLocalService.deleteCompany(company.getCompanyId());
+			}
+
+			PropsValues.LOCALES_ENABLED = PropsUtil.getArray(
+				PropsKeys.LOCALES_ENABLED);
+
+			LanguageUtil.init();
 		}
 	}
 
