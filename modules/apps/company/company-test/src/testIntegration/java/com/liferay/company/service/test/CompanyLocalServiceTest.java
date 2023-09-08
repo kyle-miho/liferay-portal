@@ -198,14 +198,14 @@ public class CompanyLocalServiceTest {
 	public void testAddAndDeleteCompanyWithAllLocalesEnabled()
 		throws Exception {
 
-		PropsValues.LOCALES_ENABLED = PropsUtil.getArray(PropsKeys.LOCALES);
-
-		LanguageUtil.init();
-
 		Company company = null;
 
 		try (LogCapture logCapture = LoggerTestUtil.configureLog4JLogger(
 				SqlExceptionHelper.class.getName(), LoggerTestUtil.WARN)) {
+
+			PropsValues.LOCALES_ENABLED = PropsUtil.getArray(PropsKeys.LOCALES);
+
+			LanguageUtil.init();
 
 			company = addCompany();
 
