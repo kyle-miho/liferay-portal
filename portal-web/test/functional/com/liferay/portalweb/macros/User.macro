@@ -1866,13 +1866,6 @@ definition {
 
 		UserBar.signOut();
 
-		if (isSet(virtualHostsURL)) {
-			var portalURL = ${virtualHostsURL};
-		}
-		else {
-			var portalURL = JSONCompany.getPortalURL();
-		}
-
 		var isLXC = JSONUtil2.getLXCEnvironment();
 
 		if (${isLXC} != "true") {
@@ -1883,6 +1876,13 @@ definition {
 				password = ${password},
 				portalURL = ${portalURL},
 				userEmailAddress = ${userEmailAddress});
+		}
+
+		if (isSet(virtualHostsURL)) {
+			var portalURL = ${virtualHostsURL};
+		}
+		else {
+			var portalURL = JSONCompany.getPortalURL();
 		}
 
 		if (isSet(virtualHostsURL)) {
