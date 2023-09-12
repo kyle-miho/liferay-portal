@@ -30,10 +30,7 @@ public class LiferayIntegrationTestRule extends AggregateTestRule {
 	private static TestRule[] _getTestRules() {
 		List<TestRule> testRules = new ArrayList<>();
 
-		if (System.getenv("JENKINS_HOME") != null) {
-			testRules.add(TimeoutTestRule.INSTANCE);
-		}
-
+		testRules.add(TimeoutTestRule.INSTANCE);
 		testRules.add(FeatureFlagTestRule.INSTANCE);
 		testRules.add(PortalRunModeClassTestRule.INSTANCE);
 		testRules.add(SynchronousDestinationTestRule.INSTANCE);
