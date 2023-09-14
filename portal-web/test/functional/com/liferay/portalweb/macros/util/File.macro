@@ -10,8 +10,19 @@ definition {
 		return ${extension};
 	}
 
-	@description = "Replace the first occurence of ${regex} in ${fileName} with ${content}"
+	@description = "Replace all occurencences of ${regex} in ${fileName} with ${content}"
 	macro regexReplace {
+		Variables.assertDefined(parameterList = "${fileName},${regex},${content}");
+
+		var fileContent = FileUtil.read(${fileName});
+
+		var newFileContent = StringUtil.regexReplaceAll(${fileContent}, ${regex}, ${content});
+
+		FileUtil.write(${fileName}, ${newFileContent});
+	}
+
+	@description = "Replace the first occurence of ${regex} in ${fileName} with ${content}"
+	macro regexReplaceFirst {
 		Variables.assertDefined(parameterList = "${fileName},${regex},${content}");
 
 		var fileContent = FileUtil.read(${fileName});
