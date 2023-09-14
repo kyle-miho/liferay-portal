@@ -414,9 +414,21 @@ public class FileInstallConfigTest {
 		}
 	}
 
-	private void _testFactoryConfiguration(char separator) throws Exception {
+	private void _testFactoryConfiguration(char separator)
+		throws Exception {
+
 		String factoryConfigurationName = StringBundler.concat(
 			StringUtil.randomId(), CharPool.DASH, StringUtil.randomId());
+
+		String testValue = StringUtil.randomId();
+
+		_testFactoryConfiguration(
+			separator, factoryConfigurationName, testValue);
+	}
+
+	private void _testFactoryConfiguration(
+			char separator, String factoryConfigurationName, String testValue)
+		throws Exception {
 
 		String factoryPid = _CONFIGURATION_PID_PREFIX.concat(
 			".testFactoryConfiguration");
@@ -427,7 +439,6 @@ public class FileInstallConfigTest {
 				factoryPid, separator, factoryConfigurationName, ".config"));
 
 		String testKey = "testKey";
-		String testValue = "testValue";
 
 		_createFactoryConfiguration(
 			factoryPid,
@@ -450,7 +461,7 @@ public class FileInstallConfigTest {
 
 		Dictionary<String, Object> dictionary = _configuration.getProperties();
 
-		Assert.assertEquals("testValue", dictionary.get(testKey));
+		Assert.assertEquals(testValue, dictionary.get(testKey));
 	}
 
 	private static final String _CONFIGURATION_PID_PREFIX =
