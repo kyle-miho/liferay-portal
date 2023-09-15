@@ -461,6 +461,9 @@ public class FileInstallConfigTest {
 
 		Dictionary<String, Object> dictionary = _configuration.getProperties();
 
+		Assert.assertNotNull(
+			"Factory configuration properties are null", dictionary);
+
 		Assert.assertEquals(testValue, dictionary.get(testKey));
 	}
 
