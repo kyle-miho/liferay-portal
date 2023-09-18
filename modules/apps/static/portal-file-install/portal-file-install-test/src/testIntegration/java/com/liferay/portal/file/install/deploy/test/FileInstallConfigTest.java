@@ -367,7 +367,17 @@ public class FileInstallConfigTest {
 			String factoryPid, UnsafeRunnable<Exception> runnable)
 		throws Exception {
 
-		CountDownLatch countDownLatch = new CountDownLatch(1);
+		int count = 1;
+
+		if (_configuration != null) {
+			Configuration[] configurations =
+				_configurationAdmin.listConfigurations(
+					"(service.factoryPid=" + factoryPid + ")");
+
+			count = count + configurations.length;
+		}
+
+		CountDownLatch countDownLatch = new CountDownLatch(count);
 
 		ServiceRegistration<ManagedServiceFactory> serviceRegistration =
 			_bundleContext.registerService(
