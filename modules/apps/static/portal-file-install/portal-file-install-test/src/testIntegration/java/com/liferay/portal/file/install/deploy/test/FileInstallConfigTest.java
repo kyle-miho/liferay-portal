@@ -414,7 +414,7 @@ public class FileInstallConfigTest {
 		}
 	}
 
-	private void _testFactoryConfiguration(char separator)
+	private Configuration _testFactoryConfiguration(char separator)
 		throws Exception {
 
 		String factoryConfigurationName = StringBundler.concat(
@@ -424,9 +424,11 @@ public class FileInstallConfigTest {
 
 		_testFactoryConfiguration(
 			separator, factoryConfigurationName, testValue);
+
+		return _configuration;
 	}
 
-	private void _testFactoryConfiguration(
+	private Configuration _testFactoryConfiguration(
 			char separator, String factoryConfigurationName, String testValue)
 		throws Exception {
 
@@ -465,6 +467,8 @@ public class FileInstallConfigTest {
 			"Factory configuration properties are null", dictionary);
 
 		Assert.assertEquals(testValue, dictionary.get(testKey));
+
+		return _configuration;
 	}
 
 	private static final String _CONFIGURATION_PID_PREFIX =
