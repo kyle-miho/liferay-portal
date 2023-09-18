@@ -307,6 +307,20 @@ public class FileInstallConfigTest {
 		_testFactoryConfiguration(CharPool.UNDERLINE);
 	}
 
+	@Test
+	public void testMultipleFactoryConfigurations() throws Exception {
+		Configuration configuration = _testFactoryConfiguration(CharPool.TILDE);
+
+		try {
+			_testFactoryConfiguration(CharPool.TILDE);
+		}
+		finally {
+			if (configuration != null) {
+				ConfigurationTestUtil.deleteConfiguration(configuration);
+			}
+		}
+	}
+
 	@Ignore
 	@Test
 	public void testReadOnlyConfiguration() throws Exception {
