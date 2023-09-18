@@ -199,36 +199,6 @@ definition {
 			text = "urlsIncludes=\"/api/liferay/test2\"");
 	}
 
-	@description = "Verify an existing factory config can be modified."
-	@priority = 3
-	test ModifyFactoryConfig {
-		property database.types = "mysql";
-		property osgi.module.configuration.file.names = "com.liferay.portal.security.auth.verifier.internal.tunnel.configuration.TunnelAuthVerifierConfiguration~test1.config";
-		property osgi.module.configurations = "urlsIncludes=\"/api/liferay/original\"";
-
-		task ("Given an existing factory config") {
-			var configName = "com.liferay.portal.security.auth.verifier.internal.tunnel.configuration.TunnelAuthVerifierConfiguration~test1";
-
-			SQL.assertTextInMySQLStatementResult(
-				mysqlStatement = "SELECT * FROM lportal.Configuration_ WHERE configurationId LIKE '%${configName}%'",
-				text = "urlsIncludes=\"/api/liferay/original\"");
-		}
-
-		task ("When the factory config is modified") {
-			OSGiConfig.deployOSGiConfigFile(
-				osgiConfigFileName = "${configName}.config",
-				osgiConfigs = "urlsIncludes=\"/api/liferay/new\"");
-		}
-
-		task ("Then the factory config should be successfully updated") {
-			OSGiConfig.waitForOSGiConfig();
-
-			SQL.assertTextInMySQLStatementResult(
-				mysqlStatement = "SELECT * FROM lportal.Configuration_ WHERE configurationId LIKE '%${configName}%'",
-				text = "urlsIncludes=\"/api/liferay/new\"");
-		}
-	}
-
 	@description = "Verify if a config exists only in the database, when a OSGI config file is added, the databse entry is updated."
 	@priority = 3
 	test OSGIConfigFileUpdatesExistingConfigInDatabase {

@@ -329,6 +329,20 @@ public class FileInstallConfigTest {
 				Configuration.ConfigurationAttribute.READ_ONLY));
 	}
 
+	@Test
+	public void testUpdateFactoryConfiguration() throws Exception {
+		String factoryConfigurationName = StringBundler.concat(
+			StringUtil.randomId(), CharPool.DASH, StringUtil.randomId());
+
+		_testFactoryConfiguration(
+			CharPool.TILDE, factoryConfigurationName, "testValue1");
+
+		Thread.sleep(1000);
+
+		_testFactoryConfiguration(
+			CharPool.TILDE, factoryConfigurationName, "testValue2");
+	}
+
 	private Configuration _createConfiguration(
 			Charset charset, String configurationPid, String content)
 		throws Exception {
