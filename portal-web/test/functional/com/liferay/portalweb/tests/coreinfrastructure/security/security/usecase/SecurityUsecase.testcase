@@ -393,8 +393,6 @@ definition {
 		}
 
 		task ("Assert user created in users page") {
-			Navigator.openURL();
-
 			User.openUsersAdmin();
 
 			User.viewUserTableName(

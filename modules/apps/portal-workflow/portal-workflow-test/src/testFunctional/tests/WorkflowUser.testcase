@@ -110,10 +110,7 @@ definition {
 			workflowAssetType = "User",
 			workflowTask = "Review");
 
-		ApplicationsMenu.gotoPortlet(
-			category = "Users",
-			panel = "Control Panel",
-			portlet = "Users and Organizations");
+		User.openUsersAdmin();
 
 		Account.deactivateAccount(accountName = "userfn userln");
 
@@ -215,10 +212,7 @@ definition {
 			workflowAssetType = "User",
 			workflowTask = "Review");
 
-		ApplicationsMenu.gotoPortlet(
-			category = "Users",
-			panel = "Control Panel",
-			portlet = "Users and Organizations");
+		User.openUsersAdmin();
 
 		Search.searchCP(searchTerm = "userfn userln");
 
@@ -291,10 +285,7 @@ definition {
 			password = "test",
 			userEmailAddress = "test@liferay.com");
 
-		ApplicationsMenu.gotoPortlet(
-			category = "Users",
-			panel = "Control Panel",
-			portlet = "Users and Organizations");
+		User.openUsersAdmin();
 
 		User.searchCP(searchTerm = "usersn");
 
@@ -312,10 +303,7 @@ definition {
 			workflowAssetType = "User",
 			workflowTask = "Review");
 
-		ApplicationsMenu.gotoPortlet(
-			category = "Users",
-			panel = "Control Panel",
-			portlet = "Users and Organizations");
+		User.openUsersAdmin();
 
 		User.editPasswordCP(
 			userEmailAddress = "user@liferay.com",

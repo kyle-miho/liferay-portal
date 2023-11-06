@@ -2678,10 +2678,7 @@ definition {
 
 	@summary = "Default summary"
 	macro tearDownCP() {
-		ApplicationsMenu.gotoPortlet(
-			category = "Users",
-			panel = "Control Panel",
-			portlet = "Users and Organizations");
+		User.openUsersAdmin();
 
 		Click(locator1 = "Dropdown#FILTER_AND_ORDER");
 
@@ -2716,10 +2713,7 @@ definition {
 
 	@summary = "Default summary"
 	macro tearDownSpecificUser(userScreenName = null) {
-		ApplicationsMenu.gotoPortlet(
-			category = "Users",
-			panel = "Control Panel",
-			portlet = "Users and Organizations");
+		User.openUsersAdmin();
 
 		Click(locator1 = "Dropdown#FILTER_AND_ORDER");
 
