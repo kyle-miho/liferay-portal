@@ -39,10 +39,7 @@ definition {
 
 		User.firstLoginPG();
 
-		ApplicationsMenu.gotoPortlet(
-			category = "System",
-			panel = "Control Panel",
-			portlet = "Server Administration");
+		ServerAdministration.openServerAdmin();
 
 		var secondCompanyId = JSONCompany.getCompanyId(portalInstanceName = "www.able.com");
 
@@ -57,10 +54,7 @@ definition {
 
 		PortalInstances.deleteCP(virtualHost = "www.able.com");
 
-		ApplicationsMenu.gotoPortlet(
-			category = "System",
-			panel = "Control Panel",
-			portlet = "Server Administration");
+		ServerAdministration.openServerAdmin();
 
 		PortalCache.getCache(
 			cacheValue = "null",
@@ -79,10 +73,7 @@ definition {
 			virtualHost = "www.able.com",
 			webId = "www.able.com");
 
-		ApplicationsMenu.gotoPortlet(
-			category = "System",
-			panel = "Control Panel",
-			portlet = "Server Administration");
+		ServerAdministration.openServerAdmin();
 
 		PortalCache.putCache(
 			cacheValue = "test.value",
@@ -107,10 +98,7 @@ definition {
 			virtualHost = "www.able.com",
 			webId = "www.able.com");
 
-		ApplicationsMenu.gotoPortlet(
-			category = "System",
-			panel = "Control Panel",
-			portlet = "Server Administration");
+		ServerAdministration.openServerAdmin();
 
 		PortalCache.putCache(cacheValue = "test.value.node.1.company.1");
 
@@ -134,10 +122,7 @@ definition {
 				userEmailAddress = "test@liferay.com");
 		}
 
-		ApplicationsMenu.gotoPortlet(
-			category = "System",
-			panel = "Control Panel",
-			portlet = "Server Administration");
+		ServerAdministration.openServerAdmin(baseURL = "http://localhost:9080");
 
 		PortalCache.getCache(cacheValue = "null");
 
@@ -159,10 +144,7 @@ definition {
 			User.firstLoginPG();
 		}
 
-		ApplicationsMenu.gotoPortlet(
-			category = "System",
-			panel = "Control Panel",
-			portlet = "Server Administration");
+		ServerAdministration.openServerAdmin();
 
 		PortalCache.getCache(cacheValue = "test.value.node.1.company.1");
 
@@ -227,10 +209,7 @@ definition {
 
 		User.firstLoginPG();
 
-		ApplicationsMenu.gotoPortlet(
-			category = "System",
-			panel = "Control Panel",
-			portlet = "Server Administration");
+		ServerAdministration.openServerAdmin();
 
 		ServerAdministration.executeScript(
 			language = "Groovy",
