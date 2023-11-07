@@ -1641,10 +1641,7 @@ definition {
 	test TaskIsNotDisplayedAfterOrderIsDeleted {
 		CommerceAccelerators.initializeNewSiteViaAccelerator(siteName = "Minium");
 
-		ApplicationsMenu.gotoPortlet(
-			category = "Accounts",
-			panel = "Control Panel",
-			portlet = "Accounts");
+		Account.openAccountsAdmin();
 
 		Account.addBusinessAccount(
 			accountDescription = "Account Description",
