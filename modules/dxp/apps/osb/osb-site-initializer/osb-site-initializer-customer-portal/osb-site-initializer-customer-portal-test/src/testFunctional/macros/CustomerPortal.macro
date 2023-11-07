@@ -482,10 +482,7 @@ definition {
 			CustomerPortal.customerPortalApisTearDown();
 		}
 
-		ApplicationsMenu.gotoPortlet(
-			category = "Sites",
-			panel = "Control Panel",
-			portlet = "Sites");
+		Site.openSitesAdmin();
 
 		Refresh();
 
