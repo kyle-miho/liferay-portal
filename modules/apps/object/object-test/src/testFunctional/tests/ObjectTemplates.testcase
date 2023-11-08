@@ -76,8 +76,6 @@ definition {
 
 		ObjectAdmin.publishObjectViaAPI(objectName = "CustomObject149241");
 
-		Navigator.openURL();
-
 		ObjectAdmin.openObjectAdmin();
 
 		ObjectPortlet.selectCustomObject(label = "Custom Object 149241");
@@ -160,8 +158,6 @@ definition {
 
 		ObjectAdmin.publishObjectViaAPI(objectName = "CustomObject149245");
 
-		Navigator.openURL();
-
 		ObjectAdmin.openObjectAdmin();
 
 		ObjectPortlet.selectCustomObject(label = "Custom Object 149245");
@@ -241,8 +237,6 @@ definition {
 			objectName = "CustomObject149246");
 
 		ObjectAdmin.publishObjectViaAPI(objectName = "CustomObject149246");
-
-		Navigator.openURL();
 
 		ObjectAdmin.openObjectAdmin();
 
@@ -324,8 +318,6 @@ definition {
 
 		ObjectAdmin.publishObjectViaAPI(objectName = "CustomObject149242");
 
-		Navigator.openURL();
-
 		ObjectAdmin.openObjectAdmin();
 
 		ObjectPortlet.selectCustomObject(label = "Custom Object 149242");
@@ -405,8 +397,6 @@ definition {
 			objectName = "CustomObject149244");
 
 		ObjectAdmin.publishObjectViaAPI(objectName = "CustomObject149244");
-
-		Navigator.openURL();
 
 		ObjectAdmin.openObjectAdmin();
 
@@ -578,8 +568,6 @@ definition {
 			objectName = "CustomObject149240");
 
 		ObjectAdmin.publishObjectViaAPI(objectName = "CustomObject149240");
-
-		Navigator.openURL();
 
 		ObjectAdmin.openObjectAdmin();
 
