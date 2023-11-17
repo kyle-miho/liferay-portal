@@ -16264,6 +16264,15 @@ mail.send.blacklist=</echo>
 		<get-testcase-property property.name="skip.start.app.server" />
 
 		<if>
+			<equals arg1="${cold.startup.testing}" arg2="true" />
+			<then>
+				<antcall target="start-app-server-preserve-liferay-home" />
+
+				<antcall target="stop-app-server" />
+			</then>
+		</if>
+
+		<if>
 			<not>
 				<equals arg1="${skip.start.app.server}" arg2="true" />
 			</not>
