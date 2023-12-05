@@ -43,6 +43,8 @@ definition {
 
 		Smoke.viewWelcomeContentPage();
 
+		fail("Kyle FAIL TEST1");
+
 		Smoke.runSmoke();
 
 		// LPS-178114 Assert Toggle Controls (eye icon) is in the correct location and can be toggled
@@ -75,6 +77,8 @@ definition {
 		property osgi.module.configuration.file.names = "com.liferay.document.library.document.conversion.configuration.OpenOfficeConfiguration";
 		property osgi.module.configurations = "cacheEnabled=\"false\"";
 		property portal.smoke = "false";
+
+		fail("Kyle FAIL TEST33");
 
 		SignIn.signInTestSetup();
 
