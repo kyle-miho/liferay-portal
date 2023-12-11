@@ -1,0 +1,39 @@
+@component-name = "portal-server-administration"
+definition {
+
+	property ci.retries.disabled = "true";
+	property portal.release = "true";
+	property portal.upstream = "true";
+	property testray.main.component.name = "Server Administration";
+
+	setUp {
+		TestCase.setUpPortalInstance();
+
+		User.firstLoginPG();
+	}
+
+	@description = "This is a usecase LPS-147401. Verify debug traces can be enabled for session creation and destruction."
+	@priority = 2
+	test EnableSessionDebugging {
+		property test.assert.warning.exceptions = "true";
+		property test.liferay.virtual.instance = "false";
+		property test.run.type = "single";
+
+		ServerAdministration.openServerAdmin();
+
+		ServerAdministration.addCategoryLogLevels(
+			categoryLevel = "DEBUG",
+			categoryName = "com.liferay.portal.servlet.PortalSessionListener");
+
+		User.logoutAndLoginPG(
+			userLoginEmailAddress = "test@liferay.com",
+			userLoginFullName = "Test Test");
+
+		AssertConsoleTextPresent(value1 = "Session");
+
+		AssertConsoleTextPresent(value1 = "was created");
+
+		AssertConsoleTextPresent(value1 = "was destroyed");
+	}
+
+}
