@@ -218,7 +218,7 @@ definition {
 	@description = "Feature ID: Legacy | Automation ID: LRAC-8148 | Test Summary: Individuals usage update in real time"
 	@priority = 5
 	test IndividualsUpdatesInRealTime {
-		property portal.acceptance = "false";
+		property portal.acceptance = "U112Round3";
 
 		var usernameList = "user1,user2,user3";
 

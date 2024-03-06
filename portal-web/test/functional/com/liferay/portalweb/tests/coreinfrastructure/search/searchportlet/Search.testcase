@@ -21,6 +21,8 @@ definition {
 	}
 
 	test AddSearchWidgetsOnContentPageViaUI {
+		property portal.acceptance = "U112Round3";
+
 		task ("Add a content page and navigate to the edit screen of said page") {
 			JSONLayout.addPublicLayout(
 				groupName = "Guest",
