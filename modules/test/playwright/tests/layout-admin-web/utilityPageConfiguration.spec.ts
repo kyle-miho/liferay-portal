@@ -48,3 +48,18 @@ test('LPD-4459: Asserts the Utility Pages configuration view.', async ({
 		0
 	);
 });
+
+test(
+	'This is a test for LPS-177408. The page designer should see the default 500 error utility page in new site based on Welcome'
+	, async({
+		apiHelpers,
+		page,
+		utilityPagesPage,
+
+}) => {
+	const site = await apiHelpers.headlessSite.createSite(getRandomString());
+
+	await utilityPagesPage.goto(site.friendlyUrlPath);
+
+	await expect(page.getByRole('link', {name: '500 Error'})).toBeVisible();
+});
