@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -163,6 +164,18 @@ public abstract class BaseWorkspaceGitRepository
 			return partitionedLocalGitCommits;
 		}
 
+		int listSize = localGitCommits.size();
+
+		int partitionSize = 1;
+
+		if (listSize > count) {
+			partitionSize = listSize / count;
+
+			if ((listSize % count) > 0) {
+				partitionSize++;
+			}
+		}
+
 		List<List<LocalGitCommit>> partitionedLocalGitCommits = new ArrayList<>(
 			count);
 
@@ -170,9 +183,37 @@ public abstract class BaseWorkspaceGitRepository
 			localGitCommits.size() - 1);
 
 		if (!localGitCommits.isEmpty()) {
-			partitionedLocalGitCommits.addAll(
-				JenkinsResultsParserUtil.partitionByCount(
-					localGitCommits, count - 1));
+			Iterator<LocalGitCommit> localGitCommitsIterator =
+				localGitCommits.iterator();
+
+			LocalGitCommit localGitCommit = localGitCommitsIterator.next();
+
+			while (localGitCommitsIterator.hasNext()) {
+				List<LocalGitCommit> tempLocalGitCommits = new ArrayList<>();
+
+				String lastJiraIssue = null;
+
+				String jiraIssue = _getJiraIssue(localGitCommit);
+
+				int currentPartitionSize = 0;
+
+				while (((currentPartitionSize < partitionSize) ||
+						lastJiraIssue.equals(jiraIssue)) &&
+					   localGitCommitsIterator.hasNext()) {
+
+					tempLocalGitCommits.add(localGitCommit);
+
+					currentPartitionSize++;
+
+					localGitCommit = localGitCommitsIterator.next();
+
+					lastJiraIssue = jiraIssue;
+
+					jiraIssue = _getJiraIssue(localGitCommit);
+				}
+
+				partitionedLocalGitCommits.add(tempLocalGitCommits);
+			}
 		}
 
 		partitionedLocalGitCommits.add(Lists.newArrayList(lastLocalGitCommit));
@@ -649,6 +690,14 @@ public abstract class BaseWorkspaceGitRepository
 
 	private String _getBaseBranchUsername() {
 		return getString("base_branch_username");
+	}
+
+	private String _getJiraIssue(LocalGitCommit localGitCommit) {
+		String commitMessage = localGitCommit.getMessage();
+
+		String[] temp = commitMessage.split("\\s");
+
+		return temp[0];
 	}
 
 	private String _getSenderBranchHeadSHA() {
