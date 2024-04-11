@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -170,9 +171,39 @@ public abstract class BaseWorkspaceGitRepository
 			localGitCommits.size() - 1);
 
 		if (!localGitCommits.isEmpty()) {
-			partitionedLocalGitCommits.addAll(
-				JenkinsResultsParserUtil.partitionByCount(
-					localGitCommits, count - 1));
+			Iterator<LocalGitCommit> localGitCommitsIterator =
+				localGitCommits.iterator();
+
+			LocalGitCommit localGitCommit = localGitCommitsIterator.next();
+
+			while (localGitCommitsIterator.hasNext()) {
+				List<LocalGitCommit> tempLocalGitCommits = new ArrayList<>();
+
+				String lastJiraIssue = null;
+
+				String jiraIssue = _getJiraIssue(localGitCommit);
+
+				int currentPartitionIndex = 0;
+
+				while (((currentPartitionIndex < _getMaxPartitionIndex(
+							localGitCommits.size(), partitionedLocalGitCommits,
+							count)) ||
+						_isSameJiraIssue(lastJiraIssue, jiraIssue)) &&
+					   localGitCommitsIterator.hasNext()) {
+
+					tempLocalGitCommits.add(localGitCommit);
+
+					currentPartitionIndex++;
+
+					localGitCommit = localGitCommitsIterator.next();
+
+					lastJiraIssue = jiraIssue;
+
+					jiraIssue = _getJiraIssue(localGitCommit);
+				}
+
+				partitionedLocalGitCommits.add(tempLocalGitCommits);
+			}
 		}
 
 		partitionedLocalGitCommits.add(Lists.newArrayList(lastLocalGitCommit));
@@ -651,6 +682,41 @@ public abstract class BaseWorkspaceGitRepository
 		return getString("base_branch_username");
 	}
 
+	private String _getJiraIssue(LocalGitCommit localGitCommit) {
+		String commitMessage = localGitCommit.getMessage();
+
+		String regex = "\\s*(\\w+-\\d+).*";
+
+		if (commitMessage.matches(regex)) {
+			return commitMessage.replaceAll(regex, "$1");
+		}
+
+		return "";
+	}
+
+	private int _getMaxPartitionIndex(
+		int maxPartitionSize, List<List<LocalGitCommit>> currentLocalGitCommits,
+		int count) {
+
+		int currentPartitionSize = 0;
+
+		for (List<LocalGitCommit> localGitCommits : currentLocalGitCommits) {
+			currentPartitionSize += localGitCommits.size();
+		}
+
+		int remainingPartitionSize = maxPartitionSize - currentPartitionSize;
+
+		int partitionsLeft = count - currentLocalGitCommits.size();
+
+		int expectedPartitionIndex = remainingPartitionSize / partitionsLeft;
+
+		if (expectedPartitionIndex < 0) {
+			return 0;
+		}
+
+		return expectedPartitionIndex;
+	}
+
 	private String _getSenderBranchHeadSHA() {
 		return getString("sender_branch_head_sha");
 	}
@@ -683,6 +749,16 @@ public abstract class BaseWorkspaceGitRepository
 
 	private boolean _isPullRequest() {
 		return PullRequest.isValidGitHubPullRequestURL(getGitHubURL());
+	}
+
+	private boolean _isSameJiraIssue(String jiraIssue, String lastJiraIssue) {
+		if (JenkinsResultsParserUtil.isNullOrEmpty(jiraIssue) ||
+			JenkinsResultsParserUtil.isNullOrEmpty(lastJiraIssue)) {
+
+			return false;
+		}
+
+		return lastJiraIssue.equals(jiraIssue);
 	}
 
 	private void _setBaseBranchHeadSHA(String branchSHA) {
