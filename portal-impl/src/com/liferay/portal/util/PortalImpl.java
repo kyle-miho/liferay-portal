@@ -918,6 +918,17 @@ public class PortalImpl implements Portal {
 				else if (allowedDomain.equals(domain)) {
 					return url;
 				}
+				else if (allowedDomain.equals("PORTAL_DOMAIN")) {
+					ServiceContext serviceContext =
+						ServiceContextThreadLocal.getServiceContext();
+
+					ThemeDisplay themeDisplay =
+						serviceContext.getThemeDisplay();
+
+					if (domain.equals(themeDisplay.getPortalDomain())) {
+						return url;
+					}
+				}
 			}
 
 			if (_log.isWarnEnabled()) {
