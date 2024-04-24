@@ -1,0 +1,1 @@
+CPCommerceChannels#CanPaginatePaymentAndShippingRestrictions
