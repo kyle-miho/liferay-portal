@@ -568,6 +568,65 @@ local.bundles.backup.file=${liferay.home.parent.dir}/bundles-master-${git.commit
 		<prepare-test-cluster-properties />
 	</target>
 
+	<target name="setup-release-branch">
+		<delete file="../release.tickets.info.txt" />
+
+		<trycatch>
+			<try>
+				<input addproperty="release.tickets.file" message="Enter the name of a *.txt file that contains a comma list of tickets in Master to cherry-pick" />
+
+				<loadfile
+					property="release.tickets"
+					srcFile="${project.dir}\${release.tickets.file}.txt"
+				/>
+
+				<exec executable="git" failonerror="true" outputproperty="current.branch.name">
+					<arg value="rev-parse" />
+					<arg value="--abbrev-ref" />
+					<arg value="HEAD" />
+				</exec>
+
+				<execute>
+					git checkout master
+				</execute>
+
+				<for delimiter="," list="${release.tickets}" param="release.ticket">
+					<sequential>
+						<echo>Currently on release ticket: @{release.ticket}</echo>
+
+						<exec append="true" executable="git" failonerror="true" output="../release.tickets.info.txt">
+							<arg value="log" />
+							<arg value="--grep=@{release.ticket}" />
+							<arg value="--reverse" />
+							<arg value="--pretty=format:%H" />
+						</exec>
+					</sequential>
+				</for>
+
+				<execute>
+					git checkout ${current.branch.name}
+					git fetch upstream master
+				</execute>
+
+				<loadfile
+					property="release.shas"
+					srcFile="${project.dir}\..\release.tickets.info.txt"
+				/>
+
+				<for delimiter="${line.separator}" list="${release.shas}" param="release.sha">
+					<sequential>
+						<execute>
+							git cherry-pick @{release.sha}
+						</execute>
+					</sequential>
+				</for>
+			</try>
+			<finally>
+				<delete file="../release.tickets.info.txt" />
+			</finally>
+		</trycatch>
+	</target>
+
 	<target name="setup-release-bundle">
 		<if>
 			<not>
