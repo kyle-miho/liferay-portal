@@ -76,6 +76,7 @@ public class UpgradeCatchAllCheck implements ConfigurationBeanDeclaration {
 		_http.sanitizeHeader(null);
 		_http.setParameter(null, null, null);
 		_http.shortenURL(null);
+		_httpOther.shortenURL(null);
 
 		HttpUtil.hasProxyConfig();
 		HttpUtil.addParameter(null, null, null);
@@ -762,6 +763,9 @@ public class UpgradeCatchAllCheck implements ConfigurationBeanDeclaration {
 
 	@Reference
 	private Http _http;
+
+	@Reference
+	private Http _httpOther;
 
 	@Reference
 	private JournalFolderLocalService _journalFolderLocalService;
