@@ -7182,10 +7182,12 @@ information. Make sure to commit in all format-javadoc results.
 	</target>
 
 	<target name="modules-integration-project-templates-jdk8">
+		<lstopwatch action="start" name="kyle.wrapper" />
 		<antcall target="modules-unit-jdk8">
 			<param name="project.templates.test" value="true" />
 			<param name="project.templates.test.builds" value="true" />
 		</antcall>
+		<lstopwatch action="stop" name="kyle.wrapper" />
 	</target>
 
 	<target name="modules-integration-sqlserver2017-jdk8">
