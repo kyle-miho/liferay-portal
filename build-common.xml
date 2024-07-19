@@ -2310,7 +2310,9 @@ rerun your task.
 	</target>
 
 	<target name="gradle-execute-modules">
-		<gradle-execute dir="${dir}" gradlejvmargs="${gradle.jvm.args}" task="${test.task}" test.name="${test.name}" />
+		<lstopwatch action="start" name="kyle.modules" />
+			<gradle-execute dir="${dir}" gradlejvmargs="${gradle.jvm.args}" task="${test.task}" test.name="${test.name}" />
+		<lstopwatch action="stop" name="kyle.modules" />
 	</target>
 
 	<target name="print-properties">
