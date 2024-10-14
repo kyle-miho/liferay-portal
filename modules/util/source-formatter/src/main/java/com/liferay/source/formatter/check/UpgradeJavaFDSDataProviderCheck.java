@@ -12,13 +12,18 @@ import com.liferay.source.formatter.check.util.JavaSourceUtil;
 import com.liferay.source.formatter.parser.JavaClass;
 import com.liferay.source.formatter.parser.JavaClassParser;
 import com.liferay.source.formatter.parser.JavaMethod;
+import com.liferay.source.formatter.parser.JavaParameter;
+import com.liferay.source.formatter.parser.JavaSignature;
 import com.liferay.source.formatter.parser.JavaTerm;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
+ * @author Kyle Miho
  * @author Michael Cavalcanti
  */
 public class UpgradeJavaFDSDataProviderCheck extends BaseUpgradeCheck {
@@ -33,6 +38,18 @@ public class UpgradeJavaFDSDataProviderCheck extends BaseUpgradeCheck {
 		List<String> implementedClassNames =
 			javaClass.getImplementedClassNames();
 
+		if (!implementedClassNames.contains("ClayDataSetDataProvider") &&
+			!implementedClassNames.contains("CommerceDataSetDataProvider")) {
+
+			return content;
+		}
+
+		content = _updateProviderKey(content);
+
+		content = _updateImplementedClass(content);
+
+		content = _updateServiceClass(content);
+
 		for (JavaTerm childJavaTerm : javaClass.getChildJavaTerms()) {
 			if (!childJavaTerm.isJavaMethod()) {
 				continue;
@@ -44,9 +61,39 @@ public class UpgradeJavaFDSDataProviderCheck extends BaseUpgradeCheck {
 
 			String newJavaMethodContent = javaMethodContent;
 
-			if (implementedClassNames.contains("FDSDataProvider")) {
-				newJavaMethodContent = _checkMethodDefinition(
-					newJavaMethodContent);
+			if (_hasUpgradeableMethod(
+					javaMethod, _originalGetItemsParameterList,
+					Arrays.asList("getItems"), "List")) {
+
+				for (int i = 0; i < _originalGetItemsParameterList.size();
+					 ++i) {
+
+					newJavaMethodContent = StringUtil.replace(
+						newJavaMethodContent,
+						_originalGetItemsParameterList.get(i),
+						_upgradedGetItemsParameterList.get(i));
+				}
+
+				newJavaMethodContent = _reorderGetItems(newJavaMethodContent);
+			}
+
+			if (_hasUpgradeableMethod(
+					javaMethod, _originalCountItemsParameterList,
+					Arrays.asList("countItems", "getItemsCount"), "int")) {
+
+				newJavaMethodContent = StringUtil.replace(
+					newJavaMethodContent, "countItems", "getItemsCount");
+
+				for (int i = 0; i < _originalCountItemsParameterList.size();
+					 ++i) {
+
+					newJavaMethodContent = StringUtil.replace(
+						newJavaMethodContent,
+						_originalCountItemsParameterList.get(i),
+						_upgradedCountItemsParameterList.get(i));
+				}
+
+				newJavaMethodContent = _reorderCountItems(newJavaMethodContent);
 			}
 
 			newJavaMethodContent = _checkMethodCalls(
@@ -57,6 +104,15 @@ public class UpgradeJavaFDSDataProviderCheck extends BaseUpgradeCheck {
 		}
 
 		return content;
+	}
+
+	@Override
+	protected String[] getNewImports() {
+		return new String[] {
+			"com.liferay.frontend.data.set.provider.FDSDataProvider",
+			"com.liferay.frontend.data.set.provider.search.FDSKeywords",
+			"com.liferay.frontend.data.set.provider.search.FDSPagination"
+		};
 	}
 
 	private boolean _checkMethodCall(
@@ -116,36 +172,56 @@ public class UpgradeJavaFDSDataProviderCheck extends BaseUpgradeCheck {
 
 				javaMethodContent = StringUtil.replace(
 					javaMethodContent, methodCall,
-					_reorderGetItemsCount(methodCall));
+					_reorderCountItems(methodCall));
 			}
 		}
 
 		return javaMethodContent;
 	}
 
-	private String _checkMethodDefinition(String javaMethodContent) {
-		Matcher matcher = _methodGetItemsPattern.matcher(javaMethodContent);
+	private boolean _hasUpgradeableMethod(
+		JavaMethod javaMethod, List<String> methodParameters,
+		List<String> methodNames, String returnType) {
 
-		boolean matchedGetItems = matcher.find();
+		if (!methodNames.contains(javaMethod.getName())) {
+			return false;
+		}
 
-		if (!matchedGetItems) {
-			matcher = _methodGetItemsCountPattern.matcher(javaMethodContent);
+		JavaSignature javaSignature = javaMethod.getSignature();
 
-			if (!matcher.find()) {
-				return javaMethodContent;
+		if (!Objects.equals(javaSignature.getReturnType(), returnType)) {
+			return false;
+		}
+
+		List<JavaParameter> javaParameters = javaSignature.getParameters();
+
+		if (methodParameters.size() != javaParameters.size()) {
+			return false;
+		}
+
+		for (int i = 0; i < methodParameters.size(); ++i) {
+			if (!Objects.equals(
+					methodParameters.get(i),
+					javaParameters.get(
+						i
+					).getParameterType())) {
+
+				return false;
 			}
 		}
 
-		String methodCall = JavaSourceUtil.getMethodCall(
-			javaMethodContent, matcher.start());
+		return true;
+	}
 
-		if (matchedGetItems) {
-			return StringUtil.replace(
-				javaMethodContent, methodCall, _reorderGetItems(methodCall));
-		}
+	private String _reorderCountItems(String methodCall) {
+		List<String> parameterList = JavaSourceUtil.getParameterList(
+			methodCall);
 
 		return StringUtil.replace(
-			javaMethodContent, methodCall, _reorderGetItemsCount(methodCall));
+			methodCall, JavaSourceUtil.getParameters(methodCall),
+			StringBundler.concat(
+				parameterList.get(1), StringPool.COMMA_AND_SPACE,
+				parameterList.get(0)));
 	}
 
 	private String _reorderGetItems(String methodCall) {
@@ -161,25 +237,60 @@ public class UpgradeJavaFDSDataProviderCheck extends BaseUpgradeCheck {
 				parameterList.get(3)));
 	}
 
-	private String _reorderGetItemsCount(String methodCall) {
-		List<String> parameterList = JavaSourceUtil.getParameterList(
-			methodCall);
+	private String _updateImplementedClass(String content) {
+		Matcher matcher = _implementedClassPattern.matcher(content);
 
-		return StringUtil.replace(
-			methodCall, JavaSourceUtil.getParameters(methodCall),
-			StringBundler.concat(
-				parameterList.get(1), StringPool.COMMA_AND_SPACE,
-				parameterList.get(0)));
+		if (matcher.find()) {
+			return StringUtil.replace(
+				content, matcher.group(), matcher.group(1) + "FDSDataProvider");
+		}
+
+		return content;
 	}
 
+	private String _updateProviderKey(String content) {
+		if (content.contains("clay.data.provider.key")) {
+			return StringUtil.replace(
+				content, "clay.data.provider.key", "fds.data.provider.key");
+		}
+		else if (content.contains("commerce.data.provider.key")) {
+			return StringUtil.replace(
+				content, "commerce.data.provider.key", "fds.data.provider.key");
+		}
+
+		return content;
+	}
+
+	private String _updateServiceClass(String content) {
+		Matcher matcher = _serviceClassPattern.matcher(content);
+
+		if (matcher.find()) {
+			return StringUtil.replace(
+				content, matcher.group(),
+				matcher.group(1) + "FDSDataProvider.class");
+		}
+
+		return content;
+	}
+
+	private static final Pattern _implementedClassPattern = Pattern.compile(
+		"(implements\\s*)" +
+			"(ClayDataSetDataProvider|CommerceDataSetDataProvider)");
 	private static final Pattern _methodCallGetItemsCountPattern =
 		Pattern.compile("\\w+\\.getItemsCount\\s*\\(\\s*.+,\\s*.+\\s*\\)");
 	private static final Pattern _methodCallGetItemsPattern = Pattern.compile(
 		"\\w+\\.getItems\\s*\\(\\s*.+,\\s*.+,\\s*.+,\\s*.+\\s*\\)");
-	private static final Pattern _methodGetItemsCountPattern = Pattern.compile(
-		"getItemsCount\\s*\\(\\s*HttpServletRequest\\s*.+,\\s*.+\\s*\\)");
-	private static final Pattern _methodGetItemsPattern = Pattern.compile(
-		"getItems\\s*\\(\\s*HttpServletRequest\\s*.+,\\s*.+,\\s*.+,\\s*.+" +
-			"\\s*\\)");
+	private static final List<String> _originalCountItemsParameterList =
+		Arrays.asList("HttpServletRequest", "Filter");
+	private static final List<String> _originalGetItemsParameterList =
+		Arrays.asList("HttpServletRequest", "Filter", "Pagination", "Sort");
+	private static final Pattern _serviceClassPattern = Pattern.compile(
+		"(service\\s*=\\s*)(ClayDataSetDataProvider|" +
+			"CommerceDataSetDataProvider)\\.class");
+	private static final List<String> _upgradedCountItemsParameterList =
+		Arrays.asList("HttpServletRequest", "FDSKeywords");
+	private static final List<String> _upgradedGetItemsParameterList =
+		Arrays.asList(
+			"HttpServletRequest", "FDSKeywords", "FDSPagination", "Sort");
 
 }
