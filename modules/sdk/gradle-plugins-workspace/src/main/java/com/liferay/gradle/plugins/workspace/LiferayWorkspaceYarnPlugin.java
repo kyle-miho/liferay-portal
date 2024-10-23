@@ -9,8 +9,6 @@ import com.liferay.gradle.plugins.NodeDefaultsPlugin;
 import com.liferay.gradle.plugins.node.NodeExtension;
 import com.liferay.gradle.plugins.node.YarnPlugin;
 import com.liferay.gradle.plugins.node.task.NpmInstallTask;
-import com.liferay.gradle.plugins.node.task.PackageRunTask;
-import com.liferay.gradle.plugins.node.task.PackageRunTestTask;
 import com.liferay.gradle.plugins.node.task.YarnInstallTask;
 import com.liferay.gradle.plugins.workspace.internal.util.GradleUtil;
 import com.liferay.gradle.plugins.workspace.task.SetUpYarnTask;
@@ -73,15 +71,6 @@ public class LiferayWorkspaceYarnPlugin extends YarnPlugin {
 						nodeExtension.setUseNpm(false);
 
 						npmInstallTask.finalizedBy(yarnInstallTaskProvider);
-					});
-				taskContainer.withType(
-					PackageRunTask.class,
-					packageRunTask -> {
-						if (packageRunTask instanceof PackageRunTestTask) {
-							return;
-						}
-
-						packageRunTask.mustRunAfter(yarnInstallTaskProvider);
 					});
 			});
 	}
