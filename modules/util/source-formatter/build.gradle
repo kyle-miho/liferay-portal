@@ -73,6 +73,8 @@ dependencies {
 			because "Java 8 runtime support is required"
 		}
 	}
+
+	implementation group: "org.antlr", name: "antlr4-runtime", version: "4.13.2"
 }
 
 deployDependencies {
