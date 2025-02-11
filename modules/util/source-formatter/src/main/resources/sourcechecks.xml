@@ -957,6 +957,10 @@
 			<description name="Finds cases of inefficient SetUtil operations." />
 			<property name="enabled" value="false" />
 		</check>
+		<check name="StringConstantsCheck">
+			<category name="Styling" />
+			<description name="Checks if styling can be improved by removing constant usage if it can be combined with a literal string." />
+		</check>
 		<check name="StringMethodsCheck">
 			<category name="Performance" />
 			<description name="Checks if performance can be improved by using different String operation methods." />

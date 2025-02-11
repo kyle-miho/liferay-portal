@@ -272,6 +272,7 @@ SizeIsZeroCheck | [Styling](styling_checks.markdown#styling-checks) | Finds case
 [StaticVariableNameCheck](https://checkstyle.sourceforge.io/checks/naming/staticvariablename.html) | [Naming Conventions](naming_conventions_checks.markdown#naming-conventions-checks) | Checks that static, non-final variable names conform to a specified pattern. |
 StringBundlerNamingCheck | [Naming Conventions](naming_conventions_checks.markdown#naming-conventions-checks) | Checks for consistent naming on variables of type 'StringBundler'. |
 StringCastCheck | [Performance](performance_checks.markdown#performance-checks) | Finds cases where a redundant `toString()` is called on variable type `String`. |
+StringConstantsCheck | [Styling](styling_checks.markdown#styling-checks) | Checks if styling can be improved by removing constant usage if it can be combined with a literal string. |
 [StringLiteralEqualityCheck](https://checkstyle.sourceforge.io/checks/coding/stringliteralequality.html) | [Styling](styling_checks.markdown#styling-checks) | Checks that string literals are not used with == or !=. |
 [StringMethodsCheck](check/string_methods_check.markdown#stringmethodscheck) | [Performance](performance_checks.markdown#performance-checks) | Checks if performance can be improved by using different String operation methods. |
 SubstringCheck | [Performance](performance_checks.markdown#performance-checks) | Finds cases like `s.substring(1, s.length())` (use `s.substring(1)` instead). |

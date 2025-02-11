@@ -166,6 +166,7 @@ SemiColonCheck | .java, .jsp, .jspf, .jspx, .tag, .tpl, or .vm | Finds cases of 
 SizeIsZeroCheck | .java, .jsp, .jspf, .jspx, .tag, .tpl, or .vm | Finds cases of calls like `list.size() == 0` (use `list.isEmpty()` instead). |
 SlantedQuotesCheck | | Finds `slanted quote` (`\u201a`, `\u201b`, `\u201c`, `\u201d`, `\u201e`, `\u201f`, `\u2018` or `\u2019`) characters. |
 SoyEmptyLinesCheck | .soy | Finds missing and unnecessary empty lines. |
+StringConstantsCheck | .java | Checks if styling can be improved by removing constant usage if it can be combined with a literal string. |
 [StringLiteralEqualityCheck](https://checkstyle.sourceforge.io/checks/coding/stringliteralequality.html) | .java, .jsp, .jspf, .jspx, .tag, .tpl, or .vm | Checks that string literals are not used with == or !=. |
 TFBlockOrderCheck | .tf | Checks the order of blocks in `.tf` file. |
 TLDElementOrderCheck | .tld | Checks the order of attributes in `.tld` file. |
