@@ -655,6 +655,9 @@ svn://svn.liferay.com/repos/public/alloy/trunk/sandbox/taglibs.
 					<jvmarg value="-Dfile.encoding=UTF-8" />
 					<jvmarg value="-Dsource.formatter.check.registry.in.test.classes=${source.formatter.check.registry.in.test.classes}" />
 					<jvmarg value="-Dsource.formatter.excludes=${source.formatter.excludes}" />
+					<jvmarg value="--add-opens=java.base/java.lang.invoke=ALL-UNNAMED" />
+					<jvmarg value="--add-opens=java.base/java.lang.reflect=ALL-UNNAMED" />
+					<jvmarg value="--add-opens=java.base/java.net=ALL-UNNAMED" />
 					<arg value="check.vulnerabilities=${check.vulnerabilities}" />
 					<arg value="commit.count=${source.formatter.commit.count}" />
 					<arg value="format.current.branch=${format.current.branch}" />

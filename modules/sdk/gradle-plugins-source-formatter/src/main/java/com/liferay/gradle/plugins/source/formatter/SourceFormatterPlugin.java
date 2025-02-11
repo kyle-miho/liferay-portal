@@ -9,6 +9,7 @@ import com.liferay.gradle.util.GradleUtil;
 import com.liferay.gradle.util.Validator;
 
 import org.gradle.api.Action;
+import org.gradle.api.JavaVersion;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
@@ -104,6 +105,24 @@ public class SourceFormatterPlugin implements Plugin<Project> {
 
 	private void _configureTaskFormatSource(
 		FormatSourceTask formatSourceTask, FileCollection classpath) {
+
+		JavaVersion javaVersion = formatSourceTask.getJavaVersion();
+
+		if (javaVersion.isJava11Compatible()) {
+			formatSourceTask.jvmArgs(
+				"--add-opens", "java.base/java.lang.invoke=ALL-UNNAMED");
+			formatSourceTask.jvmArgs(
+				"--add-opens", "java.base/java.lang.reflect=ALL-UNNAMED");
+			formatSourceTask.jvmArgs(
+				"--add-opens", "java.base/java.net=ALL-UNNAMED");
+			formatSourceTask.jvmArgs(
+				"--add-opens",
+				"java.base/sun.net.www.protocol.http=ALL-UNNAMED");
+			formatSourceTask.jvmArgs(
+				"--add-opens", "java.base/sun.util.calendar=ALL-UNNAMED");
+			formatSourceTask.jvmArgs(
+				"--add-opens", "jdk.zipfs/jdk.nio.zipfs=ALL-UNNAMED");
+		}
 
 		formatSourceTask.setClasspath(classpath);
 
