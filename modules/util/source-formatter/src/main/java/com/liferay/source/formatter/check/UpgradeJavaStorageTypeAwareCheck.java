@@ -50,7 +50,8 @@ public class UpgradeJavaStorageTypeAwareCheck extends BaseUpgradeCheck {
 
 			newContent = StringUtil.removeSubstring(
 				newContent,
-				"import com.liferay.portal.kernel.scheduler.StorageTypeAware;\n");
+				"import com.liferay.portal.kernel.scheduler.StorageTypeAware;" +
+					"\n");
 		}
 
 		return newContent;

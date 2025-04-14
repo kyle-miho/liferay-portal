@@ -18,10 +18,8 @@ public class DispatchOutputUtil {
 
 		return truncate(
 			beginningLinesCount, endingLinesCount,
-			StringBundler.concat(
-				"-----------------\n",
-				"Output was truncated for performance reasons.\n",
-				"-----------------"),
+			"-----------------\nOutput was truncated for performance reasons." +
+				"\n-----------------",
 			output);
 	}
 

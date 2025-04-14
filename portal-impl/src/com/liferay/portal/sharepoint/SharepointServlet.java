@@ -127,8 +127,8 @@ public class SharepointServlet extends HttpServlet {
 		ServletResponseUtil.write(
 			httpServletResponse,
 			StringBundler.concat(
-				"<!-- FrontPage Configuration Information\n",
-				" FPVersion=\"6.0.2.9999\"\n",
+				"<!-- FrontPage Configuration Information\n ",
+				"FPVersion=\"6.0.2.9999\"\n",
 				"FPShtmlScriptUrl=\"_vti_bin/shtml.dll/_vti_rpc\"\n",
 				"FPAuthorScriptUrl=\"_vti_bin/_vti_aut/author.dll\"\n",
 				"FPAdminScriptUrl=\"_vti_bin/_vti_adm/admin.dll\"\n",

@@ -189,7 +189,7 @@ public class WikiPageLocalServiceTest {
 	@Test
 	public void testAddPageWithNbspTitle() throws Exception {
 		WikiPage page = WikiTestUtil.addPage(
-			TestPropsValues.getUserId(), _node.getNodeId(), "ChildPage " + "1",
+			TestPropsValues.getUserId(), _node.getNodeId(), "ChildPage 1",
 			RandomTestUtil.randomString(), true,
 			ServiceContextTestUtil.getServiceContext(_group.getGroupId()));
 
@@ -1134,7 +1134,7 @@ public class WikiPageLocalServiceTest {
 
 		WikiPageLocalServiceUtil.renamePage(
 			TestPropsValues.getUserId(), _node.getNodeId(), page.getTitle(),
-			"New " + "Title", true,
+			"New Title", true,
 			ServiceContextTestUtil.getServiceContext(_group.getGroupId()));
 
 		WikiPageLocalServiceUtil.getPage(_node.getNodeId(), "New Title");
