@@ -225,8 +225,7 @@ public class MainServlet extends HttpServlet {
 			if (!StringPool.DEFAULT_CHARSET_NAME.startsWith("UTF-")) {
 				_log.warn(
 					StringBundler.concat(
-						"The default JVM character set \"",
-						StringPool.DEFAULT_CHARSET_NAME,
+						"The default JVM character set \"UTF-8",
 						"\" is not UTF. Please review the JVM property ",
 						"\"file.encoding\"."));
 			}

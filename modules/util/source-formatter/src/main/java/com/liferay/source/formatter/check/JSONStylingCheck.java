@@ -122,8 +122,7 @@ public class JSONStylingCheck extends BaseFileCheck {
 
 		sb = new StringBundler((lines.length * 5) + 3);
 
-		sb.append(StringPool.OPEN_BRACKET);
-		sb.append("\n");
+		sb.append("[\n");
 
 		for (int i = 1; i < (lines.length - 1); i++) {
 			String line = lines[i];
@@ -139,8 +138,7 @@ public class JSONStylingCheck extends BaseFileCheck {
 			sb.append(indent);
 			sb.append(StringPool.TAB);
 			sb.append(StringPool.QUOTE + line + StringPool.QUOTE);
-			sb.append(StringPool.COMMA);
-			sb.append("\n");
+			sb.append(",\n");
 		}
 
 		sb.setIndex(sb.index() - 2);

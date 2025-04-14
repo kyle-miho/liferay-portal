@@ -1266,14 +1266,12 @@ public class JSONUtil {
 
 		StringBundler sb = new StringBundler();
 
-		sb.append(StringPool.OPEN_BRACKET);
-		sb.append("\n");
+		sb.append("[\n");
 
 		for (Object value : toObjectList(jsonArray)) {
 			sb.append(_getIndent(indent, level + 1));
 			sb.append(_getString(value, indent, level + 1));
-			sb.append(StringPool.COMMA);
-			sb.append("\n");
+			sb.append(",\n");
 		}
 
 		sb.setIndex(sb.index() - 2);
@@ -1297,8 +1295,7 @@ public class JSONUtil {
 
 		StringBundler sb = new StringBundler();
 
-		sb.append(StringPool.OPEN_CURLY_BRACE);
-		sb.append("\n");
+		sb.append("{\n");
 
 		List<String> keys = new ArrayList<>(jsonObject.keySet());
 
@@ -1309,8 +1306,7 @@ public class JSONUtil {
 			sb.append(_getString(key, indent, level + 1));
 			sb.append(": ");
 			sb.append(_getString(jsonObject.get(key), indent, level + 1));
-			sb.append(StringPool.COMMA);
-			sb.append("\n");
+			sb.append(",\n");
 		}
 
 		sb.setIndex(sb.index() - 2);

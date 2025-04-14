@@ -780,15 +780,9 @@ public class ModulesStructureTest {
 
 			sb.append("!/");
 			sb.append(pluginDirName);
-			sb.append("/docroot/WEB-INF/lib");
-
-			sb.append(CharPool.NEW_LINE);
-
-			sb.append(CharPool.SLASH);
+			sb.append("/docroot/WEB-INF/lib\n/");
 			sb.append(pluginDirName);
-			sb.append("/docroot/WEB-INF/lib/*");
-
-			sb.append(CharPool.NEW_LINE);
+			sb.append("/docroot/WEB-INF/lib/*\n");
 
 			sb.append("!/");
 			sb.append(pluginDirName);
@@ -843,8 +837,7 @@ public class ModulesStructureTest {
 			sb.append(StringPool.NEW_LINE);
 
 			for (String fileName : sortedBuildExtGradleFileNames) {
-				sb.append(StringPool.NEW_LINE);
-				sb.append("apply from: \"");
+				sb.append("\napply from: \"");
 				sb.append(fileName);
 				sb.append("\"");
 			}
@@ -1212,8 +1205,7 @@ public class ModulesStructureTest {
 		if (Files.notExists(dirPath.resolve("settings-ext.gradle"))) {
 			settingsGradleTemplate = StringUtil.removeSubstring(
 				settingsGradleTemplate,
-				StringPool.NEW_LINE + StringPool.NEW_LINE +
-					"apply from: \"settings-ext.gradle\"");
+				"\n\napply from: \"settings-ext.gradle\"");
 		}
 
 		if (!dxpRepo && !privateRepo && !readOnlyRepo) {

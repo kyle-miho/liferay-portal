@@ -316,9 +316,7 @@ public class DataGuardTestRuleUtil {
 						sb.append(" with no backtrace info,\n");
 					}
 					else {
-						sb.append(" with backtrace info,\n");
-						sb.append(StringPool.TAB);
-						sb.append(StringPool.TAB);
+						sb.append(" with backtrace info,\n		");
 						sb.append(backtraceInfo);
 						sb.append(",\n");
 					}

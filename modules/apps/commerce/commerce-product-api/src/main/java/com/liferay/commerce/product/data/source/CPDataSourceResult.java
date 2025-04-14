@@ -60,9 +60,7 @@ public class CPDataSourceResult implements Serializable {
 			sb.append(cpCatalogEntry);
 		}
 
-		sb.append(CharPool.CLOSE_BRACKET);
-
-		sb.append(", length=");
+		sb.append("], length=");
 		sb.append(_length);
 		sb.append(CharPool.CLOSE_BRACKET);
 

@@ -6,7 +6,6 @@
 package com.liferay.portal.workflow.kaleo.internal.upgrade.v1_0_0;
 
 import com.liferay.petra.string.StringBundler;
-import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
 import com.liferay.portal.kernel.util.LoggingTimer;
 import com.liferay.portal.workflow.kaleo.definition.NodeType;
@@ -43,8 +42,7 @@ public class KaleoTaskInstanceTokenUpgradeProcess extends UpgradeProcess {
 			for (long kaleoInstanceTokenId : _kaleoInstanceTokenIds) {
 				sb.append("(kaleoInstanceTokenId = ");
 				sb.append(kaleoInstanceTokenId);
-				sb.append(StringPool.CLOSE_PARENTHESIS);
-				sb.append(" OR ");
+				sb.append(") OR ");
 			}
 
 			sb.setIndex(sb.index() - 1);

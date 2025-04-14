@@ -535,18 +535,15 @@ public class PortletExportControllerImpl implements PortletExportController {
 		StringBundler configurationOptionsSB = new StringBundler(6);
 
 		if (exportPortletSetup) {
-			configurationOptionsSB.append("setup");
-			configurationOptionsSB.append(StringPool.COMMA);
+			configurationOptionsSB.append("setup,");
 		}
 
 		if (exportPortletArchivedSetups) {
-			configurationOptionsSB.append("archived-setups");
-			configurationOptionsSB.append(StringPool.COMMA);
+			configurationOptionsSB.append("archived-setups,");
 		}
 
 		if (exportPortletUserPreferences) {
-			configurationOptionsSB.append("user-preferences");
-			configurationOptionsSB.append(StringPool.COMMA);
+			configurationOptionsSB.append("user-preferences,");
 		}
 
 		if (configurationOptionsSB.index() > 0) {

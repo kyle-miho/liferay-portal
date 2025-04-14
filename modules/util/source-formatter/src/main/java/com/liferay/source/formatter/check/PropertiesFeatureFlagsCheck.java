@@ -176,12 +176,7 @@ public class PropertiesFeatureFlagsCheck extends BaseFileCheck {
 				String environmentVariable =
 					ToolsUtil.encodeEnvironmentProperty(featureFlagPropertyKey);
 
-				sb.append(StringPool.NEW_LINE);
-				sb.append(StringPool.NEW_LINE);
-				sb.append(StringPool.FOUR_SPACES);
-				sb.append(StringPool.POUND);
-				sb.append(StringPool.NEW_LINE);
-				sb.append("    # Env: ");
+				sb.append("\n\n    #\n    # Env: ");
 				sb.append(environmentVariable);
 				sb.append(StringPool.NEW_LINE);
 				sb.append(StringPool.FOUR_SPACES);
@@ -224,12 +219,7 @@ public class PropertiesFeatureFlagsCheck extends BaseFileCheck {
 			String environmentVariable = ToolsUtil.encodeEnvironmentProperty(
 				key);
 
-			sb.append(StringPool.NEW_LINE);
-			sb.append(StringPool.NEW_LINE);
-			sb.append(StringPool.FOUR_SPACES);
-			sb.append(StringPool.POUND);
-			sb.append(StringPool.NEW_LINE);
-			sb.append("    # Env: ");
+			sb.append("\n\n    #\n    # Env: ");
 			sb.append(environmentVariable);
 			sb.append(StringPool.NEW_LINE);
 			sb.append(StringPool.FOUR_SPACES);

@@ -6,7 +6,6 @@
 package com.liferay.dispatch.executor;
 
 import com.liferay.petra.string.StringBundler;
-import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.util.Validator;
 
 /**
@@ -20,9 +19,9 @@ public class DispatchOutputUtil {
 		return truncate(
 			beginningLinesCount, endingLinesCount,
 			StringBundler.concat(
-				"-----------------", StringPool.NEW_LINE,
-				"Output was truncated for performance reasons.",
-				StringPool.NEW_LINE, "-----------------"),
+				"-----------------\n",
+				"Output was truncated for performance reasons.\n",
+				"-----------------"),
 			output);
 	}
 

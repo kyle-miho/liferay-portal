@@ -60,8 +60,7 @@ public class PropertiesBuildIncludeDirsCheck extends BaseFileCheck {
 		StringBundler sb = new StringBundler();
 
 		sb.append(matcher.group(1));
-		sb.append("#build.include.dirs=\\");
-		sb.append(StringPool.NEW_LINE);
+		sb.append("#build.include.dirs=\\\n");
 
 		Set<String> buildIncludeDirs = _getBuildIncludeDirs(absolutePath);
 
@@ -70,8 +69,7 @@ public class PropertiesBuildIncludeDirsCheck extends BaseFileCheck {
 			sb.append(StringPool.POUND);
 			sb.append(StringPool.FOUR_SPACES);
 			sb.append(buildIncludeDir);
-			sb.append(",\\");
-			sb.append(StringPool.NEW_LINE);
+			sb.append(",\\\n");
 		}
 
 		if (!buildIncludeDirs.isEmpty()) {

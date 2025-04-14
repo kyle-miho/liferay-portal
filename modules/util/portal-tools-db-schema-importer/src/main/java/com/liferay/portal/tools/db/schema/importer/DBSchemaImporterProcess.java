@@ -101,11 +101,9 @@ public class DBSchemaImporterProcess {
 
 			sb.append(simpleDateFormat.format(resultSet.getDate("buildDate")));
 
-			sb.append(StringPool.NEW_LINE);
-			sb.append("Portal build number: ");
+			sb.append("\nPortal build number: ");
 			sb.append(resultSet.getLong("buildNumber"));
-			sb.append(StringPool.NEW_LINE);
-			sb.append("Portal schema version: ");
+			sb.append("\nPortal schema version: ");
 			sb.append(resultSet.getString("schemaVersion"));
 		}
 

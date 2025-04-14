@@ -25,7 +25,6 @@ import com.liferay.expando.kernel.model.ExpandoColumn;
 import com.liferay.expando.kernel.model.ExpandoColumnConstants;
 import com.liferay.expando.kernel.model.ExpandoValue;
 import com.liferay.expando.test.util.ExpandoTestUtil;
-import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
@@ -190,8 +189,7 @@ public class WikiPageLocalServiceTest {
 	@Test
 	public void testAddPageWithNbspTitle() throws Exception {
 		WikiPage page = WikiTestUtil.addPage(
-			TestPropsValues.getUserId(), _node.getNodeId(),
-			"ChildPage" + CharPool.NO_BREAK_SPACE + "1",
+			TestPropsValues.getUserId(), _node.getNodeId(), "ChildPage " + "1",
 			RandomTestUtil.randomString(), true,
 			ServiceContextTestUtil.getServiceContext(_group.getGroupId()));
 
@@ -1136,7 +1134,7 @@ public class WikiPageLocalServiceTest {
 
 		WikiPageLocalServiceUtil.renamePage(
 			TestPropsValues.getUserId(), _node.getNodeId(), page.getTitle(),
-			"New" + CharPool.NO_BREAK_SPACE + "Title", true,
+			"New " + "Title", true,
 			ServiceContextTestUtil.getServiceContext(_group.getGroupId()));
 
 		WikiPageLocalServiceUtil.getPage(_node.getNodeId(), "New Title");

@@ -73,8 +73,7 @@ public class PythonImportsCheck extends BaseFileCheck {
 		sb.append(StringPool.NEW_LINE);
 
 		for (String importName : importNames) {
-			sb.append(StringPool.NEW_LINE);
-			sb.append("import ");
+			sb.append("\nimport ");
 			sb.append(importName);
 		}
 

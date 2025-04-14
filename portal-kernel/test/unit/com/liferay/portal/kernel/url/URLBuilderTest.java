@@ -112,16 +112,14 @@ public class URLBuilderTest {
 
 		StringBundler sb = new StringBundler(32);
 
-		sb.append("http://test.com");
-		sb.append(StringPool.QUESTION);
+		sb.append("http://test.com?");
 
 		for (int i = 1; i <= 5; i++) {
 			urlBuilder.addParameter("testKey" + i, "testValue" + i);
 
 			sb.append("testKey");
 			sb.append(i);
-			sb.append(StringPool.EQUAL);
-			sb.append("testValue");
+			sb.append("=testValue");
 			sb.append(i);
 			sb.append(StringPool.AMPERSAND);
 		}

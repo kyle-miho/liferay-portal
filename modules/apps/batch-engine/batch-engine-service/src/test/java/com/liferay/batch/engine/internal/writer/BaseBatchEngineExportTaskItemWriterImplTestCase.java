@@ -237,8 +237,7 @@ public abstract class BaseBatchEngineExportTaskItemWriterImplTestCase {
 
 			sb.setIndex(sb.index() - 1);
 
-			sb.append("}");
-			sb.append(StringPool.COMMA);
+			sb.append("},");
 		}
 
 		if (fieldNames.contains("name")) {
@@ -260,8 +259,7 @@ public abstract class BaseBatchEngineExportTaskItemWriterImplTestCase {
 
 			sb.setIndex(sb.index() - 1);
 
-			sb.append("}");
-			sb.append(StringPool.COMMA);
+			sb.append("},");
 		}
 
 		sb.setIndex(sb.index() - 1);

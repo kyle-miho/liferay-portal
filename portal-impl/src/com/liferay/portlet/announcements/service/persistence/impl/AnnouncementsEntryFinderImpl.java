@@ -371,8 +371,7 @@ public class AnnouncementsEntryFinderImpl
 
 			sb.append(StringPool.OPEN_PARENTHESIS);
 			sb.append(getClassPKs(classNameId.longValue(), classPKs));
-			sb.append(StringPool.CLOSE_PARENTHESIS);
-			sb.append(" OR ");
+			sb.append(") OR ");
 		}
 
 		sb.setIndex(sb.index() - 1);

@@ -5,7 +5,6 @@
 
 package com.liferay.portal.kernel.util;
 
-import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 
@@ -227,11 +226,7 @@ public class HtmlUtilTest {
 			actualSB.append(StringPool.ASCII_TABLE[i]);
 		}
 
-		actualSB.append(":;<=>?@[\\]^_`{|}~");
-		actualSB.append(CharPool.DELETE);
-		actualSB.append(CharPool.NO_BREAK_SPACE);
-		actualSB.append(CharPool.FIGURE_SPACE);
-		actualSB.append(CharPool.NARROW_NO_BREAK_SPACE);
+		actualSB.append(":;<=>?@[\\]^_`{|}~   ");
 
 		Assert.assertEquals(
 			StringBundler.concat(

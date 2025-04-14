@@ -49,7 +49,7 @@ public class UpgradeSCSSNodeSassPatternsCheck extends BaseUpgradeCheck {
 
 		if (replaced) {
 			newContent = StringBundler.concat(
-				"@use \"sass:math\";", StringPool.NEW_LINE, newContent);
+				"@use \"sass:math\";\n", newContent);
 		}
 
 		Matcher interpolationMatcher = _interpolationPattern.matcher(content);
