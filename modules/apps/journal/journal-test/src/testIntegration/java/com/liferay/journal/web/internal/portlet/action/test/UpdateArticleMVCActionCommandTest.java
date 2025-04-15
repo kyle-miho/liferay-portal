@@ -79,34 +79,36 @@ public class UpdateArticleMVCActionCommandTest {
 	}
 
 	@Test
-	public void testServeResource() throws Exception {
+	public void testProcessAction() throws Exception {
 		_processAction(_getMockLiferayPortletActionRequest());
 
-		JournalArticle journalArticle =
+		JournalArticle journalArticle1 =
 			_journalArticleLocalService.fetchArticleByUrlTitle(
 				_group.getGroupId(), "title");
 
-		Assert.assertNotNull(journalArticle);
+		Assert.assertNotNull(journalArticle1.getDisplayDate());
 		Assert.assertEquals(
-			WorkflowConstants.STATUS_APPROVED, journalArticle.getStatus());
-		Assert.assertEquals(1.0, journalArticle.getVersion(), 0.01);
+			WorkflowConstants.STATUS_APPROVED, journalArticle1.getStatus());
+		Assert.assertEquals(1.0, journalArticle1.getVersion(), 0.01);
 
 		_processAction(
 			_getMockLiferayPortletActionRequest(
-				journalArticle.getArticleId(),
-				journalArticle.getFriendlyURLMap()));
+				journalArticle1.getArticleId(),
+				journalArticle1.getFriendlyURLMap()));
 
-		journalArticle = _journalArticleLocalService.fetchArticleByUrlTitle(
-			_group.getGroupId(), "title");
+		JournalArticle journalArticle2 =
+			_journalArticleLocalService.fetchArticleByUrlTitle(
+				_group.getGroupId(), "title");
 
-		Assert.assertNotNull(journalArticle);
 		Assert.assertEquals(
-			WorkflowConstants.STATUS_APPROVED, journalArticle.getStatus());
-		Assert.assertEquals(1.1, journalArticle.getVersion(), 0.01);
+			journalArticle1.getDisplayDate(), journalArticle2.getDisplayDate());
+		Assert.assertEquals(
+			WorkflowConstants.STATUS_APPROVED, journalArticle2.getStatus());
+		Assert.assertEquals(1.1, journalArticle2.getVersion(), 0.01);
 	}
 
 	@Test
-	public void testServeResourceWithErrors() throws Exception {
+	public void testProcessActionWithErrors() throws Exception {
 		_processAction(_getMockLiferayPortletActionRequest());
 
 		JournalArticle journalArticle =

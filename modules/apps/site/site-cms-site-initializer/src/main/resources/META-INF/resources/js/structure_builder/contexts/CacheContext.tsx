@@ -6,6 +6,7 @@
 import React, {
 	ReactNode,
 	createContext,
+	useCallback,
 	useContext,
 	useEffect,
 	useState,
@@ -17,17 +18,18 @@ import {Picklist} from '../types/Picklist';
 import {Space} from '../types/Space';
 
 type CacheKey = 'picklists' | 'spaces';
+type Status = 'idle' | 'saving' | 'saved' | 'stale';
 
 export type Cache = {
 	picklists: {
 		data: Picklist[];
 		fetcher: () => Promise<Picklist[]>;
-		status: 'idle' | 'saving' | 'saved';
+		status: Status;
 	};
 	spaces: {
 		data: Space[];
 		fetcher: () => Promise<Space[]>;
-		status: 'idle' | 'saving' | 'saved';
+		status: Status;
 	};
 };
 
@@ -45,14 +47,17 @@ const INITIAL_CACHE: Cache = {
 };
 
 const CacheContext = createContext<{
+	broadcast: BroadcastChannel;
 	cache: Cache;
 	update: <T extends CacheKey>(key: T, partial: Partial<Cache[T]>) => void;
 }>({
+	broadcast: {} as BroadcastChannel,
 	cache: INITIAL_CACHE,
 	update: () => {},
 });
 
 function CacheContextProvider({children}: {children: ReactNode}) {
+	const [broadcast] = useState(() => new BroadcastChannel('update-cache'));
 	const [cache, setCache] = useState(INITIAL_CACHE);
 
 	const update = <T extends CacheKey>(key: T, partial: Partial<Cache[T]>) => {
@@ -66,22 +71,18 @@ function CacheContextProvider({children}: {children: ReactNode}) {
 	};
 
 	return (
-		<CacheContext.Provider value={{cache, update}}>
+		<CacheContext.Provider value={{broadcast, cache, update}}>
 			{children}
 		</CacheContext.Provider>
 	);
 }
 
-function useCache<T extends CacheKey>(key: T): Cache[T] {
-	const {cache, update} = useContext(CacheContext);
+function useCache<T extends CacheKey>(key: T): Cache[T] & {load: () => void} {
+	const {broadcast, cache, update} = useContext(CacheContext);
 
 	const item = cache[key];
 
-	useEffect(() => {
-		if (item.status !== 'idle') {
-			return;
-		}
-
+	const load = useCallback(() => {
 		update(key, {status: 'saving'} as Partial<Cache[T]>);
 
 		item.fetcher().then((response) => {
@@ -89,15 +90,40 @@ function useCache<T extends CacheKey>(key: T): Cache[T] {
 		});
 	}, [item, key, update]);
 
-	return item;
+	useEffect(() => {
+		if (item.status !== 'idle') {
+			return;
+		}
+
+		load();
+	}, [item, load]);
+
+	useEffect(() => {
+		const staleCache = ({data}: MessageEvent) => {
+			if (data.type !== 'staleCache' || data.key !== key) {
+				return;
+			}
+
+			update(key, {status: 'stale'} as Partial<Cache[T]>);
+		};
+
+		broadcast.addEventListener('message', staleCache);
+
+		return () => {
+			broadcast.removeEventListener('message', staleCache);
+		};
+	}, [broadcast, item, update, key]);
+
+	return {...item, load};
 }
 
-function useClearCache() {
-	const {update} = useContext(CacheContext);
+function useStaleCache() {
+	const {broadcast} = useContext(CacheContext);
 
-	return (key: CacheKey) => update(key, INITIAL_CACHE[key]);
+	return (key: CacheKey) => {
+		broadcast.postMessage({key, type: 'staleCache'});
+	};
 }
-
 export default CacheContextProvider;
 
-export {CacheContext, useCache, useClearCache};
+export {CacheContext, useCache, useStaleCache};

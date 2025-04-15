@@ -32,7 +32,7 @@
 
 <#assign
 	journalArticleId = .vars["reserved-article-id"].data
-	navigationJSONObject = jsonFactoryUtil.createJSONObject(navigation.getData())
+	navigationJSONObject = jsonFactoryUtil.createJSONObject(htmlUtil.unescape(navigation.getData()?trim))
 	taxonomyCategoriesMap = {}
 	taxonomyCategoryBriefs = restClient.get("/headless-delivery/v1.0/sites/${groupId}/structured-contents/by-key/${journalArticleId}?nestedFields=embeddedTaxonomyCategory").taxonomyCategoryBriefs
 	taxonomyVocabularies = []
@@ -156,7 +156,7 @@
 								<div class="learn-article-category-tag mr-2">
 									<a
 										class="label tag-container"
-										href="/search?category=${taxonomyCategory.categoryId}"
+										href="/search?${vocabulary?lower_case?replace(" ", "-", "r")}=${taxonomyCategory.categoryId}"
 									>
 										<span>${taxonomyCategory.categoryName}</span>
 									</a>

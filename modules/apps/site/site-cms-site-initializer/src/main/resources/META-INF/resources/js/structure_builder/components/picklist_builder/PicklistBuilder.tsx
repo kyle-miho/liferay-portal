@@ -6,13 +6,15 @@
 import ClayLayout from '@clayui/layout';
 import React, {useEffect} from 'react';
 
-import StateContextProvider, {
+import CacheContextProvider from '../../contexts/CacheContext';
+import PicklistBuilderContextProvider, {
 	buildState,
 	useId,
 } from '../../contexts/PicklistBuilderContext';
 import {Picklist} from '../../types/Picklist';
 import PicklistBuilderManagementBar from './PicklistBuilderManagementBar';
 import PicklistFields from './PicklistFields';
+import PicklistOptions from './PicklistOptions';
 
 export default function PicklistBuilder({
 	state,
@@ -20,19 +22,23 @@ export default function PicklistBuilder({
 	state: {listTypeDefinition: Picklist};
 }) {
 	return (
-		<StateContextProvider
+		<PicklistBuilderContextProvider
 			initialState={buildState(state.listTypeDefinition)}
 		>
 			<div className="d-flex flex-column">
 				<HistoryManager />
 
-				<PicklistBuilderManagementBar />
+				<CacheContextProvider>
+					<PicklistBuilderManagementBar />
+				</CacheContextProvider>
 
 				<ClayLayout.ContainerFluid className="px-4" size="md" view>
 					<PicklistFields />
+
+					<PicklistOptions />
 				</ClayLayout.ContainerFluid>
 			</div>
-		</StateContextProvider>
+		</PicklistBuilderContextProvider>
 	);
 }
 

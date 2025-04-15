@@ -7,7 +7,6 @@ package com.liferay.object.web.internal.info.item.provider;
 
 import com.liferay.document.library.kernel.service.DLAppLocalService;
 import com.liferay.document.library.util.DLURLHelper;
-import com.liferay.friendly.url.model.FriendlyURLEntry;
 import com.liferay.friendly.url.service.FriendlyURLEntryLocalService;
 import com.liferay.info.field.InfoFieldValue;
 import com.liferay.info.item.ClassPKInfoItemIdentifier;
@@ -16,7 +15,6 @@ import com.liferay.info.item.InfoItemFieldValues;
 import com.liferay.info.item.InfoItemReference;
 import com.liferay.info.item.field.reader.InfoItemFieldReaderFieldSetProvider;
 import com.liferay.info.item.provider.InfoItemFieldValuesProvider;
-import com.liferay.info.localized.InfoLocalizedValue;
 import com.liferay.info.type.WebImage;
 import com.liferay.layout.page.template.info.item.provider.DisplayPageInfoItemFieldSetProvider;
 import com.liferay.list.type.service.ListTypeEntryLocalService;
@@ -36,16 +34,12 @@ import com.liferay.object.service.ObjectRelationshipLocalService;
 import com.liferay.object.web.internal.model.ProxyObjectEntry;
 import com.liferay.petra.reflect.ReflectionUtil;
 import com.liferay.petra.string.StringPool;
-import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
-import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.template.info.item.provider.TemplateInfoItemFieldSetProvider;
@@ -128,32 +122,6 @@ public class ObjectEntryInfoItemFieldValuesProvider
 		}
 	}
 
-	private InfoLocalizedValue<?> _getFriendlyURLInfoFieldValue(
-		ObjectEntry objectEntry) {
-
-		try {
-			FriendlyURLEntry friendlyURLEntry =
-				_friendlyURLEntryLocalService.getMainFriendlyURLEntry(
-					_portal.getClassNameId(_objectDefinition.getClassName()),
-					objectEntry.getObjectEntryId());
-
-			if (friendlyURLEntry == null) {
-				return null;
-			}
-
-			return InfoLocalizedValue.function(
-				locale -> friendlyURLEntry.getUrlTitle(
-					LocaleUtil.toLanguageId(locale)));
-		}
-		catch (PortalException portalException) {
-			if (_log.isDebugEnabled()) {
-				_log.debug(portalException);
-			}
-		}
-
-		return null;
-	}
-
 	private List<InfoFieldValue<Object>> _getInfoFieldValues(
 		ObjectEntry objectEntry) {
 
@@ -221,15 +189,15 @@ public class ObjectEntryInfoItemFieldValuesProvider
 
 		objectEntryFieldValues.addAll(
 			ObjectEntryInfoItemValuesProviderUtil.getInfoFieldValues(
-				_dlAppLocalService, _dlURLHelper, _listTypeEntryLocalService,
-				_objectActionLocalService, _objectDefinition,
-				_objectDefinitionLocalService, _objectEntryLocalService,
-				_objectEntryManagerRegistry, _objectFieldInfoFieldConverter,
-				_objectFieldLocalService,
+				_dlAppLocalService, _dlURLHelper, _friendlyURLEntryLocalService,
+				_listTypeEntryLocalService, _objectActionLocalService,
+				_objectDefinition, _objectDefinitionLocalService,
+				_objectEntryLocalService, _objectEntryManagerRegistry,
+				_objectFieldInfoFieldConverter, _objectFieldLocalService,
 				_objectFieldLocalService.getObjectFields(
 					objectEntry.getObjectDefinitionId()),
 				_objectRelationshipLocalService, _objectScopeProviderRegistry,
-				themeDisplay, properties));
+				_portal, themeDisplay, properties));
 
 		if (FeatureFlagManagerUtil.isEnabled(
 				_objectDefinition.getCompanyId(), "LPD-21926")) {
@@ -238,7 +206,13 @@ public class ObjectEntryInfoItemFieldValuesProvider
 				new InfoFieldValue<>(
 					ObjectEntryInfoItemFields.getFriendlyURLInfoField(
 						_objectDefinition),
-					() -> _getFriendlyURLInfoFieldValue(objectEntry)));
+					() ->
+						ObjectEntryInfoItemValuesProviderUtil.
+							getFriendlyURLInfoFieldValue(
+								_portal.getClassNameId(
+									_objectDefinition.getClassName()),
+								_friendlyURLEntryLocalService,
+								objectEntry.getObjectEntryId())));
 		}
 
 		return objectEntryFieldValues;
@@ -275,15 +249,15 @@ public class ObjectEntryInfoItemFieldValuesProvider
 				objectEntry.getDateModified()));
 		objectEntryFieldValues.addAll(
 			ObjectEntryInfoItemValuesProviderUtil.getInfoFieldValues(
-				_dlAppLocalService, _dlURLHelper, _listTypeEntryLocalService,
-				_objectActionLocalService, _objectDefinition,
-				_objectDefinitionLocalService, _objectEntryLocalService,
-				_objectEntryManagerRegistry, _objectFieldInfoFieldConverter,
-				_objectFieldLocalService,
+				_dlAppLocalService, _dlURLHelper, _friendlyURLEntryLocalService,
+				_listTypeEntryLocalService, _objectActionLocalService,
+				_objectDefinition, _objectDefinitionLocalService,
+				_objectEntryLocalService, _objectEntryManagerRegistry,
+				_objectFieldInfoFieldConverter, _objectFieldLocalService,
 				_objectFieldLocalService.getObjectFields(
 					serviceBuilderObjectEntry.getObjectDefinitionId()),
 				_objectRelationshipLocalService, _objectScopeProviderRegistry,
-				themeDisplay, objectEntry.getProperties()));
+				_portal, themeDisplay, objectEntry.getProperties()));
 
 		return objectEntryFieldValues;
 	}
@@ -350,9 +324,6 @@ public class ObjectEntryInfoItemFieldValuesProvider
 
 		return webImage;
 	}
-
-	private static final Log _log = LogFactoryUtil.getLog(
-		ObjectEntryInfoItemFieldValuesProvider.class);
 
 	private final DisplayPageInfoItemFieldSetProvider
 		_displayPageInfoItemFieldSetProvider;

@@ -26,23 +26,35 @@ const INITIAL_STATE = {
 	name: {
 		[Liferay.ThemeDisplay.getDefaultLanguageId()]: DEFAULT_PICKLIST_NAME,
 	},
+	options: new Map(),
 	setErc: noop,
 	setId: noop,
 	setName: noop,
+	setOptions: noop,
 };
+
+export type Option = {
+	erc: string;
+	key: string;
+	name: Liferay.Language.LocalizedValue<string>;
+};
+
+export type Options = Map<string, Partial<Option>>;
 
 export type State = {
 	erc: string;
 	id: number | null;
 	name: Liferay.Language.LocalizedValue<string>;
+	options: Options;
 	setErc: Dispatch<SetStateAction<string>>;
 	setId: Dispatch<SetStateAction<number | null>>;
 	setName: Dispatch<SetStateAction<Liferay.Language.LocalizedValue<string>>>;
+	setOptions: Dispatch<SetStateAction<Options>>;
 };
 
-const StateContext = createContext<State>(INITIAL_STATE);
+const PicklistBuilderContext = createContext<State>(INITIAL_STATE);
 
-export default function StateContextProvider({
+export default function PicklistBuilderContextProvider({
 	children,
 	initialState,
 }: {
@@ -54,20 +66,23 @@ export default function StateContextProvider({
 	const [name, setName] = useState<Liferay.Language.LocalizedValue<string>>(
 		initialState.name
 	);
+	const [options, setOptions] = useState<Options>(initialState.options);
 
 	return (
-		<StateContext.Provider
+		<PicklistBuilderContext.Provider
 			value={{
 				erc,
 				id,
 				name,
+				options,
 				setErc,
 				setId,
 				setName,
+				setOptions,
 			}}
 		>
 			{children}
-		</StateContext.Provider>
+		</PicklistBuilderContext.Provider>
 	);
 }
 
@@ -81,30 +96,69 @@ const buildState = (picklist: Picklist): State => {
 		erc: picklist.externalReferenceCode,
 		id: picklist.id,
 		name: normalizeI18n(picklist.name_i18n),
+		options: new Map(
+			picklist.listTypeEntries.map((option) => [
+				option.externalReferenceCode,
+				{
+					key: option.key,
+					name: normalizeI18n(option.name_i18n),
+				},
+			])
+		),
 	};
 };
 
-const useErc = () => useContext(StateContext).erc;
+const useAddOption = () => {
+	const {setOptions} = useContext(PicklistBuilderContext);
 
-const useId = () => useContext(StateContext).id;
+	return ({erc, key, name}: Option) =>
+		setOptions((options) => {
+			options.set(erc, {key, name});
 
-const useName = () => useContext(StateContext).name;
+			return options;
+		});
+};
 
-const useSetErc = () => useContext(StateContext).setErc;
+const useErc = () => useContext(PicklistBuilderContext).erc;
 
-const useSetId = () => useContext(StateContext).setId;
+const useId = () => useContext(PicklistBuilderContext).id;
 
-const useSetName = () => useContext(StateContext).setName;
+const useName = () => useContext(PicklistBuilderContext).name;
+
+const useSetErc = () => useContext(PicklistBuilderContext).setErc;
+
+const useSetId = () => useContext(PicklistBuilderContext).setId;
+
+const useSetName = () => useContext(PicklistBuilderContext).setName;
+
+const useOptions = () => useContext(PicklistBuilderContext).options;
+
+const useRemoveOptions = () => {
+	const {setOptions} = useContext(PicklistBuilderContext);
+
+	return (ercs: string[]) => {
+		setOptions((options) => {
+			const newOptions = new Map(options);
+
+			ercs.forEach((erc) => newOptions.delete(erc));
+
+			return newOptions;
+		});
+	};
+};
 
 export {
-	buildState,
 	INITIAL_STATE,
-	StateContext,
-	StateContextProvider,
+	PicklistBuilderContext,
+	PicklistBuilderContextProvider,
+	buildState,
+	useAddOption,
 	useErc,
-	useSetErc,
 	useId,
-	useSetId,
 	useName,
+	useOptions,
+	useRemoveOptions,
+	useSetErc,
+	useSetId,
 	useSetName,
 };

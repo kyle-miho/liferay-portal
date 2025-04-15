@@ -252,8 +252,9 @@ public class ContentObjectFragmentRendererTest {
 	}
 
 	@Test
+	@TestInfo("LPD-50826")
 	public void testRenderDraftContentInViewMode() throws Exception {
-		FragmentEntryLink fragmentEntryLink = _addFragmentEntryLink();
+		FragmentEntryLink fragmentEntryLink = _addUnmappedFragmentEntryLink();
 
 		String content = _render(fragmentEntryLink, _journalArticle);
 
@@ -272,6 +273,22 @@ public class ContentObjectFragmentRendererTest {
 		Assert.assertTrue(
 			content.contains(
 				draftArticle.getTitle(LocaleUtil.getSiteDefault())));
+	}
+
+	@Test
+	@TestInfo("LPD-53199")
+	public void testRenderMappedContentInViewMode() throws Exception {
+		JournalArticle journalArticle = JournalTestUtil.addArticle(
+			_group.getGroupId(), JournalArticleConstants.CLASS_NAME_ID_DEFAULT);
+
+		FragmentEntryLink fragmentEntryLink = _addFragmentEntryLink(
+			journalArticle);
+
+		String content = _render(fragmentEntryLink, _journalArticle);
+
+		Assert.assertTrue(
+			content.contains(
+				journalArticle.getTitle(LocaleUtil.getSiteDefault())));
 	}
 
 	@Test
@@ -335,9 +352,16 @@ public class ContentObjectFragmentRendererTest {
 	}
 
 	private FragmentEntryLink _addFragmentEntryLink() throws Exception {
+		return _addFragmentEntryLink(_journalArticle);
+	}
+
+	private FragmentEntryLink _addFragmentEntryLink(
+			JournalArticle journalArticle)
+		throws Exception {
+
 		TemplateEntry templateEntry = TemplateTestUtil.addTemplateEntry(
 			JournalArticle.class.getName(),
-			String.valueOf(_journalArticle.getDDMStructureId()),
+			String.valueOf(journalArticle.getDDMStructureId()),
 			RandomTestUtil.randomString(), RandomTestUtil.randomString(),
 			TemplateTestUtil.getSampleScriptFTL("JournalArticle_title"),
 			ServiceContextTestUtil.getServiceContext(_group.getGroupId()));
@@ -357,10 +381,10 @@ public class ContentObjectFragmentRendererTest {
 								JournalArticle.class.getName()))
 					).put(
 						"classPK",
-						String.valueOf(_journalArticle.getResourcePrimKey())
+						String.valueOf(journalArticle.getResourcePrimKey())
 					).put(
 						"classTypeId",
-						String.valueOf(_journalArticle.getDDMStructureId())
+						String.valueOf(journalArticle.getDDMStructureId())
 					).put(
 						"template",
 						JSONUtil.put(
@@ -388,6 +412,33 @@ public class ContentObjectFragmentRendererTest {
 			"com.liferay.fragment.internal.renderer." +
 				"ContentObjectFragmentRenderer",
 			FragmentConstants.TYPE_COMPONENT, _serviceContext);
+	}
+
+	private FragmentEntryLink _addUnmappedFragmentEntryLink() throws Exception {
+		TemplateEntry templateEntry = TemplateTestUtil.addTemplateEntry(
+			JournalArticle.class.getName(),
+			String.valueOf(_journalArticle.getDDMStructureId()),
+			RandomTestUtil.randomString(), RandomTestUtil.randomString(),
+			TemplateTestUtil.getSampleScriptFTL("JournalArticle_title"),
+			ServiceContextTestUtil.getServiceContext(_group.getGroupId()));
+
+		return _addFragmentEntryLink(
+			JSONUtil.put(
+				FragmentEntryProcessorConstants.
+					KEY_FREEMARKER_FRAGMENT_ENTRY_PROCESSOR,
+				JSONUtil.put(
+					"itemSelector",
+					JSONUtil.put(
+						"template",
+						JSONUtil.put(
+							"infoItemRendererKey",
+							"com.liferay.template.internal.info.item." +
+								"renderer.TemplateInfoItemTemplatedRenderer"
+						).put(
+							"templateKey",
+							String.valueOf(templateEntry.getTemplateEntryId())
+						)))
+			).toString());
 	}
 
 	private HttpServletRequest _getMockHttpServletRequest() throws Exception {

@@ -29,18 +29,33 @@ async function fetchFragmentBlob(
 	return response.blob();
 }
 
-function getProductAttachmentBlob(
+async function getProductVirtualEntryBlob(
 	marketplaceRest: MarketplaceRest,
 	product: Product
 ): Promise<Blob> {
-	if (!product.attachments || !product.attachments.length) {
-		throw new Error('Product has no attachments.');
+	const cart = await marketplaceRest.createCart(product as Product, {
+		orderTypeExternalReferenceCode: 'LOW_CODE_CONFIGURATION',
+	});
+
+	await marketplaceRest.checkoutCart(cart);
+
+	const placedOrder = await marketplaceRest.getPlacedOrder(
+		cart.id,
+		new URLSearchParams({nestedFields: 'placedOrderItems'})
+	);
+
+	const hasPlacedOrderItems = placedOrder.placedOrderItems.some(
+		(placedOrderItem) => placedOrderItem?.virtualItems?.length
+	);
+
+	if (!hasPlacedOrderItems) {
+		throw new Error('Product has no virtual entries.');
 	}
 
-	return fetchFragmentBlob(
-		marketplaceRest,
-		new URL(product.attachments[0].src).pathname
-	);
+	const [virtualItemURL] =
+		placedOrder.placedOrderItems[0].virtualItemURLs ?? [];
+
+	return fetchFragmentBlob(marketplaceRest, virtualItemURL);
 }
 
 interface MarketplaceViewsProps {
@@ -103,38 +118,30 @@ export default function MarketplaceViews({
 			setProduct(product);
 
 			try {
-				const cart = await marketplaceRest.createCart(
-					product as Product,
-					{
-						orderTypeExternalReferenceCode:
-							'LOW_CODE_CONFIGURATION',
-					}
-				);
-
-				await marketplaceRest.checkoutCart(cart);
-
-				const blob = await getProductAttachmentBlob(
+				const blob = await getProductVirtualEntryBlob(
 					marketplaceRest,
 					product
 				);
 
-				if (blob) {
-					const file = new File(
-						[blob],
-						`${product.name.replace(' ', '-').toLowerCase()}.zip`,
-						{type: 'application/zip'}
-					);
-
-					await handleImportFile(file);
-
-					openToast({
-						message: Liferay.Language.get(
-							'your-request-completed-successfully'
-						),
-						title: Liferay.Language.get('success'),
-						type: 'success',
-					});
+				if (!blob) {
+					return;
 				}
+
+				const file = new File(
+					[blob],
+					`${product.name.replace(' ', '-').toLowerCase()}.zip`,
+					{type: 'application/zip'}
+				);
+
+				await handleImportFile(file);
+
+				openToast({
+					message: Liferay.Language.get(
+						'your-request-completed-successfully'
+					),
+					title: Liferay.Language.get('success'),
+					type: 'success',
+				});
 			}
 			catch (error) {
 				console.error('Installation failed:', error);
