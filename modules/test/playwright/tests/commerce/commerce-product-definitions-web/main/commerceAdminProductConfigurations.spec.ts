@@ -7,10 +7,12 @@ import {expect, mergeTests} from '@playwright/test';
 
 import {applicationsMenuPageTest} from '../../../../fixtures/applicationsMenuPageTest';
 import {commercePagesTest} from '../../../../fixtures/commercePagesTest';
+import {customFieldsPagesTest} from '../../../../fixtures/customFieldsPagesTest';
 import {dataApiHelpersTest} from '../../../../fixtures/dataApiHelpersTest';
 import {featureFlagsTest} from '../../../../fixtures/featureFlagsTest';
 import {loginTest} from '../../../../fixtures/loginTest';
 import {createCategories} from '../../../../helpers/CreateCategories';
+import {TCustomField} from '../../../../helpers/CustomFieldTypesHelper';
 import getGlobalSiteId from '../../../../utils/getGlobalSiteId';
 import getRandomString from '../../../../utils/getRandomString';
 import {waitForAlert} from '../../../../utils/waitForAlert';
@@ -19,6 +21,7 @@ export const test = mergeTests(
 	applicationsMenuPageTest,
 	dataApiHelpersTest,
 	commercePagesTest,
+	customFieldsPagesTest,
 	dataApiHelpersTest,
 	featureFlagsTest({
 		'LPD-10889': {enabled: true},
@@ -1038,11 +1041,20 @@ test(
 );
 
 test('LPD-43013 Edit child configuration list', async ({
+	addCustomFieldPage,
 	applicationsMenuPage,
 	commerceAdminProductConfigurationListPage,
 	commerceAdminProductConfigurationListsPage,
 	page,
 }) => {
+	const customField: TCustomField = {
+		fieldName: getRandomString(),
+		fieldType: 'inputField',
+		resource: 'Product Configuration List',
+	};
+
+	await addCustomFieldPage.addCustomField(customField);
+
 	await applicationsMenuPage.goToCommerceProductConfigurationLists(false);
 
 	await expect(
@@ -1102,6 +1114,12 @@ test('LPD-43013 Edit child configuration list', async ({
 	await commerceAdminProductConfigurationListPage.priorityInput.fill('2');
 	await commerceAdminProductConfigurationListPage.neverExpireInput.click();
 
+	const randomString = getRandomString();
+
+	await commerceAdminProductConfigurationListPage
+		.customFieldInput(customField.fieldName)
+		.fill(randomString);
+
 	await commerceAdminProductConfigurationListPage.saveButton.click();
 
 	await waitForAlert(page);
@@ -1129,6 +1147,11 @@ test('LPD-43013 Edit child configuration list', async ({
 	await expect(
 		commerceAdminProductConfigurationListPage.expirationDateInput
 	).toBeEnabled();
+	await expect(
+		commerceAdminProductConfigurationListPage.customFieldInput(
+			customField.fieldName
+		)
+	).toHaveValue(randomString);
 });
 
 test('LPD-43017 Can bulk set configuration entries visibility', async ({

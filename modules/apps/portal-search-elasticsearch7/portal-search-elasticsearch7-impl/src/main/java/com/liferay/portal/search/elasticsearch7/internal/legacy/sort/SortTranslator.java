@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
-package com.liferay.portal.search.elasticsearch7.internal.sort;
+package com.liferay.portal.search.elasticsearch7.internal.legacy.sort;
 
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.search.Field;
@@ -164,7 +164,8 @@ public class SortTranslator {
 	private String _getSortFieldName(Sort sort, String scoreFieldName) {
 		String sortFieldName = sort.getFieldName();
 
-		if (Objects.equals(sortFieldName, Field.PRIORITY) ||
+		if (Objects.equals(sortFieldName, Field.ENTRY_CLASS_NAME) ||
+			Objects.equals(sortFieldName, Field.PRIORITY) ||
 			Objects.equals(sortFieldName, "_score")) {
 
 			return sortFieldName;

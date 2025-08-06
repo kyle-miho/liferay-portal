@@ -15,6 +15,10 @@ public interface InfoItemDetailsProvider<T> {
 
 	public InfoItemClassDetails getInfoItemClassDetails();
 
+	public default InfoItemDetails getInfoItemDetails(long groupId, T t) {
+		return getInfoItemDetails(t);
+	}
+
 	public InfoItemDetails getInfoItemDetails(T t);
 
 }

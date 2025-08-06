@@ -56,29 +56,33 @@ public class ViewVersionHistoryDisplayContext {
 			new FDSActionDropdownItem(
 				"{actions.restore.href}", "restore", "restore",
 				_language.get(_httpServletRequest, "restore"), "put", "restore",
-				"headless"),
+				null),
 			new FDSActionDropdownItem(
 				"{actions.expire.href}", "time", "expire",
 				_language.get(_httpServletRequest, "expire"), "post", "expire",
-				"headless"),
+				null),
 			new FDSActionDropdownItem(
 				"{actions.copy.href}", "copy", "copy",
 				_language.get(_httpServletRequest, "make-a-copy"), "post",
 				"copy", null),
 			new FDSActionDropdownItem(
-				_language.get(
-					_httpServletRequest,
-					"are-you-sure-you-want-to-delete-this-entry"),
 				"{actions.delete.href}", "trash", "delete",
 				_language.get(_httpServletRequest, "delete"), "delete",
-				"delete", "headless"));
+				"delete", null));
 	}
 
 	public Map<String, Object> getProps() throws PortalException {
 		return HashMapBuilder.<String, Object>put(
 			"backURL", ParamUtil.getString(_httpServletRequest, "backURL")
 		).put(
-			"title", _objectEntry.getTitleValue(_themeDisplay.getLanguageId())
+			"objectEntryTitle",
+			_objectEntry.getTitleValue(_themeDisplay.getLanguageId())
+		).put(
+			"title",
+			StringBundler.concat(
+				StringPool.QUOTE,
+				_objectEntry.getTitleValue(_themeDisplay.getLanguageId(), true),
+				"\" ", _language.get(_themeDisplay.getLocale(), "history"))
 		).build();
 	}
 

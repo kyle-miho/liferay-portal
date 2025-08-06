@@ -78,6 +78,7 @@ import java.util.Objects;
 
 import org.osgi.service.cm.ConfigurationAdmin;
 
+import org.wso2.charon3.core.exceptions.AbstractCharonException;
 import org.wso2.charon3.core.exceptions.BadRequestException;
 import org.wso2.charon3.core.exceptions.CharonException;
 import org.wso2.charon3.core.exceptions.ConflictException;
@@ -184,6 +185,9 @@ public class UserManagerImpl implements UserManager {
 					return null;
 				});
 		}
+		catch (AbstractCharonException abstractCharonException) {
+			ReflectionUtil.throwException(abstractCharonException);
+		}
 		catch (PrincipalException principalException) {
 			if (_log.isDebugEnabled()) {
 				_log.debug(principalException);
@@ -211,6 +215,9 @@ public class UserManagerImpl implements UserManager {
 			_userService.updateStatus(
 				GetterUtil.getLong(userId), WorkflowConstants.STATUS_INACTIVE,
 				new ServiceContext());
+		}
+		catch (AbstractCharonException abstractCharonException) {
+			ReflectionUtil.throwException(abstractCharonException);
 		}
 		catch (Exception exception) {
 			throw new CharonException(
@@ -528,6 +535,9 @@ public class UserManagerImpl implements UserManager {
 						userGroup);
 				});
 		}
+		catch (AbstractCharonException abstractCharonException) {
+			return ReflectionUtil.throwException(abstractCharonException);
+		}
 		catch (Throwable throwable) {
 			throw new CharonException(
 				"Unable to provision a portal group for " +
@@ -758,6 +768,9 @@ public class UserManagerImpl implements UserManager {
 							GetterUtil.getLong(scimUser.getId())),
 						scimUser);
 				});
+		}
+		catch (AbstractCharonException abstractCharonException) {
+			return ReflectionUtil.throwException(abstractCharonException);
 		}
 		catch (Throwable throwable) {
 			throw new CharonException(
@@ -1073,7 +1086,7 @@ public class UserManagerImpl implements UserManager {
 	}
 
 	private UserGroup _getUserGroup(long companyId, long userGroupId)
-		throws Exception {
+		throws AbstractCharonException {
 
 		UserGroup userGroup = null;
 
