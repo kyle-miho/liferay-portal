@@ -10,8 +10,6 @@ import com.liferay.gradle.plugins.workspace.internal.util.GradleUtil;
 import com.liferay.gradle.util.Validator;
 import com.liferay.release.util.ReleaseUtil;
 
-import groovy.lang.Closure;
-
 import java.io.File;
 
 import java.nio.file.FileSystem;
@@ -75,37 +73,30 @@ public class WorkspacePlugin implements Plugin<Settings> {
 		File currentDir = startParameter.getCurrentDir();
 
 		gradle.beforeProject(
-			new Closure<Void>(settings) {
+			project -> {
+				_setPortalVersion(project, workspaceExtension);
 
-				@SuppressWarnings("unused")
-				public void doCall(Project project) {
-					_setPortalVersion(project, workspaceExtension);
+				Plugin<Project> plugin = null;
 
-					Plugin<Project> plugin = null;
+				if (project.getParent() == null) {
+					_applyPlugins(project, settings);
 
-					if (project.getParent() == null) {
-						_applyPlugins(project, settings);
+					for (ProjectConfigurator projectConfigurator :
+							workspaceExtension.getProjectConfigurators()) {
 
-						for (ProjectConfigurator projectConfigurator :
-								workspaceExtension.getProjectConfigurators()) {
-
-							projectConfigurator.configureRootProject(
-								project, workspaceExtension);
-						}
-
-						plugin =
-							workspaceExtension.getRootProjectConfigurator();
-					}
-					else {
-						plugin = _projectConfiguratorsMap.get(
-							project.getPath());
+						projectConfigurator.configureRootProject(
+							project, workspaceExtension);
 					}
 
-					if (plugin != null) {
-						plugin.apply(project);
-					}
+					plugin = workspaceExtension.getRootProjectConfigurator();
+				}
+				else {
+					plugin = _projectConfiguratorsMap.get(project.getPath());
 				}
 
+				if (plugin != null) {
+					plugin.apply(project);
+				}
 			});
 
 		gradle.settingsEvaluated(
