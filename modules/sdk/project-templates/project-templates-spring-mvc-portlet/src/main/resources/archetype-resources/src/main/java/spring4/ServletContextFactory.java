@@ -1,6 +1,10 @@
 package ${package}.spring4;
 
+#if (${jakartaCompatible.equals("true")})
+import jakarta.servlet.ServletContext;
+#else
 import javax.servlet.ServletContext;
+#end
 
 import org.springframework.beans.factory.FactoryBean;
 

@@ -1,8 +1,11 @@
 package ${package}.dto;
 
 import java.io.Serializable;
-
+#if (${jakartaCompatible.equals("true")})
+import jakarta.validation.constraints.NotBlank;
+#else
 import javax.validation.constraints.NotBlank;
+#end
 
 /**
  * @author ${author}

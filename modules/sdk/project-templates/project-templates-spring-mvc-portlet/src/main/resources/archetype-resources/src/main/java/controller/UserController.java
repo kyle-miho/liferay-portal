@@ -16,11 +16,19 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
+#if (${jakartaCompatible.equals("true")})
+import jakarta.portlet.ActionResponse;
+#else
 import javax.portlet.ActionResponse;
-#if (${framework.equals("portletmvc4spring")})
+#end
+#if (${jakartaCompatible.equals("true")})
+import jakarta.portlet.MutableRenderParameters;
+#elseif (${framework.equals("portletmvc4spring")})
 import javax.portlet.MutableRenderParameters;
 #end
-#if (${viewType.equals("thymeleaf")})
+#if (${jakartaCompatible.equals("true")} && ${viewType.equals("thymeleaf")})
+import jakarta.portlet.RenderResponse;
+#elseif (${viewType.equals("thymeleaf")})
 import javax.portlet.RenderResponse;
 #end
 
@@ -66,8 +74,11 @@ public class UserController {
 		return "user";
 	}
 #end
-
+#if (${jakartaCompatible.equals("true")})
+	@RenderMapping(params = "jakarta.portlet.action=success")
+#else
 	@RenderMapping(params = "javax.portlet.action=success")
+#end
 	public String showGreeting(ModelMap modelMap) {
 
 		DateFormat dateFormat = new SimpleDateFormat("EEEE, MMMM d, yyyy G");
@@ -92,8 +103,12 @@ public class UserController {
 				_logger.debug("firstName=" + user.getFirstName());
 				_logger.debug("lastName=" + user.getLastName());
 			}
+#if (${jakartaCompatible.equals("true")})
+			MutableRenderParameters mutableRenderParameters =
+				actionResponse.getRenderParameters();
 
-#if (${framework.equals("portletmvc4spring")})
+			mutableRenderParameters.setValue("jakarta.portlet.action", "success");
+#elseif (${framework.equals("portletmvc4spring")})
 			MutableRenderParameters mutableRenderParameters =
 				actionResponse.getRenderParameters();
 
