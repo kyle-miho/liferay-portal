@@ -23,13 +23,20 @@ buildscript {
 apply plugin: "com.liferay.css.builder"
 
 dependencies {
-#if (${framework.equals("portletmvc4spring")} && ${frameworkDependencies.equals("embedded")})
+#if (${jakartaCompatible.equals("true")} && ${frameworkDependencies.equals("embedded")})
+	implementation group: "com.liferay.portletmvc4spring", name: "com.liferay.portletmvc4spring.framework", version: "6.0.0-M1"
+#elseif (${framework.equals("portletmvc4spring")} && ${frameworkDependencies.equals("embedded")})
 	implementation group: "com.liferay.portletmvc4spring", name: "com.liferay.portletmvc4spring.framework", version: "5.3.2"
 #end
-#if (${framework.equals("portletmvc4spring")})
+#if (${jakartaCompatible.equals("true")})
+	implementation group: "com.liferay.portletmvc4spring", name: "com.liferay.portletmvc4spring.security", version: "6.0.0-M1"
+#elseif (${framework.equals("portletmvc4spring")})
 	implementation group: "com.liferay.portletmvc4spring", name: "com.liferay.portletmvc4spring.security", version: "5.3.2"
 #end
-#if (${framework.equals("portletmvc4spring")} && ${frameworkDependencies.equals("provided")})
+#if (${jakartaCompatible.equals("true")} && ${frameworkDependencies.equals("provided")})
+	implementation group: "com.liferay.portletmvc4spring", name: "com.liferay.portletmvc4spring.thin", version: "5.2.2", transitive: false
+	compileOnly group: "com.liferay.portletmvc4spring", name: "com.liferay.portletmvc4spring.framework", version: "6.0.0-M1"
+#elseif (${framework.equals("portletmvc4spring")} && ${frameworkDependencies.equals("provided")})
 	implementation group: "com.liferay.portletmvc4spring", name: "com.liferay.portletmvc4spring.thin", version: "5.2.2", transitive: false
 	compileOnly group: "com.liferay.portletmvc4spring", name: "com.liferay.portletmvc4spring.framework", version: "5.3.2"
 #end
@@ -41,12 +48,21 @@ dependencies {
 		exclude group: "org.slf4j", module: "slf4j-api"
 	}
 #end
-#if (${liferayVersion.startsWith("7.0")} || ${liferayVersion.startsWith("7.1")})
+#if (${jakartaCompatible.equals("true")})
+	implementation(group: "org.hibernate.validator", name: "hibernate-validator", version: "6.2.5.Final") {
+		exclude group: "jakarta.validation", module: "validation-api"
+	}
+#elseif (${liferayVersion.startsWith("7.0")} || ${liferayVersion.startsWith("7.1")})
 	implementation group: "javax.validation", name: "validation-api", version: "2.0.1.Final"
-#end
+
 	implementation(group: "org.hibernate.validator", name: "hibernate-validator", version: "6.2.5.Final") {
 		exclude group: "javax.validation", module: "validation-api"
 	}
+#else
+	implementation(group: "org.hibernate.validator", name: "hibernate-validator", version: "6.2.5.Final") {
+		exclude group: "javax.validation", module: "validation-api"
+	}
+#end
 #if (${framework.equals("portletmvc4spring")})
 	implementation (group: "org.springframework", name: "spring-aop") {
 		version {
@@ -147,13 +163,23 @@ dependencies {
 		}
 	}
 #end
-#if (${viewType.equals("thymeleaf")})
+
+#if (${jakartaCompatible.equals("true")} && ${viewType.equals("thymeleaf")})
+	implementation(group: "org.thymeleaf", name: "thymeleaf", version: "3.1.3.RELEASE") {
+		exclude group: "ognl", module: "ognl"
+		exclude group: "org.slf4j", module: "slf4j-api"
+	}
+#elseif (${viewType.equals("thymeleaf")})
 	implementation(group: "org.thymeleaf", name: "thymeleaf", version: "3.0.15.RELEASE") {
 		exclude group: "ognl", module: "ognl"
 		exclude group: "org.slf4j", module: "slf4j-api"
 	}
 #end
-#if (${viewType.equals("thymeleaf")} && ${framework.equals("portletmvc4spring")})
+#if (${viewType.equals("thymeleaf")} && ${jakartaCompatible.equals("true")})
+	implementation(group: "org.thymeleaf", name: "thymeleaf-spring6", version: "3.1.3.RELEASE") {
+		exclude group: "org.slf4j", module: "slf4j-api"
+	}
+#elseif (${viewType.equals("thymeleaf")} && ${framework.equals("portletmvc4spring")})
 	implementation(group: "org.thymeleaf", name: "thymeleaf-spring5", version: "3.0.15.RELEASE") {
 		exclude group: "org.slf4j", module: "slf4j-api"
 	}
@@ -163,7 +189,9 @@ dependencies {
 	}
 #end
 	compileOnly group: "com.liferay.portal", name: "com.liferay.portal.kernel"
-#if (${liferayVersion.startsWith("7.0")} || ${framework.equals("springportletmvc")})
+#if (${jakartaCompatible.equals("true")})
+	compileOnly group: "com.liferay.jakarta.portlet", name: "com.liferay.jakarta.portlet-api"
+#elseif (${liferayVersion.startsWith("7.0")} || ${framework.equals("springportletmvc")})
 	compileOnly (group: "javax.portlet", name: "portlet-api") {
 		version {
 			strictly "2.0"
@@ -172,8 +200,14 @@ dependencies {
 #else
 	compileOnly group: "javax.portlet", name: "portlet-api"
 #end
+#if (${jakartaCompatible.equals("true")})
+	compileOnly group: "jakarta.servlet", name: "jakarta.servlet-api", version: "6.0.0"
+#else
 	compileOnly group: "javax.servlet", name: "javax.servlet-api"
-#if (!${liferayVersion.startsWith("7.0")} && !${liferayVersion.startsWith("7.1")})
+#end
+#if (${jakartaCompatible.equals("true")})
+	compileOnly group: "jakarta.validation", name: "jakarta.validation-api", version: "3.1.0"
+#elseif (!${liferayVersion.startsWith("7.0")} && !${liferayVersion.startsWith("7.1")})
 	compileOnly group: "javax.validation", name: "validation-api", version: "2.0.1.Final"
 #end
 	compileOnly group: "org.osgi", name: "org.osgi.service.component.annotations"
