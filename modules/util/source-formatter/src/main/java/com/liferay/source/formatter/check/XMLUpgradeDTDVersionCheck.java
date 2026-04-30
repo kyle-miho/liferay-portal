@@ -34,25 +34,15 @@ public class XMLUpgradeDTDVersionCheck extends XMLDTDVersionCheck {
 
 	@Override
 	protected String getLPVersion() {
-		String[] upgradeToVersionParts = StringUtil.split(
-			_upgradeToVersion, StringPool.PERIOD);
-
-		if ((upgradeToVersionParts == null) ||
-			(upgradeToVersionParts.length < 2)) {
-
-			return null;
-		}
-
-		if (upgradeToVersionParts[1].startsWith("q")) {
-			return "7.4.0";
-		}
-
-		return StringBundler.concat(
-			upgradeToVersionParts[0], ".", upgradeToVersionParts[1], ".0");
+		return _getUpgradeToVersion(".");
 	}
 
 	@Override
 	protected String getLPVersionDTD() {
+		return _getUpgradeToVersion("_");
+	}
+
+	private String _getUpgradeToVersion(String separator) {
 		String[] upgradeToVersionParts = StringUtil.split(
 			_upgradeToVersion, StringPool.PERIOD);
 
@@ -62,12 +52,13 @@ public class XMLUpgradeDTDVersionCheck extends XMLDTDVersionCheck {
 			return null;
 		}
 
-		if (upgradeToVersionParts[1].startsWith("q")) {
-			return "7_4_0";
+		if (upgradeToVersionParts[0].length() == 4) {
+			return StringBundler.concat("7", separator, "4", separator, "0");
 		}
 
 		return StringBundler.concat(
-			upgradeToVersionParts[0], "_", upgradeToVersionParts[1], "_0");
+			upgradeToVersionParts[0], separator, upgradeToVersionParts[1],
+			separator, "0");
 	}
 
 	private String _upgradeToVersion;
