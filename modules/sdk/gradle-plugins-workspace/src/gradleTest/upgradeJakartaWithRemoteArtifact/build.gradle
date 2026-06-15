@@ -1,0 +1,18 @@
+task runGradleTest
+
+allprojects {
+	repositories {
+		maven {
+			url "https://repository-cdn.liferay.com/nexus/content/groups/public"
+		}
+	}
+}
+
+runGradleTest {
+	doLast {
+		File jakartaTransformDependenciesFile = upgradeJakarta.jakartaTransformDependenciesFile.getOrNull()?.asFile
+
+		assert jakartaTransformDependenciesFile != null
+		assert jakartaTransformDependenciesFile.name.contains("2026.q2.2")
+	}
+}

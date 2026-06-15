@@ -1,0 +1,1 @@
+javax.portlet:portlet-api=com.liferay.jakarta.portlet:com.liferay.jakarta.portlet-api:9.9.9

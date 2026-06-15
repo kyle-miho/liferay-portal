@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+
+<project>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.liferay.portal</groupId>
+	<artifactId>release.dxp.tools</artifactId>
+	<version>2026.q2.2</version>
+	<packaging>txt</packaging>
+</project>

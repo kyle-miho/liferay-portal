@@ -1,14 +1,20 @@
 task runGradleTest
 
+allprojects {
+	repositories {
+		maven {
+			url file("repo")
+		}
+	}
+}
+
 runGradleTest {
 	dependsOn upgradeJakarta
 
 	doLast {
-		File file = new File(buildDir.getParentFile(), "modules/foo-web/src/main/java/com/liferay/foo/web/internal/portlet/FooPortlet.java")
+		File file = new File(buildDir.getParentFile(), "modules/foo-web/build.gradle")
 
-		String content = file.text
-
-		assert content.contains('jakarta.portlet')
-		assert !content.contains('javax.portlet')
+		assert file.text.contains('version: "9.9.9"')
+		assert !file.text.contains('javax.portlet')
 	}
 }

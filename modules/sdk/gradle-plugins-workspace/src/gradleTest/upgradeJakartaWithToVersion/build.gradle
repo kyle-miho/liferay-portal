@@ -1,0 +1,22 @@
+task runGradleTest
+
+allprojects {
+	repositories {
+		maven {
+			url file("repo")
+		}
+	}
+}
+
+upgradeJakarta {
+	toVersion = "2026.q2.2"
+}
+
+runGradleTest {
+	doLast {
+		File file = upgradeJakarta.jakartaTransformDependenciesFile.getOrNull()?.asFile
+
+		assert file != null
+		assert file.name.contains("2026.q2.2")
+	}
+}
