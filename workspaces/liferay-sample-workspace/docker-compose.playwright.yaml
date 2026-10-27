@@ -1,0 +1,5 @@
+services:
+    liferay:
+        image: ${LIFERAY_IMAGE}
+        volumes:
+            -   ./playwright/env:/mnt/liferay/files:ro
