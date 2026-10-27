@@ -21,7 +21,7 @@ The tests run against `PORTAL_URL`, which defaults to `http://localhost:8080`. T
 
 ## Starting Liferay
 
-If Liferay is not running at `PORTAL_URL`, the tests start the `liferay.workspace.product` release in Docker and remove the containers and volumes when they finish. Liferay uses the trial license from the `liferay/dxp:latest` image.
+If Liferay is not running at `PORTAL_URL` and `PORTAL_URL` is a `http://localhost:<port>` URL, the tests start the `liferay.workspace.product` release in Docker on that port and remove the containers and volumes when they finish. Liferay uses the trial license from the `liferay/dxp:latest` image.
 
 The build tags its image as `liferay:playwright`, so the `liferay:local` image that the workspace's own stack runs is not replaced. Like any `scripts/bootstrap.sh` run, it cleans and rebuilds the workspace's `build` directory and stops a container started with `./gradlew startDockerContainer`.
 

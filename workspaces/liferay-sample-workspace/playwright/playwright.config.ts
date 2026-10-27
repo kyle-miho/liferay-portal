@@ -19,6 +19,7 @@ export default defineConfig({
 	},
 	webServer: {
 		command: './start_portal.sh',
+		env: {LIFERAY_HTTP_PORT: new URL(portalURL).port || '8080'},
 		gracefulShutdown: {signal: 'SIGTERM', timeout: 60 * 1000},
 		reuseExistingServer: true,
 		stdout: 'pipe',
