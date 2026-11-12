@@ -107,7 +107,7 @@ public class BulkActionResourceTest {
 				getObjectDefinitionByExternalReferenceCode(
 					"L_CMS_BASIC_WEB_CONTENT", _testCompany.getCompanyId());
 
-		_depotEntry2 = _addDepotEntry(false);
+		_depotEntry = _addDepotEntry(false);
 	}
 
 	@Test
@@ -199,7 +199,7 @@ public class BulkActionResourceTest {
 		return HashMapBuilder.<String, Serializable>put(
 			"title_i18n",
 			HashMapBuilder.put(
-				_LANGUAGE_ID, RandomTestUtil.randomString()
+				"en_US", RandomTestUtil.randomString()
 			).build()
 		).build();
 	}
@@ -235,11 +235,11 @@ public class BulkActionResourceTest {
 
 		ObjectEntry cmsBasicWebContentObjectEntry1 =
 			ObjectEntryTestUtil.addObjectEntry(
-				_depotEntry2.getGroupId(), _cmsBasicWebContentObjectDefinition,
+				_depotEntry.getGroupId(), _cmsBasicWebContentObjectDefinition,
 				_getObjectEntryValues());
 		ObjectEntry cmsBasicWebContentObjectEntry2 =
 			ObjectEntryTestUtil.addObjectEntry(
-				_depotEntry2.getGroupId(), _cmsBasicWebContentObjectDefinition,
+				_depotEntry.getGroupId(), _cmsBasicWebContentObjectDefinition,
 				_getObjectEntryValues());
 
 		AddObjectToProjectBulkSelectionAction bulkAction =
@@ -388,11 +388,9 @@ public class BulkActionResourceTest {
 		}
 	}
 
-	private static final String _LANGUAGE_ID = "en_US";
-
 	private BulkActionResource _bulkActionResource;
 	private ObjectDefinition _cmsBasicWebContentObjectDefinition;
-	private DepotEntry _depotEntry2;
+	private DepotEntry _depotEntry;
 
 	@Inject
 	private DepotEntryLocalService _depotEntryLocalService;
