@@ -9,6 +9,7 @@ import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.journal.model.JournalArticle;
 import com.liferay.journal.test.util.JournalTestUtil;
 import com.liferay.layout.test.util.LayoutTestUtil;
+import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.json.JSONUtil;
@@ -147,14 +148,9 @@ public class SXPBlueprintSuggestionsContributorTest {
 			String... expectedTexts)
 		throws Exception {
 
-		Suggestion[] suggestions =
-			suggestionsContributorResults.getSuggestions();
-
-		List<String> texts = new ArrayList<>();
-
-		for (Suggestion suggestion : suggestions) {
-			texts.add(suggestion.getText());
-		}
+		List<String> texts = TransformUtil.transformToList(
+			suggestionsContributorResults.getSuggestions(),
+			Suggestion::getText);
 
 		Arrays.sort(expectedTexts);
 
