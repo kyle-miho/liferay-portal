@@ -11,7 +11,7 @@
 		"start": "./start.sh",
 		"stop": "./stop.sh",
 		"test": "./test.sh",
-		"typecheck": "tsc"
+		"typecheck": "if [ -f ../playwright-custom/tsconfig.json ]; then tsc --project ../playwright-custom; else tsc; fi"
 	},
 	"version": "0.0.0"
 }
