@@ -14,4 +14,4 @@ services:
             LIFERAY_VIRTUAL_PERIOD_HOSTS_PERIOD_VALID_PERIOD_HOSTS: "*"
         image: ${LIFERAY_IMAGE}
         volumes:
-            -   ./playwright/env:/mnt/liferay/files:ro
+            -   ./playwright-custom/env:/mnt/liferay/files:ro
