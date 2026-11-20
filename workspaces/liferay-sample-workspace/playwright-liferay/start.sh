@@ -9,7 +9,7 @@ cd "$(dirname "${BASH_SOURCE[0]}")"
 source _common.sh
 
 function main {
-	../../scripts/bootstrap.sh
+	../scripts/bootstrap.sh
 }
 
 main
