@@ -21,7 +21,7 @@ apply plugin: "com.liferay.workspace"
 gradle.rootProject {
 	afterEvaluate {
 		setUpYarn {
-			excludes "playwright-liferay"
+			excludes "playwright-custom", "playwright-liferay"
 		}
 	}
 }

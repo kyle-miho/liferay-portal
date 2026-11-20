@@ -8,6 +8,7 @@
 	"name": "@liferay/playwright-liferay",
 	"private": true,
 	"scripts": {
+		"postinstall": "./install_custom.sh",
 		"start": "./start.sh",
 		"stop": "./stop.sh",
 		"test": "./test.sh",
