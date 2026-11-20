@@ -3,14 +3,14 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
-import {PlaywrightTestConfig, devices} from '@playwright/test';
+import {defineConfig, devices} from '@playwright/test';
 import {join} from 'path';
 
 import {liferayConfig} from './core/liferayConfig';
 
 const {baseUrl} = liferayConfig.environment;
 
-export const baseConfig: PlaywrightTestConfig = {
+export default defineConfig({
 	expect: {
 		timeout: 15 * 1000,
 	},
@@ -22,7 +22,7 @@ export const baseConfig: PlaywrightTestConfig = {
 		['list'],
 	],
 	retries: process.env.CI ? 1 : 0,
-	testDir: './tests',
+	testDir: '../playwright-custom',
 	timeout: 90 * 1000,
 	use: {
 		...devices['Desktop Chrome'],
@@ -31,4 +31,4 @@ export const baseConfig: PlaywrightTestConfig = {
 		trace: 'retain-on-failure',
 	},
 	workers: 1,
-};
+});

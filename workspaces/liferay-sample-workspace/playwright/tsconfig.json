@@ -1,8 +1,0 @@
-{
-	"extends": "./liferay/tsconfig.base.json",
-	"include": [
-		"*.ts",
-		"liferay/**/*.ts",
-		"tests/**/*.ts"
-	]
-}

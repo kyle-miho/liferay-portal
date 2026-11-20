@@ -1,8 +1,17 @@
 {
 	"devDependencies": {
-		"dotenv": "16.6.1"
+		"@playwright/test": "1.55.1",
+		"@types/node": "24.19.2",
+		"dotenv": "16.6.1",
+		"typescript": "5.7.2"
 	},
-	"name": "@liferay/liferay-sample-workspace-playwright",
+	"name": "@liferay/playwright-liferay",
 	"private": true,
+	"scripts": {
+		"start": "./start.sh",
+		"stop": "./stop.sh",
+		"test": "./test.sh",
+		"typecheck": "tsc"
+	},
 	"version": "0.0.0"
 }
