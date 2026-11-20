@@ -35,7 +35,9 @@ function refresh_workspaces {
 			--exclude .github \
 			--exclude /README.md \
 			--exclude /package.json \
-			--exclude /playwright \
+			--exclude /playwright-custom \
+			--exclude /playwright-liferay/playwright-report \
+			--exclude /playwright-liferay/test-results \
 			--exclude /yarn.lock \
 			--exclude Jenkinsfile \
 			--exclude build.gradle \
@@ -52,25 +54,6 @@ function refresh_workspaces {
 			--exclude test.properties \
 			--exclude themes \
 			"${PWD}/liferay-sample-workspace/" "${workspace_dir}"
-
-		mkdir -p "${workspace_dir}/playwright"
-
-		rsync \
-			--archive \
-			--delete \
-			--exclude node_modules \
-			"${PWD}/liferay-sample-workspace/playwright/liferay" \
-			"${workspace_dir}/playwright"
-
-		rsync \
-			--archive \
-			--ignore-existing \
-			"${PWD}/liferay-sample-workspace/playwright/.gitignore" \
-			"${PWD}/liferay-sample-workspace/playwright/package.json" \
-			"${PWD}/liferay-sample-workspace/playwright/playwright.config.ts" \
-			"${PWD}/liferay-sample-workspace/playwright/tsconfig.json" \
-			"${PWD}/liferay-sample-workspace/playwright/yarn.lock" \
-			"${workspace_dir}/playwright"
 	done
 }
 
