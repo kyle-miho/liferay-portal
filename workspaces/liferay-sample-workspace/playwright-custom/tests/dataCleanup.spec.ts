@@ -5,8 +5,8 @@
 
 import {expect, mergeTests} from '@playwright/test';
 
-import {dataApiHelpersTest} from '../liferay/core/fixtures/dataApiHelpersTest';
-import {loginTest} from '../liferay/core/fixtures/loginTest';
+import {dataApiHelpersTest} from '../../playwright-liferay/core/fixtures/dataApiHelpersTest';
+import {loginTest} from '../../playwright-liferay/core/fixtures/loginTest';
 
 const test = mergeTests(dataApiHelpersTest(), loginTest());
 
