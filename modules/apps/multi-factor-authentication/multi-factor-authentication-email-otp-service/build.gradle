@@ -9,5 +9,5 @@ dependencies {
 	compileOnly project(":core:petra:petra-lang")
 	compileOnly project(":core:petra:petra-sql-dsl-api")
 	compileOnly project(":core:petra:petra-string")
-	compileOnly project(":dxp:apps:multi-factor-authentication:multi-factor-authentication-email-otp-api")
+	compileOnly project(":apps:multi-factor-authentication:multi-factor-authentication-email-otp-api")
 }
